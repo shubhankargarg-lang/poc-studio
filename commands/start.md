@@ -10,10 +10,10 @@ The arguments are `<client name> | <use case name> | <POC ID>` (e.g. `Acme | Inv
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.5.0**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.6.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.5.0"
+LOADED="1.6.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -47,9 +47,26 @@ Then act on the last line it printed:
   three commands, then the same `/poc-studio:start` command again:
   `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
 - **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.5.0, then carry on.
+  are continuing on v1.6.0, then carry on.
 
-## Step 1 — run the pipeline
+## Step 1 — verify the POC ID in Orbit (after the update check, before anything else)
+
+Only once Step 0 has finished and the POC ID has been given:
+
+1. Use **Nebula's read-object command** (the Nebula plugin's command or tool for reading records from an Orbit
+   object — find it with a tool search for `nebula read object` or in the session's skill list) to read the object
+   **`orbit_studio_poc`** on Orbit UAT (`https://orbit.uat.unifyapps.com/`), **filtered on `poc_id` = the POC ID
+   given above** (exact match).
+2. **Found** (at least one record) → log it, keep the record's id and fields for later (`state.json` →
+   `"orbit_poc_record"`, written once the workspace exists), and go on to Step 2.
+3. **Not found** → **stop.** Tell the person: "POC ID `<POC ID>` was not found in Orbit (`orbit_studio_poc`). Please
+   check the POC ID and send the correct one." Wait for their reply, then run this check again with the new ID.
+   Do not start the pipeline until the check finds the record.
+4. **The check cannot run** (Nebula not installed, its read command errors, or Orbit needs a sign-in) → stop and tell
+   the person what is needed (install Nebula, or sign in to Orbit themselves — never type a password), then run the
+   check again. Never skip it.
+
+## Step 2 — run the pipeline
 
 Load the `poc-orchestrator` skill from this plugin (Skill tool: `poc-studio:poc-orchestrator`) and follow it exactly,
 starting with Setup. If the client name, the use case name or the POC ID is missing above, ask once for the missing

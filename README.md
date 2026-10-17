@@ -51,7 +51,9 @@ Open Claude Code in the folder where the POC files should live, then:
 ```
 
 For example `/poc-studio:start Acme | Invoice matching | POC-acme-20261018`. **The POC ID is required** (format
-`POC-<client>-<YYYYMMDD>`); the run does not start until it is given. It is recorded in the progress file, the
+`POC-<client>-<YYYYMMDD>`); the run does not start until it is given, and it must exist in Orbit: right after the update check, the run reads
+the Orbit object `orbit_studio_poc` (filtered on `poc_id`) with Nebula's read-object command and stops, asking you to
+check the ID, if it is not found. It is recorded in the progress file, the
 documents and the build so everything can be traced to the POC. The use case name keeps the whole run focused:
 Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:

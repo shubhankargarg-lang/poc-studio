@@ -26,6 +26,12 @@ stage until the person has given a POC ID. It looks like `POC-<client>-<YYYYMMDD
 starts with `POC-` and ends with an 8-digit date. If what was given does not match that shape, show it back and ask
 the person to confirm or correct it before starting. Use the POC ID exactly as given (same case) everywhere.
 
+**The POC ID must exist in Orbit.** The start command checks it with Nebula's read-object command against the Orbit
+object `orbit_studio_poc` (filter `poc_id`) before calling this skill; Setup only runs after that check found the
+record. If this skill is ever started without that check having passed in this session, run it first (same rule:
+not found → stop and ask the person to check the POC ID). The POC ID will later be used to write documents back to
+Orbit objects at each gate.
+
 **The use case is the focus of the whole run.** A client often has several use cases in flight, and its Slack
 channels, email threads and Drive folders mix them. Every stage works on **this** use case only:
 - Requirement Gathering searches with the client name **and** the use-case terms, keeps material about this use case,
@@ -88,7 +94,8 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
 ### state.json
 
 ```json
-{ "poc_id": "POC-acme-20261018", "client": "Acme Beverages", "use_case": "Shelf Compliance",
+{ "poc_id": "POC-acme-20261018", "orbit_poc_record": { "id": "<record id>", "...": "fields as read" },
+  "client": "Acme Beverages", "use_case": "Shelf Compliance",
   "slug": "acme-beverages-shelf-compliance",
   "workspace": "<abs path>",
   "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
