@@ -32,19 +32,22 @@ Google Calendar are optional but improve requirement gathering).
 Open Claude Code in the folder where the POC files should live, then:
 
 ```
-/poc-studio:start <Client name>
+/poc-studio:start <Client name> | <Use case name>
 ```
 
-Run the same command again later to resume: progress is kept in `<client-slug>/state.json`.
+For example `/poc-studio:start Acme Beverages | Shelf Compliance`. The use case name keeps the whole run focused:
+Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
+client's other use cases, and each use case gets its own folder. Run the same command again later to resume:
+progress is kept in `<client-slug>/<usecase-slug>/state.json`.
 
 ## What happens
 
-| # | Stage | Skill | Output (in `<client-slug>/`) |
+| # | Stage | Skill | Output (in `<client-slug>/<usecase-slug>/`) |
 |---|---|---|---|
 | 0 | Setup: connector check (Slack required), workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
-| 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client>.docx`, `files/` |
+| 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
-| 3 | Design System | `design-system` | `03-design-system/<client-slug>-design-system.html` |
+| 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
 | 4 | Build in Nebula (Sonic mode, Orbit) | `/nebula:start` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, video, deck, walkthrough, swimlanes |
 

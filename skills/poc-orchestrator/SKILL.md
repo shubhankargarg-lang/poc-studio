@@ -1,6 +1,6 @@
 ---
 name: poc-orchestrator
-description: Runs the UnifyApps POC Studio pipeline end to end for one client — Requirement Gathering → Scoping → Design System → Nebula build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for <client>", or asks to resume a POC Studio run.
+description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Design System → Nebula build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for <client>", or asks to resume a POC Studio run.
 ---
 
 # POC Studio orchestrator
@@ -16,8 +16,18 @@ Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System 
                      (research skill available to every stage; reviewer answers every clarification question)
 ```
 
-**Input:** only the client name (from `/poc-studio:start <client>`, or ask for it once if it is missing).
-Everything else — use case, website, personas — comes from the documents the stages produce.
+**Input:** the client name and the use case name, from `/poc-studio:start <client> | <use case>` (e.g.
+`/poc-studio:start Acme Beverages | Shelf Compliance`). If the separator is missing, read the arguments sensibly
+(e.g. "Acme Beverages shelf compliance POC"); if either name is missing, ask once for both together. Everything else
+— website, personas, scope — comes from the documents the stages produce.
+
+**The use case is the focus of the whole run.** A client often has several use cases in flight, and its Slack
+channels, email threads and Drive folders mix them. Every stage works on **this** use case only:
+- Requirement Gathering searches with the client name **and** the use-case terms, keeps material about this use case,
+  and lists material about the client's other use cases as "other use case — not used" instead of mixing it in.
+- Scoping, Design System, Nebula and Collaterals receive the use case name with every call, and the reviewer checks
+  that each output stays on it.
+- Each use case gets its own workspace, so two POCs for the same client never overwrite each other.
 
 ## The skills you call
 
@@ -45,17 +55,17 @@ All files go inside the folder Claude Code is running in, under one folder per c
 and any later session — can read them:
 
 ```
-<cwd>/<client-slug>/                    ← <workspace>
+<cwd>/<client-slug>/<usecase-slug>/     ← <workspace>  (one folder per client, one sub-folder per use case)
   state.json                            stage status, approvals, paths (resume from here)
   context-log.md                        running record: asks, decisions, answers, approvals, feedback
   01-requirement-gathering/
-    Requirement Gathering - <Client>.docx
+    Requirement Gathering - <Client> - <Use case>.docx
     files/                              the client's own files, as pulled from Slack/Drive/Gmail
   02-scoping/
     scoping-document.docx               the build plan (Part A proposal, Part B build spec)
     _working/                           scoping's working notes, research, evidence log
   03-design-system/
-    <client-slug>-design-system.html    the design system HTML Nebula reads (plus anything else the skill ships)
+    <slug>-design-system.html           the design system HTML Nebula reads (plus anything else the skill ships)
   04-build/
     build-summary.md                    Nebula's result: app name, app URL on Orbit, what was built
   05-collaterals/
@@ -64,15 +74,18 @@ and any later session — can read them:
   reviews/                              reviewer verdicts (*.yaml) and log.md
 ```
 
-`<client-slug>` is the client name in lower case with hyphens (e.g. `acme-beverages`). Create the tree at setup.
+`<client-slug>` and `<usecase-slug>` are the names in lower case with hyphens (e.g. `acme-beverages` /
+`shelf-compliance`); `<slug>` is `<client-slug>-<usecase-slug>` (e.g. `acme-beverages-shelf-compliance`) and is the
+`work_id`. Create the tree at setup.
 
 ### state.json
 
 ```json
-{ "client": "Acme Beverages", "slug": "acme-beverages", "workspace": "<abs path>",
+{ "client": "Acme Beverages", "use_case": "Shelf Compliance", "slug": "acme-beverages-shelf-compliance",
+  "workspace": "<abs path>",
   "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
   "stages": {
-    "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages.docx", "review_rounds": 1 },
+    "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages - Shelf Compliance.docx", "review_rounds": 1 },
     "scoping":       { "status": "in_review" },
     "design-system": { "status": "pending" },
     "build":         { "status": "pending" },
@@ -91,7 +104,7 @@ This file is the reviewer's memory of the use case; keep it factual and short.
 
 ## Resuming
 
-If `<cwd>/<client-slug>/state.json` exists, read it and `context-log.md`, tell the person in one line where the
+If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists, read it and `context-log.md`, tell the person in one line where the
 run stands, and continue from the first stage that is not `approved`. Never redo an approved stage unless the
 person asks.
 
@@ -176,13 +189,14 @@ Never advance without an explicit approval.
 
 ## 0 · Setup
 
-1. Get the client name. Make `<client-slug>` and the workspace tree. If it exists, resume (above).
+1. Get the client name and the use case name. Make the slugs and the workspace tree. If it exists, resume (above).
+   If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack is required.** If no Slack tools are found, stop and ask the person to connect Slack (in Claude Code:
      `/mcp`, or connect it as a claude.ai connector), then check again. Do not start Stage 1 without it.
    - Gmail, Google Drive and Google Calendar are optional: list which are connected and carry on; the
      Requirement Gathering document records the missing ones as "Not connected".
-3. Write `state.json` and the first lines of `context-log.md` (client, date, connectors), then these **standing
+3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Questions during stages are answered by the reviewer from context and assumptions, not the person.
    - Design system: if brand-colour sources disagree, pick the colour that fits the use case best; if no client logo
@@ -195,18 +209,20 @@ Never advance without an explicit approval.
 
 ## 1 · Requirement Gathering
 
-- Create the autopilot file. Call `requirement-gathering` with the client name and the stage folder
+- Create the autopilot file. Call `requirement-gathering` with the client name, **the use case name** and the stage folder
   `<workspace>/01-requirement-gathering/` (client files into `files/`, the document into the folder).
 - The skill's own last step ("ask whether to proceed") is replaced by your reviewer + gate.
 - Review: `stage: requirement-gathering`, artifacts = the .docx (and `files/` listing).
 - Gate. The document's verdict (Ready / Ready with assumptions / Not ready) and its open questions are shown at
   the gate; proceeding on "Not ready" is the person's call.
-- Log the client name, website, use case and stated asks from the approved document in `context-log.md`.
+- Log the client name, website, use case (as the document confirmed or refined it) and stated asks from the
+  approved document in `context-log.md`.
 
 ## 2 · Scoping
 
 - Create the autopilot file. Call `scoping-l1-first` with:
-  - input 1: the approved `Requirement Gathering - <Client>.docx`;
+  - the use case name (the scope is this use case only; material about other use cases is out of the ask);
+  - input 1: the approved `Requirement Gathering - <Client> - <Use case>.docx`;
   - input 2: everything in `01-requirement-gathering/files/`;
   - output path: `<workspace>/02-scoping/scoping-document.docx` (`_working/` beside it);
   - research through `research` (its section 4); it keeps its own `_working/research/`, and you also copy each
@@ -222,12 +238,12 @@ The `design-system` skill is tested and its output is approved as is. **Call it 
 extend or second-guess its steps.** Only these session facts are supplied by you:
 
 - Create the autopilot file. Call `design-system` with:
-  - **client name** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
+  - **client name**, **use case** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
     the client brief; if both are silent, the skill derives it);
   - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
-    `<client-slug>-design-system.html`, plus any other files the skill ships. Nebula reads the HTML from this
+    `<slug>-design-system.html`, plus any other files the skill ships. Nebula reads the HTML from this
     folder. If an Artifact tool also exists in the session, publishing is optional; the local HTML is what counts.
 - **The skill's two stops are answered without the person** (the reviewer's standing answers):
   - Brand hue ambiguous → pick the colour that fits the use case and audience best; record it in the port note.
@@ -248,7 +264,8 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
-  - **Design system:** `<workspace>/03-design-system/<client-slug>-design-system.html`.
+  - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
+  - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`.
   - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
     build plan (L1 scope only).
   - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it

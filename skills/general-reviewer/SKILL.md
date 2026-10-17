@@ -43,13 +43,16 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 
 | Stage | Kind | Approved upstream it is checked against | Output it reviews |
 |---|---|---|---|
-| `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client>.docx` |
+| `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx` |
 | `research` | research | the question the calling stage sent | the research answer |
 | `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document | `02-scoping/scoping-document.docx` |
 | `design-system` | design | the approved scoping document | `03-design-system/*.html` (style guide, tokens, logo kit) |
 | `build` | resolve only | the approved scoping document + design system | — Nebula tests its own build; the reviewer only answers its questions |
 | `collaterals` | deliverable | the approved scoping document + the built app | `05-collaterals/**/out/*` |
 
+- **Use case focus:** each workspace is one client **and one use case** (in `state.json` and the context log). In every
+  review, check that the output stays on that use case: material from the client's other use cases mixed in is a
+  blocking R2 finding; client-wide facts (company, systems, brand) are fine.
 - **Owner:** the person running the plugin. Approvers: the same person, at the orchestrator's gate after each stage.
 - **Workspace:** the client folder the orchestrator names in the request (`<workspace>`). Verdicts go to
   `<workspace>/reviews/<stage>-<mode>-<n>.yaml`, and one line per verdict is appended to `<workspace>/reviews/log.md`.

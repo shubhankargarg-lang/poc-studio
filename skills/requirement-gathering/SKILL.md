@@ -7,13 +7,13 @@ description: "POC intake for a client: finds and pulls every client file from Sl
 
 Collect everything that exists about a client and its use case, hand the client's files back in the chat, and write one short Requirement Gathering Document. Nothing else.
 
-**Never ask a question before the deliverables exist.** Work from the client name you were given. Take the most reasonable reading of anything unclear, say which reading you took in the document, and put whatever only a person can answer into Section 3. After the files are delivered, the person decides whether to proceed.
+**Never ask a question before the deliverables exist.** Work from the client name and the use case name you were given. Take the most reasonable reading of anything unclear, say which reading you took in the document, and put whatever only a person can answer into Section 3. After the files are delivered, the person decides whether to proceed.
 
 **The client's own files come first.** A Requirement Gathering Document written without the client files is not finished. Never write Step 4 while a client file is still unreached and the retry and fallback steps in Step 2 have not all been tried.
 
 **The deliverables, and nothing more:**
 1. Every client file found, sent into the chat as the actual file (e.g. the client's .pptx and .pdf).
-2. `Requirement Gathering - <Client>.docx`, with exactly the four sections below.
+2. `Requirement Gathering - <Client> - <Use case>.docx` (or `Requirement Gathering - <Client>.docx` when no use case name was given), with exactly the four sections below.
 
 Do not produce Markdown copies, PDFs, evidence logs, registers, research folders, draft emails or notices unless the person asks. (Exception: when run by the POC Studio orchestrator, save each `research` answer to `<workspace>/research/` as the orchestrator asks.)
 
@@ -28,7 +28,7 @@ Do not produce Markdown copies, PDFs, evidence logs, registers, research folders
 
 ## Step 1 — Find everything about the client
 
-Search terms: the client's name and spelling variants (e.g. "Pentland", "Pentaland"), its website domain, its brands or units, and the use-case nouns. Load each connector family with one tool search (`slack`, `drive`, `calendar`, `gmail`, `notion`, any meeting recorder). A connector that isn't available is noted in Section 4 as "Not connected", and the work carries on.
+Search terms: the client's name and spelling variants (e.g. "Pentland", "Pentaland"), its website domain, its brands or units, and the use-case nouns. **When a use case name is given, it is the focus:** search with the client terms combined with the use-case name, its synonyms and its key nouns (e.g. "Pentland PLM", "Pentland enrichment", "product content"), and read client channels and threads whole, but keep only what concerns this use case. Material that clearly belongs to another of the client's use cases is not used: list it in Section 4 as "Other use case — not used" with one line on what it was. Material that applies to the whole client (company facts, systems, people, brand) is used. Load each connector family with one tool search (`slack`, `drive`, `calendar`, `gmail`, `notion`, any meeting recorder). A connector that isn't available is noted in Section 4 as "Not connected", and the work carries on.
 
 | Source | Look for |
 |---|---|
@@ -107,7 +107,7 @@ Copy each original under its original name into the `files/` folder of the stage
 
 Before starting: make the final Slack retry for any client file still pending (2a, attempt 4).
 
-Build it with the `docx` skill (read its SKILL.md first). Title: `Requirement Gathering — <Client>, <use case>`, with the date and who ran it under the title. Then **exactly these four sections**, nothing else:
+Build it with the `docx` skill (read its SKILL.md first). Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Then **exactly these four sections**, nothing else:
 
 ### 1. Client brief
 Plain prose and short tables, readable by someone who has never heard of the client.
@@ -153,6 +153,6 @@ Two tables.
 
 ## Step 5 — Deliver
 
-1. Save the .docx in the stage folder (when run by the POC Studio orchestrator: `<workspace>/01-requirement-gathering/Requirement Gathering - <Client>.docx`), and send it with `SendUserFile` when that tool exists (the client files were already delivered in Step 2).
+1. Save the .docx in the stage folder (when run by the POC Studio orchestrator: `<workspace>/01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`), and send it with `SendUserFile` when that tool exists (the client files were already delivered in Step 2).
 2. Reply in a few lines: the score and verdict, the two or three items that most need the PM or the client, and the files delivered. If any client file was not reached, say so first.
 3. End by asking the person whether to proceed with these documents. Proceeding, revising or stopping is their call. (When the POC Studio orchestrator runs this skill, it owns this question: it runs the reviewer first and then puts the approval gate to the person. Do not ask it yourself in that case; return to the orchestrator.)
