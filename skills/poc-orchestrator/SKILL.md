@@ -1,0 +1,278 @@
+---
+name: poc-orchestrator
+description: Runs the UnifyApps POC Studio pipeline end to end for one client — Requirement Gathering → Scoping → Design System → Nebula build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for <client>", or asks to resume a POC Studio run.
+---
+
+# POC Studio orchestrator
+
+You run one client's POC from requirement gathering to collaterals. You do not do the stages' work
+yourself: each stage has its own skill, and you call it, check it with the reviewer, put it to the
+person for approval, and hand the approved files to the next stage.
+
+```
+Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System → 4 Nebula build → 5 Collaterals → Done
+                         │                        │               │                 │                │
+                     reviewer + gate         reviewer + gate  reviewer + gate   verify gate     reviewer + gate
+                     (research skill available to every stage; reviewer answers every clarification question)
+```
+
+**Input:** only the client name (from `/poc-studio:start <client>`, or ask for it once if it is missing).
+Everything else — use case, website, personas — comes from the documents the stages produce.
+
+## The skills you call
+
+Call each with the Skill tool. Use the plugin-qualified name the session lists (e.g. `poc-studio:scoping-l1-first`);
+if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
+
+| Stage | Skill | Owner (flowchart) |
+|---|---|---|
+| 1 Requirement Gathering | `requirement-gathering` | Aastha / Shubhankar |
+| 2 Scoping | `scoping-l1-first` | Shubhankar |
+| 3 Design System | `design-system` | Harshal |
+| 4 Build | `/nebula:start` (separate Nebula plugin) | Nebula |
+| 5 Collaterals | `poc-collateral-studio` | Utkarsh Vasu |
+| Any stage, outside facts | `research` | Lakshya / Gourav |
+| Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent | Gourav |
+
+**All research goes through the `research` skill.** When a stage (or you) needs outside facts, the stage's own
+instructions already say to call `research`; make sure it does. Only if `research` is unavailable may a stage
+fall back to its own web search, and it records that it did. Save each research answer to
+`<workspace>/research/<stage>-<short-topic>.md` so later stages and the reviewer can reuse it.
+
+## The workspace (everything lives in the local folder)
+
+All files go inside the folder Claude Code is running in, under one folder per client, so every later step —
+and any later session — can read them:
+
+```
+<cwd>/<client-slug>/                    ← <workspace>
+  state.json                            stage status, approvals, paths (resume from here)
+  context-log.md                        running record: asks, decisions, answers, approvals, feedback
+  01-requirement-gathering/
+    Requirement Gathering - <Client>.docx
+    files/                              the client's own files, as pulled from Slack/Drive/Gmail
+  02-scoping/
+    scoping-document.docx               the build plan (Part A proposal, Part B build spec)
+    _working/                           scoping's working notes, research, evidence log
+  03-design-system/
+    <client>-design-system.html         the design system HTML Nebula reads (plus anything else the skill ships)
+  04-build/
+    build-summary.md                    Nebula's result: app name, app URL on Orbit, what was built
+  05-collaterals/
+    <Slug>-collateral/out/              script PDF, video + .srt, deck .pptx, walkthrough PDF, swimlanes
+  research/                             every research answer, by stage
+  reviews/                              reviewer verdicts (*.yaml) and log.md
+```
+
+`<client-slug>` is the client name in lower case with hyphens (e.g. `acme-beverages`). Create the tree at setup.
+
+### state.json
+
+```json
+{ "client": "Acme Beverages", "slug": "acme-beverages", "workspace": "<abs path>",
+  "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
+  "stages": {
+    "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages.docx", "review_rounds": 1 },
+    "scoping":       { "status": "in_review" },
+    "design-system": { "status": "pending" },
+    "build":         { "status": "pending" },
+    "collaterals":   { "status": "pending" } },
+  "app": { "name": null, "url": null } }
+```
+
+Status values: `pending` → `running` → `in_review` → `awaiting_approval` → `approved` (or back to `running` on
+requested changes). Update it at every transition.
+
+### context-log.md
+
+Append a dated line at every event: what the stage decided or assumed, every question and the answer it got (and
+who answered: reviewer or person), every reviewer verdict, every gate result, and the person's feedback verbatim.
+This file is the reviewer's memory of the use case; keep it factual and short.
+
+## Resuming
+
+If `<cwd>/<client-slug>/state.json` exists, read it and `context-log.md`, tell the person in one line where the
+run stands, and continue from the first stage that is not `approved`. Never redo an approved stage unless the
+person asks.
+
+## Questions never go straight to the person
+
+The stage skills are built not to ask questions. If any stage — or Nebula — still needs an answer:
+
+1. Do not call AskUserQuestion and do not end your turn with a question. Send the question to the reviewer in
+   **resolve** mode (see "Calling the reviewer").
+2. Apply its answer, log it in `context-log.md`, and carry on.
+3. Only an `ASK_HUMAN` disposition reaches the person, and then only as one question with the reviewer's
+   recommended option first.
+
+The plugin enforces this with a hook: while the file `<cwd>/.poc-studio/autopilot` exists, AskUserQuestion is
+blocked and redirected to the reviewer. Create that file when a stage starts running; delete it right before
+you put an approval gate or an `ASK_HUMAN` question to the person; recreate it when the stage work resumes.
+Delete it when the run finishes or stops.
+
+```bash
+mkdir -p .poc-studio && echo "<workspace>" > .poc-studio/autopilot   # stage running
+rm -f .poc-studio/autopilot                                          # gate / ASK_HUMAN / done
+```
+
+Sign-ins are the exception: the person always signs in themselves (Orbit, Slack, etc.); never type a password.
+
+## Calling the reviewer
+
+The reviewer must not be the session that wrote the work, so run it as a subagent: the Agent tool with
+`subagent_type` `poc-studio:poc-reviewer` (or the name the session lists for the `poc-reviewer` agent). If that
+agent type is unavailable, use a general-purpose subagent and tell it to load the `general-reviewer` skill first.
+
+Write the request to `<workspace>/reviews/<stage>-<mode>-<n>.request.yaml` and pass its path in the prompt:
+
+```yaml
+request_id: <slug>-<stage>-<n>
+workspace: <abs workspace path>
+work_id: <slug>
+mode: review | resolve
+stage: requirement-gathering | research | scoping | design-system | build | collaterals
+round: 1 | 2 | 3
+owner: the person running POC Studio
+audience: { who: <client audience from the context log>, stakes: high }
+artifacts: [ <abs paths of the stage's outputs> ]          # review
+upstream: { path: <approved upstream>, acceptance_criteria: [ ... ] }   # review; scoping 4.1 from stage 3 on
+question: { text: <the question, verbatim>, options: [ ... ] }       # resolve
+prior_verdict: <path>                                        # round 2+
+```
+
+The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
+
+| Verdict / disposition | What you do |
+|---|---|
+| `PASS` | Go to the approval gate. |
+| `REVISE` | Re-run the stage skill on its own output with the fix lines (fix only what is listed), then review again. **At most 2 REVISE rounds**; after the second, go to the gate anyway and show the open findings. |
+| `BLOCK` | Fix the blocking findings the same way, then review again. If it still blocks after round 2, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
+| `ASK_HUMAN` | Put the one question to the person (autopilot file removed), log the answer as a human decision, continue. |
+| `REQUEST_RESEARCH` / `research_request` | Call the `research` skill with it, save the answer, give it back to the reviewer or the stage. |
+| `DECIDE` (resolve) | Apply the answer, log it, continue. |
+| `SEND_BACK` (resolve) | The question was really a defect in the work: fix it in the stage, continue. |
+| `INVALID_REQUEST` | Fix the request field it names and call again. |
+
+## The approval gate (after every stage)
+
+Remove the autopilot file, then:
+1. Tell the person in a few lines: what the stage produced (with the saved paths), the reviewer's verdict and
+   score, any assumptions marked `check_this`, and any open findings.
+2. Ask with AskUserQuestion: **Approve and continue to <next stage>** / **Request changes** (they can type the
+   changes in "Other").
+3. **Approve** → mark the stage `approved` in `state.json`, log it, move on.
+   **Changes** → log the feedback verbatim (it is now a human decision for every later review), re-run the stage
+   skill to apply it, review again (round counter restarts for the new feedback), and gate again.
+
+Never advance without an explicit approval.
+
+---
+
+## 0 · Setup
+
+1. Get the client name. Make `<client-slug>` and the workspace tree. If it exists, resume (above).
+2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
+   - **Slack is required.** If no Slack tools are found, stop and ask the person to connect Slack (in Claude Code:
+     `/mcp`, or connect it as a claude.ai connector), then check again. Do not start Stage 1 without it.
+   - Gmail, Google Drive and Google Calendar are optional: list which are connected and carry on; the
+     Requirement Gathering document records the missing ones as "Not connected".
+3. Write `state.json` and the first lines of `context-log.md` (client, date, connectors).
+4. Tell the person in one or two lines what will happen, then start Stage 1.
+
+## 1 · Requirement Gathering
+
+- Create the autopilot file. Call `requirement-gathering` with the client name and the stage folder
+  `<workspace>/01-requirement-gathering/` (client files into `files/`, the document into the folder).
+- The skill's own last step ("ask whether to proceed") is replaced by your reviewer + gate.
+- Review: `stage: requirement-gathering`, artifacts = the .docx (and `files/` listing).
+- Gate. The document's verdict (Ready / Ready with assumptions / Not ready) and its open questions are shown at
+  the gate; proceeding on "Not ready" is the person's call.
+- Log the client name, website, use case and stated asks from the approved document in `context-log.md`.
+
+## 2 · Scoping
+
+- Create the autopilot file. Call `scoping-l1-first` with:
+  - input 1: the approved `Requirement Gathering - <Client>.docx`;
+  - input 2: everything in `01-requirement-gathering/files/`;
+  - output path: `<workspace>/02-scoping/scoping-document.docx` (`_working/` beside it);
+  - research through `research` (its section 4), answers also saved to `<workspace>/research/`.
+- It runs without asking the user; anything it cannot settle goes to the reviewer (resolve).
+- Review: `stage: scoping`, upstream = the approved Requirement Gathering document. The reviewer reviews Part A
+  as a plan and Part B as a build spec (detail in Part B is expected).
+- Gate. Show the counts (L1 / L2 features, pages, objects, agents, workflows) and the top assumptions.
+
+## 3 · Design System
+
+The `design-system` skill is tested and its output is approved as is. **Call it exactly as it is; do not change,
+extend or second-guess its steps.** Only these session facts are supplied by you:
+
+- Create the autopilot file. Call `design-system` with:
+  - **client name** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
+    the client brief; if both are silent, the skill derives it);
+  - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
+  - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
+    living style guide, with the token block and logo kit in it) saved there as
+    `<client-slug>-design-system.html`, plus any other files the skill ships. Nebula reads the HTML from this
+    folder. If an Artifact tool also exists in the session, publishing is optional; the local HTML is what counts.
+- **The skill's two stops are answered without the person** (the reviewer's standing answers):
+  - Brand hue ambiguous → pick the colour that fits the use case and audience best; record it in the port note.
+  - No client logo file anywhere → build the logo kit from the UnifyApps logo bundled with this plugin
+    (`assets/unifyapps-logo.png` in the plugin root; also `skills/poc-collateral-studio/assets/unifyapps-logo.png`;
+    find it with `find ~/.claude/plugins -name unifyapps-logo.png` if the path is unclear); record it in the port note.
+- The skill's hand-over questions are answered with the client in mind (read "Amogh" there as "the client").
+- Review: `stage: design-system`, upstream = the approved scoping document.
+- Gate.
+
+## 4 · Build with Nebula
+
+- Create the autopilot file. Invoke Nebula's start command, `/nebula:start` (with the Skill tool as `nebula:start`,
+  or whatever name the session lists for it). If the Nebula plugin is not installed, stop and tell the person to
+  install it, then continue.
+- Give Nebula, in the invocation and again whenever it asks:
+  - **Mode:** Sonic.
+  - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
+  - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
+    §13, workflows/automations §14, pages §11, seed data §19, build order §20).
+  - **Design system:** `<workspace>/03-design-system/<client-slug>-design-system.html`.
+  - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
+    build plan (L1 scope only).
+- **Every question Nebula asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
+  answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model Nebula
+  recommends — if it recommends none, ask Nebula to select the most appropriate model for the task — if it cannot,
+  pick any available model. Sign-ins to Orbit are done by the person.
+- Nebula checks and tests its own flows; there is no reviewer review of the build.
+- When Nebula reports the build complete, write `04-build/build-summary.md`: app name, app URL on Orbit, what was
+  built (objects, agents, automations, pages) as Nebula reported it, and anything it could not build. Save the URL
+  in `state.json` → `app`.
+- **Gate — verify the AI solution:** remove the autopilot file and ask the person to open the app on Orbit and
+  verify it. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again.
+
+## 5 · Collaterals
+
+- Create the autopilot file. Call `poc-collateral-studio`. Work in `<workspace>/05-collaterals/` so every output
+  lands there. Supply:
+  - the app URL from `04-build/build-summary.md` (Orbit) for the personas' `url`;
+  - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
+    Requirement Gathering document (the "today" pain points) as the build session's truth;
+  - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
+    The deck (problem statement → solution) is built from it.
+- **Login:** if the app needs a sign-in, the skill opens its sign-in browser (`kit/auth.mjs`) on Orbit; remove the
+  autopilot file and ask the person to log in to Orbit there, then continue. Never type a password.
+- Install whatever the toolkit needs (Node, Python packages, ffmpeg, poppler, Playwright Chromium, the voice model)
+  when the stage needs it; its `kit/setup.sh` does most of this.
+- Review: `stage: collaterals`, artifacts = everything in `out/`.
+- Gate. On approval, mark the run done, delete the autopilot file, and give the person the list of files with
+  their paths in the client folder.
+
+## Rules for the whole run
+
+- **Everything is saved in the workspace.** No stage output lives only in the chat.
+- **Read only** in the person's accounts: nothing is posted, sent, uploaded or deleted in Slack, Gmail, Drive or
+  Calendar. Everything stays in this Claude session (posting to Slack is a future feature).
+- **Never delete** anything you did not create in this run.
+- **Tools and skills:** when a stage needs a tool or common skill (e.g. `docx`, `pptx`, `xlsx`, `pdf`, LibreOffice,
+  pandoc, ffmpeg), install or load it then and continue. For Anthropic's document skills in Claude Code:
+  `/plugin marketplace add anthropics/skills` then `/plugin install document-skills@anthropic-agent-skills`; if
+  that is not possible, use the Python libraries (`python-docx`, `python-pptx`) directly.
+- Keep the person informed with a task list (one item per stage) and a short line when each stage finishes; no
+  running commentary.

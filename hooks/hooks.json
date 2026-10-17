@@ -1,0 +1,16 @@
+{
+  "description": "POC Studio: while a stage is running, route clarification questions to the reviewer instead of the user",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/route-questions.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
