@@ -1,18 +1,19 @@
 ---
 description: Start (or resume) a UnifyApps POC for a client use case — requirement gathering → scoping → design system → Nebula build → collaterals
-argument-hint: <client name> | <use case name>
+argument-hint: <client name> | <use case name> | <POC ID>
 ---
 
 Run the POC Studio pipeline for: **$ARGUMENTS**
 
-The arguments are `<client name> | <use case name>` (e.g. `Acme Beverages | Shelf Compliance`).
+The arguments are `<client name> | <use case name> | <POC ID>` (e.g. `Acme | Invoice matching | POC-acme-20261018`).
+**All three are required. Do not start the run until a POC ID has been given** (format `POC-<client>-<YYYYMMDD>`).
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.4.2**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.5.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.4.2"
+LOADED="1.5.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -46,10 +47,11 @@ Then act on the last line it printed:
   three commands, then the same `/poc-studio:start` command again:
   `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
 - **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.4.2, then carry on.
+  are continuing on v1.5.0, then carry on.
 
 ## Step 1 — run the pipeline
 
 Load the `poc-orchestrator` skill from this plugin (Skill tool: `poc-studio:poc-orchestrator`) and follow it exactly,
-starting with Setup. If the client name or the use case name is missing above, ask once for both, then begin. If a
-workspace for this client and use case already exists in the current folder, resume from its `state.json`.
+starting with Setup. If the client name, the use case name or the POC ID is missing above, ask once for the missing
+values and **wait**; nothing starts without the POC ID. If a workspace for this client and use case already exists in
+the current folder with the same POC ID, resume from its `state.json`.

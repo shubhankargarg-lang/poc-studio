@@ -16,10 +16,15 @@ Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System 
                      (research skill available to every stage; reviewer answers every clarification question)
 ```
 
-**Input:** the client name and the use case name, from `/poc-studio:start <client> | <use case>` (e.g.
-`/poc-studio:start Acme Beverages | Shelf Compliance`). If the separator is missing, read the arguments sensibly
-(e.g. "Acme Beverages shelf compliance POC"); if either name is missing, ask once for both together. Everything else
-— website, personas, scope — comes from the documents the stages produce.
+**Input — three values, all required:** the client name, the use case name and the **POC ID**, from
+`/poc-studio:start <client> | <use case> | <POC ID>` (e.g. `/poc-studio:start Acme | Invoice matching | POC-acme-20261018`).
+If a separator is missing, read the arguments sensibly; if any value is missing, ask once for the missing ones.
+Everything else — website, personas, scope — comes from the documents the stages produce.
+
+**The POC ID is mandatory: nothing starts without it.** Do not run Setup, check connectors, create folders or call any
+stage until the person has given a POC ID. It looks like `POC-<client>-<YYYYMMDD>` (e.g. `POC-acme-20261018`): it
+starts with `POC-` and ends with an 8-digit date. If what was given does not match that shape, show it back and ask
+the person to confirm or correct it before starting. Use the POC ID exactly as given (same case) everywhere.
 
 **The use case is the focus of the whole run.** A client often has several use cases in flight, and its Slack
 channels, email threads and Drive folders mix them. Every stage works on **this** use case only:
@@ -75,13 +80,16 @@ and any later session — can read them:
 ```
 
 `<client-slug>` and `<usecase-slug>` are the names in lower case with hyphens (e.g. `acme-beverages` /
-`shelf-compliance`); `<slug>` is `<client-slug>-<usecase-slug>` (e.g. `acme-beverages-shelf-compliance`) and is the
-`work_id`. Create the tree at setup.
+`shelf-compliance`); `<slug>` is `<client-slug>-<usecase-slug>` (e.g. `acme-beverages-shelf-compliance`). The
+**POC ID** is the `work_id` in every reviewer request, and appears in `state.json`, the first line of
+`context-log.md`, the title block of the Requirement Gathering and scoping documents, `04-build/build-summary.md`,
+and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create the tree at setup.
 
 ### state.json
 
 ```json
-{ "client": "Acme Beverages", "use_case": "Shelf Compliance", "slug": "acme-beverages-shelf-compliance",
+{ "poc_id": "POC-acme-20261018", "client": "Acme Beverages", "use_case": "Shelf Compliance",
+  "slug": "acme-beverages-shelf-compliance",
   "workspace": "<abs path>",
   "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
   "stages": {
@@ -104,7 +112,7 @@ This file is the reviewer's memory of the use case; keep it factual and short.
 
 ## Resuming
 
-If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists, read it and `context-log.md`, tell the person in one line where the
+If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and `context-log.md`, tell the person in one line where the
 run stands, and continue from the first stage that is not `approved`. Never redo an approved stage unless the
 person asks.
 
@@ -147,7 +155,7 @@ Write the request to `<workspace>/reviews/<stage>-<mode>-<n>.request.yaml` and p
 ```yaml
 request_id: <slug>-<stage>-<n>
 workspace: <abs workspace path>
-work_id: <slug>
+work_id: <POC ID>
 mode: review | resolve
 stage: requirement-gathering | research | scoping | design-system | build | collaterals
 round: 1 | 2 | 3
@@ -189,7 +197,10 @@ Never advance without an explicit approval.
 
 ## 0 · Setup
 
-1. Get the client name and the use case name. Make the slugs and the workspace tree. If it exists, resume (above).
+1. Get the client name, the use case name and the POC ID (all three required; stop and ask if the POC ID is missing).
+   Make the slugs and the workspace tree. If it exists, resume (above) — but if its `state.json` has a **different**
+   POC ID, stop and ask the person whether this is the same POC (resume) or a new one (then use a new folder
+   `<client-slug>/<usecase-slug>-<POC ID>/`).
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack is required.** If no Slack tools are found, stop and ask the person to connect Slack (in Claude Code:
@@ -281,6 +292,7 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
+  - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`.
   - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
     build plan (L1 scope only).
