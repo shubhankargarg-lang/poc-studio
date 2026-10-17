@@ -205,15 +205,21 @@ Never advance without an explicit approval.
      recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
    - Nothing is posted to Slack or sent from the person's accounts.
-4. **Install the tools the later stages need, now, while the person is at the screen** (so no install prompt
-   interrupts the run hours later). Check each with `command -v` and install only what is missing:
-   - macOS (Homebrew): `brew install ffmpeg`, `brew install poppler`, `brew install pandoc`, `brew install node`
-     (and `brew install python` if `python3` is missing); LibreOffice with `brew install --cask libreoffice` if
-     `soffice` is missing. Linux: the same packages with `apt-get` (`ffmpeg poppler-utils pandoc nodejs libreoffice`).
-   - Python packages: `pip3 install python-docx python-pptx openpyxl` (add `--break-system-packages` if pip refuses).
-   - Run each install as its own single command. Claude Code may ask the person to allow each one: tell them in one
-     line that these are the tools the build and collateral stages need, and to accept. If Homebrew itself is missing,
-     tell the person and carry on; the collateral stage will retry.
+4. **Tools check, now, while the person is at the screen** (so the collateral stage is never blocked hours later).
+   Check with `command -v` / `brew list`: `brew`, `ffmpeg`, `pdftotext` (poppler), `soffice` (LibreOffice),
+   `pandoc`, `node`, `python3` (3.10+).
+   - **System tools need the person's Mac password, which Claude never types.** If any are missing, give the person
+     one block to paste into Terminal, with only the missing lines, and wait for them to say it is done:
+     ```
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"   # only if brew is missing
+     brew install ffmpeg poppler pandoc node python@3.12
+     brew install --cask libreoffice
+     ```
+     (Linux: `sudo apt-get install -y ffmpeg poppler-utils pandoc nodejs libreoffice`.) Then re-check. If the person
+     wants to skip, log it and carry on; the collateral stage will show the same block again.
+   - **Everything that needs no password, Claude installs itself now:** `pip3 install python-docx python-pptx
+     openpyxl kokoro-onnx soundfile cairosvg numpy pillow` (add `--break-system-packages` if pip refuses), and
+     `npx playwright install chromium`.
    Log what was installed in `context-log.md`.
 5. Tell the person in one or two lines what will happen, then start Stage 1.
 
