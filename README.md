@@ -22,7 +22,22 @@ On Claude Code 2.1.275 or later, one line also works:
 /plugin install poc-studio --marketplace shubhankargarg-lang/poc-studio
 ```
 
-Update later with `/plugin marketplace update unifyapps-poc`.
+**Staying on the latest version:** every `/poc-studio:start` first checks GitHub for a newer release. If one exists it
+updates the plugin and asks you to type `/reload-plugins` and run the same command again, so every POC runs on the
+latest version. To also get updates in the background, turn on auto-update once: `/plugin` → **Marketplaces** →
+`unifyapps-poc` → **Enable auto-update**. Manual update at any time:
+`/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, then `/reload-plugins`.
+
+## Releasing a change (maintainers)
+
+The update check compares versions, so **every change pushed to `main` needs a new version number**. Use:
+
+```
+scripts/release.sh 1.4.0 "what changed"
+```
+
+It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `commands/start.md`,
+then commits and pushes to `main`.
 
 Requires the **Nebula** plugin for stage 4 (`/nebula:start`) and a **Slack** connector (Gmail, Google Drive and
 Google Calendar are optional but improve requirement gathering).
@@ -63,6 +78,7 @@ Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 commands/start.md                  /poc-studio:start
 agents/poc-reviewer.md             independent reviewer subagent
 hooks/                             route questions to the reviewer while a stage runs
+scripts/release.sh                 bump the version everywhere, commit, push
 skills/poc-orchestrator/           the pipeline
 skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)
