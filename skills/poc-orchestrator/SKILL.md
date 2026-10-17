@@ -80,7 +80,7 @@ and any later session — can read them:
   04-build/
     build-summary.md                    Nebula's result: app name, preview link, published app URL, what was built
   05-collaterals/
-    <slug>-collateral/out/              script PDF, video + .srt, deck .pptx, walkthrough PDF, swimlanes
+    <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
   research/                             every research answer, by stage
   reviews/                              reviewer verdicts (*.yaml) and log.md
 ```
@@ -326,10 +326,12 @@ extend or second-guess its steps.** Only these session facts are supplied by you
 
 ## 5 · Collaterals
 
+- **Only three collaterals:** the demo script (PDF), the demo video (with subtitles) and the PPT deck. No
+  walkthrough PDF and no swimlanes document (the swimlane is only a slide inside the deck).
 - Create the autopilot file. Call `poc-collateral-studio`. Work in `<workspace>/05-collaterals/` so every output
   lands there. Supply:
   - the app's **preview link** from `04-build/build-summary.md` / `state.json` → `app.preview_url` as every persona's
-    `url` (and `public_url`) for discovery, capture, the video recording and the walkthrough. **Never use the published
+    `url` (and `public_url`) for discovery, capture and the video recording. **Never use the published
     Matrix app URL for these**: it requires creating a user before the app can be used. If no preview link was
     recorded, ask Nebula for it (same session) before recording;
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the

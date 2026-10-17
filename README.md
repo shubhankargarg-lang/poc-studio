@@ -68,7 +68,7 @@ progress is kept in `<client-slug>/<usecase-slug>/state.json`.
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
 | 4 | Build in Nebula (Sonic mode, Orbit), then publish | `/nebula:setup` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
-| 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, video, deck, walkthrough, swimlanes |
+| 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
 what it flags (max 2 rounds), then you **approve or request changes**. Questions raised during a stage — including

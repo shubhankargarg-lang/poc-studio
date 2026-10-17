@@ -53,7 +53,9 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 - **Use case focus:** each workspace is one client **and one use case** (in `state.json` and the context log). In every
   review, check that the output stays on that use case: material from the client's other use cases mixed in is a
   blocking R2 finding; client-wide facts (company, systems, brand) are fine.
-- **Collaterals use the preview link:** the video, screenshots and walkthrough must show the app opened from its
+- **Collaterals are exactly three:** demo script PDF, demo video (+ .srt) and the deck. A walkthrough PDF or a
+  separate swimlanes document in `out/` is a finding (remove from the delivery), never a missing item.
+- **Collaterals use the preview link:** the video, screenshots and deck must show the app opened from its
   preview link (`state.json` → `app.preview_url`), not the published Matrix app's login or user-creation screens; a
   frame showing those is a blocking R9 finding.
 - **Owner:** the person running the plugin. Approvers: the same person, at the orchestrator's gate after each stage.

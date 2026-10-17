@@ -1,6 +1,6 @@
 ---
 name: poc-collateral-studio
-description: Create the full collateral set for a UnifyApps POC (demo script, narrated demo video, PPT, walkthrough PDF, swimlanes) from one story, in the UnifyApps template theme.
+description: Create the collateral set for a UnifyApps POC (demo script, narrated demo video, PPT) from one story, in the UnifyApps template theme.
 ---
 
 # POC collateral studio
@@ -11,15 +11,18 @@ description: Create the full collateral set for a UnifyApps POC (demo script, na
 > the current run (the deck drops the template's sample slides from its own *output copy* only).
 > If something has to go, say what and let the user remove it.
 
-One POC → five collaterals, all generated from one story so they never disagree:
+One POC → **three** collaterals, all generated from one story so they never disagree:
 
 | # | Collateral | File |
 |---|---|---|
 | 1 | Demo script (time, screen, on-screen action, narration, features) | `out/<Slug>_Demo_Script.pdf` |
 | 2 | Demo video, narrated in US English, with subtitles | `out/<Slug>_Demo.mp4` + `.srt` |
 | 3 | PPT built from the UnifyApps template | `out/<Slug>_Deck.pptx` |
-| 4 | Walkthrough PDF: real screenshots, numbered click markers, do / see / why | `out/<Slug>_Walkthrough.pdf` |
-| 5 | Swimlanes: today vs. with UnifyApps | `out/<Slug>_Swimlanes.pdf` + PNGs (also a deck slide) |
+
+**Only these three are delivered.** No walkthrough PDF and no swimlanes document. The "today vs. with UnifyApps"
+swimlane is drawn only as a **slide inside the deck** (Phase 6 below): its picture is a working file in `build/`,
+never a separate deliverable. `out/` holds only the three collaterals. (The toolkit's walkthrough code stays in the
+Appendix unchanged but is never run.)
 
 This skill is **self-contained**. Its toolkit (Appendix) is written into the project folder and
 run there. It needs Node 18+, Python 3.10+, ffmpeg, poppler (`pdftotext`), and network access to
@@ -74,7 +77,7 @@ first update, so the user can correct any of them while the work carries on.
    **Orbit:** POC Studio apps are built by Nebula on the Orbit environment
    (`https://orbit.uat.unifyapps.com/`). Use the app's **preview link** Nebula reported (`<workspace>/04-build/
    build-summary.md`, `state.json` → `app.preview_url`) as each persona's `url` and `public_url`, for discovery,
-   capture, the video recording and the walkthrough. **Do not use the published Matrix app URL**: it asks for a user to
+   capture and the video recording. **Do not use the published Matrix app URL**: it asks for a user to
    be created before the app can be used. If no preview link is recorded, get it from Nebula before recording. When the app needs a login, open `kit/auth.mjs` on Orbit and ask the
    user to sign in to Orbit there; never type or store a password.
 5. **Who receives the files.** Default **external** (the customer): no internal URLs, usernames,
@@ -86,7 +89,7 @@ first update, so the user can correct any of them while the work carries on.
    `find ~/.claude/plugins -name UnifyApps_template.pptx`. Always use the bundled file, never another
    template. Never ask for it.
 
-### What the persona decides (for all five collaterals)
+### What the persona decides (for all three collaterals)
 
 | | Business | Technical | Mixed |
 |---|---|---|---|
@@ -174,8 +177,7 @@ python3 kit/brand.py <skill-base-dir>/assets/UnifyApps_template.pptx  # tokens, 
 | 4 Record | `node kit/run.mjs record` (`ACTS=B node …` re-records one act) | `build/raw/<act>.webm`, `build/timeline.json` | no FAIL / SLOW / OVERRUN; no LATE CUE ≥ 1.2 s |
 | 4 Build | `node kit/cards.mjs && python3 kit/build.py` | `out/<Slug>_Demo.mp4`, `.srt` | acts "synced on the flash" |
 | 5 Review | `python3 kit/review.py <n>`, then look at every frame | `review/v<n>/report.md`, contact sheet | all must-show items `shown`; no MUST FIX |
-| 6 Swimlanes | write `swimlanes.json`; `node kit/swimlanes.mjs` | `out/<Slug>_Swimlanes.pdf`, PNGs | each step maps to a scene or discovery |
-| 7 Walkthrough | `node kit/docs.mjs walkthrough` | `out/<Slug>_Walkthrough.pdf` | every page checked |
+| 6 Deck swimlane | write `swimlanes.json`; `node kit/swimlanes.mjs`; then `mkdir -p build/swimlanes && mv out/swimlane_*.png out/*_Swimlanes.pdf build/swimlanes/` | `build/swimlane_with_deck.png` for the deck slide (nothing left in `out/`) | each step maps to a scene or discovery |
 | 8 Deck | `python3 kit/deck.py --inspect`; write `deck.json`; `python3 kit/deck.py` | `out/<Slug>_Deck.pptx` | every slide rendered and checked |
 | 9 Final | `python3 kit/check.py` again (it now scans all outputs) | | 0 must-fix |
 
@@ -193,7 +195,7 @@ act; `build.py` re-stitches in seconds. Each full run writes a fresh `build/<sta
    ```json
    [{ "id": "F07", "screen": "Visit detail", "feature": "Failed check cites the brand clause",
       "nav_path": ["Sidebar › Visits", "Click visit row", "Tab › Findings"],
-      "must_show_in": ["video", "walkthrough", "deck", "swimlane"] }]
+      "must_show_in": ["video", "deck"] }]
    ```
 3. **`brief.json`**:
    ```json
@@ -337,7 +339,7 @@ bottom-right. The customer's own brand stays on their app only.
 ## Review in iterations (after every version of every collateral)
 
 Work in phases and finish each before the next: **Facts → plan → script sent → capture green →
-consistency gate → video act by act → review → swimlanes → walkthrough → deck → final check.**
+consistency gate → video act by act → review → deck swimlane → deck → final check.**
 Track them in the task list and send each collateral as soon as it passes.
 
 After each version `v<n>`:
@@ -392,7 +394,12 @@ check, not beside it). `next: [ids]` overrides the flow. `pain` adds a red tag (
 steps come from discovery, never invented. Keep a view to 4–5 lanes and 8 columns or fewer so the deck
 slide stays readable. Technical persona: add a third view of system interactions.
 
-## Walkthrough PDF
+## Walkthrough PDF — not produced in POC Studio
+
+Skip this section: the walkthrough PDF is not a deliverable. Do not run `node kit/docs.mjs walkthrough`; build the
+script with `node kit/docs.mjs script` only. Scenes need no `walkthrough` block (ignore lint warnings about it).
+
+For reference only:
 
 `node kit/docs.mjs walkthrough` builds: cover; at-a-glance (acts + the "with" swimlane); one page
 per scene with the real final screenshot, **Why it matters**, and each **Do** line paired with its
@@ -440,7 +447,7 @@ marked live / simulated / go-live) · 6 Next steps / go-live path.
 ## Delivery
 
 Send each collateral as it passes review (script first, so the user can redirect early). The final message lists the
-five files, the persona, voice and length, coverage status, `check.py` result, and anything
+three files (script PDF, video with its .srt subtitles, deck), the persona, voice and length, coverage status, `check.py` result, and anything
 simulated. Keep `story.json`, `coverage.json`, `facts.json`, `deck.json`, `swimlanes.json`,
 `internal.md` and `review/` so the next iteration is surgical. `internal.md` goes to the team, never
 to the customer.
