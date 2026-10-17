@@ -1,6 +1,6 @@
 {
   "name": "poc-studio",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "UnifyApps POC pipeline: requirement gathering → scoping → design system → Nebula build → collaterals, with a General Reviewer on every stage, a shared research skill, approval gates, and every file saved in the local client folder.",
   "author": {
     "name": "UnifyApps Solutions"

@@ -72,8 +72,10 @@ first update, so the user can correct any of them while the work carries on.
    environment already uses, never typed by you). Only when there is no way in does the run stop: then
    open `kit/auth.mjs` and ask the user to sign in, once, for every persona at the same time.
    **Orbit:** POC Studio apps are built by Nebula on the Orbit environment
-   (`https://orbit.uat.unifyapps.com/`). Use the app URL Nebula reported (in `<workspace>/04-build/` and the
-   context log) as each persona's `url`. When the app needs a login, open `kit/auth.mjs` on Orbit and ask the
+   (`https://orbit.uat.unifyapps.com/`). Use the app's **preview link** Nebula reported (`<workspace>/04-build/
+   build-summary.md`, `state.json` → `app.preview_url`) as each persona's `url` and `public_url`, for discovery,
+   capture, the video recording and the walkthrough. **Do not use the published Matrix app URL**: it asks for a user to
+   be created before the app can be used. If no preview link is recorded, get it from Nebula before recording. When the app needs a login, open `kit/auth.mjs` on Orbit and ask the
    user to sign in to Orbit there; never type or store a password.
 5. **Who receives the files.** Default **external** (the customer): no internal URLs, usernames,
    emails or build notes (`brief.share: "external"`). Use `"internal"` only when the request says the

@@ -67,7 +67,7 @@ and any later session — can read them:
   03-design-system/
     <slug>-design-system.html           the design system HTML Nebula reads (plus anything else the skill ships)
   04-build/
-    build-summary.md                    Nebula's result: app name, app URL on Orbit, what was built
+    build-summary.md                    Nebula's result: app name, preview link, published app URL, what was built
   05-collaterals/
     <slug>-collateral/out/              script PDF, video + .srt, deck .pptx, walkthrough PDF, swimlanes
   research/                             every research answer, by stage
@@ -90,7 +90,7 @@ and any later session — can read them:
     "design-system": { "status": "pending" },
     "build":         { "status": "pending" },
     "collaterals":   { "status": "pending" } },
-  "app": { "name": null, "url": null } }
+  "app": { "name": null, "preview_url": null, "published_url": null } }
 ```
 
 Status values: `pending` → `running` → `in_review` → `awaiting_approval` → `approved` (or back to `running` on
@@ -295,10 +295,12 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   Sign-ins to Orbit are done by the person.
 - Nebula checks and tests its own flows; there is no reviewer review of the build.
 - **Publish:** as soon as Nebula reports the build complete, tell it to publish the app on Orbit UAT (if its plan has
-  not already published it) and to report the published app URL.
-- Then write `04-build/build-summary.md`: app name, app URL on Orbit, what was
-  built (objects, agents, automations, pages) as Nebula reported it, and anything it could not build. Save the URL
-  in `state.json` → `app`.
+  not already published it) and to report **two links**: the published app URL, and the app's **preview link** (the
+  link that opens the app directly with its seed data, without first creating a user in the Matrix app). If Nebula
+  does not give the preview link, ask it for it explicitly.
+- Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, what was built (objects,
+  agents, automations, pages) as Nebula reported it, and anything it could not build. Save both in `state.json` →
+  `app.preview_url` and `app.published_url`.
 - **Gate — verify the published AI solution:** remove the autopilot file and ask the person to open the published app
   on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through Nebula, and are listed at the next gate.
@@ -307,7 +309,10 @@ extend or second-guess its steps.** Only these session facts are supplied by you
 
 - Create the autopilot file. Call `poc-collateral-studio`. Work in `<workspace>/05-collaterals/` so every output
   lands there. Supply:
-  - the app URL from `04-build/build-summary.md` (Orbit) for the personas' `url`;
+  - the app's **preview link** from `04-build/build-summary.md` / `state.json` → `app.preview_url` as every persona's
+    `url` (and `public_url`) for discovery, capture, the video recording and the walkthrough. **Never use the published
+    Matrix app URL for these**: it requires creating a user before the app can be used. If no preview link was
+    recorded, ask Nebula for it (same session) before recording;
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
     Requirement Gathering document (the "today" pain points) as the build session's truth;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
