@@ -26,11 +26,11 @@ stage until the person has given a POC ID. It looks like `POC-<client>-<YYYYMMDD
 starts with `POC-` and ends with an 8-digit date. If what was given does not match that shape, show it back and ask
 the person to confirm or correct it before starting. Use the POC ID exactly as given (same case) everywhere.
 
-**The POC ID must exist in Orbit.** The start command checks it with Nebula's read-object command against the Orbit
-object `orbit_studio_poc` (filter `poc_id`) before calling this skill; Setup only runs after that check found the
-record. If this skill is ever started without that check having passed in this session, run it first (same rule:
-not found → stop and ask the person to check the POC ID). The POC ID will later be used to write documents back to
-Orbit objects at each gate.
+**The POC ID must exist in Orbit, and Orbit is kept in step with the run.** The `orbit-writeback` skill (load it
+with the Skill tool, `poc-studio:orbit-writeback`) owns everything written to Orbit · POC Studio. The start command runs
+its Setup (Orbit folder, POC ID check against `orbit_studio_poc`, the POC owner's name and email) before this skill;
+if that has not happened in this session, run it first — not found → stop and ask the person to check the POC ID.
+Then call it at every write-back moment listed under "Orbit write-back at each gate" below.
 
 **The use case is the focus of the whole run.** A client often has several use cases in flight, and its Slack
 channels, email threads and Drive folders mix them. Every stage works on **this** use case only:
@@ -53,6 +53,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 4 Build | `/nebula:setup` (separate Nebula plugin) | Nebula |
 | 5 Collaterals | `poc-collateral-studio` | Utkarsh Vasu |
 | Any stage, outside facts | `research` | Lakshya / Gourav |
+| Every gate, Orbit write-back | `orbit-writeback` | — |
 | Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent | Gourav |
 
 **All research goes through the `research` skill.** When a stage (or you) needs outside facts, the stage's own
@@ -94,7 +95,9 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
 ### state.json
 
 ```json
-{ "poc_id": "POC-acme-20261018", "orbit_poc_record": { "id": "<record id>", "...": "fields as read" },
+{ "poc_id": "POC-acme-20261018",
+  "orbit": { "poc_id": "POC-acme-20261018", "poc_record_id": "<record id>", "owner": { "name": "…", "email": "…" },
+             "documents": {}, "open_iterations": [], "failed_writes": [] },
   "client": "Acme Beverages", "use_case": "Shelf Compliance",
   "slug": "acme-beverages-shelf-compliance",
   "workspace": "<abs path>",
@@ -200,6 +203,26 @@ Remove the autopilot file, then:
 
 Never advance without an explicit approval.
 
+## Orbit write-back at each gate
+
+Every gate is mirrored to Orbit by the `orbit-writeback` skill (its table "The plugin's gates → Orbit moments" is the
+reference). Do the write **before** putting the gate to the person (posting) and **right after** their answer
+(decision) — **except G4**, which is written only after the collaterals are approved — so Orbit and the Slack thread always show the same state as the chat:
+
+| In the run | Orbit moment (orbit-writeback) |
+|---|---|
+| Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file) · G2a (scoping doc) · G2b (design system) · G3 (published app) |
+| Person approves | **M2** — G1 · G2a (scoping: BRD approved only) · G2 (design system: G2 approved) · G3 |
+| Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
+| The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
+| Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
+| Nebula starts building | **M4** — stage `5_build` (if not already) |
+| Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
+
+`slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted). If a write
+fails three times, tell the person in one line and carry on; the run never stops because Orbit is unreachable,
+except at the start (the POC ID must be verified).
+
 ---
 
 ## 0 · Setup
@@ -222,7 +245,9 @@ Never advance without an explicit approval.
    - Build: Nebula in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: Nebula's
      recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
-   - Nothing is posted to Slack or sent from the person's accounts.
+   - The person's own Slack, Gmail, Drive and Calendar accounts are read-only: nothing is posted or sent from them.
+     The one exception is Orbit: the `orbit-writeback` uploads to Orbit and its `slack_notification` (which makes
+     Orbit post the gate to the POC's Slack thread) are owner-approved.
 4. **Tools check, now, while the person is at the screen** (so the collateral stage is never blocked hours later).
    Check with `command -v` / `brew list`: `brew`, `ffmpeg`, `pdftotext` (poppler), `soffice` (LibreOffice),
    `pandoc`, `node`, `python3` (3.10+).
@@ -247,6 +272,8 @@ Never advance without an explicit approval.
   `<workspace>/01-requirement-gathering/` (client files into `files/`, the document into the folder).
 - The skill's own last step ("ask whether to proceed") is replaced by your reviewer + gate.
 - Review: `stage: requirement-gathering`, artifacts = the .docx (and `files/` listing).
+- **Orbit:** M1 · G1 before the gate (RG + every discovered client file); M2 on approve; M3 on changes; M5 before
+  re-gating.
 - Gate. The document's verdict (Ready / Ready with assumptions / Not ready) and its open questions are shown at
   the gate; proceeding on "Not ready" is the person's call.
 - Log the client name, website, use case (as the document confirmed or refined it) and stated asks from the
@@ -264,6 +291,8 @@ Never advance without an explicit approval.
 - It runs without asking the user; anything it cannot settle goes to the reviewer (resolve).
 - Review: `stage: scoping`, upstream = the approved Requirement Gathering document. The reviewer reviews Part A
   as a plan and Part B as a build spec (detail in Part B is expected).
+- **Orbit:** M1a · G2 (the scoping document, with notification) before the gate; M2a on approve (BRD approved only);
+  M3 on changes; M5 before re-gating.
 - Gate. Show the counts (L1 / L2 features, pages, objects, agents, workflows) and the top assumptions.
 
 ## 3 · Design System
@@ -286,10 +315,13 @@ extend or second-guess its steps.** Only these session facts are supplied by you
     find it with `find ~/.claude/plugins -name unifyapps-logo.png` if the path is unclear); record it in the port note.
 - The skill's hand-over questions are answered with the client in mind (read "Amogh" there as "the client").
 - Review: `stage: design-system`, upstream = the approved scoping document.
+- **Orbit:** M1b · G2 (the design system, with notification; stage moves to `4_design_system`) before the gate; M2 ·
+  G2 on approve (G2 approved, stage `5_build`); M3 on changes; M5 before re-gating.
 - Gate.
 
 ## 4 · Build with Nebula
 
+- **Orbit:** M4 (stage `5_build`, if not already) when Nebula starts.
 - Create the autopilot file. Invoke Nebula's start command, `/nebula:setup` (with the Skill tool as `nebula:setup`,
   or whatever name the session lists for it). Nebula updates itself when called; no update step is needed. If the Nebula plugin is not installed, stop and tell the person to
   install it, then continue.
@@ -317,9 +349,12 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   not already published it) and to report **two links**: the published app URL, and the app's **preview link** (the
   link that opens the app directly with its seed data, without first creating a user in the Matrix app). If Nebula
   does not give the preview link, ask it for it explicitly.
-- Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, what was built (objects,
+- Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, the Nebula **solution id**
+  (`e_…`, needed for Orbit G3), what was built (objects,
   agents, automations, pages) as Nebula reported it, and anything it could not build. Save both in `state.json` →
   `app.preview_url` and `app.published_url`.
+- **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
+  version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file and ask the person to open the published app
   on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through Nebula, and are listed at the next gate.
@@ -343,14 +378,17 @@ extend or second-guess its steps.** Only these session facts are supplied by you
 - Install whatever the toolkit needs (Node, Python packages, ffmpeg, poppler, Playwright Chromium, the voice model)
   when the stage needs it; its `kit/setup.sh` does most of this.
 - Review: `stage: collaterals`, artifacts = everything in `out/`.
-- Gate. On approval, mark the run done, delete the autopilot file, and give the person the list of files with
+- **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, **M1 · G4** (upload script PDF, deck,
+  video; demo_ready) — do it before marking the run done.
+- Gate. On approval (after M1 · G4), mark the run done, delete the autopilot file, and give the person the list of files with
   their paths in the client folder.
 
 ## Rules for the whole run
 
 - **Everything is saved in the workspace.** No stage output lives only in the chat.
 - **Read only** in the person's accounts: nothing is posted, sent, uploaded or deleted in Slack, Gmail, Drive or
-  Calendar. Everything stays in this Claude session (posting to Slack is a future feature).
+  Calendar from them. The only writes outside the local folder are the Orbit write-back (uploads and rows on
+  Orbit · POC Studio, and Orbit's own Slack notification) done by `orbit-writeback`.
 - **Never delete** anything you did not create in this run.
 - **Tools and skills:** when a stage needs a tool or common skill (e.g. `docx`, `pptx`, `xlsx`, `pdf`, LibreOffice,
   pandoc, ffmpeg), install or load it then and continue. For Anthropic's document skills in Claude Code:

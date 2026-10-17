@@ -52,8 +52,12 @@ Open Claude Code in the folder where the POC files should live, then:
 
 For example `/poc-studio:start Acme | Invoice matching | POC-acme-20261018`. **The POC ID is required** (format
 `POC-<client>-<YYYYMMDD>`); the run does not start until it is given, and it must exist in Orbit: right after the update check, the run reads
-the Orbit object `orbit_studio_poc` (filtered on `poc_id`) with Nebula's read-object command and stops, asking you to
-check the ID, if it is not found. It is recorded in the progress file, the
+the Orbit object `orbit_studio_poc` (filtered on `poc_id`) and stops, asking you to check the ID, if it is not found.
+
+**Orbit write-back:** at every gate the run uploads the stage's files to Orbit · POC Studio and writes the Document,
+Activity, Iteration and POC rows (skill `orbit-writeback`), so the POC owner, the team and the Slack thread follow the
+run. It needs an **Orbit folder** set up once with `/nebula:setup` (tenant orbit.uat.unifyapps.com, solution POC Studio);
+the first run asks for its path and remembers it in `~/.poc-studio/config.json`. It is recorded in the progress file, the
 documents and the build so everything can be traced to the POC. The use case name keeps the whole run focused:
 Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:
@@ -86,6 +90,7 @@ scripts/release.sh                 bump the version everywhere, commit, push
 skills/poc-orchestrator/           the pipeline
 skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)
+skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
 skills/design-system/              unchanged, as tested
 skills/general-reviewer/           POC Studio edition (no adapter needed)

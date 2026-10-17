@@ -1,0 +1,275 @@
+---
+name: orbit-writeback
+description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
+---
+
+# Orbit write-back (POC Studio)
+
+You keep **Orbit · POC Studio** on the `orbit.uat.unifyapps.com` tenant in step with the run. Orbit is read by the POC
+owner, their team and a Slack bot. The orchestrator calls this skill at the moments listed in **The plugin's gates →
+Orbit moments**; you write exactly what that moment says and nothing else.
+
+The owner's original specification is in `orbit-spec.md` beside this file; read it once per run. **This SKILL.md is
+authoritative where the two differ** (the differences are the owner's decisions, listed under "Decisions").
+
+## Setup (once per run, before Stage 1)
+
+### 1. The Orbit folder
+Every Orbit command runs from the **Orbit folder**: a folder set up with `/nebula:setup` on `orbit.uat.unifyapps.com`,
+solution **POC Studio**. Its path is kept in `~/.poc-studio/config.json` → `"orbit_folder"`.
+- Not set → ask the person once for the folder path, save it there (create the file if needed), then continue.
+- Set but not set up (no Nebula setup files there, or the first command fails as not set up) → stop and ask the person
+  to run `/nebula:setup` in that folder once (tenant orbit.uat.unifyapps.com, solution POC Studio), then continue.
+- Never write from the client's build folder: it may point at another tenant.
+
+Define, for every command below (run them in one Bash call each, since shell state does not persist):
+
+```bash
+ORBIT_DIR="$(python3 -c 'import json,os;print(json.load(open(os.path.expanduser("~/.poc-studio/config.json")))["orbit_folder"])')"
+NEB="$(ls -d ~/.claude/plugins/cache/nebula/nebula/*/ | sort -V | tail -1)scripts"
+orbit() { (cd "$ORBIT_DIR" && node "$NEB/tool-calls.mjs" "$@"); }
+TMPDIR="${TMPDIR:-/tmp}"
+```
+
+### 2. Verify the POC ID and read the owner
+The POC ID is mandatory (the start command will not run without it). Verify it exists:
+
+```bash
+orbit object get_records '{"host":"https://orbit.uat.unifyapps.com","objectId":"orbit_studio_poc","filters":[{"field":"poc_id","op":"EQUAL","values":["<POC ID>"]}],"limit":1}'
+```
+
+- No record → stop; tell the person "POC ID `<POC ID>` was not found in Orbit (`orbit_studio_poc`). Please check the
+  POC ID and send the correct one." Wait, then check again with the new ID. Nothing starts until it is found.
+- Record found → read the **POC owner's name and email** from it (the owner fields of the record, e.g. a field named
+  like `owner_name` / `owner_email` or `poc_owner…`; use the record's own field names). Save in the run state.
+  **The owner's name and email are used in every name and email field you write** (`created_by`, `actor_name`,
+  `actor_email`), for AI and person actions alike; `actor_type` still says `ai` or `person`. If the record has no
+  owner name or email, ask the person once for them.
+
+### 3. Run state you keep
+In the workspace `state.json`, under `orbit`:
+
+```yaml
+orbit:
+  poc_id: POC-acme-20261018
+  owner: { name: <owner name>, email: <owner email> }
+  documents:            # every document you wrote, by gate
+    g1: [{ document_id: …, type: requirements, version: 1, status: in_review }]
+  open_iterations:      # iteration rows waiting for a new version
+    - { iteration_id: …, gate: g2, document_id: … }
+  failed_writes: []     # anything that did not reach Orbit after 3 tries
+```
+
+## How to write
+
+### Create or update rows — `apply_record_edits`
+Write the payload to a temp file **with a script** (never type base64 or long text into a command line), then:
+
+```bash
+orbit object apply_record_edits @"$TMPDIR/orbit-write.json"
+```
+
+```json
+{ "host": "https://orbit.uat.unifyapps.com", "objectId": "<object id>",
+  "edits": [
+    { "op": "create", "properties": { … } },
+    { "op": "update", "recordId": "<record id>", "properties": { … only the keys that change … } } ] }
+```
+
+- One call per object; all rows of that object in one `edits` list.
+- `update` merges into the stored row: send only the keys you change. Never send a row back whole.
+- Never send `""` or `null`: leave the key out.
+- Dates are epoch milliseconds (`Date.now()` / `int(time.time()*1000)`).
+- Check the reply: every item in `results` must say `"ok": true`.
+
+### Upload a file — `upload_file`
+
+```bash
+cp "<the file>" "$TMPDIR/"
+orbit agent-builder upload_file '{"host":"orbit.uat.unifyapps.com","filePath":"'"$TMPDIR/<file name>"'","contentType":"<mime>"}'
+```
+
+- Save the link as `https://orbit.uat.unifyapps.com` + the reply's `file.url`. It opens only for people signed in to
+  orbit.uat; it is never public.
+- At most **20 MB**. The demo video is usually larger: compress it first, e.g.
+  `ffmpeg -i in.mp4 -vcodec libx264 -crf 30 -preset slow -vf "scale=-2:720" -acodec aac -b:a 96k out.mp4`, raising
+  `-crf` (32, 34) until it is under 20 MB. If it still cannot fit, ask the person for a link to the video and save that.
+- Client files with no type below (or Google-native Docs/Sheets/Slides, mail and calendar items): save the
+  source's own link (Slack permalink, Drive link, Gmail or Calendar link) with `file_kind link` instead of uploading.
+- MIME: txt `text/plain` · md `text/markdown` · csv `text/csv` · eml `message/rfc822` · json `application/json` ·
+  docx `application/vnd.openxmlformats-officedocument.wordprocessingml.document` · pptx
+  `application/vnd.openxmlformats-officedocument.presentationml.presentation` · html `text/html` · pdf
+  `application/pdf` · mp4 `video/mp4` · xlsx `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` ·
+  png `image/png` · jpg `image/jpeg`.
+
+### Ids you make
+
+| Row | Id |
+|---|---|
+| Document | `<poc_id>__<stage>__<slug>__v<N>` e.g. `POC-acme-20261018__3_scope__brd__v2` |
+| Activity | `ACT-<Date.now()>-<4 random digits>` |
+| Iteration | `IT-<poc_id>-<Date.now()>` |
+
+`slug` is the document type (`requirements`, `brd`, `design-system`, `app`, `demo-script`, `deck`, `video`) or, for a
+discovered input, `<source>-<short name>` (`slack-…`, `drive-…`, `gmail-…`, `calendar-…`).
+
+## The rows
+
+**Document** — object `orbit_studio_document` (create; afterwards update only `status`)
+
+```json
+{ "document_id": "<id>", "poc": "<poc_id>", "name": "BRD", "type": "brd", "stage": "3_scope", "gate_pack": "g2",
+  "version": 1, "status": "in_review", "doc_role": "artifact", "format": "link",
+  "file_link": "https://orbit.uat.unifyapps.com/api/file/download/…", "file_kind": "docx",
+  "file_name": "Acme - BRD v1.docx", "summary": "One or two lines on what the document holds.",
+  "created_by": "<POC owner name>", "saved_at": 1792280000000 }
+```
+
+- `type`: slack · requirements · brd · design_system · app · demo_script · deck · video
+- `status`: in_review (its gate is waiting) · approved (gate passed) · final (inputs and Deliver files) · superseded
+- `doc_role`: artifact (the run made it) · input (found in discovery)
+- `file_kind`: docx · pptx · html · pdf · video · image · link · other
+- Design system only: also `"format": "html"` and `"content": "<the whole HTML>"`, so it renders in the app.
+- A re-iterated version also sends `"from_iteration": "<iteration_id>"`.
+
+**Activity** — object `orbit_studio_activity` (create only)
+
+```json
+{ "activity_id": "ACT-…", "poc": "<poc_id>", "type": "document_saved", "stage": "3_scope", "gate": "g2",
+  "actor_type": "ai", "actor_name": "<POC owner name>", "actor_email": "<POC owner email>",
+  "message": "BRD v1 saved", "related_document": "<document_id>", "created_at": 1792280000000 }
+```
+
+`type`: input_added · document_saved · gate_posted · gate_decided (with `decision`: approve · request_changes) ·
+iteration_logged · stage_completed. `actor_type`: `ai` for what the run does, `person` for the owner's own decisions.
+
+**Iteration** — object `orbit_studio_iteration` (create; then update to close)
+
+```json
+{ "iteration_id": "IT-…", "poc": "<poc_id>", "phase": "plan", "source": "person", "status": "open",
+  "actor_name": "<POC owner name>", "actor_email": "<POC owner email>", "title": "BRD: add the approval matrix",
+  "reason": "<the person's own words, exactly as they typed them>", "related_document": "<document_id they rejected>",
+  "skill": "<the POC Studio skill that made the document>", "created_at": 1792280000000 }
+```
+
+`phase`: understand (G1) · plan (G2) · build (G3) · deliver (G4).
+
+**POC** — object `orbit_studio_poc` (update only, `recordId` = the POC record's id from the check in Setup)
+Every POC update also sends `last_activity` (one plain line people read) and `last_activity_at`.
+`slack_notification: true` is sent **only in the last call of a gate push** (moments 1 and 5 — the moments a file is
+written or a new version posted). It makes Orbit post to the POC's Slack thread; Orbit clears it itself.
+
+## Order inside every moment
+**upload files → Documents → Iteration → Activity → POC last.**
+
+**Before every moment:**
+1. **Retry `failed_writes` first.** If they all save now, send any `slack_notification` that was held back for their
+   gate with this moment's POC update (only if this moment is itself M1 or M5; otherwise send a POC update with
+   `slack_notification true` for that gate on its own).
+2. **Never create twice.** Before any create in M1/M5, check `state.orbit.documents` (and, if the state is unsure,
+   `get_records` on `orbit_studio_document` filtered on `document_id`). A row that already exists is not created
+   again, and if every document of the gate already exists and its gate was already posted, skip the creates **and**
+   the `slack_notification`: just re-gate in Claude. This covers resumes and retries after a timeout.
+
+## The plugin's gates → Orbit moments
+
+| When (in the run) | Orbit write |
+|---|---|
+| Requirement Gathering done + reviewed, before its Claude gate | **M1 · G1** |
+| RG approved in Claude | **M2 · G1** |
+| Scoping document done + reviewed, before its Claude gate | **M1a · G2 (BRD)** — see below |
+| Scoping approved in Claude | **M2a · G2 (BRD)** — see below |
+| Design System done + reviewed, before its Claude gate | **M1b · G2 (Design system)** |
+| Design System approved in Claude | **M2 · G2** (full) |
+| Nebula build published, before the verify gate | **M1 · G3** |
+| App verified/approved in Claude | **M2 · G3** |
+| Collaterals done + reviewed, approved in Claude | **M1 · G4** (Deliver complete) |
+| Changes asked at any Claude gate | **M3** (phase of that gate) |
+| Moving to another stage inside a phase | **M4** |
+| The reworked document is ready (G1, G2, G3) | **M5** |
+| The run is blocked / stopped / resumes | **M6** |
+
+### Moment 1 — a gate is ready for review
+
+| | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
+|---|---|---|---|---|---|
+| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 (≤ 20 MB) |
+| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, `format html`, `content`, `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
+| gate_pack | g1 | g2 | g2 | g3 | g4 |
+| status | in_review (inputs final) | in_review | in_review | in_review | final |
+| Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
+| POC (update) | stage `2_research_assess`, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, `slack_notification true` | **stage stays `3_scope`**, current_gate g2, g2_status waiting, status waiting, g2_summary (the BRD), gate_summary, `slack_notification true` | stage `4_design_system`, current_gate g2, g2_status waiting, status waiting, g2_summary (BRD approved + design system), gate_summary, `slack_notification true` | stage `6_finalize`, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, `solution_id` (the Nebula solution `e_…`), `slack_notification true` | stage `8_demo_ready`, current_gate none, g4_status approved, status demo_ready, g4_summary, `slack_notification true` |
+
+`gN_summary` / `gate_summary`: 2–4 plain sentences on what the phase produced and what the person should check.
+Record every new `document_id` in the run state.
+
+### Moment 2 — the owner approves a gate in Claude
+- **M2 (G1, G2 full, G3):** Documents (update) each `in_review` document of that gate → `approved`. Activity
+  `gate_decided`, gate gN, decision approve, actor_type person. POC: `gN_owner_approved true`, `gN_status approved`,
+  current_gate none, stage = G1 → `3_scope` · G2 → `5_build` · G3 → `7_collaterals`, status running. No
+  slack_notification.
+- **M2a (scoping approved, design system not done yet):** Document (update) the BRD → `approved`. Activity
+  `gate_decided`, gate g2, decision approve, actor_type person, message "BRD approved". POC: current_gate none,
+  status running, last_activity "BRD approved; design system in progress". **No** `g2_owner_approved`, no
+  `g2_status approved`, no stage change, no slack_notification. `g2_status` deliberately stays `waiting` until the
+  design system is posted (M1b) and approved (M2); `last_activity` tells readers the BRD is approved. (G2 is approved
+  only with the design system.)
+
+### Moment 3 — the owner asks for changes instead of approving
+Iteration (create): status open, phase of the gate, **reason = their exact words**, related_document = the version
+they rejected, skill = the stage skill. Add it to `open_iterations`. Activity: `iteration_logged` and `gate_decided`
+(gate gN, decision request_changes, actor_type person). POC: `gN_status changes_requested`, current_gate none, status
+running, last_activity (e.g. "Changes asked on the BRD"). No slack_notification.
+Any further text the owner types about that change while it is being reworked is appended to the same iteration's
+`reason` (update) rather than opening a new one.
+
+### Moment 4 — moving to another stage inside a phase
+POC (update): stage, status running, last_activity. No documents, no slack_notification. In this plugin: when Nebula
+starts building (`5_build`, if not already), and nothing else — the move to `4_design_system` happens only with M1b.
+
+### Moment 5 — the re-iterated document is ready (G1, G2, G3)
+Upload the new file. Documents: update the rejected version → `superseded`; create the new version with version N+1,
+`document_id …__v<N+1>`, status in_review, `from_iteration <iteration_id>`, summary saying what changed. Iteration
+(update): status done, `resolved_document` = new document_id, `resolved_at` now; remove it from `open_iterations`.
+Activity: `document_saved`, `gate_posted` gN. POC: current_gate gN, gN_status waiting, status waiting, gN_summary
+(what changed), `slack_notification true`. Then wait for M2 or M3 again.
+**G3 (the app):** there is no file to upload — the new version is an app document v(N+1) with the (same or new) app
+URL as `file_link`. App fixes made later through Nebula (e.g. during collaterals) are logged as an Activity
+`document_saved` (gate g3, message naming the fix) with a POC `last_activity`; no new document, no notification.
+
+**G4 changes:** collaterals are written only once approved, so a change asked at the collaterals gate is M3 (phase
+deliver) **without** `related_document` and **without** `g4_status` (Orbit has not seen G4 yet): Iteration + activities
++ POC `status running` and `last_activity` only. When they are approved, M1 · G4 sends the documents with
+`from_iteration` and closes the iteration then.
+
+### Moment 6 — the run stops or is blocked
+POC (update): status `blocked` with `blocked_on` (one line: what is needed — a sign-in, a tool install, a missing
+file), or status `stopped`. When it resumes: status running and a new last_activity. No slack_notification.
+
+## When a write fails
+- A reply with `"ok": false` or an error: read the message, fix the payload, and send **only the rows that failed**
+  again (a create that succeeded must not be sent twice).
+- `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/nebula:setup` in the Orbit folder, then resend.
+- `CONFIRM_REQUIRED`: you sent something that deletes; you never should. Stop and tell the person.
+- After three failures on one step, stop the write-back for this moment, tell the person in one line what did not
+  reach Orbit, add it to `failed_writes` (with the gate and whether a notification was held back), and carry on with
+  the run. They are retried at the start of the next moment (see "Before every moment"). **Never send slack_notification for a gate whose
+  documents did not all save.**
+
+## Never
+- Create or delete POC rows, or delete any row.
+- Write `manager_*` fields, `pinned`, `slack_channel_id`, `slack_thread_ts` (Orbit and its people own these).
+- Send `slack_notification: true` outside moments 1 and 5.
+- Put a file's bytes in a row (upload it and save the link) — the design system's `content` is the one exception.
+- Write to any other object or tenant.
+
+## Decisions (where this differs from `orbit-spec.md`)
+1. G2 is pushed twice: the BRD as soon as scoping is done (with a notification), then the design system (with a
+   notification); the stage moves to `4_design_system` only with the design system. G2 is approved with the design
+   system.
+2. G4 is written after the owner approves the collaterals in Claude.
+3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video.
+4. The POC ID is mandatory; there is no lookup by client slug.
+5. The Orbit folder path lives in `~/.poc-studio/config.json`.
+6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
+7. Every name/email field uses the POC owner's name and email from the POC record.
