@@ -60,7 +60,9 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   consistent with Part A, and traces to the L1 features.
 - **Design system:** the design-system skill is tested and its output format is approved as is. Review the style
   guide for brand fit, scope against the scoping document and the skill's own finished-piece checks; never ask for
-  feature-level page layouts (Nebula owns those).
+  feature-level page layouts (Nebula owns those). Three things are standing human decisions and never a finding: the
+  brand colour picked without asking when sources disagreed, a logo kit built from the UnifyApps logo when no client
+  logo file exists, and a style guide saved as a local HTML file instead of a published artifact.
 
 ## Independence
 
@@ -91,6 +93,11 @@ reasonably go either way. Standing answers for this pipeline:
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
 - **Nebula asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).
+- **Pre-approved actions (DECIDE, not ASK_HUMAN):** deploying, publishing or testing the POC app on Orbit UAT; creating
+  the app's objects, agents, automations and seed data there; publishing the design system as a private artifact;
+  choosing models as above. Anything touching the client's or a real production system stays row 1.
+- **BLOCK at a gate:** the orchestrator shows unresolved blocking findings at the person's approval gate after round 2;
+  the person's override there (finding id + reason) is a human decision.
 
 ## The first-glance test (run first, on every review)
 
@@ -133,7 +140,7 @@ mode); return `INVALID_REQUEST` naming the field only when one of these is missi
 missing from the context log and the approved upstream, and say what you filled: `audience` and `owner` default to
 the person running the plugin and the client audience recorded in the context log; `acceptance_criteria` default to
 the upstream document's own (scoping 4.1 for later stages); `stated_asks` default to the asks recorded in the
-Requirement Gathering Document; `prior_verdict` defaults to the latest verdict for this stage in `<workspace>/reviews/`.
+Requirement Gathering Document; `prior_verdict` defaults to the latest **review-mode** verdict for this stage in `<workspace>/reviews/` (never a resolve verdict).
 
 ### Verdict (written by this skill)
 
@@ -183,15 +190,15 @@ go to the owner with both positions.
 
 | # | Situation | Outcome |
 |---|---|---|
-| 1 | Credentials, real customer data, real transactions, spend or limit increases, deleting, publishing, sending | **ASK_HUMAN, always** |
+| 1 | Credentials, real customer data, real transactions, spend or limit increases, deleting, publishing, sending | **ASK_HUMAN, always** — except the pre-approved actions listed under "Standing answers" (deploying or publishing the POC app on Orbit UAT, publishing a private design-system artifact, choosing a model), which are DECIDE |
 | 2 | A human decision in scope already answers it | **Apply it** (DECIDE, `HUMAN_DECISION`) |
 | 3 | A stated ask conflicts with a default or budget (a scope cut, a design choice, a count) | **resolve:** ASK_HUMAN. **review:** cut approved by a human decision, no finding; cut listed but not approved, REVISE with a blocking R2 finding and a question; cut silent (not listed anywhere), **BLOCK** |
 | 4 | A number the audience will see (ROI, savings, price, terms) has no derivation or looks implausible | **BLOCK** until sourced; also ASK_HUMAN if it needs a business assumption |
-| 5 | Persona, audience or time slot is missing, ambiguous, or contradicts the inputs | **ASK_HUMAN** |
+| 5 | Persona, audience or time slot is missing, ambiguous, or contradicts the inputs | **DECIDE** with `check_this: true`: audience and personas from the Requirement Gathering / scoping documents, time slot 4–5 minutes (the collateral default) |
 | 6 | A public fact, reference or comparable example is missing | **resolve:** REQUEST_RESEARCH. **review:** REVISE with `research_request` filled |
 | 7 | The answer follows from precedence items 1 to 5 (names, order, currency or locale, one user across screens, contrast, removing internal names, applying new input) | **DECIDE**, with a source tag |
 | 8 | The output fails a checklist item, or the question is really a defect in the work | **REVISE** (review) or **SEND_BACK** (resolve), with a one-line fix |
-| 9 | Confidence is L and stakes are high or executive | **ASK_HUMAN**; at low stakes DECIDE with `check_this: true` |
+| 9 | Confidence is L | **DECIDE** with `check_this: true` (the person sees it at the next gate); ASK_HUMAN only if the choice also cannot be undone |
 
 **Who is asked.** Every question goes to the **owner** named in the request, in the session running the work. The
 owner may forward it; the reviewer does not. An answer is logged as `HUMAN_DECISION` and applies only to its own
@@ -253,7 +260,7 @@ Decide the verdict in this order; the first that applies wins:
 1. **INVALID_REQUEST:** a hard-required field is missing (see Contracts). Nothing is scored.
 2. **BLOCK:** a 0 on R1, R2 or R9 (where scored); a contradiction of a human decision in scope; a silent cut of a
    stated ask (row 3); a credential or real side effect in an artifact; an audience-facing number with no
-   derivation (row 4). **The run halts:** no later step starts and no gate is posted until a new review clears it
+   derivation (row 4). **The run halts:** no later step starts until a new review clears it
    or the owner overrides it as above.
 3. **ASK_HUMAN:** round 3 and any finding of `prior_verdict` still open, or a row 1 item pending. Otherwise
    questions travel in `ask_human` alongside the computed verdict.
@@ -271,9 +278,11 @@ against real gate feedback over time.
 On requirements, research, plan and spec kinds, also check for filler: **each sentence states a fact, a sourced
 finding or a decision** (scored under R3).
 
-- **requirements:** problem, persona(s), success criteria, audience and time slot present; each criterion is
+- **requirements:** problem, persona(s), success criteria and audience present **or reported as a gap with a question to
+  close it** (thin client input is normal: judge whether every gap is reported with its question, not whether gaps exist); each criterion is
   observable (a requirement plus how it will be tested); every stated ask captured verbatim; contradictions between
-  inputs and budget raised, not resolved; confidence per item; halts when a required item is missing.
+  inputs and budget raised, not resolved; confidence per item. A "Not ready" verdict in the document is the person's call
+  at the gate, never a BLOCK by itself; R9 here means "every requirement names its source".
 - **research:** one goal per call; every claim sourced and dated; contradictions shown with the assumed side; each
   finding ends with what it changes for the work; no private context leaked into external queries.
 - **plan:** one named primary persona and first screen; observable success criteria; journeys; where AI agents

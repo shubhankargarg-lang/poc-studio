@@ -125,6 +125,9 @@ Everything below comes from what was built, not from looking at screens.
    seed data. If an AI text disagrees with a record, or two AI panels disagree with each other (one says
    a swap closes two-thirds of a £14.52 gap, another says it saves £27.17), **fix it in the app**: fix
    the seed data, the prompt, or the cached output. Do not write narration around a wrong screen.
+   **In POC Studio** the app was built by Nebula and approved by the person at the verify gate: route any fix to the
+   app (seed data, prompts, cached outputs) through Nebula in the same session, and list every such fix at the
+   collaterals approval gate.
    Change only demo data and prompts this build created; for records you did not create, leave them
    untouched and steer the story away from the contradiction instead (another record, another screen),
    noting it in `internal.md`. Never delete. No question is needed either way.

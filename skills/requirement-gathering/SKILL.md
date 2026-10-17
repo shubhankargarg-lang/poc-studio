@@ -15,7 +15,7 @@ Collect everything that exists about a client and its use case, hand the client'
 1. Every client file found, sent into the chat as the actual file (e.g. the client's .pptx and .pdf).
 2. `Requirement Gathering - <Client>.docx`, with exactly the four sections below.
 
-Do not produce Markdown copies, PDFs, evidence logs, registers, research folders, draft emails or notices unless the person asks.
+Do not produce Markdown copies, PDFs, evidence logs, registers, research folders, draft emails or notices unless the person asks. (Exception: when run by the POC Studio orchestrator, save each `research` answer to `<workspace>/research/` as the orchestrator asks.)
 
 **Rules**
 - Never invent a requirement. If no source states it, it is Missing.
@@ -86,7 +86,7 @@ If the Drive copy is found, use it, and say in Section 4 that the file came from
 ### 2c. Other copies
 
 - **Gmail and Calendar attachments**: when connected, look for the email or event the file first arrived with and take the attachment from there.
-- Only when Slack, Drive and Gmail have all failed: tell the person **in the chat, before writing the document**, which file is missing and that they can attach it here or save it to the client's Drive folder. If they are not there to answer, write the document, but put a line at the very top saying which client files were not read and that the score is lower because of it.
+- Only when Slack, Drive and Gmail have all failed: tell the person **in the chat, before writing the document**, which file is missing and that they can attach it here or save it to the client's Drive folder. If they are not there to answer, write the document, but put a line at the very top saying which client files were not read and that the score is lower because of it. **When run by the POC Studio orchestrator, do not ask or wait:** write that top-of-document line, list the file in Section 3 (For the PM) and Section 4, and continue; the orchestrator shows it at the approval gate.
 
 ### 2d. Deliver the files
 

@@ -46,7 +46,7 @@ Run the same command again later to resume: progress is kept in `<client-slug>/s
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-design-system.html` |
 | 4 | Build in Nebula (Sonic mode, Orbit) | `/nebula:start` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
-| 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<Slug>-collateral/out/`: demo script, video, deck, walkthrough, swimlanes |
+| 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, video, deck, walkthrough, swimlanes |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
 what it flags (max 2 rounds), then you **approve or request changes**. Questions raised during a stage — including
@@ -59,7 +59,7 @@ Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 .claude-plugin/plugin.json, marketplace.json
 commands/start.md                  /poc-studio:start
 agents/poc-reviewer.md             independent reviewer subagent
-hooks/                             routes AskUserQuestion to the reviewer while a stage runs
+hooks/                             route questions to the reviewer while a stage runs
 skills/poc-orchestrator/           the pipeline
 skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)

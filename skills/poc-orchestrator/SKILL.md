@@ -55,11 +55,11 @@ and any later session — can read them:
     scoping-document.docx               the build plan (Part A proposal, Part B build spec)
     _working/                           scoping's working notes, research, evidence log
   03-design-system/
-    <client>-design-system.html         the design system HTML Nebula reads (plus anything else the skill ships)
+    <client-slug>-design-system.html    the design system HTML Nebula reads (plus anything else the skill ships)
   04-build/
     build-summary.md                    Nebula's result: app name, app URL on Orbit, what was built
   05-collaterals/
-    <Slug>-collateral/out/              script PDF, video + .srt, deck .pptx, walkthrough PDF, swimlanes
+    <slug>-collateral/out/              script PDF, video + .srt, deck .pptx, walkthrough PDF, swimlanes
   research/                             every research answer, by stage
   reviews/                              reviewer verdicts (*.yaml) and log.md
 ```
@@ -105,15 +105,21 @@ The stage skills are built not to ask questions. If any stage — or Nebula — 
 3. Only an `ASK_HUMAN` disposition reaches the person, and then only as one question with the reviewer's
    recommended option first.
 
-The plugin enforces this with a hook: while the file `<cwd>/.poc-studio/autopilot` exists, AskUserQuestion is
-blocked and redirected to the reviewer. Create that file when a stage starts running; delete it right before
+The plugin enforces this with two hooks: while the file `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot` exists,
+AskUserQuestion is blocked and redirected to the reviewer, and ending the turn is blocked once with a reminder (so a
+plain-text question, e.g. from Nebula, is routed too). Create that file when a stage starts running; delete it right before
 you put an approval gate or an `ASK_HUMAN` question to the person; recreate it when the stage work resumes.
 Delete it when the run finishes or stops.
 
+Always use the absolute path (stages `cd` into subfolders, and the shell keeps that directory):
+
 ```bash
-mkdir -p .poc-studio && echo "<workspace>" > .poc-studio/autopilot   # stage running
-rm -f .poc-studio/autopilot                                          # gate / ASK_HUMAN / done
+F="${CLAUDE_PROJECT_DIR:-<cwd at setup>}/.poc-studio/autopilot"
+mkdir -p "$(dirname "$F")" && echo "<workspace>" > "$F"     # stage running
+rm -f "$F"                                                  # gate / ASK_HUMAN / sign-in / done
 ```
+
+Record the absolute flag path in `state.json` (`"autopilot_flag"`) at setup and use it every time.
 
 Sign-ins are the exception: the person always signs in themselves (Orbit, Slack, etc.); never type a password.
 
@@ -133,7 +139,7 @@ mode: review | resolve
 stage: requirement-gathering | research | scoping | design-system | build | collaterals
 round: 1 | 2 | 3
 owner: the person running POC Studio
-audience: { who: <client audience from the context log>, stakes: high }
+audience: { who: <client audience from the context log, or "client stakeholders" before Stage 1 is approved>, stakes: low }
 artifacts: [ <abs paths of the stage's outputs> ]          # review
 upstream: { path: <approved upstream>, acceptance_criteria: [ ... ] }   # review; scoping 4.1 from stage 3 on
 question: { text: <the question, verbatim>, options: [ ... ] }       # resolve
@@ -176,7 +182,15 @@ Never advance without an explicit approval.
      `/mcp`, or connect it as a claude.ai connector), then check again. Do not start Stage 1 without it.
    - Gmail, Google Drive and Google Calendar are optional: list which are connected and carry on; the
      Requirement Gathering document records the missing ones as "Not connected".
-3. Write `state.json` and the first lines of `context-log.md` (client, date, connectors).
+3. Write `state.json` and the first lines of `context-log.md` (client, date, connectors), then these **standing
+   human decisions** (the owner set them for every run; the reviewer applies them):
+   - Questions during stages are answered by the reviewer from context and assumptions, not the person.
+   - Design system: if brand-colour sources disagree, pick the colour that fits the use case best; if no client logo
+     file exists, build the logo kit from the UnifyApps logo; the style guide is a local HTML file.
+   - Build: Nebula in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: Nebula's
+     recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
+   - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
+   - Nothing is posted to Slack or sent from the person's accounts.
 4. Tell the person in one or two lines what will happen, then start Stage 1.
 
 ## 1 · Requirement Gathering
@@ -195,7 +209,8 @@ Never advance without an explicit approval.
   - input 1: the approved `Requirement Gathering - <Client>.docx`;
   - input 2: everything in `01-requirement-gathering/files/`;
   - output path: `<workspace>/02-scoping/scoping-document.docx` (`_working/` beside it);
-  - research through `research` (its section 4), answers also saved to `<workspace>/research/`.
+  - research through `research` (its section 4); it keeps its own `_working/research/`, and you also copy each
+    answer to `<workspace>/research/scoping-<topic>.md`.
 - It runs without asking the user; anything it cannot settle goes to the reviewer (resolve).
 - Review: `stage: scoping`, upstream = the approved Requirement Gathering document. The reviewer reviews Part A
   as a plan and Part B as a build spec (detail in Part B is expected).
@@ -236,6 +251,9 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   - **Design system:** `<workspace>/03-design-system/<client-slug>-design-system.html`.
   - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
     build plan (L1 scope only).
+  - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
+    should keep going; whenever it stops with a question — through AskUserQuestion or as plain text — answer it via
+    the reviewer before doing anything else.
 - **Every question Nebula asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
   answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model Nebula
   recommends — if it recommends none, ask Nebula to select the most appropriate model for the task — if it cannot,
@@ -245,7 +263,8 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   built (objects, agents, automations, pages) as Nebula reported it, and anything it could not build. Save the URL
   in `state.json` → `app`.
 - **Gate — verify the AI solution:** remove the autopilot file and ask the person to open the app on Orbit and
-  verify it. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again.
+  verify it. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
+  from the collateral stage) also go through Nebula, and are listed at the next gate.
 
 ## 5 · Collaterals
 
