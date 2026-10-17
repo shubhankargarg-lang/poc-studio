@@ -94,6 +94,8 @@ reasonably go either way. Standing answers for this pipeline:
   (`assets/unifyapps-logo.png`) to build the logo kit; DECIDE.
 - **Nebula asks which model to use** for agents or LLM tasks: choose the option Nebula recommends; if it recommends
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
+- **Nebula asks to confirm its build plan** ("Start the Nebula build as planned?"): its recommended option ("Start it").
+- **Seed-data file location, public or private:** Nebula's recommended option; if none is marked, private.
 - **Nebula asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).
 - **Pre-approved actions (DECIDE, not ASK_HUMAN):** deploying, publishing or testing the POC app on Orbit UAT; creating

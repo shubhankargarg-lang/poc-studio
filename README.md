@@ -39,7 +39,7 @@ scripts/release.sh 1.4.0 "what changed"
 It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `commands/start.md`,
 then commits and pushes to `main`.
 
-Requires the **Nebula** plugin for stage 4 (`/nebula:start`) and a **Slack** connector (Gmail, Google Drive and
+Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and a **Slack** connector (Gmail, Google Drive and
 Google Calendar are optional but improve requirement gathering).
 
 ## Use
@@ -59,11 +59,11 @@ progress is kept in `<client-slug>/<usecase-slug>/state.json`.
 
 | # | Stage | Skill | Output (in `<client-slug>/<usecase-slug>/`) |
 |---|---|---|---|
-| 0 | Setup: connector check (Slack required), workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
+| 0 | Setup: connector check (Slack required), installs the tools later stages need, workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
-| 4 | Build in Nebula (Sonic mode, Orbit) | `/nebula:start` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
+| 4 | Build in Nebula (Sonic mode, Orbit), then publish | `/nebula:setup` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, video, deck, walkthrough, swimlanes |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes

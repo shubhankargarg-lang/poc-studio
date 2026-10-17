@@ -39,7 +39,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 1 Requirement Gathering | `requirement-gathering` | Aastha / Shubhankar |
 | 2 Scoping | `scoping-l1-first` | Shubhankar |
 | 3 Design System | `design-system` | Harshal |
-| 4 Build | `/nebula:start` (separate Nebula plugin) | Nebula |
+| 4 Build | `/nebula:setup` (separate Nebula plugin) | Nebula |
 | 5 Collaterals | `poc-collateral-studio` | Utkarsh Vasu |
 | Any stage, outside facts | `research` | Lakshya / Gourav |
 | Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent | Gourav |
@@ -205,7 +205,17 @@ Never advance without an explicit approval.
      recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
    - Nothing is posted to Slack or sent from the person's accounts.
-4. Tell the person in one or two lines what will happen, then start Stage 1.
+4. **Install the tools the later stages need, now, while the person is at the screen** (so no install prompt
+   interrupts the run hours later). Check each with `command -v` and install only what is missing:
+   - macOS (Homebrew): `brew install ffmpeg`, `brew install poppler`, `brew install pandoc`, `brew install node`
+     (and `brew install python` if `python3` is missing); LibreOffice with `brew install --cask libreoffice` if
+     `soffice` is missing. Linux: the same packages with `apt-get` (`ffmpeg poppler-utils pandoc nodejs libreoffice`).
+   - Python packages: `pip3 install python-docx python-pptx openpyxl` (add `--break-system-packages` if pip refuses).
+   - Run each install as its own single command. Claude Code may ask the person to allow each one: tell them in one
+     line that these are the tools the build and collateral stages need, and to accept. If Homebrew itself is missing,
+     tell the person and carry on; the collateral stage will retry.
+   Log what was installed in `context-log.md`.
+5. Tell the person in one or two lines what will happen, then start Stage 1.
 
 ## 1 · Requirement Gathering
 
@@ -256,8 +266,8 @@ extend or second-guess its steps.** Only these session facts are supplied by you
 
 ## 4 · Build with Nebula
 
-- Create the autopilot file. Invoke Nebula's start command, `/nebula:start` (with the Skill tool as `nebula:start`,
-  or whatever name the session lists for it). If the Nebula plugin is not installed, stop and tell the person to
+- Create the autopilot file. Invoke Nebula's start command, `/nebula:setup` (with the Skill tool as `nebula:setup`,
+  or whatever name the session lists for it). Nebula updates itself when called; no update step is needed. If the Nebula plugin is not installed, stop and tell the person to
   install it, then continue.
 - Give Nebula, in the invocation and again whenever it asks:
   - **Mode:** Sonic.
@@ -274,13 +284,17 @@ extend or second-guess its steps.** Only these session facts are supplied by you
 - **Every question Nebula asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
   answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model Nebula
   recommends — if it recommends none, ask Nebula to select the most appropriate model for the task — if it cannot,
-  pick any available model. Sign-ins to Orbit are done by the person.
+  pick any available model. Nebula's plan confirmation ("Start the Nebula build as planned?"): its recommended option
+  ("Start it"). Seed-data file location (public or private): Nebula's recommended option, otherwise **private**.
+  Sign-ins to Orbit are done by the person.
 - Nebula checks and tests its own flows; there is no reviewer review of the build.
-- When Nebula reports the build complete, write `04-build/build-summary.md`: app name, app URL on Orbit, what was
+- **Publish:** as soon as Nebula reports the build complete, tell it to publish the app on Orbit UAT (if its plan has
+  not already published it) and to report the published app URL.
+- Then write `04-build/build-summary.md`: app name, app URL on Orbit, what was
   built (objects, agents, automations, pages) as Nebula reported it, and anything it could not build. Save the URL
   in `state.json` → `app`.
-- **Gate — verify the AI solution:** remove the autopilot file and ask the person to open the app on Orbit and
-  verify it. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
+- **Gate — verify the published AI solution:** remove the autopilot file and ask the person to open the published app
+  on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through Nebula, and are listed at the next gate.
 
 ## 5 · Collaterals
