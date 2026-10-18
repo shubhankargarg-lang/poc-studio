@@ -1,6 +1,6 @@
 ---
 name: orbit-writeback
-description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run, or runs one write-back moment by hand when the person asks to test it — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
+description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run, records POC-level feedback (/poc-studio:feedback), or runs one write-back moment by hand when the person asks to test it — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
 ---
 
 # Orbit write-back (POC Studio)
@@ -285,6 +285,61 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    on any document row.
 9. POC data policy: every file, client discovery files included, is uploaded as a public link without warning or asking
    (POCs use dummy data).
+
+## /feedback — POC-level feedback (`orbit_studio_feedback`)
+
+`/poc-studio:feedback <text>` records one piece of **POC-level** feedback: how a POC run went, what the outputs got
+wrong, what should change in how POCs are run. It is **not** a change request on one document (that is an Iteration,
+Moment 3). Orbit's skill analysis reads these rows together with the iterations on its next "Run analysis", so each
+one can become an edit to one of the plugin's SKILL.md files.
+
+1. **Find the POC.** Use the current workspace's POC ID: `state.json` → `orbit.poc_id` in the client workspace this
+   session is working in (look for `*/*/state.json` under the current folder, or `./orbit-test/state.json`). If the
+   session has none, or several and it is not clear which, ask once: "Which POC is this feedback for?" and accept a POC
+   ID or a client name.
+2. **Read the POC row** with the `get_records` tool (Setup step 1 loads it) for `client_name` and `stage`:
+   - by POC ID: `{"host":"https://orbit.uat.unifyapps.com","objectId":"orbit_studio_poc","filters":[{"field":"poc_id","op":"EQUAL","values":["<poc_id>"]}],"limit":1}`;
+     if that filter shape is refused, use `"filter":{"poc_id":"<poc_id>"}`, and if that is refused too, fetch the row
+     by its id (the record id equals the POC ID);
+   - by client name: filter `client_slug` EQUAL the client name lower-cased with every run of non-letters/digits
+     replaced by `-`, `limit` 10. One row → use it; several → ask which (show poc_id and use_case); none → ask for the
+     POC ID.
+   - No row at all → say the POC was not found and ask for the right POC ID; write nothing.
+3. **Write one row** with the `apply_record_edits` tool, exactly as for every other object (How to write: one call,
+   leave out any key that would be `""` or `null`):
+
+```json
+{ "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback",
+  "edits": [{ "op": "create", "properties": {
+    "ticket_no": "FB-<Date.now()>",
+    "poc": "<poc_id>",
+    "client_name": "<from the POC row>",
+    "poc_stage": "<the POC row's stage>",
+    "gate": "none",
+    "title": "<the person's short title, or their first sentence cut to 90 characters>",
+    "feedback": "<their words, unedited; several points in one message stay in one row>",
+    "channel": "claude",
+    "given_by_name": "<the person's name>",
+    "given_by_email": "<their email, if known>",
+    "source": "user",
+    "status": "open",
+    "analysis_status": "pending",
+    "created_at": <Date.now()> } }] }
+```
+
+   - `ticket_no` and `created_at` use the same `Date.now()` value (get it with a one-line script).
+   - Optional: `"quote"` (exact short words worth keeping verbatim) and `"channel_ref"` (e.g. the workspace path).
+   - `given_by_name` / `given_by_email` are **the person giving the feedback**, not the POC owner: take them from the
+     connected Slack profile of the session's user if there is one, else from `git config user.name` /
+     `git config user.email`, else ask once. Leave `given_by_email` out if it is not known.
+   - The reply must say `"ok": true` for the row; read it back with `get_records` on `orbit_studio_feedback` filtered on
+     `ticket_no` to confirm.
+4. **Nothing else.** No Activity row, no POC update, no `slack_notification`, no Slack message: feedback does not move
+   the POC.
+5. **Reply in one line:** `Recorded as FB-<…> for <client_name>. It goes into the next skill analysis.` If the write
+   fails, show the error in one line and what to do (e.g. run `/nebula:setup` here on orbit.uat.unifyapps.com and sign
+   in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not added to
+   `failed_writes`.
 
 ## Testing a moment by hand
 When the person asks to test a write-back moment directly (e.g. "upload this file as the G2 BRD", "log this as a change

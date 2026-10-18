@@ -66,6 +66,16 @@ Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use cas
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:
 progress is kept in `<client-slug>/<usecase-slug>/state.json`.
 
+## Feedback
+
+```
+/poc-studio:feedback <what went well or wrong, what should change>
+```
+
+Records one piece of POC-level feedback in Orbit (`orbit_studio_feedback`) for the current POC, for the next skill
+analysis. It does not move the POC or post to Slack. (Plain `/feedback` is Claude Code's own bug-report command, so use
+the `poc-studio:` prefix.)
+
 ## What happens
 
 | # | Stage | Skill | Output (in `<client-slug>/<usecase-slug>/`) |
@@ -87,6 +97,7 @@ Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 ```
 .claude-plugin/plugin.json, marketplace.json
 commands/start.md                  /poc-studio:start
+commands/feedback.md               /poc-studio:feedback
 agents/poc-reviewer.md             independent reviewer subagent
 hooks/                             route questions to the reviewer while a stage runs
 scripts/release.sh                 bump the version everywhere, commit, push
