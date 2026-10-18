@@ -313,6 +313,8 @@ you:
   - **client name**, **use case** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
     the client brief; if both are silent, the skill derives it);
   - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
+    its section 21 brand cues are **evidence with source types**, not a chosen palette; the design-system skill decides the
+    palette and theme by its own brand source order (client material → brand guidelines → live product → website).
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
     `<slug>-design-system.html` (one self-contained file, as the skill requires). Nebula reads the HTML from this

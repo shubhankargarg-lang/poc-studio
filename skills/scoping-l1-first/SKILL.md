@@ -196,7 +196,7 @@ The `research` skill takes four parts. Always send all four.
 Rules:
 - Keep each call to one theme. Run independent calls in parallel (several sub-agents, each invoking the `research` skill).
 - Every vendor or regulatory claim in the document must carry a source ID that resolves to a URL in the Appendix sources table. Mark findings you couldn't verify as **Not yet verified**.
-- Also use `research` to read the client's public website for brand cues (logo, colours, tone of voice), and pass them to the DS hand-off section.
+- **Brand guidelines.** If the client's own material (deck, brand guide, message) does not give their brand, find it by web research through `research` — never guess and never ask the person. In this order: the client's **published brand guidelines** or brand portal; their **live product interface** (their own app, when public); their **live marketing site** (CSS custom properties, the computed header and button colours, the logo). For each cue record what it is, its source URL and its **source type** (client-supplied / brand guidelines / live product / website). Also record the brand's **light-to-dark balance** (light-led, **dark-led** — black or near-black grounds — or colour-led) and its **chromatic role** (one hero colour, a pair, or **achromatic**: black, white and grey with one accent). An achromatic, black-led brand's brand colour is its black: **never promote a link, button or accent blue from the site into "the brand colour"**. Pass all of this to section 21.
 
 ---
 
@@ -291,7 +291,7 @@ Use these Heading 2s in this order:
 - **5.6 Assumptions**: the full log, A1… each with the value assumed, the reason, and the impact if wrong. It is not repeated in the Appendix.
 - **5.7 Decisions**: D1… design decisions made, with the rejected alternative and the reason.
 - **5.8 Technical approach** (when the input weighs options, or the choice changes the build): the options compared on cost, accuracy, speed, scale and offline/edge needs, and the recommended option with the reason.
-- **5.9 Open questions for the reviewer**: only questions whose answer would change the build. Each one has the default this document already uses.
+- **5.9 Open questions for the reviewer**: only questions whose answer would change the build. Each one has the default this document already uses. **Never ask about colours, theme (light/dark), typeface or look and feel**: those are not preferences to collect; the design-system skill decides them from the brand evidence in section 21.
 
 ### 6. Research findings
 Skip only for pure internal automation with no comparable tools, and say so. Otherwise include:
@@ -485,7 +485,8 @@ Start with the build order: build steps in dependency order (objects and seed �
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
 ### 21. Hand-off to the design system
-- Brand cues (logo, colours, typeface, tone), with sources.
+- Brand cues (logo, colours, typeface, tone) as **evidence, not a palette**: a table of cue · value · source URL · source type (client-supplied / brand guidelines / live product / website), plus the brand's light-to-dark balance (light-led / dark-led / colour-led) and chromatic role (hero colour / pair / achromatic with one accent), each with its source. If the evidence says the brand is black-led or achromatic, say so plainly here.
+- One line, always: "Final palette, theme and expression are decided by the design-system skill (its brand source order and expression step), not by this document." Do not choose colours, a theme or a typeface in this document.
 - Vibe: 3–5 adjectives and the reason, e.g. "calm and dense; finance users scan many rows".
 - A UI pattern inventory for the build scope only: pattern · pages that use it · special needs (e.g. a side-by-side compare with variance highlighting).
 - The components from section 23 that need custom design (e.g. a match-score gauge or a variant matrix), with their key states.
