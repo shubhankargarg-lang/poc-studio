@@ -10,10 +10,10 @@ The arguments are `<client name> | <use case name> | <POC ID>` (e.g. `Acme | Inv
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.8.0**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.9.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.8.0"
+LOADED="1.9.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -47,23 +47,23 @@ Then act on the last line it printed:
   three commands, then the same `/poc-studio:start` command again:
   `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
 - **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.8.0, then carry on.
+  are continuing on v1.9.0, then carry on.
 
 ## Step 1 — verify the POC ID in Orbit (after the update check, before anything else)
 
 Only once Step 0 has finished and the POC ID has been given:
 
-1. Load the `orbit-writeback` skill (Skill tool: `poc-studio:orbit-writeback`) and run its **Setup**: the Orbit folder
-   (asked once, kept in `~/.poc-studio/config.json`), then Nebula's `get_records` on the object
-   **`orbit_studio_poc`** on Orbit UAT, **filtered on `poc_id` EQUAL the POC ID given above**.
+1. Load the `orbit-writeback` skill (Skill tool: `poc-studio:orbit-writeback`) and run its **Setup**: load Nebula's
+   tenant tools, then call `get_records` on the object **`orbit_studio_poc`** on Orbit UAT
+   (`https://orbit.uat.unifyapps.com`), **filtered on `poc_id` EQUAL the POC ID given above**.
 2. **Found** → keep the record id and the POC owner's name and email (they go in `state.json` → `orbit` once the
    workspace exists), and go on to Step 2.
 3. **Not found** → **stop.** Tell the person: "POC ID `<POC ID>` was not found in Orbit (`orbit_studio_poc`). Please
    check the POC ID and send the correct one." Wait for their reply, then run this check again with the new ID.
    Do not start the pipeline until the check finds the record.
-4. **The check cannot run** (Nebula not installed, the Orbit folder not set up with `/nebula:setup`, or Orbit needs a
-   sign-in) → stop and tell the person what is needed (install Nebula, run `/nebula:setup` in the Orbit folder, or sign
-   in themselves — never type a password), then run the check again. Never skip it.
+4. **The check cannot run** (Nebula not installed, not set up in this folder, or Orbit needs a sign-in) → stop and
+   tell the person what is needed (install Nebula, or run `/nebula:setup` here on `orbit.uat.unifyapps.com` and sign in
+   themselves — never type a password), then run the check again. Never skip it.
 
 ## Step 2 — run the pipeline
 

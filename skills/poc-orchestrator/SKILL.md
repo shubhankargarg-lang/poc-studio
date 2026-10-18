@@ -28,7 +28,7 @@ the person to confirm or correct it before starting. Use the POC ID exactly as g
 
 **The POC ID must exist in Orbit, and Orbit is kept in step with the run.** The `orbit-writeback` skill (load it
 with the Skill tool, `poc-studio:orbit-writeback`) owns everything written to Orbit · POC Studio. The start command runs
-its Setup (Orbit folder, POC ID check against `orbit_studio_poc`, the POC owner's name and email) before this skill;
+its Setup (Nebula's tenant tools, POC ID check against `orbit_studio_poc`, the POC owner's name and email) before this skill;
 if that has not happened in this session, run it first — not found → stop and ask the person to check the POC ID.
 Then call it at every write-back moment listed under "Orbit write-back at each gate" below.
 

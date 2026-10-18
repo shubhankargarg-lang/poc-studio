@@ -56,8 +56,9 @@ the Orbit object `orbit_studio_poc` (filtered on `poc_id`) and stops, asking you
 
 **Orbit write-back:** at every gate the run uploads the stage's files to Orbit · POC Studio and writes the Document,
 Activity, Iteration and POC rows (skill `orbit-writeback`), so the POC owner, the team and the Slack thread follow the
-run. It needs an **Orbit folder** set up once with `/nebula:setup` (tenant orbit.uat.unifyapps.com, solution POC Studio);
-the first run asks for its path and remembers it in `~/.poc-studio/config.json`. It is recorded in the progress file, the
+run. It uses Nebula's own tenant tools in the session (the same ones Nebula builds with) on
+`orbit.uat.unifyapps.com`, and uploads files as public tenant links, so the folder you run in must be set up with
+`/nebula:setup` on that tenant. It is recorded in the progress file, the
 documents and the build so everything can be traced to the POC. The use case name keeps the whole run focused:
 Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:

@@ -1,6 +1,6 @@
 ---
 name: orbit-writeback
-description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
+description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run, or runs one write-back moment by hand when the person asks to test it — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
 ---
 
 # Orbit write-back (POC Studio)
@@ -14,37 +14,37 @@ authoritative where the two differ** (the differences are the owner's decisions,
 
 ## Setup (once per run, before Stage 1)
 
-### 1. The Orbit folder
-Every Orbit command runs from the **Orbit folder**: a folder set up with `/nebula:setup` on `orbit.uat.unifyapps.com`,
-solution **POC Studio**. Its path is kept in `~/.poc-studio/config.json` → `"orbit_folder"`.
-- Not set → ask the person once for the folder path, save it there (create the file if needed), then continue.
-- Set but not set up (no Nebula setup files there, or the first command fails as not set up) → stop and ask the person
-  to run `/nebula:setup` in that folder once (tenant orbit.uat.unifyapps.com, solution POC Studio), then continue.
-- Never write from the client's build folder: it may point at another tenant.
+### 1. Nebula's tenant tools (no separate folder)
+All Orbit reads, writes and uploads go through **Nebula's tenant tools, called directly as tools in this session**
+(the same tools Nebula uses while it builds), always with the host `orbit.uat.unifyapps.com`. There is no Orbit
+folder and no command-line script.
 
-Define, for every command below (run them in one Bash call each, since shell state does not persist):
+Load them with **one** ToolSearch at the start of every write moment (they are deferred tools), by exact name first:
 
-```bash
-ORBIT_DIR="$(python3 -c 'import json,os;print(json.load(open(os.path.expanduser("~/.poc-studio/config.json")))["orbit_folder"])')"
-NEB="$(ls -d ~/.claude/plugins/cache/nebula/nebula/*/ | sort -V | tail -1)scripts"
-orbit() { (cd "$ORBIT_DIR" && node "$NEB/tool-calls.mjs" "$@"); }
-TMPDIR="${TMPDIR:-/tmp}"
-```
+`select:mcp__plugin_nebula_object__get_records,mcp__plugin_nebula_object__apply_record_edits,mcp__plugin_nebula_application-builder__upload_public_file`
+
+If a name is not found, search for it (`+nebula get_records`, `+nebula apply_record_edits`,
+`+nebula upload_public_file`) and use the tool that comes back under that name.
+- **Nebula's tools are not in the session at all** → Nebula is not installed or not set up in this folder: ask the
+  person to run `/nebula:setup` here (tenant `orbit.uat.unifyapps.com`), then load them again.
+- **No record-write tool (`apply_record_edits`) can be found** → say in one line that Orbit write-back is not available
+  in this session (reads and uploads may still work), record it in `failed_writes`, and carry on with the run.
 
 ### 2. Verify the POC ID and read the owner
-The POC ID is mandatory (the start command will not run without it). Verify it exists:
+The POC ID is mandatory (the start command will not run without it). Verify it exists with the **`get_records`** tool:
 
-```bash
-orbit object get_records '{"host":"https://orbit.uat.unifyapps.com","objectId":"orbit_studio_poc","filters":[{"field":"poc_id","op":"EQUAL","values":["<POC ID>"]}],"limit":1}'
+```json
+{ "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_poc",
+  "filters": [{ "field": "poc_id", "op": "EQUAL", "values": ["<POC ID>"] }], "limit": 1 }
 ```
 
 - No record → stop; tell the person "POC ID `<POC ID>` was not found in Orbit (`orbit_studio_poc`). Please check the
   POC ID and send the correct one." Wait, then check again with the new ID. Nothing starts until it is found.
-- Record found → read the **POC owner's name and email** from it (the owner fields of the record, e.g. a field named
-  like `owner_name` / `owner_email` or `poc_owner…`; use the record's own field names). Save in the run state.
-  **The owner's name and email are used in every name and email field you write** (`created_by`, `actor_name`,
-  `actor_email`), for AI and person actions alike; `actor_type` still says `ai` or `person`. If the record has no
-  owner name or email, ask the person once for them.
+- Record found → keep its record id (the POC row's `recordId` for every POC update) and read the **POC owner's name
+  and email** from it (the owner fields of the record, e.g. a field named like `owner_name` / `owner_email` or
+  `poc_owner…`; use the record's own field names). Save in the run state. **The owner's name and email are used in
+  every name and email field you write** (`created_by`, `actor_name`, `actor_email`), for AI and person actions
+  alike; `actor_type` still says `ai` or `person`. If the record has no owner name or email, ask the person once.
 
 ### 3. Run state you keep
 In the workspace `state.json`, under `orbit`:
@@ -52,9 +52,10 @@ In the workspace `state.json`, under `orbit`:
 ```yaml
 orbit:
   poc_id: POC-acme-20261018
+  poc_record_id: <record id>
   owner: { name: <owner name>, email: <owner email> }
   documents:            # every document you wrote, by gate
-    g1: [{ document_id: …, type: requirements, version: 1, status: in_review }]
+    g1: [{ document_id: …, type: requirements, version: 1, status: in_review, file_link: … }]
   open_iterations:      # iteration rows waiting for a new version
     - { iteration_id: …, gate: g2, document_id: … }
   failed_writes: []     # anything that did not reach Orbit after 3 tries
@@ -62,12 +63,8 @@ orbit:
 
 ## How to write
 
-### Create or update rows — `apply_record_edits`
-Write the payload to a temp file **with a script** (never type base64 or long text into a command line), then:
-
-```bash
-orbit object apply_record_edits @"$TMPDIR/orbit-write.json"
-```
+### Create or update rows — the `apply_record_edits` tool
+Call the tool with:
 
 ```json
 { "host": "https://orbit.uat.unifyapps.com", "objectId": "<object id>",
@@ -79,18 +76,22 @@ orbit object apply_record_edits @"$TMPDIR/orbit-write.json"
 - One call per object; all rows of that object in one `edits` list.
 - `update` merges into the stored row: send only the keys you change. Never send a row back whole.
 - Never send `""` or `null`: leave the key out.
-- Dates are epoch milliseconds (`Date.now()` / `int(time.time()*1000)`).
+- Dates are epoch milliseconds (`Date.now()` / `int(time.time()*1000)`); get them with a one-line script, not by guessing.
+- Build long values (summaries, the design system's HTML `content`) by reading the file with a script and pasting
+  the result into the call; never retype a file's contents by hand.
 - Check the reply: every item in `results` must say `"ok": true`.
 
-### Upload a file — `upload_file`
+### Upload a file — the `upload_public_file` tool
+Call it with:
 
-```bash
-cp "<the file>" "$TMPDIR/"
-orbit agent-builder upload_file '{"host":"orbit.uat.unifyapps.com","filePath":"'"$TMPDIR/<file name>"'","contentType":"<mime>"}'
+```json
+{ "host": "orbit.uat.unifyapps.com", "filePath": "<absolute path of the file>", "fileName": "<display name>",
+  "mimeType": "<mime>" }
 ```
 
-- Save the link as `https://orbit.uat.unifyapps.com` + the reply's `file.url`. It opens only for people signed in to
-  orbit.uat; it is never public.
+- The reply gives the file's **public URL**: save it as the document's `file_link` (and in the run state). Public
+  links are owner-approved: anyone with the link can open the file, and Orbit's Slack thread can show it.
+- `fileName` is the name readers see, e.g. `Acme - BRD v1.docx`, whatever the file is called on disk.
 - At most **20 MB**. The demo video is usually larger: compress it first, e.g.
   `ffmpeg -i in.mp4 -vcodec libx264 -crf 30 -preset slow -vf "scale=-2:720" -acodec aac -b:a 96k out.mp4`, raising
   `-crf` (32, 34) until it is under 20 MB. If it still cannot fit, ask the person for a link to the video and save that.
@@ -249,7 +250,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 ## When a write fails
 - A reply with `"ok": false` or an error: read the message, fix the payload, and send **only the rows that failed**
   again (a create that succeeded must not be sent twice).
-- `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/nebula:setup` in the Orbit folder, then resend.
+- `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/nebula:setup` in this folder, then resend.
 - `CONFIRM_REQUIRED`: you sent something that deletes; you never should. Stop and tell the person.
 - After three failures on one step, stop the write-back for this moment, tell the person in one line what did not
   reach Orbit, add it to `failed_writes` (with the gate and whether a notification was held back), and carry on with
@@ -270,6 +271,14 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 2. G4 is written after the owner approves the collaterals in Claude.
 3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video.
 4. The POC ID is mandatory; there is no lookup by client slug.
-5. The Orbit folder path lives in `~/.poc-studio/config.json`.
+5. No Orbit folder and no command-line script: reads, writes and uploads are Nebula's tenant tools called directly in
+   the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.
 6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
 7. Every name/email field uses the POC owner's name and email from the POC record.
+
+## Testing a moment by hand
+When the person asks to test a write-back moment directly (e.g. "upload this file as the G2 BRD", "log this as a change
+request on G1", "approve G3"), run just that moment as written above, with the file they attached or named and the
+POC ID they give (verify it first with Setup step 2). Use the same ids, rows, order and checks as in a real run, keep
+the run state in `./orbit-test/state.json` when there is no workspace, and after the moment read the rows back with
+`get_records` (filter `poc` = the POC ID; for the POC row, `poc_id`) and show the person what Orbit now holds.
