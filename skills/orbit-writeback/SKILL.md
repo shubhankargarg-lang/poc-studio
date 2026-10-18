@@ -136,7 +136,10 @@ discovered input, `<source>-<short name>` (`slack-…`, `drive-…`, `gmail-…`
 - `file_kind`: docx · pptx · html · pdf · video · image · link · other
 - No `content` and no `format` on any document: every document, the design system included, is a file uploaded with
   `upload_public_file` and given by `file_link` + `file_kind` (the app renders it from the link). The design system is
-  its `.html` file uploaded with mimeType `text/html`, `file_kind html`.
+  its `.html` file uploaded with mimeType `text/html`, `file_kind html`. It is one self-contained file with fonts and
+  images embedded, so check its size first: if it is over 20 MB, re-compress the embedded raster images (e.g. to
+  WebP/JPEG at lower quality) in a copy and upload that; if it still does not fit, upload nothing, say so in the
+  document's `summary`, and raise it at the G2 gate (do not stop to ask during the write).
 - A re-iterated version also sends `"from_iteration": "<iteration_id>"`.
 
 **Activity** — object `orbit_studio_activity` (create only)

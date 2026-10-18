@@ -77,7 +77,7 @@ and any later session — can read them:
     scoping-document.docx               the build plan (Part A proposal, Part B build spec)
     _working/                           scoping's working notes, research, evidence log
   03-design-system/
-    <slug>-design-system.html           the design system HTML Nebula reads (plus anything else the skill ships)
+    <slug>-design-system.html           the design system HTML Nebula reads (one self-contained file)
   04-build/
     build-summary.md                    Nebula's result: app name, preview link, published app URL, what was built
   05-collaterals/
@@ -240,8 +240,10 @@ except at the start (the POC ID must be verified).
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Questions during stages are answered by the reviewer from context and assumptions, not the person.
-   - Design system: if brand-colour sources disagree, pick the colour that fits the use case best; if no client logo
-     file exists, build the logo kit from the UnifyApps logo; the style guide is a local HTML file.
+   - Design system: the stage runs unattended (the person is treated as absent for the skill's stops);
+     brand-colour conflicts are settled by the design-system skill's own brand source order, without
+     asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
+     one local HTML file, uploaded to Orbit as a public link.
    - Build: Nebula in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: Nebula's
      recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
@@ -301,8 +303,10 @@ except at the start (the POC ID must be verified).
 
 ## 3 · Design System
 
-The `design-system` skill is tested and its output is approved as is. **Call it exactly as it is; do not change,
-extend or second-guess its steps.** Only these session facts are supplied by you:
+The `design-system` skill (v6) is tested and its output is approved as is. **Call it exactly as it is; do not change,
+extend or second-guess its steps** — it reads the whole scoping document, draws the journeys, signature components,
+agent drawers and persona shells, and writes the build contract for Nebula. Only these session facts are supplied by
+you:
 
 - Create the autopilot file. Call `design-system` with:
   - **client name**, **use case** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
@@ -310,14 +314,21 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
-    `<slug>-design-system.html`, plus any other files the skill ships. Nebula reads the HTML from this
-    folder. If an Artifact tool also exists in the session, publishing is optional; the local HTML is what counts.
+    `<slug>-design-system.html` (one self-contained file, as the skill requires). Nebula reads the HTML from this
+    folder. Do not publish it as an artifact; the only place it goes outside the folder is the Orbit write-back
+    (uploaded there as a public link — owner-approved, see the POC data policy), which the skill's "do not publish
+    or share it as a link" line does not override.
+  - **file name and folder:** this name and folder replace the skill's own `<client>-design-system.html` "in the
+    outputs folder": the outputs folder is `<workspace>/03-design-system/` and the file is `<slug>-design-system.html`.
+  - **run mode:** **unattended** (the skill's own term): nobody answers its stops during the stage. Treat the person
+    as absent for the skill's stops even though they are in the chat. A typeface that cannot be identified (Step 2b's
+    "Ask") is not a stop either: ship the closest open substitute, mark it `[DERIVED]` in the type note.
 - **The skill's two stops are answered without the person** (the reviewer's standing answers):
-  - Brand hue ambiguous → pick the colour that fits the use case and audience best; record it in the port note.
-  - No client logo file anywhere → build the logo kit from the UnifyApps logo bundled with this plugin
-    (`assets/unifyapps-logo.png` in the plugin root; also `skills/poc-collateral-studio/assets/unifyapps-logo.png`;
-    find it with `find ~/.claude/plugins -name unifyapps-logo.png` if the path is unclear); record it in the port note.
-- The skill's hand-over questions are answered with the client in mind (read "Amogh" there as "the client").
+  - Brand hue ambiguous → the skill decides by its own **brand source order** (Step 1), unattended; never wait and
+    never override it with a "standing decision" (the skill forbids that). It records both candidates in the port note.
+  - No client logo file anywhere → the skill's stop 2 fallback: the logo kit is built from the UnifyApps logo bundled
+    with this plugin (`assets/unifyapps-logo.png`; also `skills/poc-collateral-studio/assets/unifyapps-logo.png`;
+    `find ~/.claude/plugins -name unifyapps-logo.png`), labelled as a stand-in; recorded in the port note.
 - Review: `stage: design-system`, upstream = the approved scoping document.
 - **Orbit:** M1b · G2 (the design system, with notification; stage moves to `4_design_system`) before the gate; M2 ·
   G2 on approve (G2 approved, stage `5_build`); M3 on changes; M5 before re-gating.
@@ -336,7 +347,10 @@ extend or second-guess its steps.** Only these session facts are supplied by you
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
   - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
-  - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`.
+  - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell Nebula to quote and follow the
+    **Build contract** section of that file verbatim (shell, agents in drawers on the platform's live agent component,
+    data/table rules, the active style set from the `#style-sets` block, overlays and spacing, colours only from the
+    token block, every state, each role's shell and device layouts).
   - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
     build plan (L1 scope only).
   - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
@@ -358,7 +372,8 @@ extend or second-guess its steps.** Only these session facts are supplied by you
      a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
      status it should change, the notification it should send. Failures, errors and empty results count as failed.
   3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
-     records from the seed data.
+     records from the seed data, and that the agent opens in its drawer on the live agent component as the design
+     system's build contract requires (not a card on a page).
   4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
   5. **Fix and re-test:** every failure goes back to Nebula to fix (same session, Sonic mode), then that page,
      automation or agent is tested again, and anything the fix touched is re-tested too. Repeat until everything

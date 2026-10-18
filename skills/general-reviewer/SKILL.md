@@ -66,11 +66,14 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   where "high-level, not configuration-level" applies. Review **Part B** (sections 10–23 and the Appendix) as a build
   spec: it is *meant* to be configuration-level, so detail there is never a finding; check only that it is complete,
   consistent with Part A, and traces to the L1 features.
-- **Design system:** the design-system skill is tested and its output format is approved as is. Review the style
-  guide for brand fit, scope against the scoping document and the skill's own finished-piece checks; never ask for
-  feature-level page layouts (Nebula owns those). Three things are standing human decisions and never a finding: the
-  brand colour picked without asking when sources disagreed, a logo kit built from the UnifyApps logo when no client
-  logo file exists, and a style guide saved as a local HTML file instead of a published artifact.
+- **Design system:** the design-system skill (v6) is tested and its output format is approved as is. Review the single
+  HTML file against the skill's own finished-piece list (23 items: manifest coverage of every L1 feature and CMP ID,
+  every journey drawn as a flow, signature components in depth, agents in drawers, the expression card, a shell per
+  persona and device, the build contract, one clean self-contained file, overlay/density/variant rules) and for brand
+  fit and scope against the scoping document. Journeys, screens and agent drawers drawn in it are expected. Standing
+  human decisions, never a finding: the brand colour settled by the skill's source order without asking, a logo kit
+  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, and the file uploaded to Orbit
+  as a public link.
 
 ## Independence
 
@@ -94,9 +97,12 @@ confidence is L) so the person sees it at the next gate. Use `ASK_HUMAN` only fo
 customer data, real transactions, spend, deleting, publishing, sending) or a choice that cannot be undone and could
 reasonably go either way. Standing answers for this pipeline:
 
-- **Brand colour ambiguous** (design-system stop 1): pick the one that fits the use case and audience best; DECIDE.
+- **Brand colour ambiguous** (design-system stop 1): the skill's own brand source order decides, unattended; DECIDE
+  that the skill applies its order (never substitute another rule).
+- **Typeface cannot be identified** (design-system Step 2b "Ask"): ship the closest open substitute, mark it
+  `[DERIVED]` in the type note; DECIDE.
 - **No client logo file** (design-system stop 2): use the UnifyApps logo bundled with the plugin
-  (`assets/unifyapps-logo.png`) to build the logo kit; DECIDE.
+  (`assets/unifyapps-logo.png`) to build the logo kit, labelled as a stand-in; DECIDE.
 - **Nebula asks which model to use** for agents or LLM tasks: choose the option Nebula recommends; if it recommends
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
 - **Nebula asks to confirm its build plan** ("Start the Nebula build as planned?"): its recommended option ("Start it").
@@ -108,7 +114,7 @@ reasonably go either way. Standing answers for this pipeline:
   approved for every document, including the client files found during discovery. Do not warn about or ask again
   about public uploads. Public uploads are never a finding and never an ASK_HUMAN.
 - **Pre-approved actions (DECIDE, not ASK_HUMAN):** deploying, publishing or testing the POC app on Orbit UAT; creating
-  the app's objects, agents, automations and seed data there; publishing the design system as a private artifact;
+  the app's objects, agents, automations and seed data there; uploading the design system HTML to Orbit as a public link;
   choosing models as above. Anything touching the client's or a real production system stays row 1.
 - **BLOCK at a gate:** the orchestrator shows unresolved blocking findings at the person's approval gate after round 2;
   the person's override there (finding id + reason) is a human decision.
@@ -303,8 +309,8 @@ finding or a decision** (scored under R3).
   versus simple model calls are used, with a reason; a **trace table** from every stated ask and input requirement
   to scope, with each cut listed and its approver; one story chain; a data plan (one user across everything); the
   audience's vocabulary; high-level, not configuration-level.
-- **design:** tokens only; the system's components and views in every state (loading, empty, error) — feature-level
-  page layouts are not expected here (Nebula owns them); AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
+- **design:** the design-system skill's finished-piece list (v6, 23 items) is the checklist; tokens only; every
+  state; AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
   used, and approval if it overrides a stated ask; reference research present.
 - **build:** not reviewed in POC Studio (Nebula tests its own flows end to end; the person verifies the app at the
   gate). Used only if a build review is explicitly requested, from whatever build report Nebula wrote. Check: every control exercised;

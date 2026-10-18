@@ -1,21 +1,25 @@
 ---
 name: "design-system"
-description: "Build a client design system from a client name and website — sample the real brand, harvest the logo into every variant, skin house Design Language v3.4 onto it preserving luminance, and ship a living style guide, token block and logo kit audited in light and dark. Carries a reserve of view-types (tables, charts, graphs, flows, maps, agentic and document views) and a full component inventory, surfaced selectively per BRD. Use before any screen is drawn."
+description: "Build a client design system from a scoping document (or BRD), a client name and a website — read the whole document, turn its journeys into drawn flows, research the brand and public design references, sample the real brand, harvest the logo into every variant, choose a client-specific expression, skin house Design Language v3.4 onto it preserving luminance, and ship a living style guide, token block, logo kit and build contract audited in light and dark. Carries a reserve of view-types (tables, charts, graphs, flows, maps, agentic and document views), a full component inventory and the agent drawer, surfaced selectively per document. Use before any screen is drawn."
 ---
 
 # Design system for a POC
 
-**Input: a client name and a website. Output: a measured design system.** Everything between is a
-pipeline you run, not a method you interpret.
+**Input: a scoping document (or BRD), a client name and a website. Output: a measured design system
+that looks like it was made for this client.** Everything between is a pipeline you run, not a method
+you interpret.
 
-**A design system is not drawn, it is transformed.** We own a validated one. The job is to move it
-onto the client's colour without breaking a single measurement in it.
+**A design system is not drawn, it is transformed — and then it is expressed.** We own a validated
+one. The job is to move it onto the client's colour without breaking a single measurement in it
+(the core), and then to choose, from variants this file already carries, the shell, chrome, surface
+and voice that make it read as the client's own product (the expression). **The core never varies.
+The expression always does.** Two clients who get the same expression need a reason on the page.
 
 **Run this as Phase 3a — before any screen is drawn, before the first builder prompt.**
 
 > **What this version adds (read once).** The original pipeline below — sample, harvest, transform,
-> audit, ship — is unchanged and authoritative; every Step and the REFERENCE doctrine stand exactly as
-> written. Five things are layered on top, and only on top:
+> audit, ship — is unchanged and authoritative; every Step and the REFERENCE doctrine stand as
+> written, except where v5 (items 6 to 11) names the change. The layers on top:
 > 1. **Phase 0 — the selection engine** (new, runs before THE RUN): read the BRD, decide which views
 >    and components this build needs, and stay in scope.
 > 2. **The view library** (in REFERENCE): a reserve of view-types the system can produce — tables,
@@ -25,13 +29,38 @@ onto the client's colour without breaking a single measurement in it.
 > 3. **The full component inventory + the universal state rule** (in REFERENCE): every atom the views
 >    are built from, each specified across every state (border, hover, active, inactive, focus,
 >    disabled, loading, error, selected, read-only).
-> 4. **Getting outside facts** (next section): a mandatory research plan, with five questions every run
+> 4. **Getting outside facts** (next section): a mandatory research plan, with seven questions every run
 >    asks plus the ones the BRD raises, each done to a minimum depth and recorded in a ledger. Every
 >    question goes to the `research` skill first; if it fails or falls short, the skill searches on its
 >    own until the minimum is met.
 > 5. **The finished-piece rule** (just before the hand-over): what this skill hands over is final. It
 >    needs no rework. Phase 0 writes a view manifest (0.6), every row of it gets a drawn specimen,
 >    and the result is checked against a fixed list before it goes out.
+>
+> **v5 — written after four real runs (Pentland, ClickUp, Vermont, Topcon) where every app came out
+> looking like the same product in a different hue, the Copilot sat on a page as a card, Pentland's
+> black-and-lime brand shipped electric blue, the user journeys were never drawn, and the dark theme
+> read as dull slate:**
+>
+> 6. **Journeys become drawn flows** (0.7): every journey in the scoping document is drawn as a
+>    storyboard of screens, with each step's action, response, exception and interaction.
+> 7. **Signature components in depth** (0.8): the two or three components the domain is really about
+>    get a full specification and a deep specimen, not a generic tile.
+> 8. **The agent drawer** (0.9, REFERENCE): every agent opens in a drawer or side panel built on the
+>    platform's live agent component. Never a card on a page.
+> 9. **The expression** (Step 2c, and the expression kit after the stylesheet): shell, chrome,
+>    surface, default theme, type voice, imagery, motif and chart voice are chosen per client from
+>    evidence, so no two clients look alike. The core rules do not move.
+> 10. **Brand decided by a fixed source order** (stop 1, Step 1): an unattended run never settles a hue
+>     conflict any other way, and achromatic, dark-led brands ship dark-led.
+> 11. **A rebuilt dark theme, inspiration research and a build contract** (Step 5, research questions
+>     6 and 7, Step 7): a deeper dark that passes everywhere, public design references on the page,
+>     and the shell and agent rules the builder must follow so the app matches the system.
+> 12. **v5.1 — consistency and density** (after the first v5 runs): every screen drawn in a device at
+>     its real width; one overlay system (modal and drawer sizes, one anatomy); spacing and density
+>     tokens; hard limits for tables and cards; coded variants with at most three style sets and one
+>     active, readable by the builder; chart views; a render check that finds overlaps and squeezed
+>     text.
 >
 > The design system is the app's entire vocabulary: the app composes only from what the system carries.
 > So coverage is capability — but coverage is held in reserve and drawn on selectively, never all at
@@ -66,6 +95,8 @@ and completes it before Step 3 (the transform). The plan has two parts.
 | 3 | Where is the client's official logo file published (site, press kit, brand page, Wikimedia Commons)? | Deep |
 | 4 | Does the client publish brand guidelines, and what do they say about tone, colour use and logo use? | Standard |
 | 5 | What does the client do, for whom, and which words do they use for their own products, customers and processes? (feeds the sample content) | Standard |
+| 6 | **Inspiration.** Which 8 to 12 public products and design references best show this domain and these surface archetypes done well? At least 2 from the client's own industry, 3 best-in-class products for the main archetype (0.2), 2 for each signature component (0.8), and, whenever dark is shipped, 3 well-regarded dark interfaces. For each: the link, what it does well, and the one idea worth borrowing | Deep |
+| 7 | **Journey patterns.** For the signature journeys (0.7), how do the best products handle the same moments: the refused action, the approval, the hand-off, the empty first run, the AI suggestion the user accepts or rejects? | Standard |
 
 **Part 2 · Questions the BRD raises.** Read the build brief and add a question wherever the BRD leaves
 something the design depends on unsaid or thin. For example:
@@ -84,6 +115,14 @@ something the design depends on unsaid or thin. For example:
 | Quick | 5 searches, the pages behind the answer opened and read |
 | Standard | 10 searches, at least one official or primary source |
 | Deep | 20 searches, at least one official or primary source, and every key fact confirmed by a second independent source |
+
+**Questions 6 and 7 feed the design, not just the record.** Their answers become the **inspiration
+board** on the style guide: each reference as a card with its link, what it does well, the idea taken,
+and the component or expression choice it informed. Take ideas — layout moves, interaction patterns,
+density, how a status or an agent is presented — never colours, logos, artwork or copied markup.
+Nothing from a reference adds a colour value, radius or new rule to the core; it informs the
+expression (Step 2c), the signature components (0.8) and the flows (0.7). A board of references that
+changed nothing in the system is a list, not research.
 
 **Keep a research ledger** and ship it in the port note: one row per question with its depth, the number
 of searches run, the pages opened, the sources with dates, the strength of each finding, and the
@@ -122,6 +161,8 @@ decision needs, for example the roles that use a process and what each reads mos
 | Phase 0.3, choosing a view | Find 3 to 5 polished references for `<data shape>` and say what each does well | Working draft: view and density choice |
 | Step 1, tone | What do `<client>`'s public brand and press pages say about tone, colour and typeface? | Internal check on Steps 1 and 2b |
 | Step 2b, the type note | What licence covers `<candidate open substitute>`, and which typeface does `<client>` name for its brand? | Deep: the client reads the type note |
+| Step 2c, expression | Find 8 to 12 public references for `<domain>` and `<archetype>`, plus dark interfaces if dark ships; say what each does well and the idea worth taking | Deep: shapes how the client's system looks |
+| 0.7, journeys | How do the best `<archetype>` products handle `<moment>` (a refused move, an approval, an AI draft the user edits)? | Standard: shapes the flow and its interactions |
 
 ## Example requests
 
@@ -211,6 +252,11 @@ separate requests, or run them in parallel with subagents and merge the answers 
 
 # PHASE 0 · Read the BRD, choose the system
 
+**In the automated flow the BRD is a scoping document** — 80 to 130 pages, most of it data model,
+workflows, business rules, agent prompts, seed data and sources. Read it as the BRD throughout this
+file. Most of it is not visual, and that is exactly why it has to be read whole: the visual facts are
+spread through it, and the journeys in it are the richest design input the system gets.
+
 **This runs before THE RUN.** THE RUN (below) skins the system onto the client's brand. Phase 0 decides
 *what gets skinned* — which views, which components, at what density — so the build matches the BRD
 instead of defaulting to the same glass dashboard every time. If there is no BRD, only a client and a
@@ -249,18 +295,58 @@ UNKNOWNS        what the design needs and the BRD does not say — each becomes 
 OUT OF SCOPE    what the BRD does NOT ask for — stated explicitly
 ```
 
+**When the BRD is a scoping document, read these sections for these fields** (section numbers follow
+the usual template; find the equivalent if they differ):
+
+| Scoping section | Feeds |
+| --- | --- |
+| Executive summary, context, pain points (§1–§3) | DOMAIN, the WOW factor, what the demo must prove |
+| Scope, asked vs scoped, live vs simulated, decisions (§5) | OUT OF SCOPE, CONTRADICTIONS, what is real and what is staged |
+| Research findings and brand cues (§6) | BRAND INPUTS, competitors for research question 6 |
+| Personas (§7) | PERSONAS, DEVICES, density and shell per role (0.4) — every persona, not the first three |
+| Journeys and workflows (§8) | JOBS and the flows in 0.7 — every journey, every step, every exception |
+| Solution overview, global conventions (§9) | SURFACES, the app map, navigation, global elements |
+| Feature catalogue and UI pattern coverage (§10, §10.5) | VIEWS; every must-have (L1) feature ID |
+| Page specifications (§11) | SCREENS/ROUTES, layout order, key states per page |
+| Data model, allowed transitions (§12) | STATUSES in their own words, state machines, UNSET fields |
+| Agents (§13) | AGENT OUTPUTS, the agent drawers in 0.9 |
+| Workflows, rules and scoring (§14) | refusal messages, gates, thresholds, what turns a status red |
+| Roles and permissions (§16) | role shells, read-only states, no-access wording |
+| AI trust and governance (§17) | the AI marker states, confidence display, human-in-the-loop moments |
+| Non-functional notes, seed data (§18–§19) | DATA VOLUMES, sample content, hero records the specimens use |
+| Demo storyline (§20) | which flows and screens carry the demo; the order the style guide follows |
+| Hand-off to the design system (§21) | BRAND INPUTS, vibe, custom components, key states, interactions, layouts |
+| Component inventory (§23) | signature-component candidates (0.8); every CMP ID gets a specimen |
+
+**Every must-have (L1) feature ID and every CMP ID maps to at least one manifest row (0.6).** Nothing
+the document builds now is moved to "future scope" by this skill. Where the document itself marks a
+feature future scope, it stays dormant.
+
+**Go beyond the document, inside its fences.** The scoping document is the floor, not the ceiling.
+After the read, ask: what would make each persona's main journey faster, clearer or more convincing
+in a demo? Add those as **proposals** — a view, a variant, a state, an interaction — drawn and labelled
+`Proposed` on the page, each with the persona and journey it serves. A proposal never contradicts the
+out-of-scope list, never adds a live integration, and never replaces what the document specifies.
+
+**Correct the document where it would hurt the app.** Scoping documents are written fast and
+sometimes ask for something that breaks a doctrine here — an agent as a full-width card on a page, a
+status shown by colour alone, a drag with no keyboard path, a chart that colours a delta by its sign.
+Follow the doctrine, draw it correctly, and record the correction in the port note with the line it
+replaces. The document's intent wins; its wording does not.
+
 **Where each fact comes from, in order:**
 
 1. **The BRD.** What it states is used as stated. Research never overrides a requirement.
-2. **The `research` skill**, for every UNKNOWN and for the five questions every run asks (see the
+2. **The `research` skill**, for every UNKNOWN and for the seven questions every run asks (see the
    research plan).
 3. **Your own web search and fetch**, when `research` fails or falls short, held to the same depth
    minimums and source standards.
 4. **A derived decision**, only after 1 to 3 are exhausted, recorded with what was tried.
 
-The one exception to "the BRD wins": where the BRD's brand inputs conflict with the client's live brand
-(an old hex, a retired logo), use the live brand, say so in the port note, and name the BRD line it
-replaces.
+Brand inputs follow their own order — the brand source order in Step 1 — because a brand can be
+current in two places at once (a deck and a website) without either being out of date. Where the BRD's
+brand input is **demonstrably retired** (a rebrand dated after it, a logo the client no longer uses),
+use the current brand, say so in the port note, and name the BRD line it replaces.
 
 **The out-of-scope line is load-bearing.** It is how the build stays inside the requirement. A BRD for
 an approval queue does not get a map, a chart wall or a chat just because the system can produce them.
@@ -347,7 +433,7 @@ system must style, even when no screen in the BRD shows it:
 when the brief selects it. Holding thirty view-types does not bloat a build; selecting four does not
 starve it.
 
-## 0.4 · Persona → density
+## 0.4 · Persona → density, device and shell
 
 Set the information density from the primary persona, then let the use-case dial and the density tokens
 (REFERENCE) carry it:
@@ -355,6 +441,17 @@ Set the information density from the primary persona, then let the use-case dial
 - **Analyst / power user** → compact, keyboard-first, more on screen, fewer labels.
 - **Occasional / external user** → spacious, guided, more labels and help.
 - **Executive** → summary-first, few actions, headline numbers over raw rows.
+- **Field / mobile user** → one column, thumb-reach actions at the bottom, large targets, glanceable
+  status, camera and upload first, works in bright light.
+
+**Then do it for every persona, not only the primary one.** Each persona gets a row in the build brief:
+density, device and width (phone 375 px, tablet 768 px, laptop 1,280 px, wide 1,440 px), default theme,
+and **its own shell** — which navigation it sees, what its first screen is, and how it reaches each
+screen it uses. A persona who works on a phone or tablet gets real layouts at that width, with their
+own navigation (bottom tabs on a phone, a collapsed rail on a tablet), not a desktop screen shrunk.
+An external persona (customer, partner) gets its own lighter shell. **A persona whose screens are not
+reachable from any drawn shell has not been designed.** On the style guide, draw phone and tablet
+layouts as device specimens (`<template class="device">`, Step 0's kit), never as a narrowed `<div>`.
 
 ## 0.5 · Record the build brief on the page
 
@@ -369,6 +466,10 @@ limit.
 Before Step 1, turn the build brief into a **numbered manifest**: one row per surface, view, screen,
 overlay and component the brief names, including every screen the BRD lists (sign-in, forgot password,
 update password, file viewer, hover cards, confirmation modals) and every agent output from 0.3.
+**Write it last in Phase 0**, so it also carries: one row per journey flow (0.7), per signature
+component (0.8), per agent drawer (0.9), per persona shell and device layout (0.4), and per proposal.
+Every L1 feature ID and CMP ID from the scoping document appears in the BRD-reference column of at
+least one row.
 
 | # | Item | BRD reference | Section on the page | Specimen |
 | --- | --- | --- | --- | --- |
@@ -376,11 +477,109 @@ update password, file viewer, hover cards, confirmation modals) and every agent 
 
 **Ship the manifest on the page**, in the build brief section, with each row linking to its specimen.
 
-**A specimen is the item drawn**: rendered with the client's content, in its real states. These are
-not specimens: a row in the containers table, a line in the build brief, a "same layout as" note, a
+**A specimen is the item drawn**: rendered with the client's content, in its real states, **inside the
+app shell it lives in** (the rail or top bar, the header, the real page width), so the reviewer and
+the builder see the screen, not a fragment floating on the guide. **Screens are drawn in a device
+(`<template class="device">`) at their real width and scaled to fit** — never a full shell squeezed
+into a narrow box. Journey storyboards (0.7) put at most two scaled desktop frames per row. Atoms (a button, a tag) may be shown
+loose in the component section; screens, views, flows and drawers may not. These are not specimens: a row in the containers table, a line in the build brief, a "same layout as" note, a
 nav item that names the screen, a token, or a sentence describing it. If the brief names it, the page
 draws it. If something should not be drawn, it moves to the out-of-scope list with a reason, and the
 brief stops claiming it.
+
+## 0.7 · Journeys → drawn flows
+
+**The journeys are where the scoping document already describes the design.** A journey table that
+says *"clicks Move stage → refused: 'No approved Fit or SMS sample'"*, *"reject without a reason is
+refused"* or *"tile 24 → 23"* is an interaction specification. Earlier runs drew the screens and never
+the journey, so every refusal, hand-off and counter change was left for the builder to invent.
+
+**Every journey in the document becomes a flow on the page** — a storyboard, left to right, one frame
+per step:
+
+```
+FRAME      the screen as it looks at this step, in the shell, with the hero record's real data
+ACTION     what the persona does (click, drag, type, approve, ask the agent) — marked on the frame
+RESPONSE   what the system shows next: the new state, the toast, the moved card, the changed count
+EXCEPTION  the refusal or error path the document names, drawn as its own frame with the exact wording
+FEEDBACK   the interaction detail: what animates (120–160 ms), what gains focus, what announces to a
+           screen reader, what undo is offered, what the keyboard path is
+DATA       the record and the field that changed (from the journey's data column)
+```
+
+**Rules:**
+
+- **Every step gets a frame; every exception gets its own frame.** A refused action is drawn refused,
+  with the message the document gives, not described.
+- **Consecutive steps on one screen share a frame** with the change shown as before → after.
+- **Cross-persona hand-offs are drawn as hand-offs**: the end of one persona's flow and the start of
+  the next (the brand manager approves; the rep sees it).
+- **Where the document gives the step but not the screen state, derive it** from the page
+  specification (§11), the rules (§14) and the data model (§12), and mark it `[DERIVED]`.
+- **Where the document gives no journey for a persona, write one** from that persona's jobs and the
+  page specifications, at least the persona's first session, and mark it `Proposed`.
+- **The demo storyline (§20) is drawn as one end-to-end flow** across personas, in its order. It is
+  the first flow on the page.
+
+**Add the interactions the journeys imply even when they do not name them**: hover and focus on
+everything clickable in the frame, the loading state between action and response, the empty state the
+first time a persona arrives, and the undo after a reversible action. These come from REFERENCE and
+research question 7, applied to this journey.
+
+## 0.8 · Signature components — depth where it matters
+
+**Every domain has two or three components that carry the product.** Shelf compliance has the shelf
+photo with evidence boxes. Product creation has the colour-checked image studio and the stage gate.
+Recruitment has the ranked shortlist with explained scores. Delivery has the risk grid and the change
+approval chain. Generic parts — tiles, tables, tabs — are carried by the kit; signature components are
+where the client sees that we understood their work.
+
+**Choose them** from the scoping document's custom-component list (§21), the component inventory
+(§23), the WOW factor in the executive summary and the demo storyline. Name each in the build brief
+with the reason.
+
+**Specify each one in depth, on the page:**
+
+1. **Anatomy** — every part named, with the token it uses and its measured contrast.
+2. **Every state** of the universal state rule, plus its domain states (for a shelf photo: analysing,
+   scored, retake needed, low confidence, override pending).
+3. **Data variants** — empty, one item, typical, many (the document's real volumes), overflow, very
+   long text, missing image, the worst real record in the seed data.
+4. **Interactions** — what each click, hover, drag and key does, with the keyboard path and the
+   non-drag alternative; what is selected, what is linked (tap a finding ↔ highlight its box).
+5. **Responsive** — how it reflows at each persona's device width (0.4).
+6. **Motion** — what moves, why, how long; nothing decorative.
+7. **AI behaviour** — where the AI marker sits, how confidence shows, how a person accepts, edits or
+   rejects, what an AI failure looks like.
+8. **Variants** — at least two layouts for different contexts (a full view and a compact card; a
+   desktop panel and a phone sheet), so the builder has the right one for each page.
+
+Draw each signature component large, with real seed data, in its states and variants. **A signature
+component drawn once, at one size, in its happy state, is a generic component with a new name.**
+
+**Signature components may introduce new composition** — a new layout of existing atoms, a new
+overlay on an image, a new arrangement of a grid — but never a new colour value outside the transform,
+a new radius, a third elevation or a new type size. That is where the expression of depth lives.
+
+## 0.9 · Agents → the agent drawer
+
+**Every agent the document names gets the agent drawer** (REFERENCE, "The agent component"), drawn
+open over the real screen it is called from, with that agent's name, scope, suggested prompts from
+the document, a real question from a journey, its working stages and its answer rendered with that
+agent's own output types (0.3) — chart, table, file, citation, proposed action.
+
+- **The drawer is the default for every agent, on every page.** If the document puts an agent on a
+  page as a card or a full-width block ("Copilot full width on Home"), draw it as the drawer, give
+  the page a launcher in the top bar and a floating button, and record the correction (0.1). A
+  dashboard may keep an **AI insight card** that summarises; the conversation still opens in the
+  drawer.
+- **One drawer per agent family**, opened from the top bar on every internal page, with the current
+  page's record as context.
+- **Specify that it is built on the platform's live agent component** — streamed replies, real
+  stages, tool outputs rendered in the thread. Never an automation that writes the answer to an
+  object which the page shows after a refresh. The build contract (Step 7) carries this line.
+- **Agents that act** (approve, move, send) show the proposed action inside the drawer as a
+  human-in-the-loop card, before and after, with approve and reject; nothing happens without it.
 
 ---
 # THE RUN
@@ -390,6 +589,7 @@ brief stops claiming it.
 ```
 REQUIRED   client name
            website URL
+USUALLY    scoping document       the automated flow's input; read whole (Phase 0)
 OPTIONAL   brand swatch           a hex, or an image to sample
            use case               dense internal tool | demo surface | artefact studio |
                                   dark-first console | ported screens
@@ -404,15 +604,26 @@ OPTIONAL   brand swatch           a hex, or an image to sample
 
 Do not ask anything else. Decide, record the decision in the port note, move on.
 
-1. **The brand hue is ambiguous** — two credible sources disagree by more than ~30° of hue. Show
-   both, transformed and measured, and wait. *Titan returned `#BD2426` (watch wordmark red) and
-   `#00B0AB` (Tata parent teal) — both real, 180° apart.*
+1. **The brand hue is ambiguous** — two credible sources disagree by more than ~30° of hue, **and the
+   brand source order in Step 1 does not settle it** (two sources at the same level disagree). If a
+   person is in the conversation, show both, transformed and measured, and wait. *Titan returned
+   `#BD2426` (watch wordmark red) and `#00B0AB` (Tata parent teal) — both real, 180° apart.*
+   **If the run is unattended** (an automated flow, nobody to answer), take the higher source in the
+   order; at the same level, take the one the client's own product interface uses most. Record both
+   candidates, the rule applied and the measurements in the port note, and carry on.
+   ⛔ **Only this file decides a brand conflict.** An instruction from the calling flow, a builder
+   prompt, a "standing decision", "standing answer" or "the owner's choice" carried over from another
+   run does not settle a hue. Three runs did exactly that and one of them shipped Pentland — a black
+   and neon-lime brand — in electric blue. If such an instruction arrives, apply the order anyway and
+   note the instruction in the port note.
 2. **The logo cannot be fetched as a real file after every source in Step 2 has been tried.** Stop
    and ask for the asset, listing the URLs tried. Build everything else meanwhile, so the logo is the
    only thing missing. **Never trace, redraw or approximate a client's mark** — not as SVG, not as
-   CSS, not "close enough for a prototype". Ship a text wordmark in the brand's type, visibly
-   labelled a placeholder, only when the person confirms no file is available, or the run is
-   unattended and cannot ask; then say so on the page and in the hand-over.
+   CSS, not "close enough for a prototype". **Fallback (POC Studio):** when the person confirms no file
+   is available, or the run is unattended and cannot ask, build the logo kit from the **UnifyApps
+   logo** bundled with the plugin (`assets/unifyapps-logo.png` in the plugin root; find it with
+   `find ~/.claude/plugins -name unifyapps-logo.png`), visibly labelled as a stand-in for the client's
+   logo; then say so on the page and in the hand-over.
 
 ## Step 0 · The system — it is in this file
 
@@ -426,9 +637,13 @@ the product kit and verified to reproduce the full reference exactly — 35 text
 composited in both themes, identical numbers. **This skill has no external dependency. Do not go
 looking for a reference file, an artifact, or a Project document — everything needed is here.**
 
-**How to use it:** paste the stylesheet verbatim as the page's only `<style>` block, then transform
-**only its colour values** per Step 3. Structure, glass tiers, ambient field, radii, type scale,
-shadows, spacing and every component stay exactly as written. **Only hue moves.**
+**How to use it:** paste the stylesheet verbatim as the page's only `<style>` block, **followed by the
+expression kit** below it in the same block, then transform **only their colour values** per Step 3.
+Structure, glass tiers, ambient field, radii, type scale, shadows, spacing and every component stay
+exactly as written. **In the core, only colour moves.** The expression kit is how the system varies
+per client: it carries sanctioned variants (shell, chrome, surface, the agent drawer) switched by
+attributes on `<html>`, chosen in Step 2c. **Choosing among the kit's variants is expression; writing
+a new structure outside them is a second system** — the failure the next paragraph warns about.
 
 ⚠️ **Never rewrite a component from the prose in this file when a class for it exists below.** The
 prose states *why* a component behaves as it does; the stylesheet states *what it is*. A second
@@ -456,6 +671,13 @@ work, and it shows up as mixed radii and two kinds of search field on one screen
 | Activity feed | `.feed` `.fi` `.fd` |
 | Chart frame · sparkline · delta · legend | `.chart` `.spark` `.delta` `.legend` |
 | Toast · menu · breadcrumb · note | `.toast` `.menu` `.crumb` `.note` |
+| **App shell** (kit) | `.app` (+`.with-agent`, `[data-shell="top"]`) `.app-rail` `.brand` `.nav-i` (+`[aria-current="page"]`) `.prof` `.app-main` `.app-top` (+`.scrolled`) `.app-body` `.app-tabs` |
+| **Agent drawer** (kit) | `.agent-launch` `.agent-drawer` (+`[data-open]`, `.wide`, `.docked`) `.ad-hd` `.ad-name` `.ad-tools` `.ad-ctx` `.ad-thread` `.ad-dock` `.ad-composer` `.ad-out` `.ad-action` `.ad-diff` |
+| **Expression switches** (kit, on `<html>`) | `data-chrome="brand / ink / light"` · `data-surface="glass / solid / paper"` · `data-density="compact / comfortable"` · `data-style-set="S1/S2/S3"` · `data-theme` · `--font-display` · `--signal` · `--paper` |
+| **Overlays** (kit) | `.scrim` · `.modal` (+`.s`, `.l`) · `.drawer` (+`.s`, `.l`) · `.ov-hd` `.ov-t` `.ov-sub` `.ov-x` · `.ov-bd` · `.ov-ft` (+`.lead`) |
+| **Spacing and density** (kit) | `--s-1…--s-12` · `--page-pad` `--section-gap` `--card-pad` · `--row-h` `--cell-px` `--cell-py` · `--ov-s/m/l` `--ov-pad` · `--content-max` |
+| **Dense data** (kit) | `.cl` `.cl2` (`--col-w`) · `.cell-chips` `.more` · `.tblwrap.freeze` · `.row-x` `.xp` · `.dl` · `.cv` `.cv-tag` |
+| **Specimens** (kit) | `<template class="device" data-device="desktop / wide / tablet / phone">` → `.device-wrap` · `.devices` · `.frame` (components only) |
 
 **Not in the kit, by choice** — the artefact studio, command palette, notification tray, diff view,
 bulk bar, slider and file drop. They are rare enough that carrying them costs every run. **Build them
@@ -468,12 +690,112 @@ invisible in light, obvious in dark. The kit is already scoped; keep it that way
 
 ### The stylesheet
 
-**Paste verbatim. 54 distinct hexes and 25 `rgb()` triples — inventory them, transform them, diff the
-count afterwards.**
+**Paste verbatim. Measured in v5: the core carries 47 distinct hexes, 26 `rgb()`/`rgba()` triples and 9
+bare `--aur` triple declarations; the expression kit adds 11 hexes and 7 triples. Inventory them,
+transform them, diff the count afterwards.** (Earlier versions printed "54 hexes and 25 triples"; the
+trimmed sheet never matched it, and three runs had to re-count. These are the measured numbers.)
 
 ```css
-:root{--sp-deep:#0033A1;--sp-blue:#0071CE;--sp-cerise:#CC27B0;--sp-pink:#E17FD2;--base:#F1F5FB;--page-top:rgba(0,51,161,.022);--glass-1:rgba(255,255,255,.72);--glass-2:rgba(255,255,255,.82);--glass-3:rgba(255,255,255,.93);--glass-solid:rgba(255,255,255,.965);--inner:rgba(0,51,161,.045);--edge:inset 0 1px 0 rgba(255,255,255,.92);--blur-1:blur(22px) saturate(160%);--blur-2:blur(26px) saturate(170%);--ink:#0B1220;--ink-2:#47566B;--ink-3:#626D84;--ink-mute:#8E9AAE;--hair:rgba(11,18,32,.07);--hair-2:rgba(11,18,32,.12);--st-neutral:#47566B;--st-neutral-t:rgba(71,86,107,.10);--st-attention:#8A5A00;--st-attention-t:rgba(138,90,0,.11);--st-negative:#96302A;--st-negative-t:rgba(150,48,42,.11);--st-positive:#1F6F5B;--st-positive-t:rgba(31,111,91,.11);--c1:#00325C;--c2:#005194;--c3:#0070CC;--c4:#0A90FF;--c5:#47ACFF;--c6:#85C8FF;--r:10px;--r-sm:6px;--r-pill:999px;--lift-1:0 1px 2px rgba(6,22,54,.05),0 12px 32px -18px rgba(6,22,54,.28);--lift-2:0 2px 6px rgba(6,22,54,.07),0 28px 60px -26px rgba(6,22,54,.40);--ease:150ms cubic-bezier(.22,.7,.28,1);--aur-a:0,51,161;--aur-b:0,113,206;--aur-c:204,39,176;--aur-1:.055;--aur-2:.045;--aur-3:.050;--vig:radial-gradient(120% 100% at 50% 40%,transparent 42%,rgba(6,18,46,.10) 100%)} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--base:#192030;--page-top:rgba(120,165,225,.055);--glass-1:rgba(120,165,225,.12);--glass-2:rgba(120,165,225,.17);--glass-3:rgba(120,165,225,.23);--glass-solid:#2F3D57;--inner:rgba(130,175,235,.085);--edge:inset 0 1px 0 rgba(214,232,255,.17);--ink:#D8E0EC;--ink-2:#AAB7CB;--ink-3:#9FADC3;--ink-mute:#78869F;--hair:rgba(206,224,255,.10);--hair-2:rgba(206,224,255,.17);--sp-blue:#6BB3EA;--sp-deep:#3A72DE;--sp-cerise:#E884D6;--sp-pink:#F2BCE9;--st-neutral:#AAB7CB;--st-neutral-t:rgba(170,183,203,.12);--st-attention:#E3B45C;--st-attention-t:rgba(227,180,92,.13);--st-negative:#EC9790;--st-negative-t:rgba(236,151,144,.13);--st-positive:#86CDB4;--st-positive-t:rgba(134,205,180,.13);--c1:#E6F2FF;--c2:#B9DDFF;--c3:#8CC6F8;--c4:#62ADEC;--c5:#3F90D6;--c6:#3576B0;--lift-1:0 1px 2px rgba(2,6,14,.46),0 14px 34px -18px rgba(2,6,14,.68);--lift-2:0 2px 7px rgba(2,6,14,.52),0 32px 66px -26px rgba(2,6,14,.80);--aur-a:76,127,232;--aur-b:107,179,234;--aur-c:232,132,214;--aur-1:.26;--aur-2:.19;--aur-3:.22;--vig:radial-gradient(120% 100% at 55% 42%,transparent 50%,rgba(6,11,22,.30) 100%)} }:root[data-theme="dark"]{--base:#192030;--page-top:rgba(120,165,225,.055);--glass-1:rgba(120,165,225,.12);--glass-2:rgba(120,165,225,.17);--glass-3:rgba(120,165,225,.23);--glass-solid:#2F3D57;--inner:rgba(130,175,235,.085);--edge:inset 0 1px 0 rgba(214,232,255,.17);--ink:#D8E0EC;--ink-2:#AAB7CB;--ink-3:#9FADC3;--ink-mute:#78869F;--hair:rgba(206,224,255,.10);--hair-2:rgba(206,224,255,.17);--sp-blue:#6BB3EA;--sp-deep:#3A72DE;--sp-cerise:#E884D6;--sp-pink:#F2BCE9;--st-neutral:#AAB7CB;--st-neutral-t:rgba(170,183,203,.12);--st-attention:#E3B45C;--st-attention-t:rgba(227,180,92,.13);--st-negative:#EC9790;--st-negative-t:rgba(236,151,144,.13);--st-positive:#86CDB4;--st-positive-t:rgba(134,205,180,.13);--c1:#E6F2FF;--c2:#B9DDFF;--c3:#8CC6F8;--c4:#62ADEC;--c5:#3F90D6;--c6:#3576B0;--lift-1:0 1px 2px rgba(2,6,14,.46),0 14px 34px -18px rgba(2,6,14,.68);--lift-2:0 2px 7px rgba(2,6,14,.52),0 32px 66px -26px rgba(2,6,14,.80);--aur-a:76,127,232;--aur-b:107,179,234;--aur-c:232,132,214;--aur-1:.26;--aur-2:.19;--aur-3:.22;--vig:radial-gradient(120% 100% at 55% 42%,transparent 50%,rgba(6,11,22,.30) 100%)} *{box-sizing:border-box} body{background:var(--base);background-image:linear-gradient(176deg,var(--page-top) 0%,transparent 46%);color:var(--ink);font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;font-variant-numeric:tabular-nums;letter-spacing:-.003em;-webkit-font-smoothing:antialiased;position:relative} .amb{position:fixed;inset:-10%;pointer-events:none;z-index:0} .amb.a{filter:blur(84px);background:radial-gradient(62% 52% at 12% 4%,rgba(var(--aur-a),var(--aur-1)),transparent 72%),radial-gradient(56% 48% at 90% 20%,rgba(var(--aur-b),var(--aur-3)),transparent 72%),radial-gradient(64% 54% at 28% 82%,rgba(var(--aur-a),var(--aur-1)),transparent 74%)} .amb.b{filter:blur(70px);opacity:.9;background:radial-gradient(50% 42% at 78% 64%,rgba(var(--aur-c),var(--aur-2)),transparent 72%),radial-gradient(44% 38% at 6% 44%,rgba(var(--aur-c),var(--aur-2)),transparent 72%)} .amb.v{background:var(--vig)} .display{font-size:34px;line-height:1.12;font-weight:600;letter-spacing:-.028em;margin:0;text-wrap:balance} .title{font-size:19px;line-height:1.3;font-weight:600;letter-spacing:-.014em;margin:0} p,li,td,th{font-size:15px;line-height:1.6;font-weight:400;margin:0} .micro{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;line-height:1.4;font-weight:600;letter-spacing:.09em;text-transform:uppercase} header.mast{padding-block:76px 30px;display:flex;flex-direction:column;gap:16px} header.mast .micro{color:var(--sp-blue)} header.mast p{color:var(--ink-2);max-width:64ch;font-size:17px;line-height:1.6} h3.sub{font-size:15px;font-weight:600;margin:0;letter-spacing:-.008em} .g1,.g2,.g3{border-radius:var(--r);position:relative} .g1{background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .g2{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} .g3{background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-1),var(--edge)} .pad{padding:22px} .pad-s{padding:16px 18px} .inner{background:var(--inner);border-radius:var(--r-sm);padding:14px 16px} .solid{background:var(--glass-solid);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge)} .grid{display:grid;gap:16px} .g2c{grid-template-columns:repeat(auto-fit,minmax(272px,1fr))} .g3c{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))} .g4c{grid-template-columns:repeat(auto-fit,minmax(158px,1fr))} .stack{display:flex;flex-direction:column;gap:12px} .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap} .sw{border-radius:var(--r);overflow:hidden;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .btn{font-family:inherit;font-size:14px;font-weight:600;border:0;border-radius:var(--r-pill);padding:10px 20px;cursor:pointer;letter-spacing:-.006em;transition:transform var(--ease),box-shadow var(--ease),background var(--ease)} .btn-p{background:linear-gradient(180deg,#0071CE 0%,#005DB4 42%,#0035A6 100%);color:#fff;box-shadow:0 1px 1px rgba(6,22,54,.18),0 10px 22px -12px rgba(0,63,168,.70),inset 0 1px 0 rgba(255,255,255,.28)} .btn-p:hover{transform:translateY(-1px);box-shadow:0 1px 1px rgba(6,22,54,.20),0 16px 30px -14px rgba(0,63,168,.80),inset 0 1px 0 rgba(255,255,255,.32)} .btn-s{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink);box-shadow:var(--lift-1),var(--edge)} .btn-t{background:transparent;color:var(--ink-2);padding-inline:12px} .btn-t:hover{background:var(--inner)} .btn:disabled{background:var(--inner);color:var(--ink-mute);box-shadow:none;cursor:not-allowed;transform:none} .btn:focus-visible{outline:2px solid var(--sp-blue);outline-offset:3px} .tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;line-height:1.3;padding:4px 11px;border-radius:var(--r-pill);background:var(--inner);color:var(--ink-2);letter-spacing:.01em} .tag.neutral{background:var(--st-neutral-t);color:var(--st-neutral)} .tag.attention{background:var(--st-attention-t);color:var(--st-attention)} .tag.negative{background:var(--st-negative-t);color:var(--st-negative)} .tag.positive{background:var(--st-positive-t);color:var(--st-positive)} .tag svg{width:12px;height:12px;flex:none} .pips{display:inline-flex;gap:6px;align-items:center} .pip{width:14px;height:14px;border-radius:50%;display:grid;place-items:center} .pip.done{background:linear-gradient(180deg,#2C8A74,#1F6F5B);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)} .pip.draft{background:linear-gradient(180deg,#A87213,#8A5A00);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)} .pip.stale{background:var(--st-attention-t);box-shadow:inset 0 0 0 1.8px var(--st-attention)} .pip.missing{background:transparent;box-shadow:inset 0 0 0 1.5px var(--hair-2)} .pip i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:8px;font-weight:600;color:#fff;line-height:1} .pip.stale i{color:var(--st-attention)} .pip.missing i{color:var(--ink-mute)} .tblwrap{overflow-x:auto;border-radius:var(--r);background:var(--glass-solid);box-shadow:var(--lift-1),var(--edge)} .tbl{width:100%;border-collapse:collapse} .tbl thead th{text-align:left;padding:12px 16px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--hair)} .tbl tbody td{padding:13px 16px;border-top:1px solid var(--hair);vertical-align:middle} .tbl tbody tr:first-child td{border-top:0} .tbl tbody tr{transition:background var(--ease)} .tbl tbody tr:hover{background:var(--inner)} .tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap} .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:14px} .field{flex:1;min-width:190px;display:flex;align-items:center;gap:9px;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r-pill);padding:9px 15px;color:var(--ink-3);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .field input{border:0;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);width:100%;outline:none} .chipsel{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r-pill);padding:9px 14px;font-size:13px;font-weight:500;color:var(--ink-2);display:flex;gap:7px;align-items:center;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .tabs{display:flex;gap:3px;padding:0 5px} .tab{font-family:inherit;font-size:13.5px;font-weight:600;border:0;background:transparent;color:var(--ink-3);padding:11px 16px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;transition:color var(--ease),background var(--ease)} .tab[aria-selected="true"]{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);color:var(--ink);box-shadow:var(--edge)} .tabpanel{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);border-radius:0 var(--r) var(--r) var(--r);box-shadow:var(--lift-1),var(--edge);padding:20px} .ai:not(.msg){border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(135deg,rgba(0,51,161,.075) 0%,rgba(0,113,206,.045) 48%,rgba(204,39,176,.065) 100%),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .ai .hd{display:flex;align-items:center;gap:8px} .ai .hd .micro{color:var(--sp-blue)} .ai p{color:var(--ink)} .ai .ground{font-size:13px;color:var(--ink-3)} .ai .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap} .chev{background:transparent;border:0;color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;padding:0} .tile{border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0)),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .tile .micro{color:var(--ink-3)} .tile .v{font-size:30px;font-weight:600;line-height:1.08;letter-spacing:-.03em} .tile .sub{font-size:13px;color:var(--ink-3);line-height:1.45} .tile.flag{background:linear-gradient(180deg,rgba(138,90,0,.10),rgba(138,90,0,.04)),var(--glass-1)} .tile.flag .v{color:var(--st-attention)} .loop{display:flex;border-radius:var(--r);overflow:hidden;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .loop div{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:4px} .loop div + div{border-left:1px solid var(--hair)} .loop .micro{color:var(--ink-3)} .loop b{font-size:19px;font-weight:600;letter-spacing:-.02em} .loop .on{background:linear-gradient(180deg,rgba(0,113,206,.10),rgba(0,113,206,.03))} .loop .on b{color:var(--sp-blue)} .rail-demo{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-2);display:flex;min-height:230px} .empty{border-radius:var(--r);padding:28px 22px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;background:var(--inner)} .legend{display:flex;gap:16px;flex-wrap:wrap} .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:7px} .legend span{font-size:13px;color:var(--ink-2);display:inline-flex;align-items:center} code.inl{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--inner);padding:2px 6px;border-radius:var(--r-sm);color:var(--ink-2)} .note{border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(180deg,rgba(138,90,0,.09),rgba(138,90,0,.03)),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .note .micro{color:var(--st-attention)} .note p{color:var(--ink)} @media (max-width:640px){.loop{flex-direction:column} .loop div + div{border-left:0;border-top:1px solid var(--hair)} .rail-demo{flex-direction:column} .rail-demo .nav{width:auto} } @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}} .fld{display:flex;flex-direction:column;gap:6px} .fld > label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .ctl{display:flex;align-items:center;gap:9px;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r);padding:11px 14px;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04);transition:box-shadow var(--ease)} .ctl input,.ctl textarea,.ctl select{border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);width:100%;outline:none;letter-spacing:-.003em} .ctl textarea{resize:vertical;min-height:76px;line-height:1.55} .ctl.focus{box-shadow:var(--edge),0 0 0 3px rgba(0,113,206,.18),0 1px 2px rgba(6,22,54,.05)} .ctl.err{box-shadow:var(--edge),0 0 0 3px rgba(150,48,42,.16),0 1px 2px rgba(6,22,54,.05);background:linear-gradient(0deg,var(--st-negative-t),var(--st-negative-t)),var(--glass-2)} .ctl.warn{box-shadow:var(--edge),0 0 0 3px rgba(138,90,0,.15),0 1px 2px rgba(6,22,54,.05);background:linear-gradient(0deg,var(--st-attention-t),var(--st-attention-t)),var(--glass-2)} .ctl.off{background:var(--inner);box-shadow:none} .ctl.off input{color:var(--ink-mute)} .hint{font-size:13px;color:var(--ink-3);line-height:1.45} .hint.e{color:var(--st-negative);display:flex;gap:6px;align-items:flex-start} .hint.w{color:var(--st-attention);display:flex;gap:6px;align-items:flex-start} .hint svg{width:13px;height:13px;flex:none;margin-top:2px} .req{color:var(--st-negative);font-weight:600} .seg{display:inline-flex;gap:2px;padding:3px;border-radius:var(--r-pill);background:var(--inner)} .seg button{font-family:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--ink-3);padding:7px 16px;border-radius:var(--r-pill);cursor:pointer;letter-spacing:-.004em;transition:color var(--ease),background var(--ease)} .seg button[aria-pressed="true"]{background:var(--glass-3);color:var(--ink);box-shadow:var(--edge),0 1px 3px rgba(6,22,54,.10)} .tog{display:inline-flex;align-items:center;gap:11px;cursor:pointer} .tog .track{width:44px;height:26px;border-radius:var(--r-pill);background:var(--inner);position:relative;transition:background var(--ease);box-shadow:inset 0 1px 2px rgba(6,22,54,.08)} .tog .track .knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(6,22,54,.28),inset 0 1px 0 rgba(255,255,255,.9);transition:transform var(--ease)} .tog.on .track{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0056B4)} .tog.on .track .knob{transform:translateX(18px)} .tog span{font-size:14px;color:var(--ink-2)} .opt{display:inline-flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;color:var(--ink-2)} .box,.dot{width:19px;height:19px;flex:none;border-radius:var(--r-sm);background:var(--glass-3);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2);display:grid;place-items:center;margin-top:1px} .dot{border-radius:50%} .opt.on .box,.opt.on .dot{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0056B4);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 3px rgba(0,63,168,.35)} .box svg,.dot svg{width:12px;height:12px;color:#fff;opacity:0} .opt.on .box svg{opacity:1} .opt.on .dot::after{content:"";width:7px;height:7px;border-radius:50%;background:#fff} .sl{display:flex;flex-direction:column;gap:9px} .drop{border-radius:var(--r);padding:26px 20px;background:var(--inner);display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center} .sth{display:flex;align-items:flex-start;gap:0} .sth .nd{flex:1;display:flex;flex-direction:column;gap:8px;position:relative;padding-top:2px} .sth .bar{display:flex;align-items:center;gap:0} .sth .cir{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600} .sth .cir.done{background:linear-gradient(180deg,#2C8A74,#1F6F5B);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)} .sth .cir.now{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 4px rgba(0,113,206,.14)} .sth .cir.todo{background:var(--glass-3);color:var(--ink-mute);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2)} .sth .cir.block{background:var(--st-negative-t);color:var(--st-negative);box-shadow:inset 0 0 0 1.5px var(--st-negative)} .sth .ln{flex:1;height:2px;background:var(--hair-2);border-radius:2px} .sth .ln.done{background:linear-gradient(90deg,#1F6F5B,#2C8A74)} .sth .lbl{font-size:13px;font-weight:600;letter-spacing:-.006em;padding-right:12px} .sth .sub{font-size:12.5px;color:var(--ink-3);padding-right:12px;line-height:1.45} .stv{display:flex;flex-direction:column} .stv .nd{display:grid;grid-template-columns:26px minmax(0,1fr);gap:0 14px;position:relative;padding-bottom:16px} .stv .nd:last-child{padding-bottom:0} .stv .nd::before{content:"";position:absolute;left:12.5px;top:26px;bottom:0;width:2px;background:var(--hair-2)} .stv .nd:last-child::before{display:none} .stv .cir{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;z-index:1} .stv .c{display:flex;flex-direction:column;gap:6px;padding-top:2px;min-width:0} .stv .hdr{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap} .stv .hdr b{font-size:14px;font-weight:600;letter-spacing:-.006em} .stv .hdr .when{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.05em} .stv .ev{font-size:13.5px;color:var(--ink-2);line-height:1.5} .pad ul,.stack ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px} .pad ul li,.stack ul li{position:relative;padding-left:17px;font-size:14px;line-height:1.6;color:var(--ink-2)} .pad ul li::before{content:"";position:absolute;left:1px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--sp-blue);opacity:.5} .stack ul li::before{content:"";position:absolute;left:1px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--sp-blue);opacity:.5} .pad ul li b,.stack ul li b{color:var(--ink);font-weight:600} .prog{height:6px;border-radius:var(--r-pill);background:var(--inner);overflow:hidden;box-shadow:inset 0 1px 2px rgba(6,22,54,.08)} .prog i{display:block;height:100%;border-radius:var(--r-pill);background:linear-gradient(90deg,#0033A1,#0071CE)} .prog.mini{width:130px;height:4px;flex:none} .stages{display:flex;flex-direction:column;gap:9px} .stages div{display:flex;gap:10px;align-items:center;font-size:13.5px} .stages .tick{width:16px;height:16px;border-radius:50%;flex:none;display:grid;place-items:center} .stages .tick.ok{background:var(--st-positive-t);color:var(--st-positive)} .stages .tick.run{background:var(--inner);box-shadow:inset 0 0 0 1.5px var(--sp-blue)} .stages .tick.wait{background:var(--inner);box-shadow:inset 0 0 0 1.5px var(--hair-2)} .stages .ok + span{color:var(--ink-2)} .stages .run + span{color:var(--ink);font-weight:600} .stages .wait + span{color:var(--ink-mute)} .scene{position:relative;border-radius:var(--r);overflow:hidden;background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge);min-height:340px} .three{display:grid;grid-template-columns:132px minmax(0,1fr) 250px;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair);box-shadow:var(--lift-1),var(--edge);min-height:270px} .toast{display:inline-flex;align-items:center;gap:13px;padding:13px 16px;border-radius:var(--r);background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} .toast .ic{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--st-positive-t);color:var(--st-positive)} .toast b{font-size:14px;font-weight:600;letter-spacing:-.006em} .toast small{display:block;font-size:12.5px;color:var(--ink-3)} .toast .undo{font-family:inherit;font-size:13px;font-weight:600;color:var(--sp-blue);background:transparent;border:0;cursor:pointer;padding:0 2px} .menu{width:236px;border-radius:var(--r);padding:6px;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge);display:flex;flex-direction:column;gap:1px} .menu a{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 12px;border-radius:var(--r-sm);font-size:14px;color:var(--ink-2);text-decoration:none} .menu a:hover{background:var(--inner);color:var(--ink)} .menu a kbd{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)} .menu hr{height:1px;background:var(--hair);border:0;margin:5px 0} .menu a.danger{color:var(--st-negative)} .crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);flex-wrap:wrap} .crumb a{color:var(--ink-2);text-decoration:none} .crumb a:hover{color:var(--ink)} .crumb b{color:var(--ink);font-weight:600} .av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11.5px;font-weight:600;color:#fff;background:linear-gradient(150deg,#0058B8,#0033A1);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 1px 3px rgba(6,22,54,.20)} .av.c2{background:linear-gradient(150deg,#B93CA5,#8C1E79)} .canvas{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-2),var(--edge);background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);min-height:420px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;padding:36px 24px;text-align:center;position:relative} .canvas .glowwrap{width:100%;max-width:520px;padding:26px} .canvas .composer{position:relative;display:flex;align-items:center;gap:11px;padding:15px 18px;border-radius:var(--r);background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--edge),0 2px 6px rgba(6,22,54,.07),0 0 34px -6px rgba(0,113,206,.38),0 0 60px -10px rgba(204,39,176,.26)} .canvas .composer input{border:0;background:transparent;font-family:inherit;font-size:16px;color:var(--ink);width:100%;outline:none;letter-spacing:-.006em} .canvas .composer input::placeholder{color:var(--ink-3)} .canvas h3{font-family:inherit;font-size:26px;font-weight:600;letter-spacing:-.024em;margin:0;line-height:1.2} .canvas .sublede{font-size:14.5px;color:var(--ink-3);max-width:46ch;margin:0} .chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center} .chips button{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-2);background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border:0;border-radius:var(--r-pill);padding:8px 15px;cursor:pointer;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .chips button:hover{color:var(--ink)} .proactive{width:100%;max-width:560px;display:flex;flex-direction:column;gap:10px;text-align:left} .convo{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-1),var(--edge);background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);display:flex;flex-direction:column;min-height:420px} .convo .thread{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px} .convo .dock{padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:inset 0 1px 0 var(--hair)} .convo .dock .composer{display:flex;align-items:center;gap:11px;padding:12px 15px;border-radius:var(--r);background:var(--glass-3);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .convo .dock .composer input{border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);width:100%;outline:none} .msg{max-width:78%;display:flex;flex-direction:column;gap:5px} .msg.me{align-self:flex-end;align-items:flex-end} .msg.ai{align-self:flex-start} .msg .who{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .msg .bub{padding:12px 15px;border-radius:var(--r);font-size:14.5px;line-height:1.55} .msg.me .bub{background:linear-gradient(180deg,#0071CE,#005DB4 62%,#0059B6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 6px 16px -10px rgba(0,63,168,.6)} .msg.ai .bub{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .raildrw{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair);box-shadow:var(--lift-1),var(--edge);min-height:310px} @media (max-width:760px){.three{grid-template-columns:minmax(0,1fr)} .raildrw{grid-template-columns:minmax(0,1fr)} .sth{flex-direction:column;gap:14px} .sth .ln{display:none} } .scene{min-height:380px} .scope{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:5px 10px 5px 8px;border-radius:var(--r-pill);background:rgba(0,113,206,.10);color:var(--sp-blue);font-size:12px;font-weight:600} .cmdk{width:min(520px,100%);border-radius:var(--r);overflow:hidden;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} @media (max-width:860px){.diff > div{grid-template-columns:minmax(0,1fr)} }:root{--r-shell:28px;--r-canvas:22px;--r-sheet:16px;--r-tile:12px} @media (max-width:900px){.bleed{margin-inline:0}} .studio2{position:relative;border-radius:var(--r-shell);display:grid;grid-template-columns:318px minmax(0,1fr);min-height:600px;overflow:hidden;background:linear-gradient(112deg,rgba(255,255,255,.74) 0%,rgba(255,255,255,.52) 26%,rgba(255,255,255,.28) 52%,rgba(255,255,255,.14) 100%),radial-gradient(60% 80% at 4% 0%,rgba(0,51,161,.10),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(204,39,176,.09),transparent 72%);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(255,255,255,.95)}:root[data-theme="dark"] .studio2,:root:not([data-theme="light"]) .studio2{} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .studio2{background:linear-gradient(112deg,rgba(120,165,225,.24) 0%,rgba(120,165,225,.17) 30%,rgba(120,165,225,.11) 60%,rgba(120,165,225,.07) 100%),radial-gradient(60% 80% at 4% 0%,rgba(76,127,232,.20),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(232,132,214,.14),transparent 72%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.18)} }:root[data-theme="dark"] .studio2{background:linear-gradient(112deg,rgba(120,165,225,.24) 0%,rgba(120,165,225,.17) 30%,rgba(120,165,225,.11) 60%,rgba(120,165,225,.07) 100%),radial-gradient(60% 80% at 4% 0%,rgba(76,127,232,.20),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(232,132,214,.14),transparent 72%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.18)} .chat2{display:flex;flex-direction:column;padding:22px 6px 18px 22px;min-width:0;position:relative} .t-ai{display:flex;flex-direction:column;gap:5px} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chat2 .cmp{background:rgba(120,165,225,.17);box-shadow:inset 0 1px 0 rgba(214,232,255,.18),0 2px 9px -5px rgba(2,6,14,.52)}}:root[data-theme="dark"] .chat2 .cmp{background:rgba(120,165,225,.17);box-shadow:inset 0 1px 0 rgba(214,232,255,.18),0 2px 9px -5px rgba(2,6,14,.52)} .seam{position:absolute;top:0;bottom:0;right:-1px;width:56px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.22))} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seam{background:linear-gradient(90deg,rgba(120,165,225,0),rgba(120,165,225,.11))}}:root[data-theme="dark"] .seam{background:linear-gradient(90deg,rgba(120,165,225,0),rgba(120,165,225,.11))} .canv{margin:14px 14px 14px 0;border-radius:var(--r-canvas);display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--glass-solid);box-shadow:var(--lift-2),inset 0 1px 0 rgba(255,255,255,.95)} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canv{box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.18)}}:root[data-theme="dark"] .canv{box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.18)} .canv .bar2{padding:13px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:inset 0 -1px 0 var(--hair)} .canv .bar2 .ttl2{font-size:14px;font-weight:600;letter-spacing:-.008em;margin-right:auto} .canv .gen2{display:flex;align-items:center;gap:11px;padding:10px 18px;box-shadow:inset 0 -1px 0 var(--hair);background:linear-gradient(90deg,rgba(0,51,161,.07),rgba(0,113,206,.04) 55%,rgba(204,39,176,.05))} .canv .gen2 span{font-size:12.5px;color:var(--ink-2)} .canv .gen2 .dot3{width:7px;height:7px;border-radius:50%;background:var(--sp-blue);flex:none} .canv .body3{flex:1;display:grid;grid-template-columns:66px minmax(0,1fr) 50px;min-height:0} .thumbs2{padding:16px 9px;display:flex;flex-direction:column;gap:9px;align-items:center;box-shadow:inset -1px 0 0 var(--hair)} .thumbs2 .th2{width:46px;height:32px;border-radius:8px;background:var(--inner);display:grid;place-items:center;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;color:var(--ink-3)} .thumbs2 .th2.on{background:rgba(0,113,206,.12);box-shadow:0 0 0 2px var(--sp-blue);color:var(--sp-blue)} .vrail2{padding:16px 7px;display:flex;flex-direction:column;align-items:center;box-shadow:inset 1px 0 0 var(--hair)} .vrail2 .v2{width:30px;padding:7px 0;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;color:var(--ink-3);border-radius:8px;cursor:pointer} .vrail2 .v2.on{background:rgba(0,113,206,.12);color:var(--sp-blue)} .vrail2 .tk{width:1px;height:13px;background:var(--hair-2)} .paper2{padding:26px 22px;display:flex;justify-content:center;align-items:flex-start;min-width:0;overflow:hidden} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sheet2{background:linear-gradient(170deg,rgba(76,127,232,.14),rgba(0,0,0,0) 44%),var(--glass-solid);box-shadow:0 1px 2px rgba(2,6,14,.34),0 20px 48px -24px rgba(2,6,14,.62),inset 0 1px 0 rgba(214,232,255,.16)}}:root[data-theme="dark"] .sheet2{background:linear-gradient(170deg,rgba(76,127,232,.14),rgba(0,0,0,0) 44%),var(--glass-solid);box-shadow:0 1px 2px rgba(2,6,14,.34),0 20px 48px -24px rgba(2,6,14,.62),inset 0 1px 0 rgba(214,232,255,.16)} .kpi2.upd{box-shadow:0 0 0 2px rgba(0,113,206,.30);background:rgba(0,113,206,.07);position:relative} .kpi2.upd::after{content:"updated";position:absolute;top:-8px;right:9px;font-family:"IBM Plex Mono",monospace;font-size:8.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#fff;background:var(--sp-blue);padding:2px 6px;border-radius:5px} .assump{border-radius:var(--r-tile);padding:13px 15px;background:var(--inner);font-size:12px;color:var(--ink-3);line-height:1.55} .rscale{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px} .rscale div{background:var(--inner);padding:14px;display:flex;flex-direction:column;gap:5px} .rscale .s1{border-radius:28px} .rscale .s2{border-radius:22px} .rscale .s3{border-radius:16px} .rscale .s4{border-radius:12px} .rscale .s5{border-radius:10px} .rscale b{font-size:13.5px;font-weight:600} .rscale code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--sp-blue)} .rscale span{font-size:12px;color:var(--ink-3);line-height:1.45} @media (max-width:860px){.studio2{grid-template-columns:minmax(0,1fr);min-height:0;border-radius:var(--r-canvas)} .chat2{padding:18px} .seam{display:none} .canv{margin:0 14px 14px} .canv .body3{grid-template-columns:minmax(0,1fr)} .thumbs2{flex-direction:row;box-shadow:inset 0 -1px 0 var(--hair);overflow-x:auto} .vrail2{flex-direction:row;box-shadow:inset 0 1px 0 var(--hair);overflow-x:auto} .paper2{padding:16px 12px} .sheet2{padding:20px} } @media (max-width:620px){.sheet2 .kpis2{grid-template-columns:minmax(0,1fr)} .kpi2.upd::after{right:auto;left:12px} } @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .convo,:root:not([data-theme="light"]) .scene,:root:not([data-theme="light"]) .canvas,:root:not([data-theme="light"]) .tabpanel,:root:not([data-theme="light"]) .kb .kc{background:var(--glass-solid);backdrop-filter:none;-webkit-backdrop-filter:none} }:root[data-theme="dark"] .convo,:root[data-theme="dark"] .scene,:root[data-theme="dark"] .canvas,:root[data-theme="dark"] .tabpanel,:root[data-theme="dark"] .kb .kc{background:var(--glass-solid);backdrop-filter:none;-webkit-backdrop-filter:none} .themesw{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .kb{display:grid;grid-template-columns:repeat(auto-fit,minmax(218px,1fr));gap:12px} .kb .col{background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge);padding:12px;display:flex;flex-direction:column;gap:9px} .kb .ch{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 2px} .kb .ch .micro{color:var(--ink-3)} .kb .ct{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--ink-3);background:var(--inner);border-radius:var(--r-sm);padding:2px 7px;font-variant-numeric:tabular-nums} .kb .kc{background:var(--glass-3);border-radius:var(--r-sm);padding:11px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .kb .kc b{font-size:13.5px;font-weight:600;letter-spacing:-.006em;line-height:1.4} .kb .kc .kid{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);letter-spacing:.06em} .kb .kc .kf{display:flex;align-items:center;justify-content:space-between;gap:8px} .kb .dz{border-radius:var(--r-sm);min-height:54px;background:var(--inner);outline:1.5px dashed var(--hair-2);outline-offset:-2px;display:grid;place-items:center;font-size:12.5px;color:var(--ink-3)} .kb .col.wip .ct{background:var(--st-attention-t);color:var(--st-attention)} .cal{background:var(--glass-solid);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge);padding:16px;display:flex;flex-direction:column;gap:12px} .cal .chd{display:flex;align-items:center;justify-content:space-between;gap:10px} .cal .chd b{font-size:14px;font-weight:600} .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px} .cal .dow{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);text-align:center;padding:4px 0} .cal .d{aspect-ratio:1;border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--ease)} .cal .d:hover{background:var(--inner)} .cal .d.out{color:var(--ink-mute);cursor:default} .cal .d.out:hover{background:transparent} .cal .d.today{box-shadow:inset 0 0 0 1.5px var(--sp-blue);color:var(--ink);font-weight:600} .cal .d.sel{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.26)} .cal .d.sel .evd{background:#fff} .cal .evd{width:4px;height:4px;border-radius:50%;background:var(--sp-blue)} .cal .d.busy .evd{background:var(--st-attention)} .agenda{display:flex;flex-direction:column;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair)} .agenda .ar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--glass-solid);padding:12px 14px} .agenda .at{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);letter-spacing:.05em;font-variant-numeric:tabular-nums} .agenda .an{display:flex;flex-direction:column;gap:2px;min-width:0} .agenda .an b{font-size:13.5px;font-weight:600;letter-spacing:-.006em} .agenda .an span{font-size:12.5px;color:var(--ink-3)} .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px} .slot{font-family:inherit;font-size:13px;font-weight:500;border:0;border-radius:var(--r-pill);padding:9px 12px;cursor:pointer;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink-2);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04);font-variant-numeric:tabular-nums} .slot[aria-pressed="true"]{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.26)} .slot:disabled{background:var(--inner);color:var(--ink-mute);box-shadow:none;cursor:not-allowed;text-decoration:line-through} .pc{display:flex;gap:13px;align-items:flex-start;padding:15px 16px;border-radius:var(--r);background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .pc .av{width:40px;height:40px;font-size:13.5px} .pc .pb{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1} .pc .pn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .pc .pn b{font-size:14.5px;font-weight:600;letter-spacing:-.008em} .pc .pn span{font-size:12.5px;color:var(--ink-3)} .pc .pm{display:flex;flex-direction:column;gap:3px} .pc .pm div{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-2)} .pc .pm .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);min-width:56px} .pc .pa{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px} .faces{display:inline-flex;align-items:center} .faces .av{width:26px;height:26px;font-size:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 0 0 2px var(--glass-solid)} .faces .av + .av{margin-left:-6px} .faces .more{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;margin-left:-6px;background:var(--inner);color:var(--ink-2);font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;box-shadow:0 0 0 2px var(--glass-solid)} .feed{display:flex;flex-direction:column} .feed .fi{display:grid;grid-template-columns:22px minmax(0,1fr);gap:0 13px;position:relative;padding-bottom:15px} .feed .fi:last-child{padding-bottom:0} .feed .fi::before{content:"";position:absolute;left:10.5px;top:22px;bottom:0;width:2px;background:var(--hair-2)} .feed .fi:last-child::before{display:none} .feed .fd{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;z-index:1;background:var(--glass-3);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2);color:var(--ink-3)} .feed .fd svg{width:11px;height:11px} .feed .fd.pos{background:var(--st-positive-t);color:var(--st-positive);box-shadow:none} .feed .fd.att{background:var(--st-attention-t);color:var(--st-attention);box-shadow:none} .feed .fd.neg{background:var(--st-negative-t);color:var(--st-negative);box-shadow:none} .feed .fb{display:flex;flex-direction:column;gap:4px;padding-top:1px;min-width:0} .feed .fh{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap} .feed .fh b{font-size:13.5px;font-weight:600;letter-spacing:-.006em} .feed .fh span{font-size:13.5px;color:var(--ink-2)} .feed .fw{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);letter-spacing:.05em;margin-left:auto} .feed .fp{font-size:12.5px;color:var(--ink-3);line-height:1.5} .pg{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:13px} .pg .rng{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-variant-numeric:tabular-nums} .pg .pgs{display:flex;gap:4px;align-items:center} .pgb{font-family:inherit;font-size:13px;font-weight:600;border:0;cursor:pointer;min-width:30px;height:30px;border-radius:var(--r-sm);background:transparent;color:var(--ink-2);font-variant-numeric:tabular-nums;transition:background var(--ease),color var(--ease)} .pgb:hover:not(:disabled){background:var(--inner);color:var(--ink)} .pgb[aria-current="page"]{background:var(--glass-3);color:var(--ink);box-shadow:var(--edge),0 1px 3px rgba(6,22,54,.10)} .pgb:disabled{color:var(--ink-mute);cursor:not-allowed} .pg .gap{color:var(--ink-mute);padding:0 2px;font-size:13px} .chart{border-radius:var(--r);padding:18px 20px 16px;display:flex;flex-direction:column;gap:14px;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .chart .chh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap} .chart .cht{display:flex;flex-direction:column;gap:3px} .chart .cht b{font-size:14px;font-weight:600;letter-spacing:-.008em} .chart .cht .unit{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .chart .plot{position:relative} .chart svg{display:block;width:100%;height:auto;overflow:visible} .chart .ax{font-family:"IBM Plex Mono",monospace;font-size:9.5px;fill:var(--ink-3);letter-spacing:.04em} .chart .gl{stroke:var(--hair);stroke-width:1} .chart .nodata{border-radius:var(--r-sm);background:var(--inner);padding:26px 18px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center} .chart .nodata b{font-size:13.5px;font-weight:600} .chart .nodata span{font-size:12.5px;color:var(--ink-3)} .spark{display:inline-block;vertical-align:-2px;width:74px;height:18px} .delta{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums} .delta.up{color:var(--st-positive)} .delta.dn{color:var(--st-negative)} @media (max-width:640px){.agenda .ar{grid-template-columns:64px minmax(0,1fr)} .agenda .ar >:last-child{grid-column:1/-1} }
+:root{--sp-deep:#0033A1;--sp-blue:#0071CE;--sp-cerise:#CC27B0;--sp-pink:#E17FD2;--base:#F1F5FB;--page-top:rgba(0,51,161,.022);--glass-1:rgba(255,255,255,.72);--glass-2:rgba(255,255,255,.82);--glass-3:rgba(255,255,255,.93);--glass-solid:rgba(255,255,255,.965);--inner:rgba(0,51,161,.045);--edge:inset 0 1px 0 rgba(255,255,255,.92);--blur-1:blur(22px) saturate(160%);--blur-2:blur(26px) saturate(170%);--ink:#0B1220;--ink-2:#47566B;--ink-3:#626D84;--ink-mute:#8E9AAE;--hair:rgba(11,18,32,.07);--hair-2:rgba(11,18,32,.12);--st-neutral:#47566B;--st-neutral-t:rgba(71,86,107,.10);--st-attention:#8A5A00;--st-attention-t:rgba(138,90,0,.11);--st-negative:#96302A;--st-negative-t:rgba(150,48,42,.11);--st-positive:#1F6F5B;--st-positive-t:rgba(31,111,91,.11);--c1:#00325C;--c2:#005194;--c3:#0070CC;--c4:#0A90FF;--c5:#47ACFF;--c6:#85C8FF;--r:10px;--r-sm:6px;--r-pill:999px;--lift-1:0 1px 2px rgba(6,22,54,.05),0 12px 32px -18px rgba(6,22,54,.28);--lift-2:0 2px 6px rgba(6,22,54,.07),0 28px 60px -26px rgba(6,22,54,.40);--ease:150ms cubic-bezier(.22,.7,.28,1);--aur-a:0,51,161;--aur-b:0,113,206;--aur-c:204,39,176;--aur-1:.055;--aur-2:.045;--aur-3:.050;--vig:radial-gradient(120% 100% at 50% 40%,transparent 42%,rgba(6,18,46,.10) 100%)} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--base:#0B1018;--page-top:rgba(120,165,225,.04);--glass-1:rgba(150,180,230,.05);--glass-2:rgba(150,180,230,.07);--glass-3:rgba(150,180,230,.095);--glass-solid:#151B26;--inner:rgba(160,190,240,.06);--edge:inset 0 1px 0 rgba(214,232,255,.10);--ink:#E7ECF3;--ink-2:#B6C0CF;--ink-3:#9AA6B8;--ink-mute:#6F7B90;--hair:rgba(206,224,255,.08);--hair-2:rgba(206,224,255,.14);--sp-blue:#7DBDF0;--sp-deep:#3A72DE;--sp-cerise:#E884D6;--sp-pink:#F2BCE9;--st-neutral:#B6C0CF;--st-neutral-t:rgba(182,192,207,.12);--st-attention:#E8BC69;--st-attention-t:rgba(232,188,105,.13);--st-negative:#F2A49D;--st-negative-t:rgba(242,164,157,.13);--st-positive:#8FD3BA;--st-positive-t:rgba(143,211,186,.13);--c1:#E6F2FF;--c2:#B9DDFF;--c3:#8CC6F8;--c4:#62ADEC;--c5:#3F90D6;--c6:#3576B0;--lift-1:0 1px 2px rgba(2,6,14,.46),0 14px 34px -18px rgba(2,6,14,.68);--lift-2:0 2px 7px rgba(2,6,14,.52),0 32px 66px -26px rgba(2,6,14,.80);--aur-a:76,127,232;--aur-b:107,179,234;--aur-c:232,132,214;--aur-1:.18;--aur-2:.12;--aur-3:.14;--vig:radial-gradient(120% 100% at 55% 42%,transparent 48%,rgba(2,5,11,.42) 100%)} }:root[data-theme="dark"]{--base:#0B1018;--page-top:rgba(120,165,225,.04);--glass-1:rgba(150,180,230,.05);--glass-2:rgba(150,180,230,.07);--glass-3:rgba(150,180,230,.095);--glass-solid:#151B26;--inner:rgba(160,190,240,.06);--edge:inset 0 1px 0 rgba(214,232,255,.10);--ink:#E7ECF3;--ink-2:#B6C0CF;--ink-3:#9AA6B8;--ink-mute:#6F7B90;--hair:rgba(206,224,255,.08);--hair-2:rgba(206,224,255,.14);--sp-blue:#7DBDF0;--sp-deep:#3A72DE;--sp-cerise:#E884D6;--sp-pink:#F2BCE9;--st-neutral:#B6C0CF;--st-neutral-t:rgba(182,192,207,.12);--st-attention:#E8BC69;--st-attention-t:rgba(232,188,105,.13);--st-negative:#F2A49D;--st-negative-t:rgba(242,164,157,.13);--st-positive:#8FD3BA;--st-positive-t:rgba(143,211,186,.13);--c1:#E6F2FF;--c2:#B9DDFF;--c3:#8CC6F8;--c4:#62ADEC;--c5:#3F90D6;--c6:#3576B0;--lift-1:0 1px 2px rgba(2,6,14,.46),0 14px 34px -18px rgba(2,6,14,.68);--lift-2:0 2px 7px rgba(2,6,14,.52),0 32px 66px -26px rgba(2,6,14,.80);--aur-a:76,127,232;--aur-b:107,179,234;--aur-c:232,132,214;--aur-1:.18;--aur-2:.12;--aur-3:.14;--vig:radial-gradient(120% 100% at 55% 42%,transparent 48%,rgba(2,5,11,.42) 100%)} *{box-sizing:border-box} body{background:var(--base);background-image:linear-gradient(176deg,var(--page-top) 0%,transparent 46%);color:var(--ink);font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;font-variant-numeric:tabular-nums;letter-spacing:-.003em;-webkit-font-smoothing:antialiased;position:relative} .amb{position:fixed;inset:-10%;pointer-events:none;z-index:0} .amb.a{filter:blur(84px);background:radial-gradient(62% 52% at 12% 4%,rgba(var(--aur-a),var(--aur-1)),transparent 72%),radial-gradient(56% 48% at 90% 20%,rgba(var(--aur-b),var(--aur-3)),transparent 72%),radial-gradient(64% 54% at 28% 82%,rgba(var(--aur-a),var(--aur-1)),transparent 74%)} .amb.b{filter:blur(70px);opacity:.9;background:radial-gradient(50% 42% at 78% 64%,rgba(var(--aur-c),var(--aur-2)),transparent 72%),radial-gradient(44% 38% at 6% 44%,rgba(var(--aur-c),var(--aur-2)),transparent 72%)} .amb.v{background:var(--vig)} .display{font-size:34px;line-height:1.12;font-weight:600;letter-spacing:-.028em;margin:0;text-wrap:balance} .title{font-size:19px;line-height:1.3;font-weight:600;letter-spacing:-.014em;margin:0} p,li,td,th{font-size:15px;line-height:1.6;font-weight:400;margin:0} .micro{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;line-height:1.4;font-weight:600;letter-spacing:.09em;text-transform:uppercase} header.mast{padding-block:76px 30px;display:flex;flex-direction:column;gap:16px} header.mast .micro{color:var(--sp-blue)} header.mast p{color:var(--ink-2);max-width:64ch;font-size:17px;line-height:1.6} h3.sub{font-size:15px;font-weight:600;margin:0;letter-spacing:-.008em} .g1,.g2,.g3{border-radius:var(--r);position:relative} .g1{background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .g2{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} .g3{background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-1),var(--edge)} .pad{padding:22px} .pad-s{padding:16px 18px} .inner{background:var(--inner);border-radius:var(--r-sm);padding:14px 16px} .solid{background:var(--glass-solid);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge)} .grid{display:grid;gap:16px} .g2c{grid-template-columns:repeat(auto-fit,minmax(272px,1fr))} .g3c{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))} .g4c{grid-template-columns:repeat(auto-fit,minmax(158px,1fr))} .stack{display:flex;flex-direction:column;gap:12px} .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap} .sw{border-radius:var(--r);overflow:hidden;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .btn{font-family:inherit;font-size:14px;font-weight:600;border:0;border-radius:var(--r-pill);padding:10px 20px;cursor:pointer;letter-spacing:-.006em;transition:transform var(--ease),box-shadow var(--ease),background var(--ease)} .btn-p{background:linear-gradient(180deg,#0071CE 0%,#005DB4 42%,#0035A6 100%);color:#fff;box-shadow:0 1px 1px rgba(6,22,54,.18),0 10px 22px -12px rgba(0,63,168,.70),inset 0 1px 0 rgba(255,255,255,.28)} .btn-p:hover{transform:translateY(-1px);box-shadow:0 1px 1px rgba(6,22,54,.20),0 16px 30px -14px rgba(0,63,168,.80),inset 0 1px 0 rgba(255,255,255,.32)} .btn-s{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink);box-shadow:var(--lift-1),var(--edge)} .btn-t{background:transparent;color:var(--ink-2);padding-inline:12px} .btn-t:hover{background:var(--inner)} .btn:disabled{background:var(--inner);color:var(--ink-mute);box-shadow:none;cursor:not-allowed;transform:none} .btn:focus-visible{outline:2px solid var(--sp-blue);outline-offset:3px} .tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;line-height:1.3;padding:4px 11px;border-radius:var(--r-pill);background:var(--inner);color:var(--ink-2);letter-spacing:.01em} .tag.neutral{background:var(--st-neutral-t);color:var(--st-neutral)} .tag.attention{background:var(--st-attention-t);color:var(--st-attention)} .tag.negative{background:var(--st-negative-t);color:var(--st-negative)} .tag.positive{background:var(--st-positive-t);color:var(--st-positive)} .tag svg{width:12px;height:12px;flex:none} .pips{display:inline-flex;gap:6px;align-items:center} .pip{width:14px;height:14px;border-radius:50%;display:grid;place-items:center} .pip.done{background:linear-gradient(180deg,#2C8A74,#1F6F5B);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)} .pip.draft{background:linear-gradient(180deg,#A87213,#8A5A00);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)} .pip.stale{background:var(--st-attention-t);box-shadow:inset 0 0 0 1.8px var(--st-attention)} .pip.missing{background:transparent;box-shadow:inset 0 0 0 1.5px var(--hair-2)} .pip i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:8px;font-weight:600;color:#fff;line-height:1} .pip.stale i{color:var(--st-attention)} .pip.missing i{color:var(--ink-mute)} .tblwrap{overflow-x:auto;border-radius:var(--r);background:var(--glass-solid);box-shadow:var(--lift-1),var(--edge)} .tbl{width:100%;border-collapse:collapse} .tbl thead th{text-align:left;padding:12px 16px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--hair)} .tbl tbody td{padding:13px 16px;border-top:1px solid var(--hair);vertical-align:middle} .tbl tbody tr:first-child td{border-top:0} .tbl tbody tr{transition:background var(--ease)} .tbl tbody tr:hover{background:var(--inner)} .tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap} .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:14px} .field{flex:1;min-width:190px;display:flex;align-items:center;gap:9px;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r-pill);padding:9px 15px;color:var(--ink-3);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .field input{border:0;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);width:100%;outline:none} .chipsel{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r-pill);padding:9px 14px;font-size:13px;font-weight:500;color:var(--ink-2);display:flex;gap:7px;align-items:center;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .tabs{display:flex;gap:3px;padding:0 5px} .tab{font-family:inherit;font-size:13.5px;font-weight:600;border:0;background:transparent;color:var(--ink-3);padding:11px 16px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;transition:color var(--ease),background var(--ease)} .tab[aria-selected="true"]{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);color:var(--ink);box-shadow:var(--edge)} .tabpanel{background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);border-radius:0 var(--r) var(--r) var(--r);box-shadow:var(--lift-1),var(--edge);padding:20px} .ai:not(.msg){border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(135deg,rgba(0,51,161,.075) 0%,rgba(0,113,206,.045) 48%,rgba(204,39,176,.065) 100%),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .ai .hd{display:flex;align-items:center;gap:8px} .ai .hd .micro{color:var(--sp-blue)} .ai p{color:var(--ink)} .ai .ground{font-size:13px;color:var(--ink-3)} .ai .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap} .chev{background:transparent;border:0;color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;padding:0} .tile{border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0)),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .tile .micro{color:var(--ink-3)} .tile .v{font-size:30px;font-weight:600;line-height:1.08;letter-spacing:-.03em} .tile .sub{font-size:13px;color:var(--ink-3);line-height:1.45} .tile.flag{background:linear-gradient(180deg,rgba(138,90,0,.10),rgba(138,90,0,.04)),var(--glass-1)} .tile.flag .v{color:var(--st-attention)} .loop{display:flex;border-radius:var(--r);overflow:hidden;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .loop div{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:4px} .loop div + div{border-left:1px solid var(--hair)} .loop .micro{color:var(--ink-3)} .loop b{font-size:19px;font-weight:600;letter-spacing:-.02em} .loop .on{background:linear-gradient(180deg,rgba(0,113,206,.10),rgba(0,113,206,.03))} .loop .on b{color:var(--sp-blue)} .rail-demo{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-2);display:flex;min-height:230px} .empty{border-radius:var(--r);padding:28px 22px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;background:var(--inner)} .legend{display:flex;gap:16px;flex-wrap:wrap} .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:7px} .legend span{font-size:13px;color:var(--ink-2);display:inline-flex;align-items:center} code.inl{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--inner);padding:2px 6px;border-radius:var(--r-sm);color:var(--ink-2)} .note{border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(180deg,rgba(138,90,0,.09),rgba(138,90,0,.03)),var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .note .micro{color:var(--st-attention)} .note p{color:var(--ink)} @media (max-width:640px){.loop{flex-direction:column} .loop div + div{border-left:0;border-top:1px solid var(--hair)} .rail-demo{flex-direction:column} .rail-demo .nav{width:auto} } @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}} .fld{display:flex;flex-direction:column;gap:6px} .fld > label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .ctl{display:flex;align-items:center;gap:9px;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r);padding:11px 14px;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04);transition:box-shadow var(--ease)} .ctl input,.ctl textarea,.ctl select{border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);width:100%;outline:none;letter-spacing:-.003em} .ctl textarea{resize:vertical;min-height:76px;line-height:1.55} .ctl.focus{box-shadow:var(--edge),0 0 0 3px rgba(0,113,206,.18),0 1px 2px rgba(6,22,54,.05)} .ctl.err{box-shadow:var(--edge),0 0 0 3px rgba(150,48,42,.16),0 1px 2px rgba(6,22,54,.05);background:linear-gradient(0deg,var(--st-negative-t),var(--st-negative-t)),var(--glass-2)} .ctl.warn{box-shadow:var(--edge),0 0 0 3px rgba(138,90,0,.15),0 1px 2px rgba(6,22,54,.05);background:linear-gradient(0deg,var(--st-attention-t),var(--st-attention-t)),var(--glass-2)} .ctl.off{background:var(--inner);box-shadow:none} .ctl.off input{color:var(--ink-mute)} .hint{font-size:13px;color:var(--ink-3);line-height:1.45} .hint.e{color:var(--st-negative);display:flex;gap:6px;align-items:flex-start} .hint.w{color:var(--st-attention);display:flex;gap:6px;align-items:flex-start} .hint svg{width:13px;height:13px;flex:none;margin-top:2px} .req{color:var(--st-negative);font-weight:600} .seg{display:inline-flex;gap:2px;padding:3px;border-radius:var(--r-pill);background:var(--inner)} .seg button{font-family:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--ink-3);padding:7px 16px;border-radius:var(--r-pill);cursor:pointer;letter-spacing:-.004em;transition:color var(--ease),background var(--ease)} .seg button[aria-pressed="true"]{background:var(--glass-3);color:var(--ink);box-shadow:var(--edge),0 1px 3px rgba(6,22,54,.10)} .tog{display:inline-flex;align-items:center;gap:11px;cursor:pointer} .tog .track{width:44px;height:26px;border-radius:var(--r-pill);background:var(--inner);position:relative;transition:background var(--ease);box-shadow:inset 0 1px 2px rgba(6,22,54,.08)} .tog .track .knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(6,22,54,.28),inset 0 1px 0 rgba(255,255,255,.9);transition:transform var(--ease)} .tog.on .track{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0056B4)} .tog.on .track .knob{transform:translateX(18px)} .tog span{font-size:14px;color:var(--ink-2)} .opt{display:inline-flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;color:var(--ink-2)} .box,.dot{width:19px;height:19px;flex:none;border-radius:var(--r-sm);background:var(--glass-3);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2);display:grid;place-items:center;margin-top:1px} .dot{border-radius:50%} .opt.on .box,.opt.on .dot{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0056B4);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 3px rgba(0,63,168,.35)} .box svg,.dot svg{width:12px;height:12px;color:#fff;opacity:0} .opt.on .box svg{opacity:1} .opt.on .dot::after{content:"";width:7px;height:7px;border-radius:50%;background:#fff} .sl{display:flex;flex-direction:column;gap:9px} .drop{border-radius:var(--r);padding:26px 20px;background:var(--inner);display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center} .sth{display:flex;align-items:flex-start;gap:0} .sth .nd{flex:1;display:flex;flex-direction:column;gap:8px;position:relative;padding-top:2px} .sth .bar{display:flex;align-items:center;gap:0} .sth .cir{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600} .sth .cir.done{background:linear-gradient(180deg,#2C8A74,#1F6F5B);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)} .sth .cir.now{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 4px rgba(0,113,206,.14)} .sth .cir.todo{background:var(--glass-3);color:var(--ink-mute);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2)} .sth .cir.block{background:var(--st-negative-t);color:var(--st-negative);box-shadow:inset 0 0 0 1.5px var(--st-negative)} .sth .ln{flex:1;height:2px;background:var(--hair-2);border-radius:2px} .sth .ln.done{background:linear-gradient(90deg,#1F6F5B,#2C8A74)} .sth .lbl{font-size:13px;font-weight:600;letter-spacing:-.006em;padding-right:12px} .sth .sub{font-size:12.5px;color:var(--ink-3);padding-right:12px;line-height:1.45} .stv{display:flex;flex-direction:column} .stv .nd{display:grid;grid-template-columns:26px minmax(0,1fr);gap:0 14px;position:relative;padding-bottom:16px} .stv .nd:last-child{padding-bottom:0} .stv .nd::before{content:"";position:absolute;left:12.5px;top:26px;bottom:0;width:2px;background:var(--hair-2)} .stv .nd:last-child::before{display:none} .stv .cir{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;z-index:1} .stv .c{display:flex;flex-direction:column;gap:6px;padding-top:2px;min-width:0} .stv .hdr{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap} .stv .hdr b{font-size:14px;font-weight:600;letter-spacing:-.006em} .stv .hdr .when{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.05em} .stv .ev{font-size:13.5px;color:var(--ink-2);line-height:1.5} .pad ul,.stack ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px} .pad ul li,.stack ul li{position:relative;padding-left:17px;font-size:14px;line-height:1.6;color:var(--ink-2)} .pad ul li::before{content:"";position:absolute;left:1px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--sp-blue);opacity:.5} .stack ul li::before{content:"";position:absolute;left:1px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--sp-blue);opacity:.5} .pad ul li b,.stack ul li b{color:var(--ink);font-weight:600} .prog{height:6px;border-radius:var(--r-pill);background:var(--inner);overflow:hidden;box-shadow:inset 0 1px 2px rgba(6,22,54,.08)} .prog i{display:block;height:100%;border-radius:var(--r-pill);background:linear-gradient(90deg,#0033A1,#0071CE)} .prog.mini{width:130px;height:4px;flex:none} .stages{display:flex;flex-direction:column;gap:9px} .stages div{display:flex;gap:10px;align-items:center;font-size:13.5px} .stages .tick{width:16px;height:16px;border-radius:50%;flex:none;display:grid;place-items:center} .stages .tick.ok{background:var(--st-positive-t);color:var(--st-positive)} .stages .tick.run{background:var(--inner);box-shadow:inset 0 0 0 1.5px var(--sp-blue)} .stages .tick.wait{background:var(--inner);box-shadow:inset 0 0 0 1.5px var(--hair-2)} .stages .ok + span{color:var(--ink-2)} .stages .run + span{color:var(--ink);font-weight:600} .stages .wait + span{color:var(--ink-mute)} .scene{position:relative;border-radius:var(--r);overflow:hidden;background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge);min-height:340px} .three{display:grid;grid-template-columns:132px minmax(0,1fr) 250px;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair);box-shadow:var(--lift-1),var(--edge);min-height:270px} .toast{display:inline-flex;align-items:center;gap:13px;padding:13px 16px;border-radius:var(--r);background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} .toast .ic{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--st-positive-t);color:var(--st-positive)} .toast b{font-size:14px;font-weight:600;letter-spacing:-.006em} .toast small{display:block;font-size:12.5px;color:var(--ink-3)} .toast .undo{font-family:inherit;font-size:13px;font-weight:600;color:var(--sp-blue);background:transparent;border:0;cursor:pointer;padding:0 2px} .menu{width:236px;border-radius:var(--r);padding:6px;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge);display:flex;flex-direction:column;gap:1px} .menu a{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 12px;border-radius:var(--r-sm);font-size:14px;color:var(--ink-2);text-decoration:none} .menu a:hover{background:var(--inner);color:var(--ink)} .menu a kbd{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)} .menu hr{height:1px;background:var(--hair);border:0;margin:5px 0} .menu a.danger{color:var(--st-negative)} .crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);flex-wrap:wrap} .crumb a{color:var(--ink-2);text-decoration:none} .crumb a:hover{color:var(--ink)} .crumb b{color:var(--ink);font-weight:600} .av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11.5px;font-weight:600;color:#fff;background:linear-gradient(150deg,#0058B8,#0033A1);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 1px 3px rgba(6,22,54,.20)} .av.c2{background:linear-gradient(150deg,#B93CA5,#8C1E79)} .canvas{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-2),var(--edge);background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);min-height:420px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;padding:36px 24px;text-align:center;position:relative} .canvas .glowwrap{width:100%;max-width:520px;padding:26px} .canvas .composer{position:relative;display:flex;align-items:center;gap:11px;padding:15px 18px;border-radius:var(--r);background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--edge),0 2px 6px rgba(6,22,54,.07),0 0 34px -6px rgba(0,113,206,.38),0 0 60px -10px rgba(204,39,176,.26)} .canvas .composer input{border:0;background:transparent;font-family:inherit;font-size:16px;color:var(--ink);width:100%;outline:none;letter-spacing:-.006em} .canvas .composer input::placeholder{color:var(--ink-3)} .canvas h3{font-family:inherit;font-size:26px;font-weight:600;letter-spacing:-.024em;margin:0;line-height:1.2} .canvas .sublede{font-size:14.5px;color:var(--ink-3);max-width:46ch;margin:0} .chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center} .chips button{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-2);background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border:0;border-radius:var(--r-pill);padding:8px 15px;cursor:pointer;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04)} .chips button:hover{color:var(--ink)} .proactive{width:100%;max-width:560px;display:flex;flex-direction:column;gap:10px;text-align:left} .convo{border-radius:var(--r);overflow:hidden;box-shadow:var(--lift-1),var(--edge);background:var(--glass-3);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);display:flex;flex-direction:column;min-height:420px} .convo .thread{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px} .convo .dock{padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:inset 0 1px 0 var(--hair)} .convo .dock .composer{display:flex;align-items:center;gap:11px;padding:12px 15px;border-radius:var(--r);background:var(--glass-3);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .convo .dock .composer input{border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);width:100%;outline:none} .msg{max-width:78%;display:flex;flex-direction:column;gap:5px} .msg.me{align-self:flex-end;align-items:flex-end} .msg.ai{align-self:flex-start} .msg .who{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .msg .bub{padding:12px 15px;border-radius:var(--r);font-size:14.5px;line-height:1.55} .msg.me .bub{background:linear-gradient(180deg,#0071CE,#005DB4 62%,#0059B6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 6px 16px -10px rgba(0,63,168,.6)} .msg.ai .bub{background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .raildrw{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair);box-shadow:var(--lift-1),var(--edge);min-height:310px} @media (max-width:760px){.three{grid-template-columns:minmax(0,1fr)} .raildrw{grid-template-columns:minmax(0,1fr)} .sth{flex-direction:column;gap:14px} .sth .ln{display:none} } .scene{min-height:380px} .scope{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:5px 10px 5px 8px;border-radius:var(--r-pill);background:rgba(0,113,206,.10);color:var(--sp-blue);font-size:12px;font-weight:600} .cmdk{width:min(520px,100%);border-radius:var(--r);overflow:hidden;background:var(--glass-2);backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2);box-shadow:var(--lift-2),var(--edge)} @media (max-width:860px){.diff > div{grid-template-columns:minmax(0,1fr)} }:root{--r-shell:28px;--r-canvas:22px;--r-sheet:16px;--r-tile:12px} @media (max-width:900px){.bleed{margin-inline:0}} .studio2{position:relative;border-radius:var(--r-shell);display:grid;grid-template-columns:318px minmax(0,1fr);min-height:600px;overflow:hidden;background:linear-gradient(112deg,rgba(255,255,255,.74) 0%,rgba(255,255,255,.52) 26%,rgba(255,255,255,.28) 52%,rgba(255,255,255,.14) 100%),radial-gradient(60% 80% at 4% 0%,rgba(0,51,161,.10),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(204,39,176,.09),transparent 72%);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(255,255,255,.95)}:root[data-theme="dark"] .studio2,:root:not([data-theme="light"]) .studio2{} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .studio2{background:linear-gradient(112deg,rgba(150,180,230,.10) 0%,rgba(150,180,230,.07) 30%,rgba(150,180,230,.05) 60%,rgba(150,180,230,.03) 100%),radial-gradient(60% 80% at 4% 0%,rgba(76,127,232,.20),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(232,132,214,.14),transparent 72%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.10)} }:root[data-theme="dark"] .studio2{background:linear-gradient(112deg,rgba(150,180,230,.10) 0%,rgba(150,180,230,.07) 30%,rgba(150,180,230,.05) 60%,rgba(150,180,230,.03) 100%),radial-gradient(60% 80% at 4% 0%,rgba(76,127,232,.20),transparent 70%),radial-gradient(52% 66% at 100% 100%,rgba(232,132,214,.14),transparent 72%);box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.10)} .chat2{display:flex;flex-direction:column;padding:22px 6px 18px 22px;min-width:0;position:relative} .t-ai{display:flex;flex-direction:column;gap:5px} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chat2 .cmp{background:rgba(150,180,230,.07);box-shadow:inset 0 1px 0 rgba(214,232,255,.10),0 2px 9px -5px rgba(2,6,14,.52)}}:root[data-theme="dark"] .chat2 .cmp{background:rgba(150,180,230,.07);box-shadow:inset 0 1px 0 rgba(214,232,255,.10),0 2px 9px -5px rgba(2,6,14,.52)} .seam{position:absolute;top:0;bottom:0;right:-1px;width:56px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.22))} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seam{background:linear-gradient(90deg,rgba(150,180,230,0),rgba(150,180,230,.05))}}:root[data-theme="dark"] .seam{background:linear-gradient(90deg,rgba(150,180,230,0),rgba(150,180,230,.05))} .canv{margin:14px 14px 14px 0;border-radius:var(--r-canvas);display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--glass-solid);box-shadow:var(--lift-2),inset 0 1px 0 rgba(255,255,255,.95)} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canv{box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.10)}}:root[data-theme="dark"] .canv{box-shadow:var(--lift-2),inset 0 1px 0 rgba(214,232,255,.10)} .canv .bar2{padding:13px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:inset 0 -1px 0 var(--hair)} .canv .bar2 .ttl2{font-size:14px;font-weight:600;letter-spacing:-.008em;margin-right:auto} .canv .gen2{display:flex;align-items:center;gap:11px;padding:10px 18px;box-shadow:inset 0 -1px 0 var(--hair);background:linear-gradient(90deg,rgba(0,51,161,.07),rgba(0,113,206,.04) 55%,rgba(204,39,176,.05))} .canv .gen2 span{font-size:12.5px;color:var(--ink-2)} .canv .gen2 .dot3{width:7px;height:7px;border-radius:50%;background:var(--sp-blue);flex:none} .canv .body3{flex:1;display:grid;grid-template-columns:66px minmax(0,1fr) 50px;min-height:0} .thumbs2{padding:16px 9px;display:flex;flex-direction:column;gap:9px;align-items:center;box-shadow:inset -1px 0 0 var(--hair)} .thumbs2 .th2{width:46px;height:32px;border-radius:8px;background:var(--inner);display:grid;place-items:center;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;color:var(--ink-3)} .thumbs2 .th2.on{background:rgba(0,113,206,.12);box-shadow:0 0 0 2px var(--sp-blue);color:var(--sp-blue)} .vrail2{padding:16px 7px;display:flex;flex-direction:column;align-items:center;box-shadow:inset 1px 0 0 var(--hair)} .vrail2 .v2{width:30px;padding:7px 0;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;color:var(--ink-3);border-radius:8px;cursor:pointer} .vrail2 .v2.on{background:rgba(0,113,206,.12);color:var(--sp-blue)} .vrail2 .tk{width:1px;height:13px;background:var(--hair-2)} .paper2{padding:26px 22px;display:flex;justify-content:center;align-items:flex-start;min-width:0;overflow:hidden} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sheet2{background:linear-gradient(170deg,rgba(76,127,232,.14),rgba(0,0,0,0) 44%),var(--glass-solid);box-shadow:0 1px 2px rgba(2,6,14,.34),0 20px 48px -24px rgba(2,6,14,.62),inset 0 1px 0 rgba(214,232,255,.10)}}:root[data-theme="dark"] .sheet2{background:linear-gradient(170deg,rgba(76,127,232,.14),rgba(0,0,0,0) 44%),var(--glass-solid);box-shadow:0 1px 2px rgba(2,6,14,.34),0 20px 48px -24px rgba(2,6,14,.62),inset 0 1px 0 rgba(214,232,255,.10)} .kpi2.upd{box-shadow:0 0 0 2px rgba(0,113,206,.30);background:rgba(0,113,206,.07);position:relative} .kpi2.upd::after{content:"updated";position:absolute;top:-8px;right:9px;font-family:"IBM Plex Mono",monospace;font-size:8.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#fff;background:var(--sp-blue);padding:2px 6px;border-radius:5px} .assump{border-radius:var(--r-tile);padding:13px 15px;background:var(--inner);font-size:12px;color:var(--ink-3);line-height:1.55} .rscale{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px} .rscale div{background:var(--inner);padding:14px;display:flex;flex-direction:column;gap:5px} .rscale .s1{border-radius:28px} .rscale .s2{border-radius:22px} .rscale .s3{border-radius:16px} .rscale .s4{border-radius:12px} .rscale .s5{border-radius:10px} .rscale b{font-size:13.5px;font-weight:600} .rscale code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--sp-blue)} .rscale span{font-size:12px;color:var(--ink-3);line-height:1.45} @media (max-width:860px){.studio2{grid-template-columns:minmax(0,1fr);min-height:0;border-radius:var(--r-canvas)} .chat2{padding:18px} .seam{display:none} .canv{margin:0 14px 14px} .canv .body3{grid-template-columns:minmax(0,1fr)} .thumbs2{flex-direction:row;box-shadow:inset 0 -1px 0 var(--hair);overflow-x:auto} .vrail2{flex-direction:row;box-shadow:inset 0 1px 0 var(--hair);overflow-x:auto} .paper2{padding:16px 12px} .sheet2{padding:20px} } @media (max-width:620px){.sheet2 .kpis2{grid-template-columns:minmax(0,1fr)} .kpi2.upd::after{right:auto;left:12px} } @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .convo,:root:not([data-theme="light"]) .scene,:root:not([data-theme="light"]) .canvas,:root:not([data-theme="light"]) .tabpanel,:root:not([data-theme="light"]) .kb .kc{background:var(--glass-solid);backdrop-filter:none;-webkit-backdrop-filter:none} }:root[data-theme="dark"] .convo,:root[data-theme="dark"] .scene,:root[data-theme="dark"] .canvas,:root[data-theme="dark"] .tabpanel,:root[data-theme="dark"] .kb .kc{background:var(--glass-solid);backdrop-filter:none;-webkit-backdrop-filter:none} .themesw{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .kb{display:grid;grid-template-columns:repeat(auto-fit,minmax(218px,1fr));gap:12px} .kb .col{background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge);padding:12px;display:flex;flex-direction:column;gap:9px} .kb .ch{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 2px} .kb .ch .micro{color:var(--ink-3)} .kb .ct{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--ink-3);background:var(--inner);border-radius:var(--r-sm);padding:2px 7px;font-variant-numeric:tabular-nums} .kb .kc{background:var(--glass-3);border-radius:var(--r-sm);padding:11px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.05)} .kb .kc b{font-size:13.5px;font-weight:600;letter-spacing:-.006em;line-height:1.4} .kb .kc .kid{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);letter-spacing:.06em} .kb .kc .kf{display:flex;align-items:center;justify-content:space-between;gap:8px} .kb .dz{border-radius:var(--r-sm);min-height:54px;background:var(--inner);outline:1.5px dashed var(--hair-2);outline-offset:-2px;display:grid;place-items:center;font-size:12.5px;color:var(--ink-3)} .kb .col.wip .ct{background:var(--st-attention-t);color:var(--st-attention)} .cal{background:var(--glass-solid);border-radius:var(--r);box-shadow:var(--lift-1),var(--edge);padding:16px;display:flex;flex-direction:column;gap:12px} .cal .chd{display:flex;align-items:center;justify-content:space-between;gap:10px} .cal .chd b{font-size:14px;font-weight:600} .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px} .cal .dow{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);text-align:center;padding:4px 0} .cal .d{aspect-ratio:1;border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;cursor:pointer;transition:background var(--ease)} .cal .d:hover{background:var(--inner)} .cal .d.out{color:var(--ink-mute);cursor:default} .cal .d.out:hover{background:transparent} .cal .d.today{box-shadow:inset 0 0 0 1.5px var(--sp-blue);color:var(--ink);font-weight:600} .cal .d.sel{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.26)} .cal .d.sel .evd{background:#fff} .cal .evd{width:4px;height:4px;border-radius:50%;background:var(--sp-blue)} .cal .d.busy .evd{background:var(--st-attention)} .agenda{display:flex;flex-direction:column;gap:1px;border-radius:var(--r);overflow:hidden;background:var(--hair)} .agenda .ar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--glass-solid);padding:12px 14px} .agenda .at{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);letter-spacing:.05em;font-variant-numeric:tabular-nums} .agenda .an{display:flex;flex-direction:column;gap:2px;min-width:0} .agenda .an b{font-size:13.5px;font-weight:600;letter-spacing:-.006em} .agenda .an span{font-size:12.5px;color:var(--ink-3)} .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px} .slot{font-family:inherit;font-size:13px;font-weight:500;border:0;border-radius:var(--r-pill);padding:9px 12px;cursor:pointer;background:var(--glass-2);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);color:var(--ink-2);box-shadow:var(--edge),0 1px 2px rgba(6,22,54,.04);font-variant-numeric:tabular-nums} .slot[aria-pressed="true"]{background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.26)} .slot:disabled{background:var(--inner);color:var(--ink-mute);box-shadow:none;cursor:not-allowed;text-decoration:line-through} .pc{display:flex;gap:13px;align-items:flex-start;padding:15px 16px;border-radius:var(--r);background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .pc .av{width:40px;height:40px;font-size:13.5px} .pc .pb{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1} .pc .pn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap} .pc .pn b{font-size:14.5px;font-weight:600;letter-spacing:-.008em} .pc .pn span{font-size:12.5px;color:var(--ink-3)} .pc .pm{display:flex;flex-direction:column;gap:3px} .pc .pm div{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-2)} .pc .pm .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);min-width:56px} .pc .pa{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px} .faces{display:inline-flex;align-items:center} .faces .av{width:26px;height:26px;font-size:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 0 0 2px var(--glass-solid)} .faces .av + .av{margin-left:-6px} .faces .more{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;margin-left:-6px;background:var(--inner);color:var(--ink-2);font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;box-shadow:0 0 0 2px var(--glass-solid)} .feed{display:flex;flex-direction:column} .feed .fi{display:grid;grid-template-columns:22px minmax(0,1fr);gap:0 13px;position:relative;padding-bottom:15px} .feed .fi:last-child{padding-bottom:0} .feed .fi::before{content:"";position:absolute;left:10.5px;top:22px;bottom:0;width:2px;background:var(--hair-2)} .feed .fi:last-child::before{display:none} .feed .fd{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;z-index:1;background:var(--glass-3);box-shadow:var(--edge),inset 0 0 0 1px var(--hair-2);color:var(--ink-3)} .feed .fd svg{width:11px;height:11px} .feed .fd.pos{background:var(--st-positive-t);color:var(--st-positive);box-shadow:none} .feed .fd.att{background:var(--st-attention-t);color:var(--st-attention);box-shadow:none} .feed .fd.neg{background:var(--st-negative-t);color:var(--st-negative);box-shadow:none} .feed .fb{display:flex;flex-direction:column;gap:4px;padding-top:1px;min-width:0} .feed .fh{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap} .feed .fh b{font-size:13.5px;font-weight:600;letter-spacing:-.006em} .feed .fh span{font-size:13.5px;color:var(--ink-2)} .feed .fw{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);letter-spacing:.05em;margin-left:auto} .feed .fp{font-size:12.5px;color:var(--ink-3);line-height:1.5} .pg{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:13px} .pg .rng{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-variant-numeric:tabular-nums} .pg .pgs{display:flex;gap:4px;align-items:center} .pgb{font-family:inherit;font-size:13px;font-weight:600;border:0;cursor:pointer;min-width:30px;height:30px;border-radius:var(--r-sm);background:transparent;color:var(--ink-2);font-variant-numeric:tabular-nums;transition:background var(--ease),color var(--ease)} .pgb:hover:not(:disabled){background:var(--inner);color:var(--ink)} .pgb[aria-current="page"]{background:var(--glass-3);color:var(--ink);box-shadow:var(--edge),0 1px 3px rgba(6,22,54,.10)} .pgb:disabled{color:var(--ink-mute);cursor:not-allowed} .pg .gap{color:var(--ink-mute);padding:0 2px;font-size:13px} .chart{border-radius:var(--r);padding:18px 20px 16px;display:flex;flex-direction:column;gap:14px;background:var(--glass-1);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);box-shadow:var(--lift-1),var(--edge)} .chart .chh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap} .chart .cht{display:flex;flex-direction:column;gap:3px} .chart .cht b{font-size:14px;font-weight:600;letter-spacing:-.008em} .chart .cht .unit{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)} .chart .plot{position:relative} .chart svg{display:block;width:100%;height:auto;overflow:visible} .chart .ax{font-family:"IBM Plex Mono",monospace;font-size:9.5px;fill:var(--ink-3);letter-spacing:.04em} .chart .gl{stroke:var(--hair);stroke-width:1} .chart .nodata{border-radius:var(--r-sm);background:var(--inner);padding:26px 18px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center} .chart .nodata b{font-size:13.5px;font-weight:600} .chart .nodata span{font-size:12.5px;color:var(--ink-3)} .spark{display:inline-block;vertical-align:-2px;width:74px;height:18px} .delta{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums} .delta.up{color:var(--st-positive)} .delta.dn{color:var(--st-negative)} @media (max-width:640px){.agenda .ar{grid-template-columns:64px minmax(0,1fr)} .agenda .ar >:last-child{grid-column:1/-1} } @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tile:not(.flag){background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0)),var(--glass-1)}} :root[data-theme="dark"] .tile:not(.flag){background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0)),var(--glass-1)} .sheet2{width:100%;max-width:680px;border-radius:var(--r-sheet);padding:28px 30px;display:flex;flex-direction:column;gap:14px;background:var(--glass-solid);box-shadow:var(--lift-1),var(--edge)} .kpis2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px} .kpi2{border-radius:var(--r-tile);background:var(--inner);padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0} .chat2 .cmp{display:flex;align-items:center;gap:10px;margin-top:auto;padding:12px 14px;border-radius:var(--r-tile);background:rgba(255,255,255,.62);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 9px -5px rgba(6,22,54,.18)} .chat2 .cmp input{border:0;background:transparent;font-family:inherit;font-size:14.5px;color:var(--ink);width:100%;min-width:0;outline:none} .grid > *{min-width:0} .field input,.ctl input,.ctl select{min-width:0;text-overflow:ellipsis} img,video{max-width:100%} p,li{overflow-wrap:break-word} .tag,.chipsel,.slot{white-space:nowrap}
 ```
+
+### The expression kit — paste after the stylesheet, in the same `<style>` block
+
+```css
+:root{--s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:20px;--s-6:24px;--s-8:32px;--s-10:40px;--s-12:48px;--page-pad:24px;--section-gap:24px;--card-pad:20px;--ov-s:420px;--ov-m:560px;--ov-l:760px;--ov-pad:24px;--row-h:44px;--cell-px:14px;--cell-py:10px;--content-max:1440px} [data-density="compact"]{--row-h:36px;--cell-px:12px;--cell-py:7px;--card-pad:16px;--section-gap:20px} [data-density="comfortable"]{--row-h:52px;--cell-px:16px;--cell-py:14px;--card-pad:24px} @media (max-width:760px){:root{--page-pad:16px;--section-gap:16px;--card-pad:16px;--ov-pad:16px}} :root{--rail-w:248px;--rail-deep:#0033A1;--rail-deep-2:#00226E;--rail-ground:var(--rail-deep);--rail-bg:linear-gradient(180deg,var(--rail-deep) 0%,var(--rail-deep-2) 100%);--rail-ink:#fff;--rail-ink-2:rgba(255,255,255,.78);--rail-hover:rgba(255,255,255,.08);--rail-active-bg:rgba(255,255,255,.16);--rail-active-ink:#fff;--rail-indicator:transparent;--signal:var(--sp-blue);--on-signal:#fff;--paper:var(--base)} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rail-deep:#1B3576;--rail-deep-2:#0E1D45}} :root[data-theme="dark"]{--rail-deep:#1B3576;--rail-deep-2:#0E1D45} [data-chrome="ink"]{--rail-ground:#0B0C0E;--rail-bg:linear-gradient(180deg,#0B0C0E 0%,#17181C 100%);--rail-ink:#F4F5F7;--rail-ink-2:rgba(244,245,247,.74);--rail-hover:rgba(255,255,255,.06);--rail-active-bg:rgba(255,255,255,.09);--rail-active-ink:#fff;--rail-indicator:var(--signal)} [data-chrome="light"]{--rail-ground:var(--base);--rail-bg:linear-gradient(var(--glass-solid),var(--glass-solid));--rail-ink:var(--ink);--rail-ink-2:var(--ink-2);--rail-hover:var(--inner);--rail-active-bg:var(--inner);--rail-active-ink:var(--ink);--rail-indicator:var(--sp-blue)} [data-surface="solid"],[data-surface="paper"]{--glass-1:var(--glass-solid);--glass-2:var(--glass-solid);--glass-3:var(--glass-solid);--blur-1:none;--blur-2:none} [data-surface="solid"] .amb.a,[data-surface="solid"] .amb.b{opacity:.5} [data-surface="paper"] .amb{display:none} [data-surface="paper"] body{background:var(--paper)} .display,.title{font-family:var(--font-display,inherit)} .app{display:grid;grid-template-columns:var(--rail-w) minmax(0,1fr);min-height:var(--app-h,100vh);position:relative;z-index:1} .app.with-agent{grid-template-columns:var(--rail-w) minmax(0,1fr) var(--ov-s)} .app-rail{position:sticky;top:0;height:var(--app-h,100vh);overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding:20px 14px;background-color:var(--rail-ground);background-image:var(--rail-bg);color:var(--rail-ink);z-index:21} .app-rail .brand{padding:4px 10px 18px} .nav-i{position:relative;display:flex;align-items:center;gap:10px;min-height:38px;padding:8px 12px;border-radius:var(--r);color:var(--rail-ink-2);font-size:14px;font-weight:500;text-decoration:none;transition:background var(--ease),color var(--ease)} .nav-i svg{width:18px;height:18px;flex:none} .nav-i:hover{background:var(--rail-hover);color:var(--rail-active-ink)} .nav-i[aria-current="page"]{background:var(--rail-active-bg);color:var(--rail-active-ink);font-weight:600} .nav-i[aria-current="page"]::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--rail-indicator)} .nav-i:focus-visible{outline:2px solid var(--rail-active-ink);outline-offset:2px} .app-rail .prof{margin-top:auto} .app-main{min-width:0;display:flex;flex-direction:column} .app-top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 24px;background-color:var(--base);background-image:linear-gradient(var(--glass-solid),var(--glass-solid));box-shadow:inset 0 -1px 0 var(--hair);transition:box-shadow var(--ease)} .app-top.scrolled{box-shadow:inset 0 -1px 0 var(--hair),0 8px 18px -14px rgba(6,22,54,.30)} .app-body{padding:var(--page-pad);display:flex;flex-direction:column;gap:var(--section-gap);min-width:0;width:100%;max-width:var(--content-max)} .app[data-shell="top"]{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr} .app[data-shell="top"] .app-rail{height:auto;flex-direction:row;align-items:center;gap:6px;padding:10px 20px;overflow-x:auto} .app[data-shell="top"] .app-rail .brand{padding:0 14px 0 0} .app[data-shell="top"] .app-rail .prof{margin:0 0 0 auto} .app[data-shell="top"] .nav-i[aria-current="page"]::before{left:12px;right:12px;top:auto;bottom:-10px;width:auto;height:3px;border-radius:3px 3px 0 0} .app[data-shell="top"] .app-top{top:0} .app-tabs{display:none} @media (max-width:1100px){.app:not([data-shell="top"]){--rail-w:72px} .app:not([data-shell="top"]) .app-rail .lbl,.app:not([data-shell="top"]) .app-rail .brand .word{display:none} } @media (max-width:760px){.app,.app.with-agent{grid-template-columns:minmax(0,1fr)} .app .app-rail{display:none} .app-body{padding-bottom:88px} .app .app-tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:space-around;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background-color:var(--base);background-image:linear-gradient(var(--glass-solid),var(--glass-solid));box-shadow:inset 0 1px 0 var(--hair)} .app .app-tabs a{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--ink-3);text-decoration:none;border-radius:var(--r)} .app .app-tabs a[aria-current="page"]{color:var(--ink);background:var(--inner)} .agent-launch{right:16px;bottom:calc(76px + env(safe-area-inset-bottom))} } .agent-launch{position:fixed;right:24px;bottom:24px;z-index:40;width:52px;height:52px;border:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:#fff;background:linear-gradient(180deg,#0071CE,#005DB4 60%,#0035A6);box-shadow:0 10px 24px -10px rgba(0,63,168,.70),inset 0 1px 0 rgba(255,255,255,.28)} .agent-launch:focus-visible{outline:2px solid var(--sp-blue);outline-offset:3px} .agent-drawer{position:fixed;top:0;right:0;bottom:0;z-index:50;width:min(var(--ov-s),100vw);display:flex;flex-direction:column;background-color:var(--base);background-image:linear-gradient(var(--glass-solid),var(--glass-solid));box-shadow:var(--lift-2),inset 1px 0 0 var(--hair);transform:translateX(100%);visibility:hidden;transition:transform var(--ease),visibility 0s linear 160ms} .agent-drawer[data-open]{transform:none;visibility:visible;transition:transform var(--ease)} .agent-drawer.wide{width:min(var(--ov-l),100vw)} .agent-drawer[data-open] ~ .agent-launch,.app.with-agent .agent-launch{display:none} .agent-drawer.docked{position:sticky;top:0;height:var(--app-h,100vh);width:auto;transform:none;visibility:visible;box-shadow:inset 1px 0 0 var(--hair);z-index:19} .ad-hd{display:flex;align-items:center;gap:10px;padding:14px 16px;box-shadow:inset 0 -1px 0 var(--hair)} .ad-hd .ad-name{font-size:15px;font-weight:600;letter-spacing:-.008em} .ad-hd .ad-tools{margin-left:auto;display:flex;gap:4px} .ad-ctx{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px 0} .ad-thread{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px} .ad-thread .msg{max-width:92%} .ad-dock{padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 1px 0 var(--hair)} .ad-composer{display:flex;align-items:center;gap:11px;padding:12px 15px;border-radius:var(--r);background:var(--base);box-shadow:inset 0 0 0 1px var(--hair-2)} .ad-composer:focus-within{box-shadow:inset 0 0 0 1px var(--hair-2),0 0 0 3px rgba(0,113,206,.18)} .ad-composer input,.ad-composer textarea{border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--ink);width:100%;outline:none;resize:none} .ad-dock .chips{justify-content:flex-start} .ad-dock .chips button{background:var(--inner);box-shadow:none} .ad-out{border-radius:var(--r);background:var(--inner);padding:12px 14px;display:flex;flex-direction:column;gap:10px} .ad-action{border-radius:var(--r);background:var(--inner);padding:14px;display:flex;flex-direction:column;gap:12px} .ad-diff{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px} .ad-diff > div{border-radius:var(--r-sm);background:var(--glass-solid);padding:10px 12px;display:flex;flex-direction:column;gap:4px} .ad-diff .was{color:var(--ink-3)} .ad-diff .now b{color:var(--ink)} @media (prefers-reduced-motion:reduce){.agent-drawer{transition:none}}
+ .frame{position:relative;transform:translateZ(0);overflow:hidden;height:var(--frame-h,720px);--app-h:var(--frame-h,720px);border-radius:var(--r);background:var(--base);box-shadow:var(--lift-2),var(--edge)} .frame > .frame-scroll{height:100%;overflow:auto;overscroll-behavior:contain} .frame .amb{position:absolute} .device-frame{display:block;border:0;border-radius:var(--r-shell);background:var(--base);box-shadow:var(--lift-2),var(--edge);max-width:100%} .device-frame.phone{width:390px;height:800px} .device-frame.tablet{width:820px;height:1000px} .devices{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start} .scrim{position:fixed;inset:0;z-index:55;background:rgba(6,14,30,.38)} :root[data-theme="dark"] .scrim{background:rgba(0,0,0,.55)} .modal,.drawer{position:fixed;z-index:60;display:flex;flex-direction:column;background-color:var(--base);background-image:linear-gradient(var(--glass-solid),var(--glass-solid));box-shadow:var(--lift-2),var(--edge)} .modal{left:50%;top:50%;transform:translate(-50%,-50%);width:min(var(--ov-m),calc(100vw - 32px));max-height:calc(100% - 64px);border-radius:var(--r-sheet,16px)} .modal.s{width:min(var(--ov-s),calc(100vw - 32px))} .modal.l{width:min(var(--ov-l),calc(100vw - 32px))} .drawer{top:0;right:0;bottom:0;width:min(var(--ov-m),100vw)} .drawer.s{width:min(var(--ov-s),100vw)} .drawer.l{width:min(var(--ov-l),100vw)} .ov-hd{display:flex;align-items:flex-start;gap:var(--s-3);padding:var(--ov-pad) var(--ov-pad) var(--s-4)} .ov-hd .ov-t{font-size:18px;font-weight:600;letter-spacing:-.01em} .ov-hd .ov-sub{font-size:13.5px;color:var(--ink-3);margin-top:2px} .ov-hd .ov-x{margin-left:auto} .ov-bd{flex:1;min-height:0;overflow-y:auto;padding:0 var(--ov-pad) var(--ov-pad);display:flex;flex-direction:column;gap:var(--s-4)} .ov-ft{display:flex;justify-content:flex-end;gap:var(--s-2);padding:var(--s-4) var(--ov-pad);box-shadow:inset 0 1px 0 var(--hair)} .ov-ft .lead{margin-right:auto} @media (max-width:760px){.modal{left:0;right:0;top:auto;bottom:0;transform:none;width:100vw;max-height:88%;border-radius:var(--r-sheet,16px) var(--r-sheet,16px) 0 0} .drawer,.drawer.s,.drawer.l{width:100vw}} .tbl td,.tbl th{padding:var(--cell-py) var(--cell-px)} .tbl tbody tr{height:var(--row-h)} .tbl .cl{display:block;max-width:var(--col-w,260px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .tbl .cl2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:var(--col-w,320px)} .tbl .cell-chips{display:flex;gap:var(--s-1);flex-wrap:nowrap;align-items:center;white-space:nowrap} .tbl .more{font-size:12px;font-weight:600;color:var(--ink-3)} .tblwrap.freeze .tbl th:first-child,.tblwrap.freeze .tbl td:first-child{position:sticky;left:0;z-index:1;background-color:var(--base);background-image:linear-gradient(var(--glass-solid),var(--glass-solid))} .row-x td{padding-top:0} .row-x .xp{border-radius:var(--r);background:var(--inner);padding:var(--s-4);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--s-4)} .dl{display:grid;grid-template-columns:minmax(120px,160px) minmax(0,1fr);gap:var(--s-2) var(--s-6);align-items:baseline} .dl dt{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)} .dl dd{margin:0;min-width:0} .cv{display:flex;flex-direction:column;gap:var(--s-3)} .cv-tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--ink-3)} .device-wrap{position:relative;width:100%;overflow:hidden;border-radius:var(--r);box-shadow:var(--lift-2),var(--edge);background:var(--base)} .device-wrap > iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;background:var(--base)} @media (max-width:1439px){.app.with-agent{grid-template-columns:var(--rail-w) minmax(0,1fr)} .agent-drawer.docked{position:fixed;top:0;right:0;bottom:0;height:auto;width:min(var(--ov-s),100vw);box-shadow:var(--lift-2),inset 1px 0 0 var(--hair);z-index:50}}
+```
+
+**What the kit fixes, from the four runs:**
+
+- **The rail runs the full height, always.** `.app-rail` is sticky at `height:100vh` inside a grid, so
+  it never stops halfway down a long page (Pentland's rail ended at 750 px).
+- **The top bar is opaque.** `.app-top` paints the solid rung over the page ground, so content never
+  slides visibly under it and collides with the title (Pentland). Add `.scrolled` once the page has
+  scrolled, for the shadow.
+- **The agent is a drawer.** `.agent-drawer` slides in from the right over the page (the default),
+  widens with `.wide` for charts and tables, or sits in the layout as a third column with `.docked`
+  inside `.app.with-agent`. It is opaque, so text on it measures against one ground. On a phone it
+  fills the screen.
+- **Phone and tablet are part of the shell.** Under 1,100 px the rail collapses to icons (labels in
+  `.lbl`, the wordmark in `.brand .word`); under 760 px it is replaced by `.app-tabs`, a bottom tab bar
+  with 52 px targets.
+- **In dark, the brand rail stays deep.** `--rail-deep` and `--rail-deep-2` are their own tokens in
+  both themes (transformed like every other colour), so the rail does not turn pale when the dark theme
+  lightens `--sp-deep`. No `color-mix()` anywhere: in a browser without it the rail rendered
+  transparent.
+- **Every screen is drawn at its real width, in a device.** Media queries answer the window, not a
+  box, so a "1,280 px" screen drawn inside a 1,000 px guide column gets the desktop layout at the wrong
+  width: the v5 runs squeezed state screens to one word per line and let a docked Copilot eat the page.
+  **Every screen specimen** — desktop, wide, tablet, phone — goes in `<template class="device"
+  data-device="desktop|wide|tablet|phone">`. The device script below renders it in an `<iframe>` at its
+  true width (1,280, 1,440, 820, 390 px) with the page's own stylesheet, **scales it to fit the guide**,
+  sizes desktop screens to their content height (`data-height="700"` fixes a height), and keeps the
+  theme, chrome, surface, density and style set in sync. `.frame` remains only for a component shown
+  without its screen.
+- **Overlays share one system.** Modals (`.modal`, sizes `.s` 420 / default 560 / `.l` 760 px), side
+  drawers (`.drawer`, same three sizes, always full height) and the agent drawer (420 px, `.wide` 760 px)
+  use the same width tokens (`--ov-s/m/l`), the same anatomy (`.ov-hd` title and one line of support,
+  `.ov-bd` scrolling body, `.ov-ft` footer with the primary action last on the right) and the same
+  padding (`--ov-pad`, 24 px; 16 px on a phone). A modal never exceeds the screen height minus 64 px;
+  its body scrolls. On a phone a modal becomes a bottom sheet and a drawer goes full width. `.scrim`
+  dims the page under a modal, never under a drawer the person works beside.
+- **The docked agent only docks when there is room.** `.app.with-agent` gives the drawer its own
+  column at 1,440 px and wider; below that the same drawer becomes an overlay, so the page is never
+  squeezed. The launcher hides while any agent drawer is open (place `.agent-launch` after the drawer).
+- **Spacing and density are tokens.** `--s-1…--s-12` (4–48 px) is the only spacing scale; page padding
+  `--page-pad`, gaps between sections `--section-gap`, card padding `--card-pad`. `data-density=
+  "compact|comfortable"` on `<html>` moves row height (36 / 44 / 52 px), cell padding and card padding
+  together; nothing else changes.
+- **Table helpers for dense data.** `.cl` (one line with ellipsis, width `--col-w`), `.cl2` (two lines),
+  `.cell-chips` with `.more` ("+2"), `.tblwrap.freeze` (first column stays while the table scrolls),
+  `.row-x .xp` (an expanded row that holds what does not fit a cell). `.dl` is a definition list with a
+  label column of 120–160 px. `.cv` and `.cv-tag` frame a chart view and its code.
+- **Chrome is a switch, not a rewrite.** `data-chrome="brand"` (the house gradient rail), `"ink"`
+  (near-black chrome with the brand's signal colour as the active indicator — for black-led and
+  achromatic brands), `"light"` (the rail on the solid rung, the brand only on the active indicator).
+- **Surface is a switch.** `data-surface="glass"` (the house look), `"solid"` (opaque cards, no blur,
+  a quieter aurora — for dense tools and clients whose own product is flat), `"paper"` (solid cards on
+  the client's own page ground `--paper`, no aurora — for print-like, editorial or very calm brands).
+
+**The device script — paste once, inline, at the end of `<body>`:**
+
+```js
+(function(){
+  var KEYS=['data-theme','data-chrome','data-surface','data-density','data-style-set'];
+  var SIZES={phone:[390,800],tablet:[820,1000],desktop:[1280,800],wide:[1440,900]};
+  var head=[].map.call(document.querySelectorAll('style,link[rel="stylesheet"]'),function(n){return n.outerHTML}).join('');
+  function rootAttrs(){var h=document.documentElement;return KEYS.filter(function(a){return h.hasAttribute(a)}).map(function(a){return a+'="'+h.getAttribute(a)+'"'}).join(' ')}
+  var items=[];
+  [].forEach.call(document.querySelectorAll('template.device'),function(t){
+    var kind=t.getAttribute('data-device')||'desktop', sz=SIZES[kind]||SIZES.desktop;
+    var W=+(t.getAttribute('data-width')||sz[0]), hAttr=t.getAttribute('data-height')||((kind==='phone'||kind==='tablet')?String(sz[1]):'auto');
+    var wrap=document.createElement('div'); wrap.className='device-wrap '+kind;
+    if(kind==='phone'||kind==='tablet'){wrap.style.maxWidth=W+'px';wrap.style.borderRadius='var(--r-shell)'}
+    var f=document.createElement('iframe'); f.title=t.getAttribute('data-title')||(kind+' specimen');
+    f.style.width=W+'px'; f.style.height=(hAttr==='auto'?sz[1]:+hAttr)+'px';
+    f.srcdoc='<!doctype html><html '+rootAttrs()+'><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+head+'</head><body>'+t.innerHTML+'</body></html>';
+    wrap.appendChild(f); t.parentNode.insertBefore(wrap,t.nextSibling);
+    var it={t:t,wrap:wrap,f:f,W:W,auto:hAttr==='auto'}; items.push(it);
+    f.addEventListener('load',function(){sync();fit(it);var d=f.contentDocument;if(d&&d.fonts)d.fonts.ready.then(function(){fit(it)});setTimeout(function(){fit(it)},400)});
+  });
+  function fit(it){
+    var d=it.f.contentDocument;
+    if(it.auto&&d&&d.documentElement){it.f.style.height='0px';var h=Math.min(Math.max(d.documentElement.scrollHeight,480),2600);it.f.style.height=h+'px'}
+    var s=Math.min(1,it.wrap.clientWidth/it.W);
+    it.f.style.transform='scale('+s+')';
+    it.wrap.style.height=(parseFloat(it.f.style.height)*s)+'px';
+  }
+  function sync(){var h=document.documentElement;items.forEach(function(it){var d=it.f.contentDocument;if(!d||!d.documentElement)return;KEYS.forEach(function(a){if(h.hasAttribute(a))d.documentElement.setAttribute(a,h.getAttribute(a));else d.documentElement.removeAttribute(a)})})}
+  new MutationObserver(function(){sync();items.forEach(fit)}).observe(document.documentElement,{attributes:true,attributeFilter:KEYS});
+  if(window.ResizeObserver){var ro=new ResizeObserver(function(){items.forEach(fit)});items.forEach(function(it){ro.observe(it.wrap)})}
+  else window.addEventListener('resize',function(){items.forEach(fit)});
+})();
+```
+
+**Every colour in the kit is transformed with the core** in Step 3, and its ratios are measured in
+Step 6 like everything else. The kit's literal blues follow the brand; the ink chrome's near-blacks are
+near-neutral and barely move.
 
 **Fonts as shipped:** Archivo 400/500/600 and IBM Plex Mono 400/500/600, both from Google Fonts and both openly licensed. **Archivo is the DEFAULT body face, not a fixed one — Step 2b decides whether it is replaced by the client's.** IBM Plex Mono stays. **If the mono is not
 actually embedded, table headers fall back silently and the whole grid loses its register.**
@@ -486,9 +808,40 @@ does not look broken, it just casts the whole page in the wrong hue. Their hex e
 
 ## Step 1 · Sample the brand
 
-* **Read the CSS custom properties off `:root` on the live site** — not a screenshot, not the brand
-  book. *On daikincomfort.com they are literally `--daikin_blue`, `--daikin_orange`,
-  `--daikinGradient`.* Take the neutral ramp too. **The type stack is its own step — see Step 2b.**
+**The brand source order — highest first.** It decides every colour conflict; nothing else does.
+
+1. **What the client supplied**: a swatch, the client's own deck or brand cues, a named brand system,
+   the brand inputs and §21 hand-off of the scoping document when they come from client material.
+2. **The client's published brand guidelines** or brand portal (colour pages, brand kit).
+3. **The client's live product interface** — their own app or platform, when it is public.
+4. **The client's live marketing site** — the CSS custom properties, the computed button and header
+   colours.
+5. **Third-party sources** (colour sites, logo libraries) — only ever as the confirming second source.
+
+A source higher in the order wins even when a lower one is used more often. A retired source (a rebrand
+dated after it) drops out of the order entirely. Record the order applied in the port note.
+
+**Sample the identity, not only the hue.** A hue rotation alone produced four apps that looked the
+same. Record each of these from the sources above; together they feed the expression (Step 2c):
+
+- **Light-to-dark balance.** Is the brand light-led (white grounds, colour as accent), dark-led
+  (black or near-black grounds, as on Pentland's deck) or colour-led (large fields of brand colour)?
+- **The brand's chromatic role.** One hero colour, a pair, a gradient, or achromatic (black, white,
+  grey) with a single accent? **An achromatic brand's "brand colour" is its black**, and its accent is
+  the signal colour. Do not promote a link blue from the site into the brand.
+- **The accent and where the client uses it** — buttons only, highlights, data, illustration.
+- **The neutral ramp** — warm, cool or pure grey; the client's page background.
+- **Shape and line** — square or rounded, hairlines or shadows, flat or layered, as their own product
+  draws them (this informs the expression only; the core radius scale does not move).
+- **Imagery** — product photography, people, illustration, data, none; and its treatment.
+- **A motif** — a shape, line, angle or pattern in the logo or brand work that can become one quiet
+  graphic element (a chevron, an oval, a stripe).
+- **Type voice** — the display face and how loud headings are.
+
+* **On the live site, read the CSS custom properties off `:root`** — not a screenshot. *On
+  daikincomfort.com they are literally `--daikin_blue`, `--daikin_orange`, `--daikinGradient`.* Take
+  the neutral ramp too. **From brand guidelines, take the digital (screen) palette**; a print primary
+  (Pantone, CMYK) is not the screen colour the client means, as the next point shows. **The type stack is its own step — see Step 2b.**
 * **🔴 A brand book's print primaries are not necessarily the hue the client means by "our colour".**
   Proofpoint's second attempt used H 196 — the hue of their own 5415 Blue — and was still wrong. The
   answer came as a swatch: *"Its more of sea green and bluish…"*, sampled as `#102F2D` off their live
@@ -647,6 +1000,108 @@ eyebrows, KPI labels, timestamps and citation chips, and its 10.5px table header
 Clients almost never have a brand mono, and swapping it changes the grid's register for no gain.
 **Swap the body face; keep the mono.**
 
+## Step 2c · Choose the expression — so it looks like this client, and only this client
+
+**Four runs, four clients, one look.** With the logo covered, Pentland, ClickUp, Vermont and Topcon
+were the same product in a different hue: the same gradient rail, white bar, glass cards and aurora.
+The core is right to stay fixed — its measurements are why the apps worked. What was missing is a
+decision about **how this client's product should feel**, taken from evidence and recorded.
+
+**Set each dial from the identity sample (Step 1), the personas (0.4) and the inspiration board
+(research question 6).** Every dial records its choice and the evidence that chose it, in an
+**expression card** on the style guide.
+
+| Dial | Options | Chosen by |
+| --- | --- | --- |
+| **Chrome** | `brand` gradient rail · `ink` near-black chrome · `light` rail on the solid rung | The brand's light-to-dark balance and chromatic role. Dark-led or achromatic → `ink`. Colour-led → `brand`. Light-led with a restrained accent → `light`. |
+| **Shell** | left rail · top navigation (`data-shell="top"`) · rail plus docked agent (`.with-agent`) | Number of top-level destinations (≤ 5 and a wide content area → top navigation works), how the client's own product navigates, the persona's session length. |
+| **Surface** | `glass` · `solid` · `paper` | The client's own product (layered or flat), density (dense tools lean `solid`), the vibe line in §21. |
+| **Default theme** | light · dark | Dark-led brands and dark-first personas (night shifts, control rooms) → dark; otherwise light. The product ships this default; the other theme stays one attribute away. |
+| **Type voice** | display face = body face · a separate display face (`--font-display`) · display weight and size emphasis within the four-size scale | The client's display face (open or substituted, Step 2b) and how loud their headings are. |
+| **Imagery** | product photography · people · illustration · data-led (no imagery) | What the client's own work shows and what the records have (styles with photos, shelves, people). Where records have images, every specimen shows them, with a real fallback. |
+| **Motif** | none · one graphic element from the logo or brand work | Used once or twice, quietly: an empty-state illustration, the rail's top edge, a section divider, the AI marker. Never behind text, never a new colour. |
+| **Chart voice** | bars and lines with gridlines · minimal with direct labels · dense small multiples | The personas (an executive reads big numbers and direct labels; an analyst reads grids) and the references. |
+| **Signal** | the transformed accent (default) · the brand's literal accent as `--signal` | When the brand's own accent cannot be a fill under white text (neon lime, yellow, light cyan), keep it literal as `--signal` for indicators, focus glow on dark chrome, a key data series, selection marks — measured per use, never as body text on light. |
+
+**Rules for the dials:**
+
+- **The house default is a choice, not a fallback.** Picking `brand` chrome + left rail + `glass` +
+  light needs evidence from the brand, the same as any other combination.
+- **The logo-off test.** Cover the logo on the main screen and ask whether a person who knows the
+  client would recognise it as theirs. If not, revisit chrome, surface, imagery and motif before going
+  on. Record the answer in the expression card.
+- **Two consecutive runs for different clients must not land on the same card** unless the evidence
+  for both points there; the card states it.
+- **What the dials never move:** the radius scale, the no-borders-on-cards rule, the two elevation
+  levels, the four type sizes and two weights, spacing, component anatomy, every state, the status
+  palette, the contrast floors. Variation lives in composition and colour application, never in
+  breaking the measured core.
+
+### Variants and the style set — options for the reviewer, one answer for the builder
+
+Reviewers want choices ("show me another chart header"), and the builder needs one unambiguous answer.
+Too many loose variants and the builder mixes them or picks the weakest. So variants are **coded,
+capped and bundled**:
+
+1. **Families.** Only these component families may carry variants: page header `PH`, record header
+   `RH`, KPI tile `KPI`, chart frame and header `CH`, table row style `TB`, card `CD`, filter bar `FB`,
+   empty state `ES`, and the signature components from 0.8 (`SG1`, `SG2`, …). Everything else has one
+   form.
+2. **At most three variants per family**, coded `<family>-<n>` (`KPI-1`, `KPI-2`, `CH-3`). Each must
+   differ in a way a reviewer can see in one second (number above label vs label above number; header
+   with inline legend vs legend below), and each passes every rule in this file. No variant is a
+   weaker copy kept for contrast.
+3. **At most three style sets**, `S1`, `S2`, `S3`. A style set names exactly **one** variant per family
+   — never two. **S1 is the recommended set** and is the only set used on every screen of the style
+   guide. S2 and S3 appear only in a **Style sets** section: the same two hero screens re-drawn with
+   each set side by side, so the reviewer compares whole looks, not parts.
+4. **Every specimen is tagged.** Each component instance carries `data-variant="KPI-1"` (and the screen
+   carries `data-style-set="S1"`), and the style guide prints the code beside each variant in the
+   component section.
+5. **Machine-readable for the builder.** The file carries one JSON block, which the build contract
+   quotes:
+
+```html
+<script type="application/json" id="style-sets">
+{"active":"S1",
+ "sets":{"S1":{"PH":"PH-1","RH":"RH-1","KPI":"KPI-1","CH":"CH-1","TB":"TB-1","CD":"CD-1","FB":"FB-1","ES":"ES-1"},
+         "S2":{"PH":"PH-1","RH":"RH-2","KPI":"KPI-2","CH":"CH-2","TB":"TB-1","CD":"CD-2","FB":"FB-1","ES":"ES-1"}},
+ "variants":{"KPI-1":"number over label, delta below, no icon","KPI-2":"label over number, sparkline right"}}
+</script>
+```
+
+   **The rule for the builder: use only the active set's variant for each family, everywhere, and never
+   mix sets.** If the reviewer picks S2, only `"active"` changes.
+6. **Variants come from the brand and the references**, not from invention: each variant names the
+   reference (research question 6) or brand evidence it came from in the `variants` text.
+
+### Chart views — more than one way to see the same data
+
+For every chart the document needs, start from the **question the chart answers** ("which stores
+fail most?", "is the pass rate improving?") and draw **chart views**: the recommended view plus one or
+two alternatives that answer the same question differently, each coded `CV-<chart>-<a|b|c>` and framed
+in `.cv` with its code (`.cv-tag`).
+
+- **Same frame, same data, same units, same status palette** across the views of one chart; only the
+  encoding changes (bars ↔ dot plot ↔ line; stacked ↔ small multiples; donut never for more than three
+  parts).
+- **Mark one view Recommended** and say why in one line. The recommended view goes into the active
+  style set's screens; the alternatives appear beside it in the chart section only.
+- **Where the persona benefits, the view switch ships in the app**: a `.seg` in the chart header
+  (Chart / Table at minimum, for accessibility and export), drawn in its states.
+- **Every chart has a table view** available, even if it is not the recommended view.
+
+**Black-led and achromatic brands** (Pentland: black grounds, white type, a neon yellow-green accent):
+chrome `ink`, default theme usually dark, surface `solid` or `glass` over a near-black ground, the
+accent kept literal as `--signal` for the active nav indicator, focus, selection and the one hero data
+series. The primary button becomes a light fill with dark text, or the signal fill with dark text,
+whichever measures ≥ 4.5:1 — never the signal under white. **An achromatic brand is never rotated
+onto a hue taken from its website's link colour.**
+
+**Brands whose hue is close to the house blue** (Topcon, H 208°): the transform barely moves anything,
+so the expression has to carry the identity — chrome, surface, imagery, motif and type voice do the
+work the hue cannot.
+
 ## Step 3 · Transform, preserving LUMINANCE
 
 **The whole value of porting a validated system is that its measurements survive. They survive only
@@ -726,14 +1181,49 @@ checked.**
 
 **The style guide ships a theme switch** — built from `.seg` (D0), defaulting to the OS, remembered
 in `localStorage`. **A screen built from the design system does not**, because a theme toggle in
-product chrome is our scaffolding shipped to the client. On a product build, ship the mode the
-design was made in and **keep the other theme's tokens live in the stylesheet**, so the second theme
-is one attribute away rather than a rebuild.
+product chrome is our scaffolding shipped to the client. On a product build, ship the **default theme chosen in
+Step 2c, set explicitly as `data-theme` on `<html>`** — a product never follows the reader's OS (the
+Topcon app opened dark on a dark-mode laptop while the design was light-first) — and **keep the other
+theme's tokens live in the stylesheet**, so the second theme is one attribute away rather than a
+rebuild. Users switch theme from the profile menu.
 
-**Dark specifics:** ambient washes go *lighter* than the page · edges catch light upward in dark and
-downward in light · one hue carries two categorical steps in dark, three in light · **a container
-that HOLDS other glass takes the opaque rung**, or nested glass composites two rungs above its
-intended one and drags every ink token after it.
+**Dark specifics — rebuilt in v5.** The v4 dark sat on a mid slate (`#192030`) under blue-grey glass at
+12–23% and aurora at 19–26%. It read dull and muddy, and measured worse than it looked: composited on
+its own tier-3 glass, `--ink-3` fell to 3.06:1 and the status tags to 2.98–3.43:1, which is why every
+run lifted tokens by hand. The v5 dark, now in the stylesheet:
+
+| Token | v4 | v5 | Why |
+| --- | --- | --- | --- |
+| `--base` | `#192030` | `#0B1018` | A deep, faintly brand-tinted ground: depth comes from a dark page, not from grey washes |
+| `--glass-1/2/3` | `rgba(120,165,225,.12/.17/.23)` | `rgba(150,180,230,.05/.07/.095)` | Glass in dark is a whisper of light; heavy alpha is what turned it to slate |
+| `--glass-solid` | `#2F3D57` | `#151B26` | The opaque rung sits one clear step above the page |
+| `--inner` · `--edge` · `--hair` | `.085` · `.17` · `.10/.17` | `.06` · `.10` · `.08/.14` | Quieter separations on a darker ground |
+| `--ink` / `-2` / `-3` / `-mute` | `#D8E0EC` `#AAB7CB` `#9FADC3` `#78869F` | `#E7ECF3` `#B6C0CF` `#9AA6B8` `#6F7B90` | Worst composited case now 9.61 / 6.21 / 4.63 (mute is disabled text, exempt) |
+| `--sp-blue` (brand as text) | `#6BB3EA` | `#7DBDF0` | 5.65:1 at its worst ground, up from 3.06 |
+| Status text | `#AAB7CB` `#E3B45C` `#EC9790` `#86CDB4` | `#B6C0CF` `#E8BC69` `#F2A49D` `#8FD3BA` | Every status tag ≥ 5.0:1 on its tint over the opaque rung (was 2.98–3.43) |
+| `--aur-1/2/3` | `.26/.19/.22` | `.18/.12/.14` | The aurora becomes a glow at the edges, not a wash over everything |
+| `--vig` | to `rgba(6,11,22,.30)` | to `rgba(2,5,11,.42)` | Corners fall away, which is what makes the glow read |
+| `.tile` highlight | white at 28% | white at 4.5% (dark only) | The 28% highlight painted every tile grey |
+
+**Rules for dark, whatever the brand:**
+
+- **Depth is lightness steps, not washes**: page < glass tiers < opaque rung < inner wells < raised
+  overlays, each a small, even step lighter.
+- **The brand glows; it does not tint everything.** Allowed: the aurora at the page edges, a soft
+  brand glow behind the hero area or the agent launcher, the focus ring, the active nav indicator, a
+  brand gradient on the primary fill. Not allowed: brand colour behind body text, saturated panels.
+- **No fluorescent text.** Brand-as-text in dark is a pastel step of the brand (HSL lightness ≥ 0.70,
+  measured); a neon or saturated accent is used for marks, indicators and fills with dark text, never
+  for words on dark.
+- **Edges catch light upward in dark and downward in light.** One hue carries two categorical steps
+  in dark, three in light.
+- **A container that HOLDS other glass takes the opaque rung**, or nested glass composites two rungs
+  above its intended one and drags every ink token after it.
+- **After the transform, re-measure the dark set on the brand's own hue.** A warm or green brand moves
+  luminance differently from blue; the v5 numbers are the floor the port must still meet.
+- **Look at references first** (research question 6): well-regarded dark products use near-black
+  grounds, low-alpha surfaces, a single accent and generous spacing. Take that discipline, not their
+  colours.
 
 **Light specifics — it is not dark with the tokens flipped:** near-white brand tint base · **aurora
 alphas roughly halved** · tier 1 `rgba(255,255,255,.72)`, tier 2 `.82`, tier 3 brand at 5% · inset
@@ -769,9 +1259,18 @@ deliberately dimmed states.
   their hierarchy, and no fixed-width layout has overflowed.**
 * Tag font-size < button font-size · status tags ≥ 4.5 composited, both themes · **logo mark ≥ 3:1
   on its ground, every variant**.
-* One `<style>`, one `</style>` · no horizontal page scroll · zero JS errors.
+* One `<style>`, one `</style>` · no horizontal page scroll · zero JS errors · **one output file**.
 * **Theme switch correct under both OS schemes and across a reload.**
 * **Narrow a filter until it returns nothing** and look at which empty state appears.
+* **Shell, at the deepest scroll:** the rail's bottom equals the viewport's bottom, the top bar's
+  computed background is opaque, no content is visible through or under it, and wide tables scroll
+  inside their own container (no column clipped, no page-level horizontal scroll).
+* **Every agent drawer opens, closes with Esc, returns focus to its launcher**, and is drawn over a
+  real screen; no agent appears as a card or block in a page layout.
+* **Images:** every record that has an image shows it; every missing image shows the designed
+  fallback, never a broken-image icon or an empty card.
+* **Status in charts** uses the status palette and a legend with words, never brand-colour steps.
+* **Phone and tablet layouts** render at their widths with their own navigation.
 
 **Four traps, each of which produced a false result on a real run:**
 
@@ -791,13 +1290,96 @@ deliberately dimmed states.
    `page.click('[data-theme]')` clicks `<html>` and your dark screenshot comes back light — select
    `button[data-theme]`.
 
+### Rendering safety — what broke in real output files, and the rule for each
+
+Every one of these produced a file that looked finished in its source and rendered wrong.
+
+| What broke | Rule |
+| --- | --- |
+| **Words looked run together** (Vermont, "Retakeneeded") | **Fonts are embedded as base64 WOFF2 taken unchanged from Google Fonts' own files** for the subsets the page needs (latin, latin-ext, plus any script the personas read). Never re-subset, rebuild or convert a font. Some faces simply have narrow spaces — Plus Jakarta Sans measures 0.17 em in its official file, Archivo 0.21, Inter 0.28 — so judge the space against the official file, not an absolute floor. For a face with a space under 0.2 em: no negative letter-spacing below 15 px, and `word-spacing:.04em` on text under 14 px. |
+| **Fonts silently fell back** when a run's sandbox could not reach Google Fonts, so its own screenshots showed Arial and the audit measured the wrong face | Embedding (above) makes the file truly self-contained. A `<link>` to Google Fonts is allowed only as a backup *in addition* to the embedded faces. `document.fonts` must report every family loaded before screenshots are taken. |
+| **Unstyled studio parts** — the v4 stylesheet had no light-theme base rule for `.sheet2`, `.kpis2`, `.kpi2` or the studio composer `.cmp` | Fixed in v5's stylesheet. Any class the page uses must have a base rule; the render check lists classes with no matching rule. |
+| **Broken images and empty image tiles** (Pentland's AI views, its material swatches) | Every image is embedded (SVG inline, raster as a data URI of 200 KB or less) — never hot-linked, since client sites block hot-linking and the file must open offline. Every image box has a size or `aspect-ratio`, `alt` text and a designed fallback. Keep the file under 15 MB. |
+| **One open drawer covered the whole guide; a 100vh rail ran past its screen** | Screen specimens go in `.frame > .frame-scroll` (the kit). |
+| **A phone drawn in a narrow box showed the desktop layout** | Phone and tablet specimens go in `<template class="device">` and render as iframes (the device script). |
+| **The launcher sat on the phone's tab bar** | Fixed in the kit: on a phone the launcher sits above `.app-tabs`. |
+| **Tags broke onto two lines in narrow tables** ("Off / track") | Fixed in the core: tags, facet chips and slots do not wrap. |
+| **Clipped inputs and spilling cards** (ClickUp's search placeholder cut off, a Topcon hover card 149 px outside its column) | Placeholders fit their field at the narrowest width shown. State specimens (hover, lifted, open) sit in a cell sized for that state. The render check flags spills and clips. |
+| **A transparent rail in some browsers** (`color-mix()`) | No `color-mix()`, CSS nesting or container queries in the system CSS; layout must not depend on `:has()`. |
+| **Icons at browser-default stroke** (camelCase SVG attributes in HTML) | The `stroke[A-Z]` grep above, before every hand-over. |
+
+**The render check — run it in the browser on the finished file, in light and in dark, at 1,280 px and
+375 px, and paste the result into the hand-over.** It also walks every device iframe. Every count must be
+zero and every face loaded; `where` names the first offenders. `overlaps` finds siblings that collide
+(pills on top of each other, task names running into the next card); `squeezed` finds text wrapping at
+one or two words per line (a column or card too narrow for its content).
+
+```js
+(() => {
+  const res = { hScroll: 0, spills: 0, clipped: 0, overlaps: 0, squeezed: 0, brokenImages: 0, fonts: {}, unstyledClasses: [], where: [] };
+  const note = (k, el, doc, win = window) => { res[k]++; if (res.where.length < 15) res.where.push(k + ': ' + (win.frameElement ? (win.frameElement.title || 'device') : 'page') + ' › ' + el.tagName.toLowerCase() + '.' + [...el.classList].join('.') + ' "' + (el.textContent || '').trim().slice(0, 40) + '"'); };
+  const scan = (doc, win) => {
+    const de = doc.documentElement; res.hScroll = Math.max(res.hScroll, de.scrollWidth - de.clientWidth);
+    const texts = [];
+    const layer = el => { for (let n = el; n && n !== doc.body; n = n.parentElement) { const p = win.getComputedStyle(n).position; if (p === 'fixed' || p === 'absolute' || p === 'sticky') return n; } return doc.body; };
+    for (const el of doc.querySelectorAll('body *')) {
+      const cs = win.getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+      if (['hidden', 'clip'].includes(cs.overflowX) && el.scrollWidth > el.clientWidth + 2 && el.clientWidth > 40 && cs.textOverflow !== 'ellipsis' && !el.closest('.tblwrap')) note('clipped', el, doc, win);
+      const p = el.parentElement;
+      if (p && cs.position !== 'fixed' && cs.position !== 'absolute' && win.getComputedStyle(p).overflowX === 'visible' && r.right > p.getBoundingClientRect().right + 4) note('spills', el, doc, win);
+      const own = [...el.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim());
+      if (own) {
+        if (cs.display !== 'inline' && cs.display !== 'contents') texts.push([el, r, layer(el)]);
+        const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3, lines = Math.round(r.height / lh), words = el.textContent.trim().split(/\s+/).length;
+        if (lines >= 3 && words / lines <= 1.6 && words >= 3) note('squeezed', el, doc, win);
+      }
+    }
+    for (const parent of doc.querySelectorAll('body *')) {
+      if (parent.matches('.faces')) continue;
+      const kids = [...parent.children].filter(k => { const cs = win.getComputedStyle(k); return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.position !== 'absolute' && cs.position !== 'fixed' && k.textContent.trim(); });
+      for (let i = 0; i < kids.length; i++) for (let j = i + 1; j < kids.length; j++) {
+        const ra = kids[i].getBoundingClientRect(), rb = kids[j].getBoundingClientRect();
+        const ix = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), iy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+        if (ra.width && rb.width && ix > 3 && iy > 3) note('overlaps', kids[j], doc, win);
+      }
+    }
+    res.brokenImages += [...doc.images].filter(i => i.complete && !i.naturalWidth).length;
+    const c = doc.createElement('canvas').getContext('2d');
+    doc.fonts.forEach(f => { const fam = f.family.replace(/["']/g, ''); c.font = `16px "${fam}"`; res.fonts[fam] = { status: f.status, spaceEm: +((c.measureText('a b').width - c.measureText('ab').width) / 16).toFixed(2) }; });
+    const css = [...doc.styleSheets].flatMap(s => { try { return [...s.cssRules].map(r => r.cssText) } catch (e) { return [] } }).join(' ');
+    [...new Set([...doc.querySelectorAll('[class]')].flatMap(e => [...e.classList]))].filter(k => !css.includes('.' + k) && !res.unstyledClasses.includes(k)).forEach(k => res.unstyledClasses.push(k));
+  };
+  scan(document, window);
+  for (const f of document.querySelectorAll('iframe')) { try { if (f.contentDocument) scan(f.contentDocument, f.contentWindow); } catch (e) {} }
+  console.table(res); return res;
+})()
+```
+
+Treat `spills`, `clipped` and `squeezed` in the style guide's own documentation tables as leads to
+check; in screen specimens they are defects, every one. `unstyledClasses` should list only hooks used
+by a script, never a visual component. The v5 runs measured 69–381 squeezed elements and up to 54
+clipped ones per file; the reference test page measures zero on every count.
+
 ## Step 7 · Ship
 
-**Three deliverables:**
+**The output is one file: a single self-contained HTML file, and nothing else.** Not a published
+artifact, not a separate token file, not a logo folder, not JSON or Markdown alongside it. Save it as
+`<client>-design-system.html` in the outputs folder and hand over that path. Everything the four
+deliverables below describe lives inside that one file as sections of the page — the token block as a
+copyable code block, the logo kit as inline SVG (raster variants as data URIs) with a copy button per
+variant, the build contract as a quotable block. If something cannot live inside the file, it is not
+delivered.
 
-1. **Living style guide** — self-contained HTML, the full section set, light and dark with a working
-   switch, published as an artifact. Doubles as the visual spec the build prompt points at. Carry:
-   the view manifest from 0.6 with a link to every specimen ·
+**Four deliverables, all inside the one file:**
+
+1. **Living style guide** — the page itself: self-contained, the full section set, light and dark with
+   a working switch. Doubles as the visual spec the build prompt points at. **Its
+   order:** build brief and manifest → expression card and inspiration board → the demo-storyline flow
+   and every journey flow (0.7) → signature components (0.8) → the app shell for each role and device →
+   every screen, in its shell → agent drawers (0.9) → overlays (modals and drawers, all sizes) → chart
+   views → style sets (S1, S2, S3 compared) → foundations and components → port note, ledger,
+   build contract, hand-over. Carry: the view manifest from 0.6 with a link to every specimen ·
    the swatch and its provenance · the token block · type scale · glass tiers · ambient field · every
    component **rendered, not described** · the table toolbar with all four states including
    filtered-empty · the AI Insight card · the container doctrine.
@@ -805,7 +1387,32 @@ deliberately dimmed states.
    beside each**, non-text ones marked. A token carrying a number nobody re-measured after a hue
    rotation is a defect.
 3. **Logo kit** — the seven variants with the usage matrix, clear space, minimum sizes, misuse list
-   and provenance.
+   and provenance. With `ink` or `light` chrome, the rail takes the variant that measures on it (the
+   reversed mono on `ink`, the full-colour horizontal lockup on `light`).
+4. **Build contract** — a short block on the page, written for the builder (Nebula), that the build
+   prompt quotes verbatim. It carries:
+   - **Shell:** use `.app`, `.app-rail`, `.app-top`, `.app-main`, `.app-body` from the kit; the rail is
+     full height at every scroll position; the top bar is opaque and gains `.scrolled` on scroll; set
+     `data-chrome`, `data-surface` and `data-theme` on `<html>` exactly as the expression card says.
+   - **Agents:** every agent uses the `.agent-drawer` opened from a top-bar button and `.agent-launch`,
+     **built on the platform's live agent/chat component** with streamed replies and real stages.
+     Never an automation that writes the answer into an object for the page to show on refresh. Tool
+     outputs (charts, tables, files, citations, proposed actions) render inside the thread.
+   - **Data:** tables scroll horizontally inside `.tblwrap`; every image has a fallback; counts shown
+     in two places come from the same query. Tables follow the density rules (one line per cell, two
+     chips then "+n", long text in an expanded row or drawer, about seven columns at 1,280 px).
+   - **Style set:** the `#style-sets` JSON block, quoted; use only the active set's variant for each
+     family, on every screen; never mix sets. Chart views: the recommended view, with the Chart / Table
+     switch where drawn.
+   - **Overlays and spacing:** modals and drawers only in the three sizes and one anatomy; the agent
+     docks only at 1,440 px and wider; spacing only from the scale; `data-density` as the persona
+     row says.
+   - **Colour:** no colour value outside the token block; status series in charts use the status
+     palette; deltas are coloured by good or bad, not by sign.
+   - **States:** every screen ships its empty, filtered-empty, loading, error, no-access and UNSET
+     states as drawn.
+   - **Roles and devices:** each role's shell and navigation as drawn; phone and tablet layouts as
+     drawn.
 
 **And a type note:** the client's real typeface named, what was shipped instead, and why — *"Brand face
  is Gotham (Monotype, single-domain licence); shipped Montserrat as the closest open substitute.
@@ -813,15 +1420,17 @@ deliberately dimmed states.
  looks like we did not notice.**
 
 **Plus a port note on the page itself**, stating the source version, max |ΔY| across all colours, and
-every decision the port forced. **Anchor the one branded surface to the client** — the nav and rail
-gradients start at the sampled swatch.
+every decision the port forced, **the brand source order applied, the expression card, and every
+correction made to the scoping document (0.1)**. **Anchor the one branded surface to the client** — with
+`brand` chrome the rail gradient starts at the sampled swatch; with `ink` chrome the signal colour marks
+the active item; with `light` chrome the brand marks the active item and the primary action.
 
 **Swap the sample domain, not the doctrine.** Proofpoint: Deal Gate → Quote Builder; gate artefacts
 → product configuration / pricing summary / legal review / order form; identities → seats; Okta IG →
 Defender for O365; Stage 20/40 → awaiting approval / approved. **Every measurement stayed.**
 
-⚠️ **Anonymise at extraction: the format travels, the client name does not.** Check the artifact's
-share setting before handing over a link — the Proofpoint one shipped as "anyone with the link".
+⚠️ **Anonymise at extraction: the format travels, the client name does not.** The file is the
+hand-over; do not publish it or share it as a link.
 **If you fix something in the stylesheet, say so in the hand-over** — an unreported fix means
 the next run reintroduces it and the skins quietly diverge.
 
@@ -932,7 +1541,8 @@ interactive legend, zoom/pan and drill-down.
 - **Audit log** `[NEW]` — immutable record of who-did-what-when.
 
 ### Conversational & agentic views
-- **Copilot / chat** `[in kit]` — three shapes (floating / pane / full); the copilot speaks first, loading is a sequence not a spinner.
+- **Agent drawer** `[in kit]` — the default home of every agent: right drawer (overlay), wide drawer, docked third column, full screen on a phone (`.agent-drawer`); see "The agent component" below. The agent speaks first; loading is a sequence, not a spinner.
+- **Agent workspace (full page)** `[in kit, partial]` — only when the agent IS the screen's purpose (a dedicated "Ask" page); a centred column around the composer (`.canvas`). Never on a dashboard or record page.
 - **Agent workbench** `[NEW]` — the agent's work as structured, inspectable output, not only a chat log.
 - **AI insight card** `[in kit]` — inferred-vs-stated, grounded, per-row confidence, one row deliberately excluded with its reason (`.ai:not(.msg)`).
 - **Reasoning / trace view** `[in kit, partial]` — expand `.stages` into a full step-by-step trace.
@@ -1120,7 +1730,9 @@ risks the signature look).
 * **Chart frame:** the system owns the card, title, **unit**, legend placement and no-data state; the
   ramp and marks follow the palette rules and the `dataviz` skill. A chart without a stated unit is a
   decoration. **Never colour a delta by its arithmetic sign** — colour it by whether the movement is
-  good, and name the comparison period beside it.
+  good, and name the comparison period beside it. **A series that encodes a status (pass / fail,
+  on track / off track) takes the status palette and a worded legend**, never steps of the brand
+  colour — Vermont's pass-rate chart showed Fail, Needs attention and Pass as three blues.
 * **Container doctrine:** **modal** only for irreversible or legally significant acts (withdraw,
   reject with mandatory reason, e-signature, stop ship) — blocking is the point, never nested, never
   holding a scrolling table · **right drawer** (~480px, dismissible) for configuration attached to
@@ -1134,17 +1746,42 @@ risks the signature look).
   persona switcher — a visible `Planner · CSR · Manager · Auditor` control tells the client instantly
   this is a mock, and real RBAC is an attribute of the signed-in user, so role switching lives in the
   profile menu. No theme toggle, no demo-path control. A quiet scope indicator is fine.
-* **Left nav: logo → navigation → profile at the bottom**, on a premium brand gradient.
+* **Left nav: logo → navigation → profile at the bottom**, on the chrome the expression chose
+  (`brand` gradient, `ink` or `light`), full height at every scroll position. With a top-navigation
+  shell, the same order runs left to right.
+* **The top bar is opaque.** Content scrolls under it without showing through it.
 * **One composer per surface. One right-hand rail, not two** — assistant and inspector share it as
   two modes; opening the assistant swaps the mode and remembers the inspector's state.
-* **Copilot — two shapes, deliberately.** On a dashboard or working screen: a **floating icon
-  bottom-right expanding into a floating box** that floats *over* content and never docks, pushes or
-  reflows, with its own layout — input pinned to its bottom, thread scrolling above. Inside a
-  two-pane studio: **a region of the shell**, interface left, conversation right, no card, no fill,
-  no divider — *a pane that lives in the layout is not a floater*. On its own screen: a centred
-  column built around the input, no page header. User messages right, agent left. Suggested prompts
-  **outside** the input. **Loading is a sequence, not a spinner** — show the real stages; a copilot
-  that shows its stages reads as reasoning, a spinner reads as latency. **The copilot speaks first.**
+* **The agent component — always a drawer, never a card on the page.** Pentland's Range Copilot was
+  built as a full-width block on Home, wired as an automation that wrote answers into an object the
+  page showed after a refresh. That is not an agent. The rule:
+  - **Where it lives.** A right-side **drawer** (`.agent-drawer`, ~440 px) that slides over the page
+    without reflowing it — the default on every internal page. It opens from a **top-bar button**, the
+    floating **launcher** (`.agent-launch`) and a keyboard shortcut, and closes with Esc, returning
+    focus. Variants, each for a reason: **wide** (720 px) while an answer carries a chart or table;
+    **docked** as a third column (`.app.with-agent`) for personas who keep it open all session;
+    **full screen** on a phone; **studio region** inside a two-pane artefact studio (interface left,
+    conversation right, no card); **full page** only when the agent is the screen's whole purpose.
+    One drawer at a time; it shares the right-hand side with the inspector as two modes.
+  - **Anatomy, top to bottom.** Header: the agent's name, a scope chip (read-only, or what it can
+    act on), expand / dock / close. Context chips: the record or page it is looking at. Thread: agent
+    left, person right; the agent speaks first with three suggested prompts from the person's own data.
+    Working stages while it thinks (`.stages`), named by what it is really doing. Answers rendered with
+    their tool outputs — chart (chart engine, with unit), in-thread table, file card, citation chips
+    with the evidence hover card, record links — each marked AI-written. Proposed actions as a
+    **human-in-the-loop card** (`.ad-action` with `.ad-diff` before → after, approve and reject with a
+    required reason). Dock: suggestion chips **outside** the composer, then the composer.
+  - **Every state:** closed (launcher with an unread dot when the agent has something), opening, empty
+    first run, thinking (stages), streaming, answered, partial answer with a gap named, refused (out of
+    scope, with what to try instead), tool failed (which step, retry), offline, and read-only.
+  - **How it is built.** On the platform's **live agent/chat component** — streamed replies, real
+    stages from the agent run, tool outputs rendered as they arrive. Never an automation that stores
+    the answer in an object for the page to pick up on refresh. The build contract says so.
+  - **AI on a page is not the agent.** A dashboard may carry an **AI insight card** (`.ai:not(.msg)`)
+    that summarises and links "Ask about this" into the drawer, and a field may carry an AI-draft
+    marker with an inline assist. The conversation itself always opens in the drawer.
+  - **Loading is a sequence, not a spinner** — a copilot that shows its stages reads as reasoning, a
+    spinner reads as latency. **The agent speaks first.**
 * **No stacked sublines under headers, no redundant preview data.** One header, one line of support
   at most, and only if it carries something the header does not. Show data by the priority of the
   flow the user is in on the screen they are on.
@@ -1153,6 +1790,82 @@ risks the signature look).
   their own answer.** On one build this produced a cost one-pager reading $26,250 against an actual
   $55,550 and a visit "booked" for March 2011, while the Next card told her to plan the visit the
   one-pager said was already booked.
+
+## Layout, spacing, density and overlays — the rules the v5 screenshots broke
+
+Every rule below comes from a screenshot of a v5 output. They apply to every screen specimen.
+
+**Spacing.**
+- Only the spacing scale (`--s-1` 4 px to `--s-12` 48 px). Page padding 24 px (16 px on a phone),
+  24 px between sections, card padding 20 px (16 compact, 24 comfortable), 8 px between related
+  controls, 4 px between a label and its value. No other values.
+- **Equal rhythm inside a row of cards**: the same padding, the same order of parts (eyebrow → value →
+  support line), top-aligned. A label that wraps to two lines must not push its value below its
+  neighbours' (image 1: "Candidates in pools" pushed 77 down) — shorten the label or let the eyebrow
+  row reserve two lines across the whole row.
+
+**Filling the space — no dead areas.**
+- **A row fills its width.** Tile rows use as many equal columns as tiles (3, 4, 5 or 6) across the
+  full content width. Two-panel screens split 8/4 or 7/5 of a 12-column grid. A row that leaves a
+  large empty area on the right, or a card with a large empty area below its content, is redesigned:
+  move a related panel into the gap, or let the content take the width.
+- **Headers carry their actions on the title row.** Page header: title left, primary action right,
+  same line. Record header: ID eyebrow, title with status tags, one meta line; actions right-aligned on
+  the title row — never floating in their own row with empty space beside them (image 5).
+- **Definition lists** (`.dl`) use a label column of 120–160 px, never wider (image 5's 250 px label
+  column left a channel of white).
+- **Specimen height fits the content.** Device specimens size to their content; a fixed height only
+  when the screen scrolls by design.
+
+**Density — what fits in a cell, a card, a column.**
+- **Tables: one line per cell by default; at most two in the first column** (name over one muted line).
+  Longer text is truncated with an ellipsis and the full value in a tooltip, or moves to an expanded row
+  (`.row-x`) or the detail drawer. **No paragraphs in cells** — image 4's reasons paragraph and
+  four-row sub-score breakdown belong in the expanded row.
+- **At most two chips per cell, then "+n"** (`.cell-chips`, `.more`). One status tag per cell. Nothing
+  in a cell overlaps or leaves its cell (image 4: a source pill sat on the "Approved" chip; the status
+  tag was cut off at the table edge).
+- **Column budget at 1,280 px: about seven columns.** More columns → a column picker, a frozen first
+  column (`.tblwrap.freeze`) and horizontal scroll inside the table. Minimum widths: ID 96 px, name
+  200 px, status 120 px, number 80 px, date 104 px. Numbers right-aligned in tabular figures.
+- **Cards in narrow columns** (kanban, lists): a card is at least 240 px wide and holds at most four
+  lines — title, one meta line, one status, one blocking or next-action line. No two-column layout
+  inside a card narrower than 320 px. Long status text truncates (image 2: "Feedback 2 days overdue"
+  left the card; "No feedback yet" wrapped to three lines).
+- **Row heights follow density**: 36 / 44 / 52 px for compact / default / comfortable, set by the
+  persona (0.4), never mixed on one screen.
+
+**Copy inside specimens.**
+- **Never show field names, query syntax or rule expressions as text** — image 1's tiles read
+  "status = open" and "interview_count > 0". Write what the person needs: "of 11 jobs", "3 with
+  feedback overdue".
+- IDs in mono only where the person really uses them (a requisition number), never as decoration.
+
+**States never move the layout.** Hover, selected, focus and active change colour, shadow or an inset
+ring — never padding, size, alignment or border width (image 1: the selected "On hold" tile grew a
+thick border and centred its text).
+
+**State variants of a screen** (empty, loading, error, filtered-empty, no-access) are drawn **one per
+row, each at real width** in its own device, or — when only the content region changes — as the
+content region alone at its real width. **Never several full app shells side by side** (images 3 and
+6: three shells in one row left a 200 px content area and one word per line).
+
+**Overlays — one system** (kit: `.modal`, `.drawer`, `.agent-drawer`, `.ov-hd/.ov-bd/.ov-ft`):
+
+| Overlay | Width | Height | When |
+| --- | --- | --- | --- |
+| Modal S | 420 px | content, max screen − 64 px | confirm an irreversible act |
+| Modal M | 560 px | content, max screen − 64 px | a short form |
+| Modal L | 760 px | content, max screen − 64 px | review or compare before committing |
+| Drawer S | 420 px | full height | the agent; a quick peek |
+| Drawer M | 560 px | full height | record detail, inspector, filters |
+| Drawer L | 760 px | full height | the agent with a chart or table; a long form beside the list |
+| Agent docked | 420 px column | full height | only at 1,440 px and wider |
+
+Same header (title, one line of support, close), same body padding, same footer (secondary actions
+left of primary, primary last on the right, a destructive primary in the negative tone). One overlay
+at a time; a drawer never opens a modal on top of itself except to confirm. Image 7's agent filled
+most of the screen because it was a docked column at 1,280 px; the kit now forbids it.
 
 ## The use-case dial
 
@@ -1195,6 +1908,39 @@ The standing lessons, all derived from defects on the record:
 * **Bare rgb triples** survive any regex port.
 * **A wrong number in a document is not a wrong colour.** Correct the number.
 
+**Added in v5, from the Pentland, ClickUp, Vermont and Topcon runs:**
+
+* **Same core, same look** — with the logo covered the four apps were one product. The core stays
+  fixed; the expression (Step 2c) must differ, with evidence.
+* **An agent on a page** — Pentland's Copilot as a full-width block, fed by an automation and a
+  refresh. Agents live in the drawer, on the live agent component.
+* **A brand decided outside the file** — three runs settled a hue conflict with a "standing decision"
+  from the calling flow; Pentland's black-and-lime brand shipped electric blue. Only the brand source
+  order decides.
+* **Must-haves moved to future scope** — Pentland's material compare, detail pane and docked Copilot
+  were L1 and were dropped. Every L1 ID maps to a manifest row.
+* **Journeys never drawn** — refusals, approvals and counters were in the scoping document and nowhere
+  on the page. Every journey is a flow (0.7).
+* **Status as brand steps** — Vermont's chart showed fail and pass as shades of blue.
+* **A rail that stops, a bar you can see through** — layout defects in the build that the kit and the
+  build contract now prevent.
+* **Personas without screens** — Vermont's merchandiser had no phone or tablet layout reachable from
+  any shell.
+* **A dull dark** — mid-slate grounds and heavy glass; failing contrast on its own tiers. Rebuilt.
+
+**Added in v5.1, from the first v5 runs and their review screenshots:**
+
+* **Screens at the wrong width** — "1,280 px" screens drawn in a narrower column took the desktop
+  layout at half width: state screens one word per line, a docked Copilot covering the page. Every
+  screen is now a device at real width, scaled.
+* **Overlays of every size** — modals and drawers improvised per run. One overlay system, three sizes.
+* **Dense tables and cards** — paragraphs, four-row breakdowns and stacked pills in cells; two-column
+  layouts in 240 px kanban cards. Density rules with hard limits.
+* **Dead space** — half-empty rows, actions floating in their own row, a 250 px label column.
+* **Implementation leaking into copy** — "status = open" as a tile's support line.
+* **Unbounded variants** — options with no codes and no way for the builder to pick one coherently.
+  Coded variants, at most three style sets, one active.
+
 ## The finished-piece rule — no rework after hand-over
 
 **What this skill hands over is the final piece.** The person receiving it should be able to use it
@@ -1211,7 +1957,8 @@ the whole list passes.**
    Every agent output from 0.3 has its specimen too. Every section of the style guide is built.
 2. **No leftovers.** Search the output for `TODO`, `TBD`, `FIXME`, `lorem`, `[UNVERIFIED]`,
    `placeholder`, `XXX`, "still to come", "waiting on", empty `href`s and empty sections. None remain.
-   The one allowed exception is the labelled text wordmark, and only under the conditions in stop 2.
+   The one allowed exception is the labelled UnifyApps stand-in logo, and only under the conditions in
+   stop 2.
 3. **Every fact settled.** Every gap from research has been closed by your own search, or decided and
    recorded as `[DERIVED]` with its reason. Nothing is left as an open question for the user to answer
    later, except the two stops.
@@ -1233,10 +1980,45 @@ the whole list passes.**
     last section, not only in the chat reply.
 12. **Research done to depth.** Every row in the research ledger has met its minimum: searches run,
     official source found, second source for deep facts. The ledger is in the port note.
+13. **Every journey drawn.** Every journey in the scoping document, and the demo storyline, is a
+    flow on the page with a frame per step and per exception, using the document's own wording for
+    refusals and messages. Count journeys in the document and flows on the page; they match.
+14. **Every L1 feature and CMP ID covered.** A script lists every must-have feature ID and component ID
+    in the document and finds each in the manifest's reference column. None missing.
+15. **Signature components in depth.** Each one shows anatomy, every state, the data variants,
+    interactions, responsive behaviour and at least two variants.
+16. **Agents in drawers.** Every agent has its drawer drawn open over a real screen, with its own
+    outputs; no agent sits in a page layout; the build contract names the live agent component.
+17. **The expression is decided and visible.** The expression card records every dial with its
+    evidence and the logo-off answer; the inspiration board shows what each reference changed; the
+    brand source order applied is in the port note.
+18. **Every persona has a shell.** Each persona's screens are reachable from a drawn shell at its
+    device widths, phone and tablet included where the document names them.
+19. **Build contract on the page**, matching the expression card and the kit classes used.
+20. **One file, rendering clean.** The output is a single self-contained HTML file with fonts and
+    images embedded. The render check (Step 6) returns zero page scroll, zero spills, clips, overlaps
+    or squeezed text in any screen specimen, zero broken images, every font loaded and matching its
+    official file, and no unstyled component class — in light and dark, at 1,280 px and 375 px. Every
+    screen is a device at its real width.
+21. **Overlays consistent.** Every modal and drawer uses a kit size and the shared anatomy; no other
+    widths; the agent docks only at 1,440 px and wider; the launcher hides while a drawer is open.
+22. **Layout and density rules hold.** No row with a large dead area, actions on the header's title
+    row, one line per table cell (two in the first column), at most two chips per cell, cards within
+    their four-line budget, no field names or query syntax in copy, states that do not move the
+    layout, state variants one per row at real width.
+23. **Variants coded, one active set.** Variants exist only for the listed families, at most three per
+    family, coded; at most three style sets; S1 on every screen; the `#style-sets` JSON block present
+    and quoted in the build contract; every chart has its coded views with one Recommended and a table
+    view.
 
-**Show the result.** The hand-over reply lists all twelve items with pass and one line of evidence
+**Show the result.** The hand-over reply lists all twenty-three items with pass and one line of evidence
 each (for example "1 · pass · 23 of 23 manifest rows link to drawn specimens"). An item that cannot
 show evidence has not passed.
+
+**A run that skips a step fails here.** No brief, no manifest, no ledger, no flows, no expression card
+or no checklist on the page means the piece is not finished, whatever else it contains. The time a
+run takes is not a reason to cut research depth or drawing — a run that was told to hurry still meets
+the minimums and says how long it took.
 
 **A failure found here is fixed here, not reported as a known issue.** Only something that genuinely
 cannot be fixed inside this run (the client's logo file does not exist anywhere) goes into the
@@ -1247,7 +2029,7 @@ hand-over, with the reason.
 Write them in the style guide's last section and repeat them in the reply.
 
 > **What is the WOW factor here? Name it in one sentence.**
-> **What would Amogh or the client push back on first?**
+> **What would the client push back on first?**
 > **What is the weakest part, and do you know it?**
 
 **Answering the third honestly is not a confession, it is the deliverable.** A hand-over that names
