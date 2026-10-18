@@ -348,19 +348,37 @@ extend or second-guess its steps.** Only these session facts are supplied by you
   pick any available model. Nebula's plan confirmation ("Start the Nebula build as planned?"): its recommended option
   ("Start it"). Seed-data file location (public or private): Nebula's recommended option, otherwise **private**.
   Sign-ins to Orbit are done by the person.
-- Nebula checks and tests its own flows; there is no reviewer review of the build.
-- **Publish:** as soon as Nebula reports the build complete, tell it to publish the app on Orbit UAT (if its plan has
-  not already published it) and to report **two links**: the published app URL, and the app's **preview link** (the
+- **Test everything with Nebula, fix, then publish.** When Nebula reports the build complete, do **not** publish yet.
+  Have Nebula test the whole app itself, in the same session, with its own testing tools (its app-verify / test skill
+  or browser checks, whatever name the session lists for them; there is no reviewer review of the build):
+  1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
+     seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
+     every create/edit form and submit it once with test data.
+  2. **Every automation / workflow** (scoping §14): run each one by its real trigger (the page button, the object event,
+     a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
+     status it should change, the notification it should send. Failures, errors and empty results count as failed.
+  3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
+     records from the seed data.
+  4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
+  5. **Fix and re-test:** every failure goes back to Nebula to fix (same session, Sonic mode), then that page,
+     automation or agent is tested again, and anything the fix touched is re-tested too. Repeat until everything
+     passes, **at most 3 fix rounds per failing item**; questions Nebula asks while fixing go to the reviewer as usual.
+  6. **Report:** write `<workspace>/04-build/test-report.md`: one row per page, automation, agent and storyline step,
+     with pass/fail, what was fixed and how many rounds, and anything still failing after 3 rounds (with the reason).
+     Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
+- **Publish:** once testing is done, tell Nebula to publish the app on Orbit UAT (if its plan has not already
+  published it) and to report **two links**: the published app URL, and the app's **preview link** (the
   link that opens the app directly with its seed data, without first creating a user in the Matrix app). If Nebula
   does not give the preview link, ask it for it explicitly.
 - Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, the Nebula **solution id**
   (`e_…`, needed for Orbit G3), what was built (objects,
-  agents, automations, pages) as Nebula reported it, and anything it could not build. Save both in `state.json` →
+  agents, automations, pages) as Nebula reported it, the test results (counts passed / fixed / still failing, linking
+  `test-report.md`), and anything it could not build. Save both in `state.json` →
   `app.preview_url` and `app.published_url`.
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
   version, no upload) before re-gating.
-- **Gate — verify the published AI solution:** remove the autopilot file and ask the person to open the published app
-  on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
+- **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
+  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through Nebula, and are listed at the next gate.
 
 ## 5 · Collaterals

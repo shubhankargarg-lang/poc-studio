@@ -207,7 +207,8 @@ written or a new version posted). It makes Orbit post to the POC's Slack thread;
 | Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
 | POC (update) | stage `2_research_assess`, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, `slack_notification true` | **stage stays `3_scope`**, current_gate g2, g2_status waiting, status waiting, g2_summary (the BRD), gate_summary, `slack_notification true` | stage `4_design_system`, current_gate g2, g2_status waiting, status waiting, g2_summary (BRD approved + design system), gate_summary, `slack_notification true` | stage `6_finalize`, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, `solution_id` (the Nebula solution `e_…`), `slack_notification true` | stage `8_demo_ready`, current_gate none, g4_status approved, status demo_ready, g4_summary, `slack_notification true` |
 
-`gN_summary` / `gate_summary`: 2–4 plain sentences on what the phase produced and what the person should check.
+`gN_summary` / `gate_summary`: 2–4 plain sentences on what the phase produced and what the person should check. For G3, include
+the test results from `04-build/test-report.md` (passed / fixed / still failing).
 Record every new `document_id` in the run state.
 
 ### Moment 2 — the owner approves a gate in Claude
