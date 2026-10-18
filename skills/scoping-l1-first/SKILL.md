@@ -23,7 +23,7 @@ The Pentland example is the quality bar: two flow decks and a one-line email bec
 
 You receive **both** of these. Read both. The raw files are the source of truth when they disagree with the brief.
 
-1. **Requirement Gathering Document** (`Requirement Gathering - <Client>.docx`, sometimes just meeting notes or an email summary when run on its own): client, industry, stated ask, any structured fields it produced.
+1. **Requirement Gathering Document** (`Requirement Gathering - <Client> - <Use case>.docx`, sometimes just meeting notes or an email summary when run on its own): client, use case, industry, stated ask, any structured fields it produced. When a use case name is given, scope that use case only; client material about other use cases goes in the coverage map as out of the ask.
 2. **Raw client material** (in the POC Studio workspace: `01-requirement-gathering/files/`): emails, decks (pptx/pdf), process diagrams, SOPs, spreadsheets, sample documents (POs, invoices, forms), screenshots, URLs, existing-system exports.
 
 How to read them:
