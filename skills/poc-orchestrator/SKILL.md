@@ -102,6 +102,7 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
   "slug": "acme-beverages-shelf-compliance",
   "workspace": "<abs path>",
   "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
+  "video_route": { "ok": true, "root": "<local Drive folder>", "account": "…", "company_share": true, "folder_id": "…" },
   "stages": {
     "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages - Shelf Compliance.docx", "review_rounds": 1 },
     "scoping":       { "status": "in_review" },
@@ -240,6 +241,11 @@ except at the start (the POC ID must be verified).
      Stage 1 without both. (Drive is needed for discovery and to host the demo video, which always goes to Drive.)
    - Gmail and Google Calendar are optional: list which are connected and carry on; the Requirement Gathering
      document records the missing ones as "Not connected".
+   - **Video route check.** Run the `orbit-writeback` skill's **Video route check** now: Google Drive for desktop is
+     installed and running, it and the Drive connector use the same Google account (a test file written locally is
+     read back through the connector), and the `POC Studio` folder is shared with the whole company. If anything
+     fails, flag in one line that the demo video will not ship to Drive automatically, why, and the fix; re-check
+     when the person says it is fixed. It never blocks the run.
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Questions during stages are answered by the reviewer from context and assumptions, not the person.
@@ -255,8 +261,9 @@ except at the start (the POC ID must be verified).
      approved for every document, including the client files found during discovery. Do not warn about or ask again
      about public uploads.
    - The person's own Slack, Gmail, Drive and Calendar accounts are read-only: nothing is posted or sent from them.
-     The one exception is Orbit: the `orbit-writeback` uploads to Orbit and its `slack_notification` (which makes
-     Orbit post the gate to the POC's Slack thread) are owner-approved.
+     The exceptions are owner-approved: Orbit (the `orbit-writeback` uploads and its `slack_notification`, which makes
+     Orbit post the gate to the POC's Slack thread), and the demo video plus the small sync-check file copied into the
+     person's `POC Studio` Drive folder through Drive for desktop.
 4. **Tools check, now, while the person is at the screen** (so the collateral stage is never blocked hours later).
    Check with `command -v` / `brew list`: `brew`, `ffmpeg`, `pdftotext` (poppler), `soffice` (LibreOffice),
    `pandoc`, `node`, `python3` (3.10+).
@@ -442,7 +449,8 @@ you:
 - **Everything is saved in the workspace.** No stage output lives only in the chat.
 - **Read only** in the person's accounts: nothing is posted, sent, uploaded or deleted in Slack, Gmail, Drive or
   Calendar from them. The only writes outside the local folder are the Orbit write-back (uploads and rows on
-  Orbit · POC Studio, and Orbit's own Slack notification) done by `orbit-writeback`.
+  Orbit · POC Studio, and Orbit's own Slack notification) and the demo video (plus the sync-check file) in the
+  person's `POC Studio` Drive folder, both done by `orbit-writeback`.
 - **Never delete** anything you did not create in this run.
 - **Tools and skills:** when a stage needs a tool or common skill (e.g. `docx`, `pptx`, `xlsx`, `pdf`, LibreOffice,
   pandoc, ffmpeg), install or load it then and continue. For Anthropic's document skills in Claude Code:

@@ -97,18 +97,9 @@ Call it with:
   links are owner-approved: anyone with the link can open the file, and Orbit's Slack thread can show it.
 - `fileName` is the name readers see, e.g. `Acme - BRD v1.docx`, whatever the file is called on disk.
 - At most **20 MB** per upload.
-- **The demo video always goes to Google Drive, whatever its size** (the Drive connector is required at setup) —
-  never through `upload_public_file`, and never compressed:
-  1. In the person's Drive, find or create the folder `POC Studio / <POC ID> - <Client>` (Drive connector: search,
-     then create the folder if missing).
-  2. Upload the `.mp4` there with the Drive connector's file-create tool, named `<Client> - Demo video v<N>.mp4`.
-  3. Share it so **anyone with the link can view** (the Drive connector's share/permission tool) — owner-approved
-     under the POC data policy.
-  4. Use that Drive link (the file's `webViewLink`) as the video document's `file_link`, with `file_kind video`, and
-     say "Video on Google Drive" in its `summary`. Readers open it straight from Orbit.
-  5. If the connector cannot upload a file that size, ask the person once to drop the file into that Drive folder (give
-     them the folder link and the local path), then share it and use its link as above.
-  This is the only way the video is stored; there is no Orbit upload for it.
+- **The demo video always goes to Google Drive, whatever its size**, never through `upload_public_file` and never
+  compressed. It goes by the route in **Video to Google Drive** below (copied into the person's Drive for desktop
+  folder, found and linked with the Drive connector). This is the only way the video is stored.
 - Client files with no type below (or Google-native Docs/Sheets/Slides, mail and calendar items): save the
   source's own link (Slack permalink, Drive link, Gmail or Calendar link) with `file_kind link` instead of uploading.
 - MIME: txt `text/plain` · md `text/markdown` · csv `text/csv` · eml `message/rfc822` · json `application/json` ·
@@ -194,6 +185,88 @@ Before anything else when a run resumes, and again right before writing G4, comp
 5. Say in one line what was written (or "Orbit is in step").
 Do not write G4 until G1–G3 show approved in Orbit.
 
+## Video to Google Drive
+
+The Drive connector cannot take a large file (it only accepts file bytes inside the tool call) and cannot set
+company-wide link sharing (it shares with an email, a group or a Chat space only). So the video goes through
+**Google Drive for desktop** on the person's computer: Claude Code copies the file into the local Drive folder, the
+Drive app uploads it in the background, and the connector finds it and gives its link. Sharing to everyone in the
+company comes from the `POC Studio` folder, which is set once to "anyone at <company> with the link", and every file
+inside inherits it.
+
+### Video route check (in Setup, while the person is at the screen)
+
+Run it once per run in the orchestrator's Setup, and again before the video upload if it did not pass. It never
+blocks the run: if it fails, flag it and carry on.
+
+1. **Drive connector**: its tools are in the session (Setup already requires this).
+2. **Drive for desktop**: find the local folder and whether the app is running, with Bash:
+   ```bash
+   python3 - <<'PY'
+   import glob, json, os, subprocess, sys
+   h = os.path.expanduser("~"); roots = []
+   for acct in glob.glob(f"{h}/Library/CloudStorage/GoogleDrive-*"):          # macOS (stream or mirror)
+       email = os.path.basename(acct)[len("GoogleDrive-"):]
+       subs = [d for d in glob.glob(f"{acct}/*") if os.path.isdir(d) and not os.path.basename(d).startswith(("Shared", "."))]
+       for d in subs: roots.append({"email": email, "root": d})
+   for d in [f"{h}/My Drive", f"{h}/Google Drive/My Drive"] + [f"{c}:/My Drive" for c in "DEFGHIJKLMNOPQRSTUVWXYZ"]:
+       if os.path.isdir(d): roots.append({"email": None, "root": d})        # mirror mode / Windows drive letter
+   if sys.platform == "win32":
+       running = "GoogleDriveFS.exe" in subprocess.run(["tasklist"], capture_output=True, text=True).stdout
+   else:
+       running = subprocess.run(["pgrep", "-if", "Google Drive"], capture_output=True).returncode == 0
+   print(json.dumps({"running": running, "roots": roots}))
+   PY
+   ```
+   With several roots, try first the one whose email is on the POC owner's domain (e.g. `@unifyapps.com`).
+3. **Same account and sync working (the real test):** write a small file
+   `<root>/POC Studio/_poc-studio-sync-check.txt` containing the POC ID and a fresh random token (`mkdir -p` the
+   folder; the same file is overwritten each run and never deleted). Then, with the connector, search
+   `title = '_poc-studio-sync-check.txt'` every 15 s for up to 3 minutes and read it (`read_file_content`): it passes
+   when the token matches. Seeing the token through the connector proves the connector and Drive for desktop use the
+   same Google account and that sync works.
+   The first write may bring up Claude Code's permission prompt (the folder is outside the workspace) and macOS's
+   "access files on Google Drive" prompt: the person approves both once.
+4. **Company-wide sharing:** find the `POC Studio` folder with the connector (`title = 'POC Studio'`, folder mime type,
+   `owner = 'me'`) and read its permissions (`get_file_permissions`). It passes when there is a `domain` permission
+   for the owner's email domain with role `reader` or higher. If it is missing, ask the person once to set it
+   themselves (give the folder link): **Share → General access → "<company>" (anyone in the organisation with the
+   link) → Viewer → Done**, then read the permissions again. Claude never changes this setting itself.
+5. Save the result in `state.json` → `video_route`:
+   `{ "ok": true|false, "root": "<local folder>", "account": "<email>", "company_share": true|false,
+   "folder_id": "<POC Studio folder id>", "reason": "<why not, if not ok>", "checked_at": "<ISO time>" }`, and one line
+   in `context-log.md`.
+6. Tell the person in one line:
+   - all passed → "The demo video will go to Google Drive automatically (`<account>`), shared with everyone at
+     `<company>`."
+   - anything failed → "**The demo video will not ship to Drive automatically:** `<reason>`. Fix: `<fix>`. Otherwise
+     you will be asked to drop it into the Drive folder at the end." Say it can be re-checked any time, re-check when
+     they say it is fixed, and carry on either way.
+
+| What failed | `reason` | `fix` |
+|---|---|---|
+| No local Drive folder | Google Drive for desktop is not installed or not signed in | Install it and sign in with your company Google account |
+| Folder found, app not running | Google Drive for desktop is not running | Open Google Drive (it stays in the menu bar) |
+| Could not write the folder | Claude Code or macOS did not allow access to the Drive folder | Approve the access prompts, then re-check |
+| Token not seen in 3 minutes | Drive for desktop is signed in as `<email from the folder name>` but the Drive connector cannot see its files (a different Google account), or sync is paused/offline | Sign both in to the same company account (connector: claude.ai → Settings → Connectors → Google Drive), check Drive is online and not paused |
+| No domain permission | The `POC Studio` folder is not shared with the company, so the video would be visible only to people it is shared with | Set the folder's General access as in step 4 |
+
+### Uploading the video (M1 · G4)
+
+1. If `video_route.ok` is not true, run the check again first.
+2. Copy (never move) the final `.mp4` to `<root>/POC Studio/<POC ID> - <Client>/<Client> - Demo video v<N>.mp4`
+   (`mkdir -p`, then `cp`).
+3. With the connector, search `title = '<Client> - Demo video v<N>.mp4'` every 30 s for up to 15 minutes (large
+   files take a while to upload). Take the newest match in that folder.
+4. Read its permissions: a `domain` permission (inherited from `POC Studio`) means everyone in the company can open
+   it. If it is missing, share it with the POC owner's email as `reader` and say at the gate that it is not shared
+   company-wide and why.
+5. Get its link (`get_file_metadata` → `webViewLink`, else `https://drive.google.com/file/d/<id>/view`) and use it as
+   the video document's `file_link`, with `file_kind video`, and "Video on Google Drive" in its `summary`.
+6. **Fallback** (the route failed, or the file did not appear in 15 minutes): ask the person once to drop the file
+   into that Drive folder (give the local path of the video and the folder), wait until they say it is done, then do
+   steps 3–5. Say which reason made it fall back.
+
 ## Order inside every moment
 **upload files → Documents → Iteration → Activity → POC last.**
 
@@ -228,7 +301,7 @@ Do not write G4 until G1–G3 show approved in Orbit.
 
 | | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
 |---|---|---|---|---|---|
-| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive, shared by link (never `upload_public_file`) |
+| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive via "Video to Google Drive" (never `upload_public_file`) |
 | Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
@@ -317,7 +390,8 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    system.
 2. G4 is written after the owner approves the collaterals in Claude.
 3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video. The video is
-   always put on Google Drive (any size), shared by link, and that link is its `file_link`.
+   always put on Google Drive (any size) through Drive for desktop, shared with the whole company through the
+   `POC Studio` folder, and its Drive link is its `file_link` (see "Video to Google Drive").
 4. The POC ID is mandatory; there is no lookup by client slug.
 5. No Orbit folder and no command-line script: reads, writes and uploads are Nebula's tenant tools called directly in
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.

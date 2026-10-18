@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.16.0
+- Demo video: copied into the person's Google Drive for desktop folder (`POC Studio/<POC ID> - <Client>/`), found and linked with the Drive connector, shared with the whole company through the `POC Studio` folder's General access. Setup runs a Video route check (Drive app installed and running, same account as the connector via a test file read back, folder shared with the company) and flags why the video would not ship automatically; manual drop stays as the fallback.
+
 ## 1.15.0
 - Orbit: every approval write is read back and confirmed before the next stage starts; every new app version is posted (also after G3 approval); a Reconcile check on every resume and before G4 writes any missing approval or document version without moving the stage backwards.
 

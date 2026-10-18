@@ -41,7 +41,27 @@ then commits and pushes to `main`.
 
 Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and the **Slack** and **Google Drive** connectors
 (Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video (always,
-whatever its size), shared by link, so it opens straight from Orbit.
+whatever its size), so it opens straight from Orbit.
+
+### Demo video on Google Drive
+
+The video goes through **Google Drive for desktop**: the plugin copies it into your local Drive folder, the Drive app
+uploads it, and the Drive connector finds it and puts its link in Orbit. Setup checks this at the start and flags it
+if it will not work. To pass the check:
+
+1. Install Google Drive for desktop and sign in with your company Google account. It must be running (it sits in the
+   menu bar; it does not need a window open).
+2. Sign the **Google Drive connector** in Claude in to the **same** account.
+3. Once, set your Drive folder `POC Studio` to **Share → General access → UnifyApps (anyone in the organisation with
+   the link) → Viewer**, so every video inside opens for anyone in the company. Setup gives you the folder link.
+4. Approve the two one-time prompts the first time: Claude Code's "write outside this folder" and macOS's "access
+   files on Google Drive". To skip Claude Code's prompt in future, add the Drive folder to your Claude Code settings
+   (`~/.claude/settings.json`):
+   ```json
+   { "permissions": { "additionalDirectories": ["~/Library/CloudStorage"] } }
+   ```
+
+If the check fails, the run still goes ahead; at the end you are asked to drop the video into the Drive folder.
 
 ## Use
 
