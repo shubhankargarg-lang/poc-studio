@@ -26,7 +26,8 @@ Appendix unchanged but is never run.)
 
 This skill is **self-contained**. Its toolkit (Appendix) is written into the project folder and
 run there. It needs Node 18+, Python 3.10+, ffmpeg, poppler (`pdftotext`), and network access to
-npm, PyPI and GitHub (Playwright, the offline Kokoro voice model, the Spectral font). Nothing calls
+npm, PyPI and GitHub. On a Mac these come from the `poc-collateral-setup` skill (installed once into the user's own
+folders, no admin); `kit/setup.sh` reuses them (Playwright, the offline Kokoro voice model, the Spectral font). Nothing calls
 a paid or external speech service.
 
 Do the work yourself: discover, record, capture and write everything. Do not ask the user to
@@ -78,8 +79,10 @@ first update, so the user can correct any of them while the work carries on.
    (`https://orbit.uat.unifyapps.com/`). Use the app's **preview link** Nebula reported (`<workspace>/04-build/
    build-summary.md`, `state.json` → `app.preview_url`) as each persona's `url` and `public_url`, for discovery,
    capture and the video recording. **Do not use the published Matrix app URL**: it asks for a user to
-   be created before the app can be used. If no preview link is recorded, get it from Nebula before recording. When the app needs a login, open `kit/auth.mjs` on Orbit and ask the
-   user to sign in to Orbit there; never type or store a password.
+   be created before the app can be used. If no preview link is recorded, get it from Nebula before recording. When the app needs a login, set the persona's `login` to
+   `https://orbit.uat.unifyapps.com/login` (the preview answers 401 without a session instead of redirecting), open
+   `kit/auth.mjs` and ask the user to sign in to Orbit there (Google sign-in is fine; it saves only once the preview
+   opens); never type or store a password.
 5. **Who receives the files.** Default **external** (the customer): no internal URLs, usernames,
    emails or build notes (`brief.share: "external"`). Use `"internal"` only when the request says the
    collaterals are for the team.
@@ -161,9 +164,14 @@ records and AI panels during Phase 1 and write `facts.json` from what you verify
 # POC Studio: work inside <workspace>/05-collaterals/ so every output lands in the client folder
 mkdir <slug>-collateral && cd <slug>-collateral
 # write every Appendix file into kit/ verbatim, then:
-bash kit/setup.sh                                  # deps, Chromium, Kokoro voice, Spectral font
-python3 kit/brand.py <skill-base-dir>/assets/UnifyApps_template.pptx  # tokens, logo, template copy -> brand/
+bash kit/setup.sh                                  # reuses the shared tools if installed, else installs here
+source env.sh && python3 kit/brand.py <skill-base-dir>/assets/UnifyApps_template.pptx  # tokens, logo, template copy -> brand/
 ```
+
+**Every command in the collateral folder starts with `source env.sh && `** (each shell starts fresh; `env.sh` puts
+the shared Python, ffmpeg, LibreOffice and voice model on the PATH; it is empty when nothing is shared). The commands
+below omit it for brevity. On a Mac, if `~/.local/poc-collateral/env.sh` does not exist yet, run the
+`poc-collateral-setup` skill first (no admin, once per Mac) instead of installing anything with Homebrew.
 
 | Phase | Command | Produces | Gate |
 |---|---|---|---|
@@ -480,6 +488,10 @@ to the customer.
   `nav: true` for that screen.
 - Headless recording runs at 1920×1080. If the app needs a real (headed) browser, run under Xvfb.
 - If Spectral is missing, renders silently fall back: `render.mjs` warns; re-run `kit/setup.sh`.
+- `command not found` (ffmpeg, ffprobe, soffice, pdftoppm) or `No module named kokoro_onnx`: the command was run
+  without `source env.sh && `. On a Mac, if the shared doctor reports MISSING, re-run `poc-collateral-setup`.
+- On a Mac without Homebrew, `ffprobe`, `pdftotext` and `pdftoppm` are small Python stand-ins that answer the
+  calls this kit makes; if a new call needs more, extend the stand-in in `~/.local/bin` rather than the kit.
 - Reuse existing sessions; ask for a sign-in only when there is no way in, all personas at once; never store or type passwords.
 
 ---
@@ -494,16 +506,31 @@ Write each block below to the named path **verbatim** (they are tested together)
 
 ```bash
 #!/usr/bin/env bash
-# kit/setup.sh: everything the pipeline needs, installed into this project folder. Safe to re-run.
+# kit/setup.sh: everything the pipeline needs. Safe to re-run.
+# If poc-collateral-setup has installed the shared tools on this machine (~/.local/poc-collateral), reuse them:
+# no downloads, done in seconds. Otherwise install into this project folder (Linux / cloud sandbox).
 set -euo pipefail
+SHARED="$HOME/.local/poc-collateral"
+mkdir -p auth build out review
+if [ -f "$SHARED/env.sh" ]; then
+  printf 'source "%s"\n' "$SHARED/env.sh" > env.sh
+  source env.sh
+  [ -e models ] || ln -s "$SHARED/models" models
+  [ -e fonts ] || ln -s "$SHARED/fonts" fonts
+  [ -f package.json ] || npm init -y >/dev/null
+  npm i --no-audit --no-fund --prefer-offline playwright@1.56.1 lucide-static@0.468.0 >/dev/null
+  if [ -x "$SHARED/doctor.sh" ]; then bash "$SHARED/doctor.sh" || { echo "shared tools incomplete: run poc-collateral-setup again"; exit 1; }; fi
+  echo "setup done (shared tools from $SHARED)"; exit 0
+fi
+: > env.sh   # every command starts with `source env.sh &&`; here there is nothing extra to load
 [ -f package.json ] || npm init -y >/dev/null
 npm i --no-audit --no-fund playwright@1.56.1 lucide-static@0.468.0 >/dev/null
 # Use the machine's Chromium if Playwright already has one (cloud sandbox), else fetch it once.
 if [ -z "${PLAYWRIGHT_BROWSERS_PATH:-}" ] && [ -z "${CHROME_PATH:-}" ]; then npx playwright install chromium >/dev/null; fi
-pip install -q --break-system-packages kokoro-onnx soundfile cairosvg python-pptx numpy pillow 2>/dev/null \
-  || pip install -q kokoro-onnx soundfile cairosvg python-pptx numpy pillow
-command -v ffmpeg >/dev/null || { echo "ffmpeg is required (apt-get install -y ffmpeg / brew install ffmpeg)"; exit 1; }
-command -v pdftotext >/dev/null || echo "WARN pdftotext missing (apt-get install -y poppler-utils / brew install poppler): check.py cannot scan PDFs"
+PKGS="kokoro-onnx soundfile resvg-py python-pptx numpy pillow"
+pip install -q --break-system-packages $PKGS 2>/dev/null || pip install -q $PKGS
+command -v ffmpeg >/dev/null || { echo "ffmpeg is required (apt-get install -y ffmpeg; on a Mac run poc-collateral-setup)"; exit 1; }
+command -v pdftotext >/dev/null || echo "WARN pdftotext missing (apt-get install -y poppler-utils; on a Mac run poc-collateral-setup): check.py cannot scan PDFs"
 # Offline US-English narration model (Kokoro v1.0, ~350 MB, from GitHub releases).
 mkdir -p models
 for f in kokoro-v1.0.onnx voices-v1.0.bin; do
@@ -516,7 +543,6 @@ for w in Light Regular Italic Medium MediumItalic SemiBold; do
   cp -n fonts/Spectral-$w.ttf ~/.fonts/ 2>/dev/null || true
 done
 fc-cache -f >/dev/null 2>&1 || true
-mkdir -p auth build out review
 echo "setup done"
 ```
 
@@ -684,7 +710,8 @@ export class Engine {
 ### `kit/auth.mjs`
 
 ```js
-// kit/auth.mjs: one visible browser per persona; the USER types the credentials. Saves auth/<persona>.json.
+// kit/auth.mjs: one visible browser per persona; the USER signs in (Google SSO is fine). Saves auth/<persona>.json
+// only once the app itself has opened, so an SSO hop (accounts.google.com, /auth/callback) never saves too early.
 // usage: node kit/auth.mjs [persona ...]
 import fs from 'node:fs';
 import { launch, readJSON, W, H } from './lib.mjs';
@@ -695,16 +722,24 @@ fs.mkdirSync('auth', { recursive: true });
 for (const [name, p] of Object.entries(brief.personas)) {
   if (want.length && !want.includes(name)) continue;
   if (!p.login) continue; // public app, nothing to sign in to
+  const app = new URL(p.url); const login = new URL(p.login, p.url);
+  if (!login.searchParams.has('returnTo')) login.searchParams.set('returnTo', app.pathname);
   const browser = await launch({ headless: false });
   const ctx = await browser.newContext({ viewport: { width: W, height: H } });
   const page = await ctx.newPage();
-  await page.goto(new URL(p.login, p.url).href);
-  console.log(`>> Sign in as ${p.username} for persona "${name}" in the open window. Waiting...`);
-  const loginPath = new URL(p.login, p.url).pathname;
-  await page.waitForURL((u) => !u.pathname.startsWith(loginPath), { timeout: 0 });
-  await page.waitForLoadState('networkidle').catch(() => {});
+  await page.goto(login.href);
+  console.log(`>> Sign in${p.username ? ` as ${p.username}` : ''} for persona "${name}" in the open window. Waiting...`);
+  // back on the app's own host, and past every sign-in / SSO callback path
+  await page.waitForURL((u) => u.hostname === app.hostname && !u.pathname.startsWith(login.pathname)
+    && !/^\/(auth|sso|oauth|callback)/.test(u.pathname), { timeout: 0 });
+  await page.goto(app.href, { waitUntil: 'networkidle' }).catch(() => {});
+  await page.waitForFunction(() => document.body && document.body.innerText.trim().length > 50, null, { timeout: 90000 })
+    .catch(() => {});
+  if (new URL(page.url()).pathname.startsWith(login.pathname)) {
+    console.error(`persona "${name}": still on the sign-in page, not saved; run again`); await browser.close(); process.exitCode = 1; continue;
+  }
   await ctx.storageState({ path: `auth/${name}.json` });
-  console.log(`saved auth/${name}.json`);
+  console.log(`saved auth/${name}.json (app opened)`);
   await browser.close();
 }
 ```
@@ -714,6 +749,7 @@ for (const [name, p] of Object.entries(brief.personas)) {
 ```js
 // kit/lint.mjs: refuse a story that breaks the rules before anything is captured or recorded.
 // usage: node kit/lint.mjs   (exit 1 on errors)
+import { pathToFileURL } from 'node:url';
 import { readJSON } from './lib.mjs';
 
 const NAV_WORDS = /^(on|in|under|open|opening|next|finally|back|stepping|switch|go|moving|the \w+ tab)/i;
@@ -760,7 +796,7 @@ export function lint() {
   return { errs, warns };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { // works when the path has spaces
   const { errs, warns } = lint();
   warns.forEach((w) => console.log('WARN ', w));
   errs.forEach((e) => console.log('ERROR', e));
@@ -1796,13 +1832,19 @@ def colour_of(pic):
     v, c = np.unique(a, axis=0, return_counts=True); return "#%02x%02x%02x" % tuple(v[c.argmax()])
 
 def icon_png(name, colour, size=192):
-    import cairosvg
+    try:
+        import resvg_py  # no system library needed (works on a Mac without Homebrew)
+    except ImportError:
+        resvg_py = None
+        import cairosvg
     f = f"node_modules/lucide-static/icons/{name}.svg"
     if not os.path.exists(f):
         near = [x[:-4] for x in os.listdir(os.path.dirname(f)) if name.split("-")[0] in x][:12]
         raise SystemExit(f"no icon {name!r}; similar: {near}")
     svg = open(f).read()
     svg = svg.replace("currentColor", colour).replace('stroke-width="2"', 'stroke-width="1.75"')
+    if resvg_py:
+        return io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_string=svg, width=size, height=size)))
     return io.BytesIO(cairosvg.svg2png(bytestring=svg.encode(), output_width=size, output_height=size))
 
 def fill_crop(path, w, h, y=0.0):

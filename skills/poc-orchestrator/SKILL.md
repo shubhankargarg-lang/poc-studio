@@ -264,21 +264,17 @@ except at the start (the POC ID must be verified).
      The exceptions are owner-approved: Orbit (the `orbit-writeback` uploads and its `slack_notification`, which makes
      Orbit post the gate to the POC's Slack thread), and the demo video plus the small sync-check file copied into the
      person's `POC Studio` Drive folder through Drive for desktop.
-4. **Tools check, now, while the person is at the screen** (so the collateral stage is never blocked hours later).
-   Check with `command -v` / `brew list`: `brew`, `ffmpeg`, `pdftotext` (poppler), `soffice` (LibreOffice),
-   `pandoc`, `node`, `python3` (3.10+).
-   - **System tools need the person's Mac password, which Claude never types.** If any are missing, give the person
-     one block to paste into Terminal, with only the missing lines, and wait for them to say it is done:
-     ```
-     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"   # only if brew is missing
-     brew install ffmpeg poppler pandoc node python@3.12
-     brew install --cask libreoffice
-     ```
-     (Linux: `sudo apt-get install -y ffmpeg poppler-utils pandoc nodejs libreoffice`.) Then re-check. If the person
-     wants to skip, log it and carry on; the collateral stage will show the same block again.
-   - **Everything that needs no password, Claude installs itself now:** `pip3 install python-docx python-pptx
-     openpyxl kokoro-onnx soundfile cairosvg numpy pillow` (add `--break-system-packages` if pip refuses), and
-     `npx playwright install chromium`.
+4. **Tools, now, in the background** (so the collateral stage is never blocked hours later, and nobody waits).
+   - **Mac:** load the `poc-collateral-setup` skill (Skill tool: `poc-studio:poc-collateral-setup`) and follow it:
+     if its doctor already passes, say so in one line; otherwise start its `setup.sh` **in the background** (about
+     1 GB the first time, into the person's own folders, no admin, no Homebrew, no password) and go straight on to
+     Stage 1. When it finishes, log the result; if a step still fails after one re-run, say in one line which tool
+     is missing and what it blocks. Never ask the person to install Homebrew or type their Mac password.
+   - **Linux:** check `ffmpeg`, `pdftotext`, `soffice`, `pandoc`, `node`, `python3` (3.10+); if any are missing give
+     the person one line to paste (`sudo apt-get install -y ffmpeg poppler-utils pandoc nodejs libreoffice`) and
+     carry on; `pip3 install python-docx python-pptx openpyxl` yourself.
+   - From then on, on a Mac, every Bash command that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts
+     with `source ~/.local/poc-collateral/env.sh && ` once that file exists (each shell starts fresh).
    Log what was installed in `context-log.md`.
 5. Tell the person in one or two lines what will happen, then start Stage 1.
 
@@ -435,8 +431,10 @@ you:
     The deck (problem statement → solution) is built from it.
 - **Login:** if the app needs a sign-in, the skill opens its sign-in browser (`kit/auth.mjs`) on Orbit; remove the
   autopilot file and ask the person to log in to Orbit there, then continue. Never type a password.
-- Install whatever the toolkit needs (Node, Python packages, ffmpeg, poppler, Playwright Chromium, the voice model)
-  when the stage needs it; its `kit/setup.sh` does most of this.
+- **Tools first:** on a Mac, run the `poc-collateral-setup` doctor before anything else in this stage. If it is not
+  all `ok` (Setup's background install failed or never ran), run that skill's install now and wait for it. Then the
+  kit's `kit/setup.sh` reuses the shared tools and takes seconds. Every command in the collateral folder starts with
+  `source env.sh && `. On Linux, `kit/setup.sh` installs what is missing into the project folder.
 - Review: `stage: collaterals`, artifacts = everything in `out/`.
 - **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, first the **Reconcile check**
   (G1–G3 must show approved in Orbit), then **M1 · G4** (upload script PDF, deck,

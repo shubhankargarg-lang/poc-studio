@@ -43,6 +43,12 @@ Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and the **Slack** a
 (Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video (always,
 whatever its size), so it opens straight from Orbit.
 
+### Collateral tools (Mac)
+
+The first run installs every tool the collaterals need, once per Mac, in the background: about 1 GB into
+`~/.local/poc-collateral`, no admin password and no Homebrew. Every later POC reuses it, so the collateral stage
+starts in seconds. To check it any time: `bash ~/.local/poc-collateral/doctor.sh` (every line should read `ok`).
+
 ### Demo video on Google Drive
 
 The video goes through **Google Drive for desktop**: the plugin copies it into your local Drive folder, the Drive app
