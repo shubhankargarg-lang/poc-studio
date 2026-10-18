@@ -39,8 +39,9 @@ scripts/release.sh 1.4.0 "what changed"
 It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `commands/start.md`,
 then commits and pushes to `main`.
 
-Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and a **Slack** connector (Gmail, Google Drive and
-Google Calendar are optional but improve requirement gathering).
+Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and the **Slack** and **Google Drive** connectors
+(Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video when it
+is over 20 MB, shared by link, so it opens straight from Orbit.
 
 ## Use
 
@@ -80,7 +81,7 @@ the `poc-studio:` prefix.)
 
 | # | Stage | Skill | Output (in `<client-slug>/<usecase-slug>/`) |
 |---|---|---|---|
-| 0 | Setup: connector check (Slack required), installs the tools later stages need, workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
+| 0 | Setup: connector check (Slack and Google Drive required), installs the tools later stages need, workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |

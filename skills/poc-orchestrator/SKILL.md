@@ -233,10 +233,11 @@ except at the start (the POC ID must be verified).
    `<client-slug>/<usecase-slug>-<POC ID>/`).
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
-   - **Slack is required.** If no Slack tools are found, stop and ask the person to connect Slack (in Claude Code:
-     `/mcp`, or connect it as a claude.ai connector), then check again. Do not start Stage 1 without it.
-   - Gmail, Google Drive and Google Calendar are optional: list which are connected and carry on; the
-     Requirement Gathering document records the missing ones as "Not connected".
+   - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
+     connect it (in Claude Code: `/mcp`, or connect it as a claude.ai connector), then check again. Do not start
+     Stage 1 without both. (Drive is needed for discovery and to host the demo video when it is over 20 MB.)
+   - Gmail and Google Calendar are optional: list which are connected and carry on; the Requirement Gathering
+     document records the missing ones as "Not connected".
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Questions during stages are answered by the reviewer from context and assumptions, not the person.
