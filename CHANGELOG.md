@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.12.2
+- The demo video always goes to Google Drive (any size), shared by link; that link is saved in Orbit. No Orbit upload for the video.
+
 ## 1.12.1
 - Demo video over 20 MB goes to Google Drive (shared by link) and that link is saved in Orbit; Google Drive is now a required connector at setup, with Slack.
 

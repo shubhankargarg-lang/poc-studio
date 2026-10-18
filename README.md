@@ -40,8 +40,8 @@ It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplac
 then commits and pushes to `main`.
 
 Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and the **Slack** and **Google Drive** connectors
-(Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video when it
-is over 20 MB, shared by link, so it opens straight from Orbit.
+(Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video (always,
+whatever its size), shared by link, so it opens straight from Orbit.
 
 ## Use
 

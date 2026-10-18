@@ -97,8 +97,8 @@ Call it with:
   links are owner-approved: anyone with the link can open the file, and Orbit's Slack thread can show it.
 - `fileName` is the name readers see, e.g. `Acme - BRD v1.docx`, whatever the file is called on disk.
 - At most **20 MB** per upload.
-- **The demo video over 20 MB goes to Google Drive** (the Drive connector is required at setup), not through
-  `upload_public_file`, and is not compressed:
+- **The demo video always goes to Google Drive, whatever its size** (the Drive connector is required at setup) —
+  never through `upload_public_file`, and never compressed:
   1. In the person's Drive, find or create the folder `POC Studio / <POC ID> - <Client>` (Drive connector: search,
      then create the folder if missing).
   2. Upload the `.mp4` there with the Drive connector's file-create tool, named `<Client> - Demo video v<N>.mp4`.
@@ -108,7 +108,7 @@ Call it with:
      say "Video on Google Drive" in its `summary`. Readers open it straight from Orbit.
   5. If the connector cannot upload a file that size, ask the person once to drop the file into that Drive folder (give
      them the folder link and the local path), then share it and use its link as above.
-  A video of 20 MB or less is uploaded with `upload_public_file` like every other file.
+  This is the only way the video is stored; there is no Orbit upload for it.
 - Client files with no type below (or Google-native Docs/Sheets/Slides, mail and calendar items): save the
   source's own link (Slack permalink, Drive link, Gmail or Calendar link) with `file_kind link` instead of uploading.
 - MIME: txt `text/plain` · md `text/markdown` · csv `text/csv` · eml `message/rfc822` · json `application/json` ·
@@ -213,7 +213,7 @@ written or a new version posted). It makes Orbit post to the POC's Slack thread;
 
 | | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
 |---|---|---|---|---|---|
-| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 (≤ 20 MB with `upload_public_file`; larger → Google Drive, shared by link) |
+| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive, shared by link (never `upload_public_file`) |
 | Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
@@ -289,8 +289,8 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    notification); the stage moves to `4_design_system` only with the design system. G2 is approved with the design
    system.
 2. G4 is written after the owner approves the collaterals in Claude.
-3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video. A video over
-   20 MB is put on Google Drive, shared by link, and that link is its `file_link` (not compressed).
+3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video. The video is
+   always put on Google Drive (any size), shared by link, and that link is its `file_link`.
 4. The POC ID is mandatory; there is no lookup by client slug.
 5. No Orbit folder and no command-line script: reads, writes and uploads are Nebula's tenant tools called directly in
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.

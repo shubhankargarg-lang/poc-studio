@@ -235,7 +235,7 @@ except at the start (the POC ID must be verified).
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
      connect it (in Claude Code: `/mcp`, or connect it as a claude.ai connector), then check again. Do not start
-     Stage 1 without both. (Drive is needed for discovery and to host the demo video when it is over 20 MB.)
+     Stage 1 without both. (Drive is needed for discovery and to host the demo video, which always goes to Drive.)
    - Gmail and Google Calendar are optional: list which are connected and carry on; the Requirement Gathering
      document records the missing ones as "Not connected".
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
