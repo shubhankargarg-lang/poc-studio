@@ -339,10 +339,22 @@ one can become an edit to one of the plugin's SKILL.md files.
     "source": "user",
     "status": "open",
     "analysis_status": "pending",
+    "skill": "<skill key, or general>",
     "created_at": <Date.now()> } }] }
 ```
 
    - `ticket_no` and `created_at` use the same `Date.now()` value (get it with a one-line script).
+   - `skill` is the POC Studio skill or agent the feedback is about, as its key: `requirement-gathering`, `research`,
+     `scoping-l1-first`, `design-system`, `poc-orchestrator`, `poc-collateral-studio`, `orbit-writeback`,
+     `general-reviewer`, `poc-reviewer` — or `general`. Choose it in this order:
+     1. The person names a skill or stage in the feedback (or as an argument) → that key.
+     2. Otherwise decide from the feedback text and this session, by what stage or output it is about:
+        intake, the brief, client sources → `requirement-gathering`; outside facts → `research`; the scoping/BRD
+        document, L1 scope → `scoping-l1-first`; palette, brand, components, the design system → `design-system`;
+        how the run is driven, gates, the Nebula build, app build quality → `poc-orchestrator`; demo script, deck,
+        video → `poc-collateral-studio`; what shows in Orbit, statuses or links, Slack gate messages →
+        `orbit-writeback`; the reviewer's checks → `general-reviewer`; the independent reviewer agent → `poc-reviewer`.
+     3. It could be several, or none fits clearly → `general` (Orbit's skill analysis places it).
    - Optional: `"quote"` (exact short words worth keeping verbatim) and `"channel_ref"` (e.g. the workspace path).
    - `given_by_name` / `given_by_email` are **the person giving the feedback**, not the POC owner: take them from the
      connected Slack profile of the session's user if there is one, else from `git config user.name` /
@@ -351,7 +363,7 @@ one can become an edit to one of the plugin's SKILL.md files.
      `ticket_no` to confirm.
 4. **Nothing else.** No Activity row, no POC update, no `slack_notification`, no Slack message: feedback does not move
    the POC.
-5. **Reply in one line:** `Recorded as FB-<…> for <client_name>. It goes into the next skill analysis.` If the write
+5. **Reply in one line:** `Recorded as FB-<…> for <client_name>, under <skill name or General>. It goes into the next skill analysis.` If the write
    fails, show the error in one line and what to do (e.g. run `/nebula:setup` here on orbit.uat.unifyapps.com and sign
    in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not added to
    `failed_writes`.
