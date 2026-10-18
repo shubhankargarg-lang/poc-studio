@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.15.0
+- Orbit: every approval write is read back and confirmed before the next stage starts; every new app version is posted (also after G3 approval); a Reconcile check on every resume and before G4 writes any missing approval or document version without moving the stage backwards.
+
 ## 1.14.0
 - Collaterals: slow steps are recorded as they happen and the silent wait is cut out (`kit/trim.py`, after `build.py`): click → short beat → result, voice-over stays in sync, subtitles and scene times shifted; app-caused OVERRUN/SLOW count as fixed once trimmed.
 

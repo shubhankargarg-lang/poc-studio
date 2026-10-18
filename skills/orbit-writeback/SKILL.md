@@ -179,6 +179,21 @@ Every POC update also sends `last_activity` (one plain line people read) and `la
 `slack_notification: true` is sent **only in the last call of a gate push** (moments 1 and 5 — the moments a file is
 written or a new version posted). It makes Orbit post to the POC's Slack thread; Orbit clears it itself.
 
+## Reconcile check (on every resume, and before M1 · G4)
+
+Before anything else when a run resumes, and again right before writing G4, compare Orbit with the run state:
+1. Read the POC row and this POC's documents (`get_records`, filter `poc` = the POC ID, limit 100).
+2. For every gate the run state shows **approved** but Orbit does not (`gN_status` not `approved` or
+   `gN_owner_approved` not true): write the missing approval **only** — that gate's `in_review` documents →
+   `approved`, an Activity `gate_decided` approve (actor_type person, the owner, message "Approval recorded late"),
+   and on the POC row only `gN_status approved`, `gN_owner_approved true` and `last_activity`. **Never move `stage`,
+   `current_gate` or `status` backwards**, and send no `slack_notification`.
+3. For every document version in the run state that Orbit lacks (e.g. an app version): create it as in M5 (or as the
+   approved app version above).
+4. Retry everything in `failed_writes`.
+5. Say in one line what was written (or "Orbit is in step").
+Do not write G4 until G1–G3 show approved in Orbit.
+
 ## Order inside every moment
 **upload files → Documents → Iteration → Activity → POC last.**
 
@@ -235,6 +250,13 @@ Record every new `document_id` in the run state.
   `g2_status approved`, no stage change, no slack_notification. `g2_status` deliberately stays `waiting` until the
   design system is posted (M1b) and approved (M2); `last_activity` tells readers the BRD is approved. (G2 is approved
   only with the design system.)
+- **Confirm every approval (M2 and M2a) before the run moves on.** Right after the write, read the POC row back with
+  `get_records` (and, for M2a, the BRD document). M2 is confirmed when `gN_status` is `approved` and
+  `gN_owner_approved` is true; M2a when the BRD document is `approved`. Not confirmed → send the missing keys again (up
+  to 3 tries in total). Still not confirmed → **the next stage does not start**: tell the person in one line what did
+  not reach Orbit and ask once whether to retry or carry on without Orbit for now (if they carry on, the gate goes to
+  `failed_writes` and the reconcile check below writes it later). Record the confirmation in the run state
+  (`orbit.confirmed: [g1, g2a, g2, g3]`).
 
 ### Moment 3 — the owner asks for changes instead of approving
 Iteration (create): status open, phase of the gate, **reason = their exact words**, related_document = the version
@@ -255,8 +277,13 @@ Upload the new file. Documents: update the rejected version → `superseded`; cr
 Activity: `document_saved`, `gate_posted` gN. POC: current_gate gN, gN_status waiting, status waiting, gN_summary
 (what changed), `slack_notification true`. Then wait for M2 or M3 again.
 **G3 (the app):** there is no file to upload — the new version is an app document v(N+1) with the (same or new) app
-URL as `file_link`. App fixes made later through Nebula (e.g. during collaterals) are logged as an Activity
-`document_saved` (gate g3, message naming the fix) with a POC `last_activity`; no new document, no notification.
+URL as `file_link`. **Every new app version is posted, whenever it happens:**
+- while G3 is waiting or changes were asked → this M5 (new app document v(N+1), `in_review`, the old one
+  `superseded`, gate re-posted with notification);
+- after G3 was approved (e.g. Nebula fixes made during collaterals) → create the app document v(N+1) with status
+  `approved` and the published URL, set the previous version `superseded`, log `document_saved` (gate g3, message naming
+  what changed) and update the POC `g3_summary` and `last_activity`; no notification, no gate change.
+The run state's app version number and Orbit's latest app document must always match.
 
 **G4 changes:** collaterals are written only once approved, so a change asked at the collaterals gate is M3 (phase
 deliver) **without** `related_document` and **without** `g4_status` (Orbit has not seen G4 yet): Iteration + activities

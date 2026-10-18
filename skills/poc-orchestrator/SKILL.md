@@ -124,7 +124,8 @@ This file is the reviewer's memory of the use case; keep it factual and short.
 
 If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and `context-log.md`, tell the person in one line where the
 run stands, and continue from the first stage that is not `approved`. Never redo an approved stage unless the
-person asks.
+person asks. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
+reached Orbit is written before the run goes on.
 
 ## Questions never go straight to the person
 
@@ -197,7 +198,8 @@ Remove the autopilot file, then:
    score, any assumptions marked `check_this`, and any open findings.
 2. Ask with AskUserQuestion: **Approve and continue to <next stage>** / **Request changes** (they can type the
    changes in "Other").
-3. **Approve** → mark the stage `approved` in `state.json`, log it, move on.
+3. **Approve** → mark the stage `approved` in `state.json`, log it, run the Orbit approval write (M2 / M2a) and
+   **confirm it landed** (orbit-writeback: "Confirm every approval"); only then move on to the next stage.
    **Changes** → log the feedback verbatim (it is now a human decision for every later review), re-run the stage
    skill to apply it, review again (round counter restarts for the new feedback), and gate again.
 
@@ -406,8 +408,9 @@ you:
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
   version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
-  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, gate again. Later fixes to the app (e.g.
-  from the collateral stage) also go through Nebula, and are listed at the next gate.
+  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
+  from the collateral stage) also go through Nebula, are listed at the next gate, and each new app version is posted
+  to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
 
 ## 5 · Collaterals
 
@@ -428,7 +431,8 @@ you:
 - Install whatever the toolkit needs (Node, Python packages, ffmpeg, poppler, Playwright Chromium, the voice model)
   when the stage needs it; its `kit/setup.sh` does most of this.
 - Review: `stage: collaterals`, artifacts = everything in `out/`.
-- **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, **M1 · G4** (upload script PDF, deck,
+- **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, first the **Reconcile check**
+  (G1–G3 must show approved in Orbit), then **M1 · G4** (upload script PDF, deck,
   video; demo_ready) — do it before marking the run done.
 - Gate. On approval (after M1 · G4), mark the run done, delete the autopilot file, and give the person the list of files with
   their paths in the client folder.
