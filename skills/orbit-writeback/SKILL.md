@@ -77,8 +77,7 @@ Call the tool with:
 - `update` merges into the stored row: send only the keys you change. Never send a row back whole.
 - Never send `""` or `null`: leave the key out.
 - Dates are epoch milliseconds (`Date.now()` / `int(time.time()*1000)`); get them with a one-line script, not by guessing.
-- Build long values (summaries, the design system's HTML `content`) by reading the file with a script and pasting
-  the result into the call; never retype a file's contents by hand.
+- Build long values (summaries) with a script when they come from a file; never retype a file's contents by hand.
 - Check the reply: every item in `results` must say `"ok": true`.
 
 ### Upload a file — the `upload_public_file` tool
@@ -120,7 +119,7 @@ discovered input, `<source>-<short name>` (`slack-…`, `drive-…`, `gmail-…`
 
 ```json
 { "document_id": "<id>", "poc": "<poc_id>", "name": "BRD", "type": "brd", "stage": "3_scope", "gate_pack": "g2",
-  "version": 1, "status": "in_review", "doc_role": "artifact", "format": "link",
+  "version": 1, "status": "in_review", "doc_role": "artifact",
   "file_link": "https://orbit.uat.unifyapps.com/api/file/download/…", "file_kind": "docx",
   "file_name": "Acme - BRD v1.docx", "summary": "One or two lines on what the document holds.",
   "created_by": "<POC owner name>", "saved_at": 1792280000000 }
@@ -130,7 +129,9 @@ discovered input, `<source>-<short name>` (`slack-…`, `drive-…`, `gmail-…`
 - `status`: in_review (its gate is waiting) · approved (gate passed) · final (inputs and Deliver files) · superseded
 - `doc_role`: artifact (the run made it) · input (found in discovery)
 - `file_kind`: docx · pptx · html · pdf · video · image · link · other
-- Design system only: also `"format": "html"` and `"content": "<the whole HTML>"`, so it renders in the app.
+- No `content` and no `format` on any document: every document, the design system included, is a file uploaded with
+  `upload_public_file` and given by `file_link` + `file_kind` (the app renders it from the link). The design system is
+  its `.html` file uploaded with mimeType `text/html`, `file_kind html`.
 - A re-iterated version also sends `"from_iteration": "<iteration_id>"`.
 
 **Activity** — object `orbit_studio_activity` (create only)
@@ -195,7 +196,7 @@ written or a new version posted). It makes Orbit post to the POC's Slack thread;
 | | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
 |---|---|---|---|---|---|
 | Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 (≤ 20 MB) |
-| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, `format html`, `content`, `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
+| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
 | Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
@@ -261,7 +262,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 - Create or delete POC rows, or delete any row.
 - Write `manager_*` fields, `pinned`, `slack_channel_id`, `slack_thread_ts` (Orbit and its people own these).
 - Send `slack_notification: true` outside moments 1 and 5.
-- Put a file's bytes in a row (upload it and save the link) — the design system's `content` is the one exception.
+- Put a file's bytes or text in a row: upload it and save the link (no exceptions, the design system included).
 - Write to any other object or tenant.
 
 ## Decisions (where this differs from `orbit-spec.md`)
@@ -275,6 +276,8 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.
 6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
 7. Every name/email field uses the POC owner's name and email from the POC record.
+8. The design system is uploaded as a public `.html` file like every other document; no `content` or `format` is sent
+   on any document row.
 
 ## Testing a moment by hand
 When the person asks to test a write-back moment directly (e.g. "upload this file as the G2 BRD", "log this as a change
