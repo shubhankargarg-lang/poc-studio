@@ -148,6 +148,7 @@ Rules that follow:
 
 ### Step 6 — Personas and journeys
 - Derive personas from the org charts, roles named in flows, and the people the documents imply (who approves, who uploads, who gets notified). Add personas the research shows are standard for this kind of app, such as an admin or a leadership viewer.
+- **Primary-persona rule.** The primary persona performs the core job and creates the core record; the app and the demo open on their home. Personas who oversee, approve or analyse are secondary unless oversight is the core job. Each secondary role gets its own home page. Start from the Requirement Gathering document's Stage-1 UX decisions (primary persona, device per persona, reuse vs rebuild) and change one only with a Decision (D-ID) that says why.
 - Write the **to-be end-to-end journey**: the business process from start to finish as it will run with the app, across all personas. Mark where the app, an agent or an automation takes over a step that used to be manual.
 - Write **one workflow per persona per job-to-be-done** as a step table (section 6.8). Each step names the page, the action, what the system does, the data touched, and which agent or automation is involved. Persona workflows use only build-scope pages and actions.
 
@@ -271,7 +272,14 @@ Half a page: the problem, what we'll build, for whom, the 3–5 headline capabil
 ### 4. Objectives and success criteria
 - Objectives (O1…), each linked to problems.
 - Success criteria table: metric · baseline (known or assumed) · target · how it's measured in the app (which object field or report).
-- "4.1 Acceptance criteria for the build": concrete checks a reviewer can tick, e.g. "Every chart changes when the underlying record changes." Acceptance criteria test L1 only. This is the only place they are listed; 20.1 refers back to them.
+- "4.1 Acceptance criteria for the build": concrete checks a reviewer can tick, e.g. "Every chart changes when the underlying record changes." Acceptance criteria test L1 only. This is the only place they are listed; 20.1 refers back to them. End 4.1 with a **Visual acceptance** block, tested at 1280×800 on every page in the demo storyline:
+  - no horizontal scroll and no clipped column;
+  - no list row taller than 64 px (state another number only with a reason), and at least 8 rows visible in a list;
+  - no wrapped or mid-word-broken pill or tag;
+  - each page opens on its specified tab and first viewport;
+  - every AI output named in 4.1 is visible in the seed data;
+  - every rail badge and KPI count equals the count on its page;
+  - no truncated or inert control: every button either works or is disabled with its reason (section 11 prerequisites).
 
 ### 5. Scope
 Use these Heading 2s in this order:
@@ -294,7 +302,7 @@ Skip only for pure internal automation with no comparable tools, and say so. Oth
 - Brand cues found for the client (for the DS hand-off).
 
 ### 7. Personas
-A table per persona: ID (U1…), role/title, team, goals, pains, key jobs-to-be-done, frequency of use, devices, permissions (what they can see, create, approve), and which pages they use most. For segmented audiences (type D) add the segment matrix and visibility rules.
+A table per persona: ID (U1…), role/title, team, **Primary (Y/N)** (exactly one Y, by the primary-persona rule in step 6), goals, pains, key jobs-to-be-done, frequency of use, devices and working conditions, permissions (what they can see, create, approve), **home page** (the page they land on), and which pages they use most. For segmented audiences (type D) add the segment matrix and visibility rules.
 
 ### 8. Journeys and workflows
 - **8.1 To-be end-to-end journey**: the stages of the business process as a table: stage · personas · what happens · app page · agent/automation · output. Include a flow diagram (image, section 2).
@@ -327,13 +335,25 @@ The **complete** feature catalogue lives here, in the format of section 7, in a 
 ### 11. Page specifications
 One subsection per page in the build scope, in nav order (pages needed only by L2 are in 10.3, not here). Specify only the blocks, tabs, fields, actions and states that L1 features need; end with one "Future scope:" line naming any L2 additions planned for the page (L2 IDs only, no description of how to build them). "Features covered" lists L1 IDs only. Every page here is built, so a page spec has no "Phase" row or flag. For each:
 - **Purpose**: one sentence on what the persona gets from this page.
+- **Screen UX** (required on every page, before the blocks table):
+  - **The question the screen answers** for its persona, in their words.
+  - **One primary CTA**: its label and placement (one per screen).
+  - **Above the fold** at 1280×800: what the persona sees without scrolling.
+  - **Hero content**: the one thing the eye lands on first.
+  - **Filters** with their exact values and the seed count behind each value.
+  - **Row or card anatomy**: what each list row or card shows, in order (at most four lines on a card, one line per table cell).
+  - **Exact copy**: headings, the empty state with its CTA, button labels.
+  - **Context actions** on a row or record.
+  - **States**: loading, slow AI (what shows while an agent works), success, empty, error, no-permission.
+- **Home pages by persona type.** A doer's home leads with their next task (a task list or work queue); an overseer's home leads with what needs action (a queue or insights), then numbers. Lead with a task list, not KPI tiles: a full-width chart or a KPI strip is never the whole home. Every persona's home page is named in section 7.
 - **Personas** and **entry points** (nav, links, notifications, agent answers).
 - **Components used** (CMP IDs from section 23).
 - **Layout**: regions top to bottom (header, KPI strip, main, side pane, drawer).
 - **Blocks table**: block · what it shows · data source (object.field, filter, formula) · UI pattern (generic name, list below) · actions.
 - **Formulas**: every computed number defined, e.g. "Stuck > 14 days = count Product where now − stage_entered_at > 14".
 - **Actions**: button/menu → what happens (the workflow ID it triggers, or the object update).
-- **States**: empty (exact message and recovery action), loading, error, no-permission.
+- **Prerequisites shown before the click**: for every action that needs earlier steps (e.g. 2–3 fields filled, a sample approved, a document attached), list the conditions. The button stays **disabled** until they are met, with a tooltip or helper line naming exactly what is missing; it never fails only after the click. Each such action gets an acceptance check in 4.1.
+- **States**: empty (exact message and recovery action), loading, slow AI, success, error, no-permission (the same states as Screen UX; state each once there and reference it here).
 - **AI surfaces**: which values are AI-generated, how they're marked, and what the human approves.
 - **Features covered**: L1 feature IDs.
 - For record pages with tabs or stages, a table per tab or stage with: the fields shown (object.field), which are editable at which stage, the completeness rule for that tab, the AI-prefilled values, the actions, and the **gate** to leave the stage (exact condition, e.g. "every offered variant has a GTIN and country of origin"; who can advance; the message shown when blocked). Future stages are read-only unless you say otherwise.
@@ -445,12 +465,22 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 - **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers.
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
 - Realistic values that use the client's real brands, products, document formats and regions. Numbers can be dummy, labelled as such.
+- **Demo data rules** (Nebula follows them when it seeds; the build test checks them by script):
+  - one demo "today" that every date agrees with; no date after it; overdue items are overdue by whole days;
+  - times in business hours (08:00–18:00) in the persona's stated time zone (the client's head-office time zone when none is stated, and say so);
+  - statuses agree with the scores, values and dates on the same record;
+  - every filter, badge and KPI count equals its row count, each with its formula;
+  - the default persona's first screen is non-empty, and the default period, filter or tab has data;
+  - every AI output names the records that carry it and the count shown (never "0 AI suggestions");
+  - evidence (images, documents, quotes) is unique to each hero record and shows what it claims;
+  - no duplicates or placeholders on any demo path;
+  - test datasets are kept separate from the demo data (their own seed, or a hidden entry point), never mixed into demo screens.
 - For type C, use the client's sample documents as seed inputs, and add generated variants that exercise each match/exception path.
 
 ### 20. Build plan and demo storyline
 Start with the build order: build steps in dependency order (objects and seed → shell → core journey → depth → reporting), each one demo-able at its end, naming the pages, workflows and agents built in each step. Call these **build steps** (B1, B2…), never "phases", so they are not confused with the future-scope phases in 5.5. Then use these Heading 2s:
 - **"20.1 Acceptance checklist"**: one line pointing to 4.1, plus only the checks that belong to the build order (e.g. "after B3, a photo in gives a score out"). Do not copy the 4.1 list.
-- **20.2 Demo storyline**: 6–10 steps, each naming the page, the record and what it proves. Aim for 15 minutes. It uses only L1. Mark any step that happens outside the app (e.g. a slide in the proposal deck) as "outside the app".
+- **20.2 Demo storyline**: 6–10 steps, each naming the page, the record and what it proves. Aim for 15 minutes. It uses only L1. **Order:** the primary persona's home → the core action → the result with its evidence → the follow-up by a secondary persona; oversight, admin and setup come only after this core loop. Mark any step that happens outside the app (e.g. a slide in the proposal deck) as "outside the app".
 - **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 6–12 pages, 6–20 objects, 4–12 workflows, 1–2 live agents. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
@@ -744,6 +774,7 @@ Write a script or check by hand. Every check must pass.
 - [ ] All sections 0–23 and the Appendix are present and non-empty (or carry a one-line "not applicable because…").
 - [ ] Every persona has at least one workflow in 8.2, and every workflow names real build-scope page IDs.
 - [ ] Every page has purpose, components used, blocks with data sources, actions, empty state and features covered.
+- [ ] Every page has its Screen UX fields; every persona's home follows the home rule; exactly one persona is Primary; every action with prerequisites is specified disabled-with-reason; 4.1 ends with the Visual acceptance block; 20.2 follows the storyline order; section 19 carries the demo data rules.
 - [ ] Every object field has a type, and every picklist lists its values.
 - [ ] Every agent and workflow uses the full spec table, and every workflow has exactly one trigger type and a numbered path.
 - [ ] Every scoring rule (if any) has checks, inputs with sources, a formula, all four result bands and a weight, and the weights total 100 per tenant.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.0
+- Requirement Gathering: required Personas and journeys table; Stage-1 UX decisions (primary persona, device per persona, reuse vs rebuild) with source or stated default; checklist re-weighted to 12 items (personas and journeys = 25 points); Slack file retries cut to 2.
+- Scoping: primary-persona rule and Primary column; Screen UX fields on every page (kept with the data bindings); home pages by persona type; prerequisites shown before the click (disabled with reason); Visual acceptance block in 4.1 (1280×800); demo storyline order; demo data rules in section 19.
+- Build test: visual acceptance, blockers-before-click and the demo data rules (by script) are checked in the built app.
+
 ## 1.12.2
 - The demo video always goes to Google Drive (any size), shared by link; that link is saved in Orbit. No Orbit upload for the video.
 

@@ -63,15 +63,15 @@ Call the Slack connector's file read (`slack_read_file`) with the file ID. Binar
 
 The answer "Resources of type ... are not currently supported" is usually **temporary**: the same file can fail several times in a row and then succeed minutes later. Back-to-back retries tend to land in the same bad window, so retries must be **spaced in time**:
 
+**At most 2 attempts per file:**
+
 1. **Attempt 1** — straight away.
 2. If refused, **do not retry immediately**. Note the file as pending, try the Drive fallback (2b) for it, and carry on with other work (other searches, other files, reading what you already have).
-3. **Attempt 2** — at least **1 minute** after attempt 1.
-4. **Attempt 3** — at least **3 minutes** after attempt 2.
-5. **Attempt 4** — at least **5 minutes** after attempt 3, and always once more just before starting Step 4.
+3. **Attempt 2** — the last one, at least **1 minute** after attempt 1 (just before Step 4 if nothing else is left to do). No further Slack retries.
 
 Check the time with the current-time tool before each retry so the spacing is real, not assumed. If there is no other work left to fill the gap, wait with the session's wait tool (for example `Monitor` with a time-based until-loop, or a scheduled wake-up); never use `sleep` in the shell. Record each attempt's time and result; Section 4 lists them for any file that ends up not reached.
 
-A file is marked **Not reached** only when all four spaced Slack attempts have failed **and** 2b and 2c found no copy.
+A file is marked **Not reached** only when both Slack attempts have failed **and** 2b and 2c found no copy.
 
 ### 2b. Drive fallback for the same file
 
@@ -105,7 +105,7 @@ Copy each original under its original name into the `files/` folder of the stage
 
 ## Step 4 — Write the Requirement Gathering Document
 
-Before starting: make the final Slack retry for any client file still pending (2a, attempt 4).
+Before starting: make the final Slack retry for any client file still pending (2a, attempt 2), if it has not been made.
 
 Build it with the `docx` skill (read its SKILL.md first). Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Then **exactly these four sections**, nothing else:
 
@@ -114,30 +114,47 @@ Plain prose and short tables, readable by someone who has never heard of the cli
 - **Client name** and **website**
 - **Use case**: what the client asked for, in one or two sentences, quoting the client's own words where a client source has them. Say whether the ask was found in the client's words or only in our team's summary.
 - **Problem statement**: who has what problem, and what it costs or slows down, from the sources.
+- **Personas and journeys** — a required table, from the sources:
+
+  | Persona | Device and working conditions | Jobs to be done | Screens or steps seen in the sources | Primary (Y/N) |
+  |---|---|---|---|---|
+
+  Always capture these five facts, each with its source or marked Missing: the **primary persona and their first
+  screen**; the **other personas**; the **top 3 end-to-end journeys** (start → end, who does each step); the
+  **device and working conditions per persona** (desk, field, phone, offline, bright light…). The primary persona is
+  the one who performs the core job and creates the core record (overseers, approvers and analysts are secondary
+  unless oversight is the core job).
+- **Stage-1 UX decisions** — a short table deciding the three choices that shape the UX: **primary persona**,
+  **device per persona**, and **reuse vs rebuild** of any earlier work our team or the client already has. Each row
+  gives the decision and either its source or a **stated default** marked "Default — confirm". A question to the
+  client alone does not count as a decision, and no default is applied without being written here. These decisions
+  do not change the checklist score: a default is never scored as Confirmed.
 - **Other important information** found across Slack, Drive and meeting transcripts: the client's current process and stages, systems and tools, brands or units in scope, people and roles, dates and meetings, what our team has already built or decided, and a glossary of client terms (e.g. acronyms used in their files). Each point names its source.
 
 ### 2. Requirement checklist score
-One table, ten items, ten points each, total out of 100:
+One table, twelve items, total out of 100 (the weight is in the Max column):
 
-| # | Requirement | Status | Points | Finding | Source |
-|---|---|---|---|---|---|
-| 1 | Client identified (name, website) | | | | |
-| 2 | The ask in the client's own words (their email, message or transcript) | | | | |
-| 3 | Problem statement (who, what goes wrong) | | | | |
-| 4 | Current process (steps, roles, tools) | | | | |
-| 5 | Users and roles | | | | |
-| 6 | Scope: core use case and must-haves | | | | |
-| 7 | Data: hypothetical or real; if real, where it lives and a sample | | | | |
-| 8 | Systems and integrations | | | | |
-| 9 | Success criteria and demo audience | | | | |
-| 10 | Delivery date, and our PM and manager | | | | |
+| # | Requirement | Max | Status | Points | Finding | Source |
+|---|---|---|---|---|---|---|
+| 1 | Client identified (name, website) | 5 | | | | |
+| 2 | The ask in the client's own words (their email, message or transcript) | 10 | | | | |
+| 3 | Problem statement (who, what goes wrong) | 10 | | | | |
+| 4 | Current process (steps, roles, tools) | 10 | | | | |
+| 5 | Primary persona and their first screen | 10 | | | | |
+| 6 | Other personas, with device and working conditions per persona | 5 | | | | |
+| 7 | Top 3 end-to-end journeys | 10 | | | | |
+| 8 | Scope: core use case and must-haves | 10 | | | | |
+| 9 | Data: hypothetical or real; if real, where it lives and a sample | 5 | | | | |
+| 10 | Systems and integrations | 5 | | | | |
+| 11 | Success criteria and demo audience | 10 | | | | |
+| 12 | Delivery date, and our PM and manager | 10 | | | | |
 
-Statuses and points: **✅ Confirmed** (a client source states it) = 10 · **🟡 Inferred** (only our team's material, or implied) = 5 · **❌ Missing** = 0. All ten items are always scored, out of 100. For a "show us your view" (POV) ask, items 6 and 8 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (5 points), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us.
+Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us.
 
 Under the table: the total, one sentence on what lowers it most, and the verdict:
-- **Ready**: 80 or more, and none of items 2, 3, 6 or 10 is Missing
-- **Ready with assumptions**: 60–79, and none of items 2, 3, 6 or 10 is Missing
-- **Not ready**: below 60, or any of items 2, 3, 6 or 10 is Missing
+- **Ready**: 80 or more, and none of items 2, 3, 8 or 12 is Missing
+- **Ready with assumptions**: 60–79, and none of items 2, 3, 8 or 12 is Missing
+- **Not ready**: below 60, or any of items 2, 3, 8 or 12 is Missing
 
 ### 3. Questions to close the gaps
 Two numbered tables, each: # · Question · Why it matters · Default if no answer.

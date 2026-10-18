@@ -376,6 +376,16 @@ you:
      records from the seed data, and that the agent opens in its drawer on the live agent component as the design
      system's build contract requires (not a card on a page).
   4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
+  4a. **Visual acceptance** (scoping §4.1's Visual acceptance block) at 1280×800 on every storyline page: no horizontal
+     scroll or clipped column, list rows within the stated height with at least 8 rows visible, no wrapped or broken
+     pill, each page opens on its specified tab, every rail badge and KPI count equals its page, no inert control.
+  4b. **Blockers before the click** (scoping §11 prerequisites): each such button is disabled with its reason until
+     the prerequisites are met, then enabled and working.
+  4c. **Demo data rules** (scoping §19), checked **by script** against the seeded records: one demo "today" and no
+     later date; times in business hours in the stated time zone; statuses agree with scores, values and dates;
+     filter/badge/KPI counts equal row counts; the default persona's first screen and default tab have data; every AI
+     output names its records and count (no "0 AI suggestions"); hero evidence unique; no duplicates or placeholders on
+     demo paths; test data kept separate from demo data.
   5. **Fix and re-test:** every failure goes back to Nebula to fix (same session, Sonic mode), then that page,
      automation or agent is tested again, and anything the fix touched is re-tested too. Repeat until everything
      passes, **at most 3 fix rounds per failing item**; questions Nebula asks while fixing go to the reviewer as usual.
