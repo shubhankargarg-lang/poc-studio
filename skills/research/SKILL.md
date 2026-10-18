@@ -37,11 +37,7 @@ say that you did.
 
    When the purpose is unclear, use standard.
 2. **Reuse what exists.** Check the context for earlier findings on the same point, and link to them
-   instead of searching again. When the context includes the client's own documents (a BRD, brief or
-   process map), treat them as the authority on how the client's process and the build work, and carry
-   them over exactly. Say which features are live and which are pre-filled demo data, and keep every
-   branch of a process, including loops that send work back and hand-offs to the next stage. Raise any
-   outside source that disagrees under notes for the caller instead of overriding the document.
+   instead of searching again.
 3. **Search.** Use `references/source-guide.md` to pick where to look for this kind of question.
 4. **Read and rate the sources** you rely on.
 5. **Write the answer** in the format below.
