@@ -52,14 +52,16 @@ Open Claude Code in the folder where the POC files should live, then:
 
 For example `/poc-studio:start Acme | Invoice matching | POC-acme-20261018`. **The POC ID is required** (format
 `POC-<client>-<YYYYMMDD>`); the run does not start until it is given, and it must exist in Orbit: right after the update check, the run reads
-the Orbit object `orbit_studio_poc` (filtered on `poc_id`) and stops, asking you to check the ID, if it is not found.
+the Orbit object `orbit_studio_poc` (filtered on `poc_id`) and stops, asking you to check the ID, if it is not found. The POC ID is recorded in the progress file,
+the documents and the build so everything can be traced to the POC.
 
 **Orbit write-back:** at every gate the run uploads the stage's files to Orbit · POC Studio and writes the Document,
 Activity, Iteration and POC rows (skill `orbit-writeback`), so the POC owner, the team and the Slack thread follow the
 run. It uses Nebula's own tenant tools in the session (the same ones Nebula builds with) on
 `orbit.uat.unifyapps.com`, and uploads files as public tenant links, so the folder you run in must be set up with
-`/nebula:setup` on that tenant. It is recorded in the progress file, the
-documents and the build so everything can be traced to the POC. The use case name keeps the whole run focused:
+`/nebula:setup` on that tenant.
+
+The use case name keeps the whole run focused:
 Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:
 progress is kept in `<client-slug>/<usecase-slug>/state.json`.
