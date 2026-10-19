@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.17.2
+- Questions that wait on you now nudge the POC owner in the POC's Slack thread (not while autopilot routes questions to the reviewer).
+
 ## 1.17.0
 - New skill `poc-collateral-setup` (from a successful run): installs every collateral tool once per Mac into the user's own folders, no admin and no Homebrew (Python 3.12 venv, ffmpeg, ffprobe/pdftotext/pdftoppm stand-ins, pandoc, LibreOffice, Kokoro voice, Spectral fonts, Playwright Chromium, lucide icons), with a doctor that runs each tool. Setup starts it in the background; Stage 5 runs the doctor first.
 - Collateral kit: `kit/setup.sh` reuses the shared install (seconds, no downloads) and writes `env.sh`; every command starts with `source env.sh && `; deck icons drawn with resvg-py (cairosvg fallback); `kit/lint.mjs` works when the path has spaces; `kit/auth.mjs` waits for Google SSO to finish and saves only once the app opens; Orbit login set to `https://orbit.uat.unifyapps.com/login`.
