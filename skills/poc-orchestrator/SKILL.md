@@ -357,6 +357,7 @@ Only these session facts are supplied by you:
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
   - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
+  - **Solution:** create a **new** solution named `<Client> — <Use case>` for this POC. Never reuse a cached or generically named solution for the tenant (e.g. one called "Nebula"), unless its id is already recorded in this workspace's `04-build/build-summary.md` or `state.json`. This is also the answer when Nebula offers a cached solution. If Nebula has already opened a solution, or synced entity manifests whose names belong to another client, stop before building: tell the person in one line, log it, and have Nebula create the new solution instead.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell Nebula to quote and follow the
     **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
     the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
@@ -366,7 +367,7 @@ Only these session facts are supplied by you:
     micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
     draws at most five screens on purpose; Nebula composes every other page from the kit and patterns, matching the
     drawn screens' finish, and never copies one screen's content onto another page.
-  - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
+  - **What to build:** a text-to-code app on UnifyApps, built with Nebula's **text-to-code builder** (never the no-code config builder; if Nebula offers or picks the config builder, answer text-to-code), with the agents, automations and objects listed in the
     build plan (L1 scope only).
   - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
     should keep going; whenever it stops with a question — through AskUserQuestion or as plain text — answer it via
@@ -382,17 +383,20 @@ Only these session facts are supplied by you:
   or browser checks, whatever name the session lists for them; there is no reviewer review of the build):
   1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
      seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
-     every create/edit form and submit it once with test data.
+     every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key or any 500 error).
   2. **Every automation / workflow** (scoping §14): run each one by its real trigger (the page button, the object event,
      a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
      status it should change, the notification it should send. Failures, errors and empty results count as failed.
   3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
      records from the seed data, and that the agent opens in its drawer on the live agent component as the design
      system's composition contract requires (not a card on a page).
+     If an agent asks a follow-up question, the drawer shows it and takes the answer (no dead-end or error screen),
+     and the conversation continues to its result.
   4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
   4a. **Visual acceptance** (scoping §4.1's Visual acceptance block) at 1280×800 on every storyline page: no horizontal
      scroll or clipped column, list rows within the stated height with at least 8 rows visible, no wrapped or broken
      pill, each page opens on its specified tab, every rail badge and KPI count equals its page, no inert control.
+     Scores, confidence and other ratios show as percentages (e.g. 87%), never as a raw fraction such as 0.87.
   4b. **Blockers before the click** (scoping §11 prerequisites): each such button is disabled with its reason until
      the prerequisites are met, then enabled and working.
   4c. **Demo data rules** (scoping §19), checked **by script** against the seeded records: one demo "today" and no
@@ -421,6 +425,8 @@ Only these session facts are supplied by you:
   failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through Nebula, are listed at the next gate, and each new app version is posted
   to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
+  Records the person created while verifying the app (their own runs, uploads, cases) are kept: fixes and re-seeding
+  never delete them unless the person asks.
 
 ## 5 · Collaterals
 
