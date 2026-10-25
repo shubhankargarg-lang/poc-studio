@@ -55,7 +55,7 @@ That single document holds everything. Nothing the DS skill or Nebula needs may 
 
 Working notes are allowed while you run: research answers, drafts, the evidence log as you build it, and, if it helps, a structured working draft (e.g. a Python or JSON file) from which you generate the long tables so IDs and counts can't drift. Keep all of these in a `_working/` folder next to the document. They are not deliverables, and nothing downstream reads them. Everything that matters goes into the Word file.
 
-The prose, the feature tables, the page/object/agent/workflow specs and the component inventory must agree exactly, with the same IDs, names and counts. Generate the long tables (feature catalogue, objects, page blocks, workflows, seed plan) from one working draft by script rather than typing them twice. **Generate every count the document states** (in Document Control, the executive summary, 5.5, 9.2, 10.1 and 20.3) from that same draft, never by hand, so "N of M" figures can't disagree between sections.
+The prose, the feature tables, the page/object/agent/workflow specs and the component inventory must agree exactly, with the same IDs, names and counts. Generate the long tables (feature catalogue, objects, page blocks, workflows, seed plan) from one working draft by script rather than typing them twice. **Generate every count the document states** (in Document Control, the executive summary, 5.5, 9.2, 10.1 and 20.3, and every seed-plan figure that recurs, such as records per picklist value or the share of AI drafts) from that same draft, never by hand, so "N of M" figures can't disagree between sections.
 
 ### Two parts, two readers
 The same file serves two different readers, so it is split into two parts with a Heading 1 divider before each:
@@ -141,13 +141,16 @@ Everything else is **L2 — future scope**: enhancements, nice-to-have different
 
 Rules that follow:
 - Keep L1 tight. Test each L1 row: "If we drop it, does the client lose something they asked for, does the core flow or an agent break, or does research say the demo looks incomplete?" If none, it is L2.
+- Check L1 against the storyline (20.2). A row that no storyline step uses stays L1 only on a Client ask or Research must-have reason; otherwise it is L2. Supporting records reached from the story (e.g. a dealer profile) get a simple linked view, not a full page with its own trend charts. Keep at most one simple chart per secondary view. Shrink the data model to match.
 - When an L1 feature needs a smaller, simpler version of a capability (e.g. read-only reference data instead of imports), split the row: the simple version is L1, the full version L2.
 - Typical shape for a POV: 30–45% of rows are L1. If L1 exceeds about half the catalogue, re-test it.
+- **Cover the whole journey, not one module.** The L1 slice touches every stage of the client's end-to-end process (8.1) at least thinly. Never let one module, such as data-quality or ID checks, become the whole app; supporting checks live inside the main record, not at its centre. Depth goes to the core loop. Other stages each get one well-defined page or tab, with seeded data so they never look empty.
 - **Build assets follow L1.** Pages, page blocks, tabs, objects, fields, workflows, agents, integrations, components, seed records and design patterns are specified only when at least one L1 feature needs them. An asset needed only by L2 features is not specified; it is listed in the future-scope assets table (section 10.3) with the L2 feature IDs that need it. Page blocks and actions that serve only L2 features are left out of the page spec (or named once in the page's "Future scope" line), so the builder never builds them.
 - "Phase 1" means exactly the L1 set; later phases group the L2 rows.
 
 ### Step 6 — Personas and journeys
 - Derive personas from the org charts, roles named in flows, and the people the documents imply (who approves, who uploads, who gets notified). Add personas the research shows are standard for this kind of app, such as an admin or a leadership viewer.
+- **Keep app personas to two or three.** A persona is someone who logs in and works in the app. People who only receive emails or notifications (e.g. store managers, sales reps, account teams) are recipients: name them in the notification rules and in who is copied, but give them no persona row, no pages and no permissions. Merge roles that share a home page and a job rather than adding a persona per job title; when several people share one role (e.g. merchandisers split by region), model that as a field on the user or record, not as extra personas.
 - **Primary-persona rule.** The primary persona performs the core job and creates the core record; the app and the demo open on their home. Personas who oversee, approve or analyse are secondary unless oversight is the core job. Each secondary role gets its own home page. Start from the Requirement Gathering document's Stage-1 UX decisions (primary persona, device per persona, reuse vs rebuild) and change one only with a Decision (D-ID) that says why.
 - Write the **to-be end-to-end journey**: the business process from start to finish as it will run with the app, across all personas. Mark where the app, an agent or an automation takes over a step that used to be manual.
 - Write **one workflow per persona per job-to-be-done** as a step table (section 6.8). Each step names the page, the action, what the system does, the data touched, and which agent or automation is involved. Persona workflows use only build-scope pages and actions.
@@ -259,7 +262,7 @@ Use exactly these sections, in this order, with these numbers (0–23 plus the A
 - A **Count · Value** table, generated by script: Personas, Features (Grand total, L1 must-have, L2 future scope), and for the L1 build scope: Components, Pages, Objects, Agents, Workflows, Integrations. Each row label starts with the word shown here so the checker can match it against the specs.
 
 ### 1. Executive summary
-Half a page: the problem, what we'll build, for whom, the 3–5 headline capabilities, and how success is measured. Say in one line how many features are must-have (built now) and how many are future scope.
+Open with the business problem, never with a description of how the client's process works today. Write it in this order: the pain (who suffers, what goes wrong, what it costs), then what we will show and why it matters to this client, then the scope (for whom, which apps and modules). Keep it to one short paragraph plus three or four outcomes, each tied to a success measure in section 4. Say in one line how many features are must-have (built now) and how many are future scope.
 
 ### 2. Context
 - **Client and industry**: who they are, brands/units/regions, scale indicators, systems they use today.
@@ -271,7 +274,8 @@ Half a page: the problem, what we'll build, for whom, the 3–5 headline capabil
 
 ### 4. Objectives and success criteria
 - Objectives (O1…), each linked to problems.
-- Success criteria table: metric · baseline (known or assumed) · target · how it's measured in the app (which object field or report).
+- Success criteria table: metric · baseline (known or assumed) · target · how it's measured in the app (which object field or report). Every metric must be measurable with L1 features only; reword any metric that needs an L2 feature to what L1 delivers. Each problem maps (in 22) to a metric that actually measures it. Label every industry or research baseline as such (e.g. 'industry, not <client>', with its source ID) wherever it appears, including sections 1 and 3. Never show a client 'before' number you do not have, and never a 0% for something the client already partly does; state the baseline in words instead (e.g. 'No pre-landing plan today').
+- Success criteria measure the business, not the demo. Lead with outcomes the client tracks (e.g. store conversion, average order value, returns), and give no target without a baseline. Log the baseline you assume in 5.6, and ask the client to confirm it in 5.9. Checks that the app works (reasons cited, consent recorded, no medical claims, time to shortlist) are acceptance criteria in 4.1, not success metrics. Where L1 cannot record a business metric, name the client report it is read from.
 - "4.1 Acceptance criteria for the build": concrete checks a reviewer can tick, e.g. "Every chart changes when the underlying record changes." Acceptance criteria test L1 only. This is the only place they are listed; 20.1 refers back to them. End 4.1 with a **Visual acceptance** block, tested at 1280×800 on every page in the demo storyline:
   - no horizontal scroll and no clipped column;
   - no list row taller than 64 px (state another number only with a reason), and at least 8 rows visible in a list;
@@ -297,7 +301,7 @@ Use these Heading 2s in this order:
 Skip only for pure internal automation with no comparable tools, and say so. Otherwise include:
 - References reviewed (vendors, products, standards), with one line each on why they're relevant.
 - Benchmark summary: the capabilities that are standard, partial or missing across the market.
-- Differentiators: where our solution goes beyond the market, and why that matters to this client.
+- Differentiators: where our solution goes beyond the market, and why that matters to this client. Never claim no one else does it when known products cover parts of it. Name them, and say what we add, e.g. 'joins all six steps in one case record, from flag to settlement'.
 - Regulatory and compliance notes, with dates.
 - Brand cues found for the client (for the DS hand-off).
 
@@ -345,7 +349,7 @@ One subsection per page in the build scope, in nav order (pages needed only by L
   - **Exact copy**: headings, the empty state with its CTA, button labels.
   - **Context actions** on a row or record.
   - **States**: loading, slow AI (what shows while an agent works), success, empty, error, no-permission.
-- **Home pages by persona type.** A doer's home leads with their next task (a task list or work queue); an overseer's home leads with what needs action (a queue or insights), then numbers. Lead with a task list, not KPI tiles: a full-width chart or a KPI strip is never the whole home. Every persona's home page is named in section 7.
+- **Home pages by persona type.** A doer's home leads with their next task (a task list or work queue); an overseer's home leads with what needs action (a queue or insights), then numbers. Lead with a task list, not KPI tiles: a full-width chart or a KPI strip is never the whole home. A short summary strip above the queue is welcome. A few AI suggestion cards may sit beside it, each with one button that applies its filter to the queue (e.g. '6 styles missing care copy → Show them'); each card's count equals the rows the filter returns. Every persona's home page is named in section 7.
 - **Personas** and **entry points** (nav, links, notifications, agent answers).
 - **Components used** (CMP IDs from section 23).
 - **Layout**: regions top to bottom (header, KPI strip, main, side pane, drawer).
@@ -377,7 +381,7 @@ Types: text, long text, number, currency, percent, date, datetime, boolean, pick
 
 Fields shared by every object (origin, archived, timestamps, AI marker fields) may be defined once in a table at the top of the section and referenced from each object.
 
-- Give every object a business key with an ID format (e.g. `<BRAND>-<yy>-<seq>`, `INV-####`); pages, agents and links use it.
+- Give every object a business key with an ID format (e.g. `<BRAND>-<yy>-<seq>`, `INV-####`); pages, agents and links use it. Say how the next key is generated (max-plus-one in the creating workflow, or a counter object) and what Reset demo does to it. Avoid record keys that look like feature IDs (e.g. REQ-1042 vs REQ-001). If prefixes overlap, say in "How to read this document" that feature IDs are catalogue references only and never appear in the UI.
 - Decide per record whether stage-specific data lives in its own objects (one row per thing, filterable and countable) or as JSON on the parent (fewer objects, but not filterable by the copilot or charts). Anything a chart, filter, queue or the copilot must count gets its own object or flat fields.
 - Derived values that pages show as badges, pips, scores or "x of y" (completeness, readiness, health score, data quality, days in stage, late/at-risk flags) are computed fields with their formula, not page-only maths.
 - Include the support objects most apps need: activity log, AI suggestion (if AI values are stored separately), documents/files, and the demo-reset fields or snapshot object.
@@ -427,6 +431,10 @@ One spec per agent in the build scope (every agent that an L1 feature uses; agen
 | Features powered | L1 feature IDs |
 
 Nebula builds the implementation from this, so the trigger and the path must be exact. Write the path as a numbered list, not prose.
+Check each path in three ways:
+- Read it top to bottom for overwrites: a later step never resets a value an earlier branch set (e.g. a 'Not eligible' band replaced by a score band).
+- Cover the edge states of the records it touches (e.g. an auto-advance when the parent is On hold: what is kept, what is skipped, who is notified).
+- Make every row it writes satisfy that object's required fields at that point in the path (no required record key before the record exists).
 
 **14.2 Business rules and scoring.** Required whenever the app judges, scores, matches, validates or routes by rules: compliance KPIs, invoice match scores, data-quality checks, eligibility, risk ratings. Skip with one line otherwise. For each rule or KPI (R1…):
 
@@ -440,9 +448,11 @@ Nebula builds the implementation from this, so the trigger and the path must be 
 
 Then:
 - Every rule or KPI the client asked for, and the ones research shows are the core of the scorecard, are L1 and fully specified. Extra rules that are only nice to have are L2: list them in 10.3 and leave them out of the weights.
-- **Weights**: a table of rule × tenant/brand/segment → weight and priority, totalling 100, with the reason each one differs.
+- **Weights**: a table of rule × tenant/brand/segment → weight and priority, totalling 100, with the reason each one differs. When some rules do not apply to an item (e.g. a rule only for one channel or category), say once here how the score treats them: either renormalise the applicable weights to 100 for that item, or score non-applicable rules as pass. Show the effective weights on the item.
 - **Roll-up**: how rule scores combine into item, entity and portfolio scores, and the final status bands.
 - **Human review**: which results go to a person (low confidence, critical flags), and what they can override.
+- **Name thresholds for what they do**: an amount a role may approve alone is an approval limit, not a cap. Check `research` for guidance that discourages a construct (e.g. arbitrary daily caps), and name the rule ID and every label to match. Define every exception a seed record or demo step uses (e.g. 'delivery outside the 24 h window') here, with its exact condition and who approves it.
+- **Ownership**: say once which sub-scores the agent returns (e.g. skills and domain match, with rationale and confidence) and which are computed by rule in a workflow (e.g. experience, location). Never assign a sub-score to both. Model calls that score run at low or zero temperature. Hero-record scores are seeded, so the test tables in 13 are reproducible; live scoring on new records is not expected to match them.
 
 ### 15. Integrations
 Only integrations the L1 features need (most are Mocked in a POV); later integrations are listed in 10.3. A table: system · direction (in / out / both) · mechanism (API, webhook, file drop, email, connector) · objects and fields moved · frequency · auth · live or mocked. For two-way sync, include the field mapping table and conflict rule.
@@ -462,7 +472,7 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 - Named **hero records** that carry the demo story, each with the state it's in, its key dates (offsets) and what it demonstrates. One name per record, used identically everywhere.
 - **Story defects**: list the deliberate problems planted in seed records (missing field, failed rule, overdue, over budget, low-confidence AI value) and which record carries each, so every warning, gate block and exception path has something to show and the copilot's example questions have known answers.
 - **Dates**: store as offsets from the demo day and say how reset re-anchors them.
-- **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers.
+- **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
 - Realistic values that use the client's real brands, products, document formats and regions. Numbers can be dummy, labelled as such.
 - **Demo data rules** (Nebula follows them when it seeds; the build test checks them by script):
@@ -480,8 +490,12 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 ### 20. Build plan and demo storyline
 Start with the build order: build steps in dependency order (objects and seed → shell → core journey → depth → reporting), each one demo-able at its end, naming the pages, workflows and agents built in each step. Call these **build steps** (B1, B2…), never "phases", so they are not confused with the future-scope phases in 5.5. Then use these Heading 2s:
 - **"20.1 Acceptance checklist"**: one line pointing to 4.1, plus only the checks that belong to the build order (e.g. "after B3, a photo in gives a score out"). Do not copy the 4.1 list.
-- **20.2 Demo storyline**: 6–10 steps, each naming the page, the record and what it proves. Aim for 15 minutes. It uses only L1. **Order:** the primary persona's home → the core action → the result with its evidence → the follow-up by a secondary persona; oversight, admin and setup come only after this core loop. Mark any step that happens outside the app (e.g. a slide in the proposal deck) as "outside the app".
-- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 6–12 pages, 6–20 objects, 4–12 workflows, 1–2 live agents. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
+- **20.2 Demo storyline**: 6–10 steps, each naming the page, the record and what it proves. Fit it in 10–15 minutes. It uses only L1. **Order:** the primary persona's home → the core action → the result with its evidence → the follow-up by a secondary persona; oversight, admin and setup come only after this core loop. Mark any step that happens outside the app (e.g. a slide in the proposal deck) as "outside the app".
+  - **Live, not replayed.** The core action runs live on a fresh or draft record, so the check, score or send happens on screen rather than re-showing a seeded result. Where the record normally comes from an upstream system, add one simulated arrival flow (e.g. 'New style arriving from PLM (simulated)').
+  - **Seed matches the story.** Each step's record is seeded in exactly the state the step needs: other required approvals already submitted, or the item still in Draft if the step sends it. The hero records (19), agent test answers (13) and field examples (12) all agree with the step.
+  - **Show the differentiators.** Every headline differentiator from section 6 appears in a step, including its blocked or failing case when that is the point. Trim other steps to stay in time.
+  - **Say what cannot be shown live.** Anything that cannot happen live during the demo (e.g. hourly scheduled reminders) goes in 20.4, or gets an admin 'Run now' action.
+- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
 ### 21. Hand-off to the design system
@@ -798,6 +812,10 @@ Write a script or check by hand. Every check must pass.
 - [ ] Every object.field referenced in a page, formula, workflow or mapping exists in section 12.
 - [ ] IDs, names and counts match across the prose, the feature tables, the specs and the component inventory; hero records have one name everywhere, and agent test answers match the seed plan.
 - [ ] Thresholds (confidence bands, margins, deadlines) are stated once and used the same way everywhere.
+- [ ] Every promise in 17 and 4.1 (logged fields such as model and confirmed_by, which AI surfaces are logged) has a matching field in section 12 and a writing step in a workflow or agent spec.
+- [ ] Permissions in 16 match the page personas in 11, the nav items defined per role, the Primary users in the catalogue (10.2) and component inventory (23), and every workflow or agent read filter (one filter per restricted role). A persona redirected away from a page is never listed as its user, unless the page gets a filtered view for them.
+- [ ] Field examples in section 12 use the hero-record values from 19, so seeding from the examples creates no conflicts.
+- [ ] Every report or chart counted in 9 or 20.3 has a page spec.
 
 **Evidence**
 - [ ] Research ran through the `research` skill, or the fallback and its reason are recorded in Document Control.
@@ -833,6 +851,7 @@ If a check fails, fix the document rather than weakening the check. For client-f
 - **Catalogue**: PLM 161, Enrichment 159 and AI layer 18 sub-features, plus a 13-agent catalogue and a 36-component UI list.
 - **Components**: e.g. Content Hub: content builder, tech pack reviewer, content generator, asset shot-list checker, channel readiness board, claims checker; PLM: line plan matrix, proposal studio, PACE decision room, style stage-gate stepper, critical-path calendar, forecast & sign-off grid.
 - **Build plans**: PLM with 5 journey sections plus supporting pages, 19 objects, 3 workflows, one live Copilot and seeded ★ AI. Content app with 6 pages, 6 objects with typed fields, a 7-stage product record, 9 workflows (W1–W9), named seed records, an acceptance checklist and a demo path.
+- **Sizing lesson** (from the Pentland scoping reviews): reviewers found 19 objects, many personas and many pages too heavy. They asked for about 10–12 objects, three personas, a handful of well-defined pages and three workflows (reset demo, change stage, generate the PACE pack PPT). They also rejected a draft that had drifted into a product-data and GTIN tool. The fix: keep the whole journey (strategies, concept, PACE, product record, line plan, critical path, materials, approvals) on fewer, richer pages, keep checks inside the product record, and seed every page.
 - The client's process stages and meeting names (PACE, IBP, lanes) drove the page order, the stage picklists and the demo story.
 
 A scoping document from this skill should contain everything the Excel and both build plans held, in one Word file, in the structure above.
