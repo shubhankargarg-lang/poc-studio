@@ -35,7 +35,9 @@ say that you did.
    | Feeding a working draft, such as a scoping document section or a design direction | Standard: about 10 to 20 searches |
    | Figures or claims the client will see, or a decision that is hard to reverse | Deep: 20 or more searches, several angles, every key figure confirmed by a second source |
 
-   When the purpose is unclear, use standard.
+   When the purpose is unclear, use standard. **If the caller states a search budget** (for example
+   "Quick — at least 3 searches"), use that budget instead of the table: it is the floor to reach and
+   the point to stop once the answer is clear.
 2. **Reuse what exists.** Check the context for earlier findings on the same point, and link to them
    instead of searching again.
 3. **Search.** Use `references/source-guide.md` to pick where to look for this kind of question.

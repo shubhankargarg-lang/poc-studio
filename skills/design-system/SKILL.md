@@ -1,77 +1,41 @@
 ---
 name: "design-system"
-description: "Build a client design system from a scoping document (or BRD), a client name and a website — read the whole document, turn its journeys into drawn flows, research the brand and public design references, sample the real brand, harvest the logo into every variant, choose a client-specific expression, skin house Design Language v3.4 onto it preserving luminance, and ship a living style guide, token block, logo kit and build contract audited in light and dark. Carries a reserve of view-types (tables, charts, graphs, flows, maps, agentic and document views), a full component inventory and the agent drawer, surfaced selectively per document. Use before any screen is drawn."
+description: "Build a client design system from a scoping document (or BRD), a client name and a website — read the whole document, research the brand and public design references, sample the real brand, harvest the logo into every variant, choose a client-specific expression, skin house Design Language v3.4 onto it preserving luminance, and ship ONE self-contained HTML file that is a true design system: a labelled component kit with variants, a set of distinct layout patterns, signature flows and components drawn in full, and a composition contract that tells the builder how to compose the app's pages itself — not a pre-drawn copy of every screen. Audited in light and dark. Use before any screen is drawn."
 ---
 
 # Design system for a POC
 
-**Input: a scoping document (or BRD), a client name and a website. Output: a measured design system
-that looks like it was made for this client.** Everything between is a pipeline you run, not a method
-you interpret.
+**Input: a scoping document (or BRD), a client name and a website. Output: a design system the builder
+composes an app from.** Everything between is a pipeline you run, not a method you interpret.
 
-**A design system is not drawn, it is transformed — and then it is expressed.** We own a validated
-one. The job is to move it onto the client's colour without breaking a single measurement in it
-(the core), and then to choose, from variants this file already carries, the shell, chrome, surface
-and voice that make it read as the client's own product (the expression). **The core never varies.
-The expression always does.** Two clients who get the same expression need a reason on the page.
+**A design system is transformed, then expressed, then composed from.** The **core** is a validated
+system moved onto the client's colour without breaking a measurement. The **expression** (shell,
+chrome, surface, voice) makes it read as this client's product. The **composition** is the builder's:
+this file gives it a kit of components with variants, a set of distinct layout patterns, and the rules
+for choosing between them. **The core never varies, the expression always does, and the builder
+composes the pages.** This file does not pre-draw every screen; when it did, every app came out the same.
 
 **Run this as Phase 3a — before any screen is drawn, before the first builder prompt.**
 
-> **What this version adds (read once).** The original pipeline below — sample, harvest, transform,
-> audit, ship — is unchanged and authoritative; every Step and the REFERENCE doctrine stand as
-> written, except where v5 (items 6 to 11) names the change. The layers on top:
-> 1. **Phase 0 — the selection engine** (new, runs before THE RUN): read the BRD, decide which views
->    and components this build needs, and stay in scope.
-> 2. **The view library** (in REFERENCE): a reserve of view-types the system can produce — tables,
->    the chart/graph/flow/map engines, agentic and document views — most dormant on any given build,
->    surfaced only when the BRD calls for them. **A view the system does not carry is a view the app
->    can never build**; that reserve is what stops every output collapsing to a table-and-chart.
-> 3. **The full component inventory + the universal state rule** (in REFERENCE): every atom the views
->    are built from, each specified across every state (border, hover, active, inactive, focus,
->    disabled, loading, error, selected, read-only).
-> 4. **Getting outside facts** (next section): a mandatory research plan, with seven questions every run
->    asks plus the ones the BRD raises, each done to a minimum depth and recorded in a ledger. Every
->    question goes to the `research` skill first; if it fails or falls short, the skill searches on its
->    own until the minimum is met.
-> 5. **The finished-piece rule** (just before the hand-over): what this skill hands over is final. It
->    needs no rework. Phase 0 writes a view manifest (0.6), every row of it gets a drawn specimen,
->    and the result is checked against a fixed list before it goes out.
+> **How this file is layered (read once).** The original pipeline — sample, harvest, transform, audit,
+> ship — is unchanged and authoritative. On top of it: **Phase 0** reads the scoping document and
+> chooses what the app needs; **research** (next section) confirms the brand; **the expression**
+> (Step 2c) finds the client's design concept and makes the system look like this client and no other;
+> **the composition model** (REFERENCE) makes every design choice and records it in a build plan, so the
+> builder looks answers up instead of choosing; **Step 7** hands all of it over in one file. The version history, and the real runs each change came from, is at the end of the file.
 >
-> **v5 — written after four real runs (Pentland, ClickUp, Vermont, Topcon) where every app came out
-> looking like the same product in a different hue, the Copilot sat on a page as a card, Pentland's
-> black-and-lime brand shipped electric blue, the user journeys were never drawn, and the dark theme
-> read as dull slate:**
->
-> 6. **Journeys become drawn flows** (0.7): every journey in the scoping document is drawn as a
->    storyboard of screens, with each step's action, response, exception and interaction.
-> 7. **Signature components in depth** (0.8): the two or three components the domain is really about
->    get a full specification and a deep specimen, not a generic tile.
-> 8. **The agent drawer** (0.9, REFERENCE): every agent opens in a drawer or side panel built on the
->    platform's live agent component. Never a card on a page.
-> 9. **The expression** (Step 2c, and the expression kit after the stylesheet): shell, chrome,
->    surface, default theme, type voice, imagery, motif and chart voice are chosen per client from
->    evidence, so no two clients look alike. The core rules do not move.
-> 10. **Brand decided by a fixed source order** (stop 1, Step 1): an unattended run never settles a hue
->     conflict any other way, and achromatic, dark-led brands ship dark-led.
-> 11. **A rebuilt dark theme, inspiration research and a build contract** (Step 5, research questions
->     6 and 7, Step 7): a deeper dark that passes everywhere, public design references on the page,
->     and the shell and agent rules the builder must follow so the app matches the system.
-> 12. **v5.1 — consistency and density** (after the first v5 runs): every screen drawn in a device at
->     its real width; one overlay system (modal and drawer sizes, one anatomy); spacing and density
->     tokens; hard limits for tables and cards; coded variants with at most three style sets and one
->     active, readable by the builder; chart views; a render check that finds overlaps and squeezed
->     text.
->
-> The design system is the app's entire vocabulary: the app composes only from what the system carries.
-> So coverage is capability — but coverage is held in reserve and drawn on selectively, never all at
-> once. Phase 0 decides what to draw; the transform pipeline skins it; the audit proves it.
+> **The output is a design system: deep on components, light on screens.** Every component is
+> documented in full (anatomy, variants, every state, micro-interactions, usage, accessibility), the
+> foundations show the material properly, every pattern has a blueprint, and every journey is a flow
+> diagram. **At most 5 full screens** show the system put together. A sixth screen means a rule is
+> being read as "draw every page" — stop and check 0.6.
 
 ---
 
 # GETTING OUTSIDE FACTS · call the `research` skill
 
 **Any web search or outside research this skill needs goes through the `research` skill first.** Run
-your own searches only when `research` fails (see "When `research` fails" below). `research` searches, rates the sources and returns an answer with sources, dates,
+your own searches only when `research` fails (see "Calling `research`" below). `research` searches, rates the sources and returns an answer with sources, dates,
 a strength rating and any gaps. It stays inside the question it was sent. This skill decides what to do
 with the answer.
 
@@ -93,13 +57,14 @@ and completes it before Step 3 (the transform). The plan has two parts.
 | 1 | What are the client's brand colours? Confirm the hex values on an official source (the live site's CSS, a brand or press page) and a second independent source | Deep |
 | 2 | Which typeface does the client use, who licenses it, and which open substitute matches it? | Deep |
 | 3 | Where is the client's official logo file published (site, press kit, brand page, Wikimedia Commons)? | Deep |
-| 4 | Does the client publish brand guidelines, and what do they say about tone, colour use and logo use? | Standard |
-| 5 | What does the client do, for whom, and which words do they use for their own products, customers and processes? (feeds the sample content) | Standard |
-| 6 | **Inspiration.** Which 8 to 12 public products and design references best show this domain and these surface archetypes done well? At least 2 from the client's own industry, 3 best-in-class products for the main archetype (0.2), 2 for each signature component (0.8), and, whenever dark is shipped, 3 well-regarded dark interfaces. For each: the link, what it does well, and the one idea worth borrowing | Deep |
-| 7 | **Journey patterns.** For the signature journeys (0.7), how do the best products handle the same moments: the refused action, the approval, the hand-off, the empty first run, the AI suggestion the user accepts or rejects? | Standard |
+| 4 | Does the client publish brand guidelines, and what do they say about tone, colour use and logo use? | Quick |
+| 5 | What does the client do, for whom, and which words do they use for their own products, customers and processes? (feeds the sample content; the scoping document usually answers most of it) | Quick |
+| 6 | **Inspiration.** Which 5 or 6 public products and design references best show this domain and these surface archetypes done well? At least 1 from the client's own industry, 2 best-in-class products for the main archetype (0.2), and 1 for each signature component (0.8). For each: the link, what it does well, and the one idea worth borrowing | Standard |
+| 7 | **Journey patterns.** For the signature journeys (0.7), how do the best products handle the same moments: the refused action, the approval, the hand-off, the empty first run, the AI suggestion the user accepts or rejects? Answer from the references found for question 6 where possible | Quick |
 
-**Part 2 · Questions the BRD raises.** Read the build brief and add a question wherever the BRD leaves
-something the design depends on unsaid or thin. For example:
+**Part 2 · Questions the BRD raises.** Read the build brief and add a question only where the BRD leaves
+something the design depends on unsaid or thin. **At most three Part 2 questions, each Quick.** For
+example:
 
 - personas or jobs are vague → who does this work in this industry, and what do they read most
 - the BRD names countries, regulated data or languages → which privacy, accessibility and language rules
@@ -112,11 +77,16 @@ something the design depends on unsaid or thin. For example:
 
 | Depth | Minimum before the question is done |
 | --- | --- |
-| Quick | 5 searches, the pages behind the answer opened and read |
-| Standard | 10 searches, at least one official or primary source |
-| Deep | 20 searches, at least one official or primary source, and every key fact confirmed by a second independent source |
+| Quick | 3 searches, the pages behind the answer opened and read |
+| Standard | 6 searches, at least one official or primary source |
+| Deep | 12 searches, at least one official or primary source, and every key fact confirmed by a second independent source |
 
-**Questions 6 and 7 feed the design, not just the record.** Their answers become the **inspiration
+**Deep is only for questions 1 to 3** (colours, typeface, logo), because a wrong hue or a redrawn logo
+is the most expensive mistake this skill can make. Everything else is Quick or Standard. **Stop a
+question as soon as its minimum is met and the answer is clear** — the minimum is a floor to reach,
+and also the point to stop.
+
+**Questions 6 and 7 feed the design, not just the record.** Keep it to the 5 or 6 references. Their answers become the **inspiration
 board** on the style guide: each reference as a card with its link, what it does well, the idea taken,
 and the component or expression choice it informed. Take ideas — layout moves, interaction patterns,
 density, how a status or an agent is presented — never colours, logos, artwork or copied markup.
@@ -131,122 +101,36 @@ client's own subdomains, press releases, investor pages, app-store listings, arc
 browser for pages a fetch cannot read) until it is. Only after the minimum is spent may a fact be
 recorded as `[DERIVED]`, and the row then lists what was tried.
 
-## What to send
+## Calling `research`, and what to do with the answer
 
-When this skill needs facts it does not have, send `research`:
+**Send one decision per question**, with its purpose (internal check, working draft, or something the
+client will read), the context (client, industry, country, the build brief so far) and the format you
+need. "Research the client" gives `research` nothing to aim at. Depth follows the research plan above:
+**state the search budget in every request** (for example "Quick — at least 3 searches, stop once the
+answer is clear"). The `research` skill uses the same words Quick, Standard and Deep for larger default
+counts, so a request without a stated budget runs longer than this skill needs.
+Send related questions together so sources are reused; run unrelated ones in parallel.
 
-- **Question(s):** specific, one decision each
-- **Purpose:** what this stage will decide with the answer, and whether it is an internal check, a
-  working draft, or something the client will see
-- **Context:** client, industry, country, earlier findings, and the build brief so far
-- **Format:** the layout this stage needs, if different from the default
+**It returns** an answer in two to four sentences, a findings table (finding, source, date, strength),
+the gaps, and notes on conflicts. Strength is **Strong** (official or primary, or two reputable sources
+agreeing), **Medium** (one reputable secondary source) or **Weak** (marketing, galleries, unverified).
 
-**Purpose sets how deep `research` searches**, so state it plainly:
+**Using it:**
+- Treat it as a draft. Close every gap and Weak finding the build depends on with your own search. If
+  nothing turns up once the depth minimum is spent, decide, record it as `[DERIVED]` with what was
+  tried, and keep going. A gap is never a stop; the two stops in THE RUN stay the only two.
+- Research never replaces sampling. A hex or logo URL it returns is a lead to verify on the live site
+  (Steps 1 and 2).
+- References inform the expression and the choice of pattern, never the core: no new colour value,
+  radius or component comes from a reference.
+- Record each question, the strength of each finding used, and every source with its date in the port
+  note.
 
-| Purpose | How `research` works |
-| --- | --- |
-| Confirming one fact, or an internal yes/no check | Quick: about 5 to 10 searches |
-| Feeding a working draft, such as a build brief section or a view choice | Standard: about 10 to 20 searches |
-| Figures or claims the client will see (the type note, the hand-over), or a hard-to-reverse choice | Deep: 20 or more searches, every key figure confirmed by a second source |
-
-A request that says only "research the client" gives `research` nothing to aim at. Ask for what one
-decision needs, for example the roles that use a process and what each reads most.
-
-## Where this skill asks
-
-| Stage | Typical question | Purpose |
-| --- | --- | --- |
-| Phase 0.1, BRD is thin | Which roles take part in `<process>`, what does each do daily, and what information does each read most? | Working draft: fills PERSONAS and JOBS |
-| Phase 0.1, locale | Which privacy, accessibility or language rules affect screens that show `<data>` in `<country>`? | Working draft: fills REGION/LOCALE |
-| Phase 0.3, choosing a view | Find 3 to 5 polished references for `<data shape>` and say what each does well | Working draft: view and density choice |
-| Step 1, tone | What do `<client>`'s public brand and press pages say about tone, colour and typeface? | Internal check on Steps 1 and 2b |
-| Step 2b, the type note | What licence covers `<candidate open substitute>`, and which typeface does `<client>` name for its brand? | Deep: the client reads the type note |
-| Step 2c, expression | Find 8 to 12 public references for `<domain>` and `<archetype>`, plus dark interfaces if dark ships; say what each does well and the idea worth taking | Deep: shapes how the client's system looks |
-| 0.7, journeys | How do the best `<archetype>` products handle `<moment>` (a refused move, an approval, an AI draft the user edits)? | Standard: shapes the flow and its interactions |
-
-## Example requests
-
-**Phase 0, thin BRD**
-- Question: Which roles take part in `<process>` at `<industry>` companies in `<country>`, what does each
-  one do daily, and what information does each read most often?
-- Purpose: working draft. It fills PERSONAS and JOBS in the build brief.
-- Context: `<client>`, `<industry>`, `<country>`, the BRD summary.
-- Format: a table of role, daily job, information read, source.
-
-**Phase 0, view references**
-- Question: Find 3 to 5 polished `<surface type>` references for `<data shape>` and say what each does
-  well.
-- Purpose: working draft. It informs the choice of views and density for `<surface>`.
-- Context: `<client>`, `<industry>`, the personas and jobs from the build brief.
-- Format: for each reference, a link and the idea worth borrowing.
-
-**Step 2b, type note**
-- Question: Which typeface does `<client>` name for its brand, who licenses it, and under what licence
-  is `<candidate open substitute>` available?
-- Purpose: the answer appears in the type note the client will read.
-- Context: `<client>`, the font loader found in the stylesheet.
-- Format: face, foundry, licence terms, source.
-
-## What comes back
-
-Unless a different format is requested, each question returns:
-
-```markdown
-**Answer:** <2 to 4 sentences that answer the question directly>
-
-**Findings**
-| Finding | Source | Date | Strength |
-|---|---|---|---|
-
-**Gaps:** <what could not be found, and what could answer it>
-
-**Notes for the caller:** <conflicts between sources, assumptions taken>
-```
-
-Strength is **Strong** (official or primary source, or two reputable sources that agree), **Medium**
-(one reputable secondary source) or **Weak** (vendor marketing, gallery posts, unverified).
-
-## Using what comes back
-
-- **Treat it as a draft.** Check the gaps and the Weak findings before relying on them.
-- **Close every gap and Weak finding the build depends on yourself.** Search and fetch the sources
-  directly (see "When `research` fails" below) until the fact is confirmed. A Weak finding never
-  becomes a stated fact until you have confirmed it. If your own search also finds nothing after the
-  depth minimum is spent, make the decision, record it in the port note as `[DERIVED]` with the reason
-  and what was tried, and keep going. **A gap is not a stop: the two stops in THE RUN stay the only
-  two.**
-- **Research never replaces sampling.** The brand colour comes from Step 1 and the logo from Step 2. A
-  result that names a hex or a logo source is a lead to verify on the live site.
-- **References inform the choice of view, never the system.** Nothing from a reference brings in a new
-  colour value, radius or component. The stylesheet in Step 0 stays the system.
-- **Record it.** The port note lists each question sent, the strength of each finding used, and the
-  sources with dates. The type note and the build brief cite their sources.
-- **Saving is this skill's job.** `research` returns its answer in the reply; this skill writes what it
-  needs into the port note and the hand-over.
-
-## When `research` fails
-
-`research` is always the first call. **If it fails or falls short, do the rest of the research
-yourself and carry on.** It has failed or fallen short when:
-
-- the skill is not available in the session, or the call errors or times out
-- it returns no answer, or only gaps, for a question the build depends on
-- it returns only Weak findings for a fact the client will see
-- its answer has not met the depth minimum in the research plan: fewer searches than the level asks,
-  a deep fact resting on one source, or no official or primary source
-
-Loading the `research` skill only loads instructions; the searching is still done in this run. So the
-ledger counts the searches actually run, whoever ran them.
-
-Then search with the web search and fetch tools directly. Work to the same standard `research` would:
-open the pages you take facts from (a search snippet is not a source), prefer official and primary
-sources, confirm client-facing facts with a second source, and record each source with its date in
-the port note. Never stop the build or hand back an unfinished piece because `research` failed.
-
-## Several questions
-
-Send related questions in one request so `research` can reuse sources. Send unrelated questions as
-separate requests, or run them in parallel with subagents and merge the answers here.
+**If `research` fails** (not available, errors, returns only gaps or only Weak findings for something
+the build depends on, or falls short of the depth minimum), do the searching yourself with the web
+search and fetch tools, to the same standard: open the pages you take facts from, prefer official
+sources, confirm client-facing facts with a second source, and log them in the ledger. Never stop the
+build because `research` failed.
 
 ---
 
@@ -318,7 +202,7 @@ the usual template; find the equivalent if they differ):
 | Hand-off to the design system (§21) | BRAND INPUTS, vibe, custom components, key states, interactions, layouts |
 | Component inventory (§23) | signature-component candidates (0.8); every CMP ID gets a specimen |
 
-**Every must-have (L1) feature ID and every CMP ID maps to at least one manifest row (0.6).** Nothing
+**Every must-have (L1) feature ID and every CMP ID maps to at least one inventory row (0.6).** Nothing
 the document builds now is moved to "future scope" by this skill. Where the document itself marks a
 feature future scope, it stays dormant.
 
@@ -381,57 +265,43 @@ stops in THE RUN are still the only two stops. Fill the gaps instead:
 The floor is the minimum, not a cap. Add what the brief and research call for; leave dormant what
 neither does.
 
-## 0.2 · Map to surfaces, then to views and components
+## 0.2 · Map to surfaces
 
-The build brief resolves to a few **surface archetypes**. Each names a default set of views and
-components pulled from the reserve. Everything not named stays dormant.
+The build brief resolves to one or two **surface archetypes**; each sets the use-case dial row
+(REFERENCE) and the layout patterns its pages usually take (REFERENCE, "The composition model"):
 
-| Surface archetype | Default views it pulls | Use-case-dial row it inherits |
-| --- | --- | --- |
-| **Dashboard / overview** | KPI tiles · charts · a table · maybe a feed | client-facing demo surface |
-| **Dense ops console** | data grid (deep) · filters · detail/inspector · bulk actions | dense internal tool |
-| **Record workspace** | master–detail · detail/inspector · activity feed · related records | dense internal tool |
-| **Wizard / flow** | stepper · forms · review-and-confirm | demo surface |
-| **Conversational / agentic** | copilot · agent run/trace · AI insight card · HITL approval | demo surface |
-| **Map / geospatial** | map engine · legend · detail-on-select · filters | demo surface |
-| **Process / workflow** | flow diagram · swimlane · kanban or stage board · stepper | dense internal tool |
-| **Artefact / document studio** | document reader · studio shell · compare/diff | artefact / document studio |
-| **Portal / external** | lighter nav · forms · status · help | demo surface |
-| **Mobile-first** | single-column, touch targets, bottom nav | demo surface |
+- **Dashboard / overview** → P5 metric dashboard · demo-surface row
+- **Dense ops console** or **record workspace** → P1 list workspace, P2 split master-detail, P3 focus · dense-internal row
+- **Process / workflow** → P4 board, plus flow views · dense-internal row
+- **Map / geospatial** → P6 map · demo-surface row
+- **Activity / history** → P7 feed · either row
+- **Wizard**, **conversational**, **artefact studio**, **portal**, **mobile-first** → the stepper, the
+  agent drawer, the studio shell, a lighter shell, a one-column phone shell, inside whichever pattern
+  the page's data needs
 
-**A build is usually one or two archetypes, not all of them.** Pick the ones the jobs demand, inherit
-their default views, then add or remove individual views by the data-shape rule in 0.3.
+Everything the brief does not name stays dormant.
 
-## 0.3 · The data-shape → view rule (how the right non-standard view gets chosen)
+## 0.3 · The data-shape → view rule
 
-This is what makes the system produce a flow diagram instead of a table when a flow is what the data is.
-Read the dominant data shape in each job and reach for the matching view from the library:
+Read the dominant data shape of each page and reach for the matching view, so a flow is drawn as a
+flow and not a table. The pattern-fit table in the composition model turns the same reading into a
+page layout.
 
-- **Many records, flat** → table / data grid. **One record, deep** → detail / inspector.
-- **A value over time** → trend chart or timeline. **Many values compared** → comparison chart.
-- **Parts of a whole** → part-to-whole chart. **Distribution / spread** → distribution chart.
-- **Entities and their relationships** → node-link graph, tree, ER or dependency view.
-- **A process with steps, branches or stages** → flow diagram, swimlane, kanban or stepper.
-- **Things with a location** → map. **Things across time with duration** → Gantt / timeline.
-- **An agent's work** → agent run / trace + HITL approval. **A long text or file** → document / code / preview view.
-- **Two things to compare** → compare / diff view.
+- **Many records, flat** → table or card list. **One record, deep** → detail / focus view.
+- **A value over time** → trend chart or timeline. **Values compared** → comparison chart.
+  **Parts of a whole** → part-to-whole chart. **Spread** → distribution chart.
+- **Entities and relationships** → graph, tree, ER or dependency view.
+- **Steps, branches or stages** → flow diagram, swimlane, board or stepper.
+- **Locations** → map. **Durations over time** → Gantt or timeline.
+- **An agent's work** → run / trace + approval. **A long text or file** → document, code or preview view.
+  **Two things side by side** → compare / diff.
 
-**Read what the agents and automations can output, not only the screens.** Go through every agent,
-copilot and automation the BRD names, and list its tools and outputs. Each output type is a view the
-system must style, even when no screen in the BRD shows it:
-
-- a **chart** tool (generate chart, text-to-SQL with charts) → the chart engine: data palette, axes,
-  legend and at least one chart specimen drawn inside that agent's pane
-- a **file or document** output (generated letter, report, export) → document card plus the file viewer
-- a **table** output → the in-chat data table
-- an **approval or action** the agent proposes → the HITL approval view
-- a **citation or source** output → citation chips plus the evidence hover card
-
-"There is no trend data to chart" is not a reason to leave charts dormant when an agent can draw one.
-
-**The reserve stays in the background.** A view-type is specified in the library but only instantiated
-when the brief selects it. Holding thirty view-types does not bloat a build; selecting four does not
-starve it.
+**Read what the agents and automations can output, not only the screens.** Each output type is a view
+the system must style, even when no screen in the BRD shows it: a **chart** tool → the chart engine,
+drawn inside that agent's drawer; a **file** output → document card and file viewer; a **table** →
+the in-chat table; a **proposed action** → the approval card; a **citation** → citation chips and the
+evidence hover card. "There is no trend data" is not a reason to leave charts dormant when an agent can
+draw one.
 
 ## 0.4 · Persona → density, device and shell
 
@@ -450,8 +320,14 @@ and **its own shell** — which navigation it sees, what its first screen is, an
 screen it uses. A persona who works on a phone or tablet gets real layouts at that width, with their
 own navigation (bottom tabs on a phone, a collapsed rail on a tablet), not a desktop screen shrunk.
 An external persona (customer, partner) gets its own lighter shell. **A persona whose screens are not
-reachable from any drawn shell has not been designed.** On the style guide, draw phone and tablet
-layouts as device specimens (`<template class="device">`, Step 0's kit), never as a narrowed `<div>`.
+reachable from a shell has not been designed.**
+
+**Shells are shown through the five screens (0.6), not drawn separately.** Choose the five so the
+main personas' shells appear in them, each at its primary device; a phone screen is one of the five
+only for a persona who mainly uses a phone. Any persona whose shell is not in the five gets a **shell
+blueprint**: its navigation, first screen and regions as a labelled diagram, not a drawn screen.
+Responsive behaviour is one line per shell (rail collapses to icons under 1,100 px; bottom tabs under
+600 px). Device specimens use `<template class="device">` (Step 0's kit), never a narrowed `<div>`.
 
 ## 0.5 · Record the build brief on the page
 
@@ -461,70 +337,84 @@ see *why these views and not others* without opening the BRD. **The views you di
 the BRD did not ask for them, are part of the record** — they show the scope was a decision, not a
 limit.
 
-## 0.6 · The view manifest — every item in the brief gets a drawn specimen
+## 0.6 · The deliverable — a kit and its rules, not a drawn copy of every page
 
-Before Step 1, turn the build brief into a **numbered manifest**: one row per surface, view, screen,
-overlay and component the brief names, including every screen the BRD lists (sign-in, forgot password,
-update password, file viewer, hover cards, confirmation modals) and every agent output from 0.3.
-**Write it last in Phase 0**, so it also carries: one row per journey flow (0.7), per signature
-component (0.8), per agent drawer (0.9), per persona shell and device layout (0.4), and per proposal.
-Every L1 feature ID and CMP ID from the scoping document appears in the BRD-reference column of at
-least one row.
+**Write a page inventory, not a page gallery.** One row per page, overlay and screen the brief names
+(sign-in and recovery, file viewer, confirmations, and every agent output from 0.3), recording what the
+builder needs to **compose** it. Every L1 feature ID and component ID maps to at least one row.
 
-| # | Item | BRD reference | Section on the page | Specimen |
-| --- | --- | --- | --- | --- |
-| 1 | Forgot password screen | §9.1 routes | `#signin` | drawn |
+| # | Page | BRD ref | Data shape (0.3) | Persona (0.4) | Fitting patterns | Chosen | Drawn? |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Case queue | §8.1 | many records, flat | agent, dense | P1 · P2 | P2 | screen 1 of 5 |
+| 2 | Case record | §8.3 | one record, deep | agent, dense | P3 · P2 | P3 | screen 2 of 5 |
+| 3 | Hub overview | §8.4 | metrics + map | supervisor | P5 · P6 | P5 | blueprint, composed |
 
-**Ship the manifest on the page**, in the build brief section, with each row linking to its specimen.
+**The page draws five things. Only the fifth is full screens:**
 
-**A specimen is the item drawn**: rendered with the client's content, in its real states, **inside the
-app shell it lives in** (the rail or top bar, the header, the real page width), so the reviewer and
-the builder see the screen, not a fragment floating on the guide. **Screens are drawn in a device
-(`<template class="device">`) at their real width and scaled to fit** — never a full shell squeezed
-into a narrow box. Journey storyboards (0.7) put at most two scaled desktop frames per row. Atoms (a button, a tag) may be shown
-loose in the component section; screens, views, flows and drawers may not. These are not specimens: a row in the containers table, a line in the build brief, a "same layout as" note, a
-nav item that names the screen, a token, or a sentence describing it. If the brief names it, the page
-draws it. If something should not be drawn, it moves to the out-of-scope list with a reason, and the
-brief stops claiming it.
+1. **Component pages** — every component the inventory needs, documented to the component-page spec
+   (REFERENCE): anatomy, labelled variants, the full state matrix, micro-interactions, sizes, content
+   rules, accessibility, do and don't. Signature components (0.8), modals, drawers and the agent drawer
+   are documented here as components. **This is the bulk of the page and where its quality shows.**
+2. **Foundations** — colour with measured ratios, type, spacing, **material and elevation** (the glass
+   tiers over the ambient field, the solid rung, the edge light, both themes), motion and icons.
+3. **Pattern blueprints** — every chosen pattern as a labelled region diagram: regions, grid split,
+   which component families fill each region, how it reflows.
+4. **Journeys as flow diagrams** (0.7), the demo storyline included, with exact wording.
+5. **At most 5 full screens** — the system assembled. Pick them so that together they cover the main
+   patterns chosen, the main personas' shells, and the key moments of the demo storyline; show the agent
+   drawer open on one of them. Each is real: client content, in its shell, in a device at real width.
 
-## 0.7 · Journeys → drawn flows
+**Five screens is a hard limit.** Everything else a reviewer needs is in the component pages and
+blueprints. A page unlike every pattern is a signature component (document it) or a sign the brief is
+wrong for this system (say so in the inventory).
+
+**The composition contract** (spec in REFERENCE, quoted in Step 7) carries the seed, the chosen
+pattern per page, the active variant per family (`#style-sets`), and the rules. Ship the inventory in
+the build brief section, each row linking to its screen or blueprint. "Finished" means every needed
+component has its full page, every chosen pattern has a blueprint, every journey is a diagram, the
+five screens are drawn and the contract is quoted.
+Everything drawn meets the specimen bar: client content, real states, in its shell, screens in a
+`<template class="device">` at real width.
+
+## 0.7 · Journeys → flow diagrams
 
 **The journeys are where the scoping document already describes the design.** A journey table that
 says *"clicks Move stage → refused: 'No approved Fit or SMS sample'"*, *"reject without a reason is
-refused"* or *"tile 24 → 23"* is an interaction specification. Earlier runs drew the screens and never
-the journey, so every refusal, hand-off and counter change was left for the builder to invent.
+refused"* or *"tile 24 → 23"* is an interaction specification. Earlier runs either never drew the
+journey, so the builder invented every refusal, or drew a full app screen for every step, which
+redrew the whole app and took most of the run. v8 keeps the information and drops the redraw.
 
-**Every journey in the document becomes a flow on the page** — a storyboard, left to right, one frame
-per step:
+**Every journey becomes a flow diagram on the page**, built with the flow engine (REFERENCE, process
+and flow views): one node per step, swimlanes when more than one persona is involved, and the branch
+for each exception. Each node carries, as short text on or beside it:
 
 ```
-FRAME      the screen as it looks at this step, in the shell, with the hero record's real data
-ACTION     what the persona does (click, drag, type, approve, ask the agent) — marked on the frame
+STEP       the screen it happens on (page name + pattern, from the 0.6 inventory)
+ACTION     what the persona does (click, drag, type, approve, ask the agent)
 RESPONSE   what the system shows next: the new state, the toast, the moved card, the changed count
-EXCEPTION  the refusal or error path the document names, drawn as its own frame with the exact wording
-FEEDBACK   the interaction detail: what animates (120–160 ms), what gains focus, what announces to a
-           screen reader, what undo is offered, what the keyboard path is
-DATA       the record and the field that changed (from the journey's data column)
+EXCEPTION  the refusal or error, as its own branch, with the document's exact wording in quotes
+FEEDBACK   only where it is not the default: an undo, a focus move, a keyboard path, an announcement
+DATA       the record and field that changed
 ```
 
 **Rules:**
 
-- **Every step gets a frame; every exception gets its own frame.** A refused action is drawn refused,
-  with the message the document gives, not described.
-- **Consecutive steps on one screen share a frame** with the change shown as before → after.
-- **Cross-persona hand-offs are drawn as hand-offs**: the end of one persona's flow and the start of
-  the next (the brand manager approves; the rep sees it).
-- **Where the document gives the step but not the screen state, derive it** from the page
-  specification (§11), the rules (§14) and the data model (§12), and mark it `[DERIVED]`.
-- **Where the document gives no journey for a persona, write one** from that persona's jobs and the
-  page specifications, at least the persona's first session, and mark it `Proposed`.
-- **The demo storyline (§20) is drawn as one end-to-end flow** across personas, in its order. It is
-  the first flow on the page.
+- **Exact wording is mandatory.** Every refusal, toast and message the document gives appears on the
+  diagram word for word. This is what stops the builder inventing them.
+- **Cross-persona hand-offs are drawn as hand-offs** between swimlanes.
+- **A diagram fits its column or says it scrolls.** If the steps do not fit the content width, wrap
+  them onto a second row, or let the diagram scroll inside its frame with the lane names sticky on the
+  left, an edge fade and a "Scroll →" hint. No card may end cut off at the frame edge.
+- **Where the document gives the step but not the screen state, derive it** and mark it `[DERIVED]`.
+  Where the document gives no journey for a persona, write that persona's first session and mark it
+  `Proposed`.
+- **Default interactions are not repeated per node.** Hover and focus on everything clickable, a
+  loading state between action and response, an empty first run and an undo after a reversible action
+  are stated once, as the rule for every journey, in the composition contract.
 
-**Add the interactions the journeys imply even when they do not name them**: hover and focus on
-everything clickable in the frame, the loading state between action and response, the empty state the
-first time a persona arrives, and the undo after a reversible action. These come from REFERENCE and
-research question 7, applied to this journey.
+**The demo storyline (§20) is a flow diagram too**, drawn first because it is what the client sees
+first. Each of its steps names the screen (one of the five, 0.6) or the component page that shows that
+moment, so the reviewer can follow the demo through the drawn screens without extra frames.
 
 ## 0.8 · Signature components — depth where it matters
 
@@ -554,19 +444,22 @@ with the reason.
 8. **Variants** — at least two layouts for different contexts (a full view and a compact card; a
    desktop panel and a phone sheet), so the builder has the right one for each page.
 
-Draw each signature component large, with real seed data, in its states and variants. **A signature
+Document each signature component on its own full component page, drawn large, with real seed data, in its states and variants. **A signature
 component drawn once, at one size, in its happy state, is a generic component with a new name.**
 
-**Signature components may introduce new composition** — a new layout of existing atoms, a new
+**Signature components take their form from the design concept** (Step 2c): they are where the
+concept is most visible. **They may introduce new composition** — a new layout of existing atoms, a new
 overlay on an image, a new arrangement of a grid — but never a new colour value outside the transform,
 a new radius, a third elevation or a new type size. That is where the expression of depth lives.
 
 ## 0.9 · Agents → the agent drawer
 
-**Every agent the document names gets the agent drawer** (REFERENCE, "The agent component"), drawn
-open over the real screen it is called from, with that agent's name, scope, suggested prompts from
-the document, a real question from a journey, its working stages and its answer rendered with that
-agent's own output types (0.3) — chart, table, file, citation, proposed action.
+**Every agent the document names gets the agent drawer** (REFERENCE, "The agent component"), with
+that agent's name, scope, suggested prompts from the document, a real question from a journey, its
+working stages and its answer rendered with its own output types (0.3) — chart, table, file, citation,
+proposed action. **The main agent is shown open over one of the five screens.** Every other agent is
+documented on the agent-drawer component page as the drawer alone, with its own content, so no extra
+screens are drawn.
 
 - **The drawer is the default for every agent, on every page.** If the document puts an agent on a
   page as a card or a full-width block ("Copilot full width on Home"), draw it as the drawer, give
@@ -577,7 +470,7 @@ agent's own output types (0.3) — chart, table, file, citation, proposed action
   page's record as context.
 - **Specify that it is built on the platform's live agent component** — streamed replies, real
   stages, tool outputs rendered in the thread. Never an automation that writes the answer to an
-  object which the page shows after a refresh. The build contract (Step 7) carries this line.
+  object which the page shows after a refresh. The composition contract (Step 7) carries this line.
 - **Agents that act** (approve, move, send) show the proposed action inside the drawer as a
   human-in-the-loop card, before and after, with approve and reject; nothing happens without it.
 
@@ -724,7 +617,8 @@ trimmed sheet never matched it, and three runs had to re-count. These are the me
   both themes (transformed like every other colour), so the rail does not turn pale when the dark theme
   lightens `--sp-deep`. No `color-mix()` anywhere: in a browser without it the rail rendered
   transparent.
-- **Every screen is drawn at its real width, in a device.** Media queries answer the window, not a
+- **Every screen that is drawn is drawn at its real width, in a device** (which screens are drawn
+  at all is decided by 0.6 and its budget, not by this rule). Media queries answer the window, not a
   box, so a "1,280 px" screen drawn inside a 1,000 px guide column gets the desktop layout at the wrong
   width: the v5 runs squeezed state screens to one word per line and let a docked Copilot eat the page.
   **Every screen specimen** — desktop, wide, tablet, phone — goes in `<template class="device"
@@ -1007,9 +901,32 @@ were the same product in a different hue: the same gradient rail, white bar, gla
 The core is right to stay fixed — its measurements are why the apps worked. What was missing is a
 decision about **how this client's product should feel**, taken from evidence and recorded.
 
-**Set each dial from the identity sample (Step 1), the personas (0.4) and the inspiration board
-(research question 6).** Every dial records its choice and the evidence that chose it, in an
-**expression card** on the style guide.
+**Start with the design concept, then set the dials.**
+
+**The design concept — the one idea that makes this system belong to this client.** Find an object,
+material or ritual from the client's own world and let it shape the system: Asian Paints' shade card
+and paint chip; an airline's departure board and boarding pass; a fashion brand's lookbook and swatch
+card; a lab's sample tray; a bank's statement. Choose it from what the scoping document, the client's
+site and the research show the client's people actually handle every day, never from a generic
+metaphor. Write it on the expression card in one line with its evidence, then let it drive:
+
+- **the signature components (0.8)** — their form borrows from the concept (a dealer score shown as a
+  paint chip whose shade fills to the score; a bag case header laid out like a boarding pass);
+- **the variants** — each family's variants are designed from the concept, not taken from a house set;
+- **the motif, empty states and imagery** — drawn from the concept, used quietly;
+- **the chart voice** — how data is marked (chips, departure-board rows, swatches) where it reads
+  better than a plain bar;
+- **one signature interaction** — a single memorable moment tied to the concept (a score filling like
+  paint; a status flipping like a departure-board tile; a card turning like a lookbook page), built
+  within the motion rules, used once or twice in the app, never on every control.
+
+**The concept changes form, never the core.** It can shape layout, composition, imagery and motion. It
+never adds a colour value outside the transform, a radius outside the scale, a third elevation, a new
+type size, or anything a UX law forbids. If the concept fights readability, the concept loses.
+
+**Then set each dial from the concept, the identity sample (Step 1), the personas (0.4) and the
+inspiration board (research question 6).** Every dial records its choice and the evidence that chose
+it, in an **expression card** on the style guide.
 
 | Dial | Options | Chosen by |
 | --- | --- | --- |
@@ -1051,29 +968,32 @@ capped and bundled**:
    differ in a way a reviewer can see in one second (number above label vs label above number; header
    with inline legend vs legend below), and each passes every rule in this file. No variant is a
    weaker copy kept for contrast.
-3. **At most three style sets**, `S1`, `S2`, `S3`. A style set names exactly **one** variant per family
-   — never two. **S1 is the recommended set** and is the only set used on every screen of the style
-   guide. S2 and S3 appear only in a **Style sets** section: the same two hero screens re-drawn with
-   each set side by side, so the reviewer compares whole looks, not parts.
+3. **One style set by default: `S1`.** A style set names exactly **one** variant per family — never
+   two. S1 is the set every drawn screen uses, and the only set the builder uses. The other variants
+   still appear, labelled, on the component pages, so the reviewer can see the choices without whole
+   screens being redrawn. **Draw `S2` (and at most `S3`) only when the user asks for options**, and
+   then on **one** hero screen each, side by side.
 4. **Every specimen is tagged.** Each component instance carries `data-variant="KPI-1"` (and the screen
    carries `data-style-set="S1"`), and the style guide prints the code beside each variant in the
    component section.
-5. **Machine-readable for the builder.** The file carries one JSON block, which the build contract
+5. **Machine-readable for the builder.** The file carries one JSON block, which the composition contract
    quotes:
 
 ```html
 <script type="application/json" id="style-sets">
 {"active":"S1",
- "sets":{"S1":{"PH":"PH-1","RH":"RH-1","KPI":"KPI-1","CH":"CH-1","TB":"TB-1","CD":"CD-1","FB":"FB-1","ES":"ES-1"},
-         "S2":{"PH":"PH-1","RH":"RH-2","KPI":"KPI-2","CH":"CH-2","TB":"TB-1","CD":"CD-2","FB":"FB-1","ES":"ES-1"}},
+ "sets":{"S1":{"PH":"PH-1","RH":"RH-1","KPI":"KPI-1","CH":"CH-1","TB":"TB-1","CD":"CD-1","FB":"FB-1","ES":"ES-1"}},
  "variants":{"KPI-1":"number over label, delta below, no icon","KPI-2":"label over number, sparkline right"}}
 </script>
 ```
 
    **The rule for the builder: use only the active set's variant for each family, everywhere, and never
-   mix sets.** If the reviewer picks S2, only `"active"` changes.
-6. **Variants come from the brand and the references**, not from invention: each variant names the
-   reference (research question 6) or brand evidence it came from in the `variants` text.
+   mix sets.** If the user asks for options and then picks S2, S2 is added to `"sets"` and only
+   `"active"` changes.
+6. **Variants are designed for this client.** Each family's variants come from the design concept,
+   the brand and the references, so two clients' KPI tiles can look nothing alike. Each variant names
+   its source (the concept, a reference from research question 6, or brand evidence) in the `variants`
+   text, and the **recommended** one (active in S1) says in one line why it fits this client best.
 
 ### Chart views — more than one way to see the same data
 
@@ -1270,7 +1190,8 @@ deliberately dimmed states.
 * **Images:** every record that has an image shows it; every missing image shows the designed
   fallback, never a broken-image icon or an empty card.
 * **Status in charts** uses the status palette and a legend with words, never brand-colour steps.
-* **Phone and tablet layouts** render at their widths with their own navigation.
+* **Phone and tablet layouts that are drawn** (0.4: only a persona's primary device) render at their
+  widths with their own navigation.
 
 **Four traps, each of which produced a false result on a real run:**
 
@@ -1307,16 +1228,22 @@ Every one of these produced a file that looked finished in its source and render
 | **Clipped inputs and spilling cards** (ClickUp's search placeholder cut off, a Topcon hover card 149 px outside its column) | Placeholders fit their field at the narrowest width shown. State specimens (hover, lifted, open) sit in a cell sized for that state. The render check flags spills and clips. |
 | **A transparent rail in some browsers** (`color-mix()`) | No `color-mix()`, CSS nesting or container queries in the system CSS; layout must not depend on `:has()`. |
 | **Icons at browser-default stroke** (camelCase SVG attributes in HTML) | The `stroke[A-Z]` grep above, before every hand-over. |
+| **The guide's left navigation showed half-height, overlapping labels** (Fujairah: a fixed-height flex column, links with `overflow:hidden`, so the browser shrank each link to 15 px; worse on shorter screens) | Every child of a flex column that must keep its height gets `flex-shrink:0`; a long navigation scrolls inside itself (`overflow-y:auto`), it never squeezes its items. The render check's `vclipped` count catches it. |
+| **State matrices squeezed wide components** (Fujairah: a 360 px pilot card forced into 190 px state columns — eyebrows one word per line, the last card cut at the edge) | A state cell is never narrower than the component's real width. Narrow atoms (buttons, chips, toggles) use the table matrix; a component wider than about 240 px shows its states as a wrapping grid, each tile at the component's real width (`grid-template-columns:repeat(auto-fill,minmax(<real width>,1fr))`). |
+| **Wide diagrams looked cut off** (Fujairah's swimlanes ran 1,814 px in an 1,116 px column with no sign they scroll) | A diagram wider than its column either wraps (lanes stack, steps flow to a second row) or scrolls inside a frame with its first column (lane names) sticky and a visible edge fade and "Scroll →" hint. Nothing ends mid-card at the edge. |
 
 **The render check — run it in the browser on the finished file, in light and in dark, at 1,280 px and
 375 px, and paste the result into the hand-over.** It also walks every device iframe. Every count must be
 zero and every face loaded; `where` names the first offenders. `overlaps` finds siblings that collide
 (pills on top of each other, task names running into the next card); `squeezed` finds text wrapping at
-one or two words per line (a column or card too narrow for its content).
+one or two words per line (a column or card too narrow for its content); `vclipped` finds text cut off
+vertically inside a box that hides overflow (a link or row shrunk below its line height). **Run it at
+three viewports: 1,280 × 800, 1,280 × 680 (a short laptop screen, where squeezing shows first) and
+375 × 812.**
 
 ```js
 (() => {
-  const res = { hScroll: 0, spills: 0, clipped: 0, overlaps: 0, squeezed: 0, brokenImages: 0, fonts: {}, unstyledClasses: [], where: [] };
+  const res = { hScroll: 0, spills: 0, clipped: 0, vclipped: 0, overlaps: 0, squeezed: 0, brokenImages: 0, fonts: {}, unstyledClasses: [], where: [] };
   const note = (k, el, doc, win = window) => { res[k]++; if (res.where.length < 15) res.where.push(k + ': ' + (win.frameElement ? (win.frameElement.title || 'device') : 'page') + ' › ' + el.tagName.toLowerCase() + '.' + [...el.classList].join('.') + ' "' + (el.textContent || '').trim().slice(0, 40) + '"'); };
   const scan = (doc, win) => {
     const de = doc.documentElement; res.hScroll = Math.max(res.hScroll, de.scrollWidth - de.clientWidth);
@@ -1326,6 +1253,7 @@ one or two words per line (a column or card too narrow for its content).
       const cs = win.getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden') continue;
       const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
       if (['hidden', 'clip'].includes(cs.overflowX) && el.scrollWidth > el.clientWidth + 2 && el.clientWidth > 40 && cs.textOverflow !== 'ellipsis' && !el.closest('.tblwrap')) note('clipped', el, doc, win);
+      if (['hidden', 'clip'].includes(cs.overflowY) && el.clientHeight > 0 && el.scrollHeight > el.clientHeight + 2 && cs.webkitLineClamp === 'none' && !el.closest('.frame, .frame-scroll') && [...el.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim())) note('vclipped', el, doc, win);
       const p = el.parentElement;
       if (p && cs.position !== 'fixed' && cs.position !== 'absolute' && win.getComputedStyle(p).overflowX === 'visible' && r.right > p.getBoundingClientRect().right + 4) note('spills', el, doc, win);
       const own = [...el.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim());
@@ -1356,8 +1284,10 @@ one or two words per line (a column or card too narrow for its content).
 })()
 ```
 
-Treat `spills`, `clipped` and `squeezed` in the style guide's own documentation tables as leads to
-check; in screen specimens they are defects, every one. `unstyledClasses` should list only hooks used
+**Every count is a defect in screens, specimens, state matrices, component pages and the guide's own
+navigation.** The only allowed exception is a short label in the first column of a documentation table
+wrapping onto two lines (for example "Hover a waypoint"); check each one by eye and list it in the
+hand-over. Anything else flagged is fixed before hand-over. `unstyledClasses` should list only hooks used
 by a script, never a visual component. The v5 runs measured 69–381 squeezed elements and up to 54
 clipped ones per file; the reference test page measures zero on every count.
 
@@ -1365,54 +1295,81 @@ clipped ones per file; the reference test page measures zero on every count.
 
 **The output is one file: a single self-contained HTML file, and nothing else.** Not a published
 artifact, not a separate token file, not a logo folder, not JSON or Markdown alongside it. Save it as
-`<client>-design-system.html` in the outputs folder and hand over that path. Everything the four
-deliverables below describe lives inside that one file as sections of the page — the token block as a
-copyable code block, the logo kit as inline SVG (raster variants as data URIs) with a copy button per
-variant, the build contract as a quotable block. If something cannot live inside the file, it is not
-delivered.
+`<client>-design-system.html` in the outputs folder and hand over that path. Everything the deliverables
+below describe lives inside that one file as sections of the page — the token block as a copyable code
+block, the logo kit as inline SVG (raster variants as data URIs) with a copy button per variant, the
+composition contract as a quotable block. If something cannot live inside the file, it is not delivered.
 
-**Four deliverables, all inside the one file:**
+**The file is a design system, not a drawn copy of the app.** It documents every component in full,
+shows the foundations and patterns, draws the journeys as diagrams and at most five screens, and hands
+over the rules for the rest (0.6).
 
-1. **Living style guide** — the page itself: self-contained, the full section set, light and dark with
-   a working switch. Doubles as the visual spec the build prompt points at. **Its
-   order:** build brief and manifest → expression card and inspiration board → the demo-storyline flow
-   and every journey flow (0.7) → signature components (0.8) → the app shell for each role and device →
-   every screen, in its shell → agent drawers (0.9) → overlays (modals and drawers, all sizes) → chart
-   views → style sets (S1, S2, S3 compared) → foundations and components → port note, ledger,
-   build contract, hand-over. Carry: the view manifest from 0.6 with a link to every specimen ·
-   the swatch and its provenance · the token block · type scale · glass tiers · ambient field · every
-   component **rendered, not described** · the table toolbar with all four states including
-   filtered-empty · the AI Insight card · the container doctrine.
+**Five deliverables, all inside the one file:**
+
+1. **Living style guide** — the page itself, built like a real design-system site: self-contained,
+   light and dark with a working switch, a **sticky left navigation** of its sections (full viewport
+   height, scrolling inside itself when long; every item `flex-shrink:0`, one line, never squeezed), the client's
+   expression applied to the guide itself (chrome, motif, type voice) so it reads as this client's
+   system. **Its sections, in order:**
+   - **Overview** — the build brief and page inventory (0.6), the expression card, the inspiration board.
+   - **Foundations** — colour (every token with its measured ratio), type scale, spacing and density,
+     **material and elevation** (glass tiers layered over the ambient field, the solid rung, edge light,
+     shadows, in both themes), motion (durations, easing, what moves and why), icons.
+   - **Components** — one component page per component (REFERENCE, the component-page spec), grouped
+     as the inventory groups them; signature components first, then the agent drawer, overlays,
+     navigation, inputs, data display, feedback and states. Every component **rendered, not
+     described**, with its live specimen and state matrix.
+   - **Patterns** — a blueprint for each chosen pattern; chart views.
+   - **Journeys** — the demo storyline and every journey as flow diagrams.
+   - **Screens** — at most five, each labelled with its pattern, persona and the storyline steps it shows.
+   - **Build** — the composition contract, the token block, the logo kit, the port note and ledger, the
+     hand-over. Style sets S2/S3 only if the user asked for options.
 2. **Token block** — one `:root`, tokens named by **job** never by colour, **a measured ratio printed
    beside each**, non-text ones marked. A token carrying a number nobody re-measured after a hue
    rotation is a defect.
 3. **Logo kit** — the seven variants with the usage matrix, clear space, minimum sizes, misuse list
-   and provenance. With `ink` or `light` chrome, the rail takes the variant that measures on it (the
-   reversed mono on `ink`, the full-colour horizontal lockup on `light`).
-4. **Build contract** — a short block on the page, written for the builder (Nebula), that the build
-   prompt quotes verbatim. It carries:
-   - **Shell:** use `.app`, `.app-rail`, `.app-top`, `.app-main`, `.app-body` from the kit; the rail is
-     full height at every scroll position; the top bar is opaque and gains `.scrolled` on scroll; set
-     `data-chrome`, `data-surface` and `data-theme` on `<html>` exactly as the expression card says.
-   - **Agents:** every agent uses the `.agent-drawer` opened from a top-bar button and `.agent-launch`,
-     **built on the platform's live agent/chat component** with streamed replies and real stages.
-     Never an automation that writes the answer into an object for the page to show on refresh. Tool
-     outputs (charts, tables, files, citations, proposed actions) render inside the thread.
-   - **Data:** tables scroll horizontally inside `.tblwrap`; every image has a fallback; counts shown
-     in two places come from the same query. Tables follow the density rules (one line per cell, two
-     chips then "+n", long text in an expanded row or drawer, about seven columns at 1,280 px).
-   - **Style set:** the `#style-sets` JSON block, quoted; use only the active set's variant for each
-     family, on every screen; never mix sets. Chart views: the recommended view, with the Chart / Table
-     switch where drawn.
-   - **Overlays and spacing:** modals and drawers only in the three sizes and one anatomy; the agent
-     docks only at 1,440 px and wider; spacing only from the scale; `data-density` as the persona
-     row says.
-   - **Colour:** no colour value outside the token block; status series in charts use the status
-     palette; deltas are coloured by good or bad, not by sign.
-   - **States:** every screen ships its empty, filtered-empty, loading, error, no-access and UNSET
-     states as drawn.
-   - **Roles and devices:** each role's shell and navigation as drawn; phone and tablet layouts as
-     drawn.
+   and provenance. With `ink` or `light` chrome, the rail takes the variant that measures on it.
+4. **Composition contract** — a block written for the builder (Nebula), quoted verbatim in the build
+   prompt. The builder reads this, not the skill, so every rule it must follow is here:
+   - **Look up, don't choose.** Every design decision is already made in `#build-plan` and
+     `#style-sets`. For each page: find its route in `build-plan.pages` and use that pattern and those
+     region fillers. For a page not listed, take its data shape and persona and use the **first
+     matching rule** in `build-plan.rules`. Use the `app` settings (shell, theme, surface, density,
+     agent drawer) on every page. Never pick a different pattern or variant because it seems better.
+   - **Copy only active specimens.** Build from components marked `data-active="true"`. Anything marked
+     `data-active="false"` ("Reference — not in this app") is never used. Nothing exists outside the kit
+     and the token block: no new component, colour, radius, elevation, type size or spacing step.
+   - **Compose the page; don't clone a screen.** Follow the pattern's blueprint and match the drawn
+     screens' look, spacing and finish, with the page's own content. Never copy one screen's content
+     onto another page.
+   - **Keep the concept.** Where `build-plan.concept` and a signature component apply to a page (the
+     shade-card score, the boarding-pass header), use them as drawn; they are what make the app this
+     client's.
+   - **Journeys run as specified.** Build the pages so each journey follows its flow diagram, using the
+     document's exact wording for every refusal and message. Signature components are built as
+     their component pages specify.
+   - **Every component keeps every state and micro-interaction from its component page:** hover,
+     focus-visible, pressed, selected, disabled, loading, error and read-only, with the timings and
+     easing given. Every page also gets a loading state between action and response, the empty first
+     run, undo after a reversible action, and its empty, filtered-empty, error, no-access and UNSET
+     states, from the kit.
+   - **Shell:** `.app`, `.app-rail`, `.app-top`, `.app-main`, `.app-body`; rail full height; top bar
+     opaque, `.scrolled` on scroll; `data-chrome`, `data-surface`, `data-theme` on `<html>` as the
+     expression card says.
+   - **Agents:** the chosen `AG` drawer, opened from the top bar and `.agent-launch`, built on the
+     platform's **live agent component** (streamed replies, real stages, tool outputs in the thread),
+     never an automation that writes an answer for the page to show on refresh.
+   - **Data and density:** tables scroll inside `.tblwrap`; one line per cell (two in the first column),
+     two chips then "+n", about seven columns at 1,280 px; every image has a fallback; a count shown
+     twice comes from one query.
+   - **Overlays, spacing, colour:** modals and drawers only in the kit sizes and anatomy; the agent docks
+     only at 1,440 px and wider; spacing only from the scale; no colour outside the token block; chart
+     status series use the status palette; deltas coloured by good or bad, not by sign.
+   - **The UX laws** in "The composition model" bound everything the builder composes.
+5. **The build plan** — `#build-plan` (composition model, Layer 4) and `#style-sets`, quoted with the
+   contract: the seed, the concept, the app settings, the pattern and region fillers per page with the
+   reason, the rules for unlisted pages, and the chart encoding per chart. A reviewer changes the app by
+   editing these blocks; the builder follows them.
 
 **And a type note:** the client's real typeface named, what was shipped instead, and why — *"Brand face
  is Gotham (Monotype, single-domain licence); shipped Montserrat as the closest open substitute.
@@ -1420,10 +1377,10 @@ delivered.
  looks like we did not notice.**
 
 **Plus a port note on the page itself**, stating the source version, max |ΔY| across all colours, and
-every decision the port forced, **the brand source order applied, the expression card, and every
-correction made to the scoping document (0.1)**. **Anchor the one branded surface to the client** — with
-`brand` chrome the rail gradient starts at the sampled swatch; with `ink` chrome the signal colour marks
-the active item; with `light` chrome the brand marks the active item and the primary action.
+every decision the port forced, **the brand source order applied, the expression card, the seed, and
+every correction made to the scoping document (0.1)**. **Anchor the one branded surface to the client** —
+with `brand` chrome the rail gradient starts at the sampled swatch; with `ink` chrome the signal colour
+marks the active item; with `light` chrome the brand marks the active item and the primary action.
 
 **Swap the sample domain, not the doctrine.** Proofpoint: Deal Gate → Quote Builder; gate artefacts
 → product configuration / pricing summary / legal review / order form; identities → seats; Okta IG →
@@ -1433,225 +1390,302 @@ Defender for O365; Stage 20/40 → awaiting approval / approved. **Every measure
 hand-over; do not publish it or share it as a link.
 **If you fix something in the stylesheet, say so in the hand-over** — an unreported fix means
 the next run reintroduces it and the skins quietly diverge.
+**No demo or synthetic labels anywhere** — not "demo persona", not "synthetic data", not "used for demo
+only". The app and its specimens read as the real product with real content.
+
+---
+# REFERENCE
+
+## The composition model — how the builder makes pages from the kit
+
+Components are the words, **patterns** are the sentence shapes, and a **seeded chooser** decides which
+sentence each page becomes, so two apps differ and one app stays coherent. **Order of authority: core
+→ UX laws → fit → seed.** The seed only ever chooses between options that are already correct.
+
+### Layer 1 · Components with labelled variants
+
+Each family below may carry **up to three variants**, each visibly different, each passing every rule
+in this file. A variant rearranges the same atoms; it never adds a colour, radius, elevation, type size
+or spacing step. Each component page draws every variant with its code.
+
+| Family | Code | What varies |
+| --- | --- | --- |
+| Page header / record header | `PH` / `RH` | ID eyebrow vs breadcrumb; actions inline vs in a menu |
+| KPI tile | `KPI` | number over label vs label over number; sparkline; mini-bar |
+| Chart frame | `CH` | legend inline vs below; with a view switch |
+| Table row | `TB` | single line vs name over meta; status stripe |
+| Card | `CD` | metric-led vs media-led vs text-led |
+| Filter bar | `FB` | pill facets vs dropdowns |
+| Empty state | `ES` | icon-led vs illustration-led |
+| List item | `LI` | one line vs two lines vs thumbnail |
+| Right-rail panel | `RP` | summary vs action list vs mixed |
+| Agent drawer | `AG` | right drawer vs docked column vs bottom sheet; thread only vs thread with canvas |
+| Signature components | `SG1…` | the two layouts 0.8 requires |
+
+### Layer 2 · The layout patterns
+
+A page is built on **one** pattern. Carrying seven means "a list plus a side rail" is one option, not
+the only shape.
+
+| # | Pattern | Built around | Fits |
+| --- | --- | --- | --- |
+| **P1** | List workspace | one list (table or cards), tabs, toolbar, optional rail | many records, flat |
+| **P2** | Split master-detail | a list beside the **live full record** | records worked one at a time |
+| **P3** | Focus / canvas | **one hero object**, little chrome, docked actions | one record, a document, a photo, a form-led task |
+| **P4** | Board | **columns of cards** that move through stages | stages, a process |
+| **P5** | Metric dashboard | a **mixed-width widget grid** (8/4, 6/6, 4/4/4) | aggregates |
+| **P6** | Map | **the map as hero**, list and legend docked | locations |
+| **P7** | Feed / timeline | **a chronological stream** as hero | activity, history, a schedule |
+
+The agent drawer overlays any pattern; it is never a page body. In the kit, each pattern declares its
+regions and grid split, which families fill each region, how it reflows per device, and its own
+variants (rail left or right, detail inline or in a drawer). Patterns may nest once (a P2 record pane
+holding a P7 feed); never two levels deep.
+
+### Layer 3 · The chooser — run here, never by the builder
+
+**All choosing happens in this run, by this skill.** The builder (Nebula) works with no person in the
+loop and is good at reproducing what it is given, not at judging which of three options is better; left
+to choose, it falls back to the safest default, and every app turns into a list with a rail. So this
+skill makes every choice, records it, and hands the builder answers, not options.
+
+**How each choice is made — best fit first, the seed only breaks ties:**
+
+1. **Build the candidate set**: the patterns or variants that fit the data shape and persona and pass
+   the UX laws.
+2. **Rank by fit to this client**: the data, the persona's job, and the design concept (Step 2c). The
+   best fit is the **recommended** choice, and its one-line reason is recorded.
+3. **Use the seed only when two candidates fit equally well.** One seed per build, from a hash of the
+   client name. This is what makes two clients with similar data land on different, equally good
+   answers, without any memory of past builds.
+
+What gets chosen this way: the **pattern per page**; the **active variant per family** (once, for the
+whole app); the **chart encoding per chart**. Shell, theme, surface, density, the agent-drawer variant
+and the concept are set by the expression and the personas from evidence, not by the seed.
+
+**Coherence overrides everything:** one shell, theme, density and surface per app; one variant per
+family; the same data shape gets the same pattern wherever it recurs.
+
+### Layer 4 · The build plan — answers the builder looks up
+
+The choices are handed over as one machine-readable block, `#build-plan`, which the composition
+contract quotes. The builder does not choose anything; it looks things up:
+
+```html
+<script type="application/json" id="build-plan">
+{"seed":"asian-paints-7f3a","concept":"shade card: scores and status as paint chips",
+ "app":{"shell":"rail","theme":"light","surface":"glass","density":"comfortable","agent":"AG-1"},
+ "variants":"#style-sets active set",
+ "pages":[
+  {"route":"/today","pattern":"P7","regions":{"stream":"LI-2","rail":"RP-1"},"screen":"1 of 5",
+   "why":"a rep's day is a timeline of visits"},
+  {"route":"/visit/:id","pattern":"P3","regions":{"hero":"SG1 shade-card scorecard","dock":"action bar"},
+   "screen":"2 of 5","why":"one visit, worked in depth"}],
+ "rules":[
+  {"when":{"shape":"many records, flat","persona":"desk"},"pattern":"P2"},
+  {"when":{"shape":"many records, flat"},"pattern":"P1"},
+  {"when":{"shape":"aggregates"},"pattern":"P5"},
+  {"when":{"shape":"one record, deep"},"pattern":"P3"},
+  {"when":{"shape":"stages"},"pattern":"P4"},
+  {"when":{"shape":"locations"},"pattern":"P6"},
+  {"when":{"shape":"activity or schedule"},"pattern":"P7"}]}
+</script>
+```
+
+- **`pages`** covers every page in the inventory: its pattern, which variant or component fills each
+  region, which of the five screens shows it (if any), and why.
+- **`rules`** covers pages the builder creates that the inventory did not list: the builder takes the
+  page's data shape and persona and uses the **first rule that matches**. The rules are ordered so
+  the first match is the recommended fit for this client.
+- **Every drawn specimen is tagged** so the builder copies the right one: `data-component="KPI"`
+  `data-variant="KPI-2"` `data-active="true"`. Variants that are not active carry `data-active="false"`
+  and a visible label "Reference — not in this app", so a builder that copies from the page never
+  copies the wrong one. The five screens and the blueprints use active variants only.
+
+**The reviewer can still change things.** Overriding one page's pattern, or making another variant
+active, is an edit to `#build-plan` or `#style-sets`; the builder follows whatever the block says.
+
+### The UX laws — every candidate passes these first
+
+- **Jakob's law** — nav, search, primary action and record sit where users expect, in every pattern.
+- **Hick's law** — no region offers more actions than it needs; the rest fold into a menu.
+- **Fitts's law** — 24×24 targets at least; primary actions near the hand; destructive actions apart.
+- **Miller's law** — chunks of 5–7; a stat row is 3–6 tiles.
+- **Proximity / common region** — grouping by spacing and containers, not colour.
+- **Consistency** — one look per app; the seed serves this law.
+- **Von Restorff** — one thing per screen stands out.
+- **Tesler's law** — complexity goes into the system, not onto the user.
+- **Aesthetic–usability** — a cramped or mis-spaced candidate fails even if structurally valid.
+- **Serial position** — the most useful column or action at the start or end, not buried.
+
+A candidate that fails any law is removed before the seed sees it.
 
 ---
 
-# REFERENCE
-
 ## The view library — the reserve the app draws from
 
-**Everything below is held, not always built.** Phase 0 selects which of these a given build uses; the
-rest stay dormant. A view the library does not carry is a view the app can never produce, so the
-library is deliberately wide. Each view-type is either a **component** (built once, configured per use)
-or an **engine + type catalogue** (one renderer configured to many outputs chosen by data shape).
+**Held, not always built.** Phase 0 picks what a build uses; the rest stay dormant. A view the library
+does not carry is a view the app can never produce, so it is wide on purpose. **Charts, graphs, flows
+and maps are engines**: build each renderer once with the shared palette, then configure it to the
+types listed. `[kit]` = a class already exists, reuse it; everything else is built from tokens and
+doctrine when first needed, never with new colour values.
 
-**Four of these are engines, not single components.** Charts, graphs, flows and maps each build *once*
-as a renderer plus the shared palette (see "The visualization engines" below), then produce the long
-lists of types under them by configuration. Do not hand-build forty chart components; build the chart
-engine and configure it.
+**Data and record** — table / data grid `[kit .tbl]` (always with the toolbar and filtered-empty ≠
+empty) · editable grid · tree-table · card gallery `[kit .tile]` · list, one to three lines · key-value
+list · grouped list · leaderboard · KPI tiles `[kit .tile .loop]` (colour a delta by good or bad, never
+by sign) · detail / inspector · master-detail · compare / diff · pivot · heatmap grid (sequential
+palette, never colour alone).
 
-`[in kit]` = a class or pattern already exists in the stylesheet / REFERENCE above — reuse it, never
-write a second one. `[NEW]` = add to the reserve when a build first needs it, built from the tokens and
-doctrine, never with new colour values.
+**Charts (chart engine, `.chart` owns frame, title, unit, legend, no-data)**, grouped by the question:
+comparison (bar, column, grouped, stacked, bullet, lollipop, radar) · trend (line, area, stacked area,
+step, slope, sparkline `[kit]`, candlestick) · part-to-whole (donut for at most three parts, treemap,
+sunburst, waffle) · distribution (histogram, box, violin, dot, beeswarm) · relationship (scatter,
+bubble, hexbin) · flow (funnel, waterfall, sankey) · single value (gauge, progress ring, big number with
+delta) · analytics (cohort, retention, control chart, pareto) · geo (choropleth, bubble map, flow map,
+handed to the map engine). A chart without a unit is decoration; the ramp never cycles.
 
-### Data & record views
-- **Table / data grid** `[in kit]` — rows of records; the default list surface. Every table gets the toolbar (search left, facets right) and the filtered-empty ≠ empty rule from the Components doctrine.
-- **Editable data grid** `[NEW]` — inline-edit cells, add/remove rows; config and ops tools.
-- **Tree-table / hierarchy grid** `[NEW]` — expandable parent-child rows; BOMs, categories, org data.
-- **Card gallery / tile grid** `[in kit]` — scannable cards (`.tile`, `.g2c`/`.g3c`), image or metric-led.
-- **List (one / two / multi-line)** `[in kit, partial]` — dense line items with optional meta and actions.
-- **Description / key-value list** `[NEW]` — label:value pairs for one record's attributes.
-- **Grouped / sectioned list** `[NEW]` — items under collapsible section headers.
-- **Leaderboard / ranking** `[NEW]` — ordered list with rank, score and movement.
-- **KPI / scorecard tiles** `[in kit]` — headline numbers with delta (`.tile`, `.loop`); never colour a delta by arithmetic sign, colour by whether the movement is good.
-- **Detail / inspector panel** `[in kit, partial]` — one record, deep; third-pane per container doctrine.
-- **Master–detail / split view** `[in kit, partial]` — list on one side, record on the other.
-- **Compare / diff view** `[NEW]` — two or more records or versions side by side; quote vs quote, before vs after.
-- **Pivot / cross-tab** `[NEW]` — values across two dimensions; roll-ups.
-- **Matrix / heatmap grid** `[NEW]` — colour-graded cells for coverage, risk, utilisation (sequential palette, never colour alone).
+**Graph (graph engine, layouts force / hierarchy / radial)** — network · tree · org chart · mind map ·
+ER / schema · dependency / lineage · adjacency matrix · taxonomy explorer. Nodes and edges have full
+states.
 
-### Charts — the chart engine, configured
-Build the chart engine once (`.chart` frame already owns card, title, unit, legend placement and
-no-data state). Configure it to these types, chosen by the question the data answers. Grouping is the
-selection rule.
+**Process and flow (flow engine)** — workflow / DAG · flowchart · swimlane · sequence · state machine ·
+decision tree · data-flow · journey map / blueprint · approval chain · stage board `[kit .loop]` ·
+stepper `[kit .sth .stv]` · kanban `[kit .kb]` (always with a non-drag alternative) · agent run / trace
+`[kit .stages]`. Nodes reuse the stepper's pip and status tones.
 
-- **Comparison** — bar, column, grouped/clustered, stacked, horizontal bar, bullet, lollipop, radar/spider, parallel coordinates.
-- **Trend over time** — line, multi-line, area, stacked area, streamgraph, step, spline, slope, **sparkline** `[in kit]`, candlestick/OHLC.
-- **Part-to-whole** — donut (pie sparingly), stacked bar/area, treemap, sunburst, icicle, marimekko, waffle/pictogram.
-- **Distribution** — histogram, box plot, violin, ridgeline/density, dot plot, strip/beeswarm.
-- **Relationship / correlation** — scatter, bubble, connected scatter, heatmap, hexbin, contour.
-- **Flow / magnitude** — funnel, waterfall/bridge, sankey, chord, arc, alluvial.
-- **Single value / KPI** — gauge/radial, bullet, progress ring, big-number stat with delta.
-- **Specialised analytics** — cohort grid, retention curve, control chart, pareto, polar/wind-rose.
-- **Geospatial charts** — choropleth, symbol/bubble map, heat overlay, flow map (these hand off to the map engine).
+**Spatial (map engine: layers, markers, heat, routes, clustering, legend, zoom, drill-down)** — map ·
+canvas / whiteboard · floorplan · network topology · slot / seat map `[kit .slot]` · mini-map.
 
-A chart without a stated unit is decoration. The ramp follows the palette rules (fixed hue order,
-never cycled) and the shared data-viz palette below.
+**Temporal** — calendar month / week / day / agenda / slots `[kit .cal .agenda .slot]` (today takes a
+ring, selection takes the fill, never both) · timeline · Gantt · resource schedule · roadmap · activity
+feed `[kit .feed]` (a change carries its reason) · audit log.
 
-### Relationship & graph views — the graph engine, configured
-One node-edge renderer with switchable layouts (force / hierarchical / radial / grid). Nodes, edges and
-their labels are components with full states (hover, selected, disabled) like any other control.
+**Agentic** — agent drawer `[kit .agent-drawer]`, the home of every agent (see "The agent component") ·
+agent page `[kit .canvas]`, only when the agent is the page's whole purpose · agent workbench · AI
+insight card `[kit .ai]` · reasoning trace · tool-call inspector · prompt console · suggested prompts
+`[kit .chips]` · approval / action diff · citation panel.
 
-- **Node-link graph / network** `[NEW]` — entities and links; context graphs, entity resolution.
-- **Tree / hierarchy** `[NEW]` — parent-child, expandable.
-- **Org chart** `[NEW]` — reporting / role structure.
-- **Mind map / concept map** `[NEW]` — radial idea structure.
-- **ER / schema / data-model diagram** `[NEW]` — tables and relations; data and integration apps.
-- **Dependency / lineage graph** `[NEW]` — what feeds what; impact analysis.
-- **Adjacency matrix** `[NEW]` — a dense graph shown as a grid.
-- **Knowledge-graph / taxonomy explorer** `[NEW]` — browse a large entity graph.
-
-### Process & flow views — the flow engine, configured
-One node-and-edge flow renderer with shape and layout styles. This is the view a workflow app needs;
-without it, a "show me the workflow" BRD collapses to a table. Nodes carry state (active, done, blocked)
-reusing the stepper's pip and status tones.
-
-- **Workflow / flow diagram (DAG)** `[NEW]` — nodes, edges, branches, conditions; generated from the data.
-- **Classic flowchart** `[NEW]` — start / decision / process / end shapes.
-- **Swimlane / BPMN-style** `[NEW]` — steps grouped by actor or system.
-- **Sequence / interaction diagram** `[NEW]` — ordered exchanges between parties.
-- **State-machine diagram** `[NEW]` — states and transitions; order lifecycle, approvals.
-- **Decision tree** `[NEW]` — branching logic to an outcome.
-- **Data-flow diagram** `[NEW]` — how data moves between stores and processes.
-- **Journey map / service blueprint** `[NEW]` — stages, actions, back-stage systems.
-- **Approval / escalation chain** `[NEW]` — who signs off, in order.
-- **Stage board / pipeline** `[in kit, partial]` — items through fixed stages (`.loop` is the seed).
-- **Stepper / wizard flow** `[in kit]` — ordered, forward-moving task (`.sth`, `.stv`).
-- **Kanban** `[in kit]` — states a person moves items between, can go backwards (`.kb`); needs a non-drag alternative (WCAG 2.2).
-- **Agent run / reasoning trace** `[in kit, partial]` — steps taken, tools called, inputs considered (`.stages` is the seed).
-
-### Spatial views — the map engine, configured
-One map renderer with layers (shape / tile), marks (markers / bubbles / heat / routes), clustering,
-interactive legend, zoom/pan and drill-down.
-
-- **Map / geospatial** `[NEW]` — choropleth, markers, heat, routes; country → region → point drill-down.
-- **Canvas / whiteboard / freeform** `[NEW]` — place-anywhere nodes and connectors.
-- **Floorplan / layout editor** `[NEW]` — positioned elements on a 2D plan.
-- **Network topology** `[NEW]` — infra / devices and links (graph engine on a spatial frame).
-- **Resource / slot / seat map** `[in kit, partial]` — pick-one from a spatial layout (`.slot`).
-- **Mini-map / overview** `[NEW]` — zoomed-out navigator for a large canvas or map.
-
-### Temporal views
-- **Calendar (month / week / day / agenda / slot)** `[in kit]` — three shapes are doctrine (`.cal`, `.agenda`, `.slot`); add week/day when needed. Today takes a ring, selection takes the fill, never both on one cell.
-- **Timeline (horizontal / vertical)** `[NEW]` — events along a line; history, roadmaps.
-- **Gantt / schedule** `[NEW]` — bars across time with dependencies; projects, plans.
-- **Resource / scheduling grid** `[NEW]` — rows of resources against a time axis.
-- **Roadmap** `[NEW]` — initiatives across quarters / lanes.
-- **Activity feed / history** `[in kit]` — newest-first log (`.feed`); a change carries its reason.
-- **Audit log** `[NEW]` — immutable record of who-did-what-when.
-
-### Conversational & agentic views
-- **Agent drawer** `[in kit]` — the default home of every agent: right drawer (overlay), wide drawer, docked third column, full screen on a phone (`.agent-drawer`); see "The agent component" below. The agent speaks first; loading is a sequence, not a spinner.
-- **Agent workspace (full page)** `[in kit, partial]` — only when the agent IS the screen's purpose (a dedicated "Ask" page); a centred column around the composer (`.canvas`). Never on a dashboard or record page.
-- **Agent workbench** `[NEW]` — the agent's work as structured, inspectable output, not only a chat log.
-- **AI insight card** `[in kit]` — inferred-vs-stated, grounded, per-row confidence, one row deliberately excluded with its reason (`.ai:not(.msg)`).
-- **Reasoning / trace view** `[in kit, partial]` — expand `.stages` into a full step-by-step trace.
-- **Tool-call inspector** `[NEW]` — what the agent called, with inputs and outputs.
-- **Prompt console / playground** `[NEW]` — prompt in, response out, with controls.
-- **Suggestion / support-prompt rail** `[NEW]` — recommended next inputs (reuse `.chips`).
-- **HITL approval / action diff** `[NEW]` — review what an agent will do before it acts; the modal container is for the irreversible ones.
-- **Citation / grounding panel** `[NEW]` — the sources behind an AI answer.
-
-### Document & artefact views
-- **Document / report reader** `[in kit, partial]` — long-form, sheet-on-shell (studio is the seed).
-- **Rich-text editor** `[NEW]` — compose formatted content.
-- **Form / data entry** `[in kit]` — all controls, validation (`.fld`, `.ctl`).
-- **Form-builder / schema view** `[NEW]` — define fields and rules visually.
-- **Spreadsheet-like grid** `[NEW]` — formulas, cells, selection.
-- **Code / log / JSON viewer** `[NEW]` — monospace, foldable, syntax-aware (IBM Plex Mono is already structural).
-- **PDF / file preview** `[NEW]` — render a document inline.
-- **Media / file gallery** `[NEW]` — thumbnails, preview, upload.
-- **Slide / deck view** `[NEW]` — paged presentation surface.
-- **Redline / track-changes / comparison** `[NEW]` — document diff with comments.
-- **Artefact studio** `[in kit]` — two-pane generate-and-review shell (`.studio2`).
+**Document and artefact** — document reader · rich-text editor · form `[kit .fld .ctl]` · form builder ·
+spreadsheet grid · code / log / JSON viewer · PDF / file preview · media gallery · slide view · redline
+/ track changes · artefact studio `[kit .studio2]`.
 
 ---
 
 ## The component inventory — every atom, every state
 
-The views above are built from these atoms. **Reuse the stylesheet class whenever one exists**
-(the single most common failure on this work is a second implementation — mixed radii, two kinds of
-search field). Build a `[NEW]` atom from the tokens and the Form/Components doctrine above, never with
-new colour values and never outside the five-step radius scale.
+The views are built from these atoms. **Reuse the stylesheet class whenever one exists**; a second
+implementation is the most common failure on this work (mixed radii, two kinds of search field). A new
+atom is built from tokens and the Form / Components doctrine, inside the five-step radius scale.
 
-### Full inventory (grouped as the major systems group theirs)
-- **Actions** — button (primary/secondary/tertiary `[in kit]`: `.btn-p/.btn-s/.btn-t`), icon button, button group, split button, FAB, link, menu button.
-- **Text & number inputs** — text field `[in kit]`, textarea `[in kit]`, number stepper, search field `[in kit]` (`.field`), tag/token input, rich-text, OTP/pin.
-- **Selection inputs** — select `[in kit]`, combobox / autocomplete, multi-select, checkbox `[in kit]` (`.opt .box`), radio `[in kit]` (`.opt .dot`), switch/toggle `[in kit]` (`.tog`), segmented control `[in kit]` (`.seg`), slider / range, rating.
-- **Date & specialised inputs** — date picker, time picker, date-range, color picker, file upload / dropzone.
-- **Status & display** — badge, count / notification dot, status pill/lozenge `[in kit]` (`.tag` tones), tag/chip `[in kit]` (`.chipsel`), avatar `[in kit]` (`.av`), avatar group `[in kit]` (`.faces`), icon, pictogram, progress bar `[in kit]` (`.prog`), progress ring, skeleton, spinner.
-- **Containment** — card `[in kit]` (`.g1/.g2/.g3`), panel, accordion / collapsible, tabs `[in kit]` (`.tabs`, + vertical), tile `[in kit]`, inset / well `[in kit]` (`.inner`), section.
-- **Overlays** — tooltip, popover, dropdown menu `[in kit, visual]` (`.menu` exists; the trigger/dismiss/focus behaviour does not), context menu, modal / dialog, drawer / side-sheet `[in kit, doctrine]`, bottom sheet (mobile only), toast `[in kit]` (`.toast`), inline alert / banner (`.note` is the seed), command palette, coachmark / tour.
-- **Navigation** — app / top bar, side nav / rail `[in kit]`, breadcrumb `[in kit]` (`.crumb`), pagination `[in kit]` (`.pg`), tabs `[in kit]`, stepper `[in kit]`, tree nav, back / forward.
-- **Feedback & states** — empty `[in kit]` (`.empty`), filtered-empty `[in kit]`, error, loading / skeleton, progress, notification centre, inline validation `[in kit]` (`.ctl.err`, `.hint.e`), UNSET (the fifth state, already doctrine).
-- **Form helpers** — label `[in kit]`, hint / helper text `[in kit]` (`.hint`), validation message `[in kit]`, fieldset / field group.
+- **Actions** — buttons `[kit .btn-p .btn-s .btn-t]`, icon button, button group, split button, link, menu button.
+- **Inputs** — text and textarea `[kit .ctl]`, search `[kit .field]`, number stepper, tag input, OTP;
+  select, combobox, multi-select, checkbox and radio `[kit .opt]`, switch `[kit .tog]`, segmented
+  `[kit .seg]`, slider, rating; date, time and range pickers, file upload.
+- **Status and display** — badge, count dot, status tag `[kit .tag]`, chip `[kit .chipsel]`, avatar and
+  group `[kit .av .faces]`, icon, progress bar `[kit .prog]` and ring, skeleton, spinner.
+- **Containment** — glass cards `[kit .g1 .g2 .g3]`, panel, accordion, tabs `[kit .tabs]`, tile, inset `[kit .inner]`.
+- **Overlays** — tooltip, popover, menu `[kit .menu]` (add trigger, dismiss and focus behaviour), context
+  menu, modal, drawer, bottom sheet (phone only), toast `[kit .toast]`, banner (`.note` is the seed),
+  command palette.
+- **Navigation** — top bar, rail, breadcrumb `[kit .crumb]`, pagination `[kit .pg]`, tabs, stepper, tree nav.
+- **States** — empty `[kit .empty]`, filtered-empty, error, loading, no-access, inline validation
+  `[kit .ctl.err .hint.e]`, UNSET.
 
 ### The universal state + anatomy rule
-**Every interactive atom — including the new views' controls — ships and is audited across the full
-state set, and names the token it uses in each:**
 
 ```
 STATES   default · hover · focus-visible · active/pressed · selected · disabled · loading · error · read-only
 DECLARES border width · border colour · radius · background · elevation · the token for each state
 ```
 
-The stylesheet already does this for `.ctl` (`.focus/.err/.warn/.off`). The rule is to make it a
-requirement for *everything*: a graph node, an edge, a map marker, a flow step, a timeline event and a
-kanban card all have hover / selected / disabled states, and all take their values from tokens, the
-five-step radius scale and the two-level elevation — never a one-off. An atom that looks unfinished is
-almost always one missing its focus-visible ring, its disabled tone, or its selected treatment.
+Every interactive atom ships and is audited across these states, including the engines' parts: a graph
+node, an edge, a map marker, a flow step, a timeline event and a kanban card all have hover, selected
+and disabled states, from tokens, the radius scale and the two elevations. An atom that looks unfinished
+is usually missing its focus ring, its disabled tone or its selected treatment.
+
+---
+
+## The component page — how every component is documented
+
+**This is where the design system's quality is seen.** The five screens show the system assembled;
+the component pages are what the builder actually builds from, so each one is complete enough that
+nothing about the component has to be guessed.
+
+**Every interactive component and every signature component gets a full page. Display-only atoms
+(icon, avatar, badge, divider) get a short page: variants, the states that apply, usage.**
+
+**A full page has ten parts, in this order:**
+
+1. **Header** — name, code (`KPI`, `AG`…), one line on what it is for, when to use it and when not.
+2. **Anatomy** — the component drawn large with numbered callouts; each part named with the token it
+   uses (surface, border, radius, text, icon) and its measured contrast.
+3. **Variants** — up to three, side by side, each with its code, a one-line difference and its source
+   (concept, reference or brand). The active one is marked **Recommended — used in this app** with its
+   reason and `data-active="true"`; the others carry `data-active="false"` and the label "Reference — not
+   in this app".
+4. **State matrix (static)** — every state shown at once, without a mouse: **default · hover ·
+   focus-visible · pressed · selected · disabled · loading · error · read-only** (only the states that
+   apply). **Lay it out by the component's width:** narrow atoms (buttons, chips, toggles, inputs) in a
+   table, rows as variants and columns as states; anything wider than about 240 px (cards, panels,
+   rows, drawers) as a wrapping grid of labelled tiles, **each tile at the component's real width**. A
+   component is never squeezed to fit a column.
+5. **Live specimen** — the real component, on its real surface, that responds to hover, focus (Tab),
+   press and selection, so the reviewer feels the interaction.
+6. **Micro-interactions** — a short table: trigger · what changes · duration · easing · reduced-motion
+   behaviour. Durations come from the motion foundation (the kit's 150 ms `--ease`; large surfaces such
+   as drawers up to twice that). States change colour, shadow, ring or a transform, **never padding,
+   size, alignment or border width**.
+7. **Sizes and density** — compact, default and comfortable, where the component has them.
+8. **Content rules** — label length, truncation and where the full text goes, number formats, empty
+   and overflow cases, with the real worst-case content from the seed data.
+9. **Accessibility** — role, keyboard path, target size, focus order, what a screen reader announces,
+   the non-drag alternative where it drags.
+10. **Do and don't** — one of each, drawn, from a mistake this component is prone to.
+
+**How the state matrix renders without a mouse.** After the expression kit, in the same `<style>`
+block, add a **state-hook block**: for every `:hover`, `:focus-visible`, `:active` and selected rule in
+the stylesheet and kit, repeat the same declarations under a state class — `.is-hover`, `.is-focus`,
+`.is-active`, `.is-selected`, `.is-loading` (for example `.btn-p.is-hover{…}` copying `.btn-p:hover{…}`).
+A specimen with `class="btn btn-p is-hover"` then shows the hover look. The stylesheet itself stays
+verbatim; this block only mirrors it. The builder uses the real pseudo-classes; the state classes are
+for the guide.
+
+**Show components on their real material.** A component is drawn on the surface it lives on (a glass
+card over the ambient field, the solid rung, the dark chrome), in both themes through the switch, never
+on a flat white box. That is how the material quality shows.
+
+**The finish bar for every component page:** parts aligned on one baseline, padding from the spacing
+scale, a visible focus ring, icons at their optical size, no text squeezed or orphaned, and the
+client's real content. A component page that would not pass for a page in Material or Carbon's
+documentation is not finished.
 
 ---
 
 ## Foundation additions (so the new views render correctly)
 
-These extend the existing foundations; they do not replace Step 3's transform or the radius/elevation
-rules. Apply them with the same "only hue moves, measurements survive" discipline.
+These extend the foundations; they never move a measured value.
 
-- **Semantic token tier.** Colour by job through a semantic alias layer (primitive → semantic →
-  component), so the reskin in Step 3 is a near-mechanical swap and the hardcoded gradients and focus
-  rings (`.btn-p`, `.msg.me`, `.tog.on`, the `rgba(0,113,206,…)` rings) stop slipping past the port.
-  This is the clean fix for the bare-triple and gradient-stop traps already in Step 6. It also makes
-  density and multi-theme a file swap rather than an edit.
-- **Density modes.** Compact / default / spacious driven by spacing + line-height tokens only, set by
-  the Phase 0 persona. Component structure never changes; only the spacing tokens move.
-- **`backdrop-filter` / forced-colors / reduced-transparency fallback.** The glass identity depends on
-  `backdrop-filter`. Define the solid-surface fallback (the opaque rung already exists for nested dark
-  glass — extend it) so glass degrades to legible flat cards under `prefers-reduced-transparency`,
-  Windows forced-colors, and browsers without the filter. This is correctness: without it the page is
-  unreadable washes, not a softer look.
-- **WCAG 2.2 interaction checks (add to the Step 6 audit).** Target size ≥ 24×24 (buttons, pips, map
-  markers, slot chips, graph nodes), focus appearance (indicator size + contrast), focus-not-obscured
-  (sticky headers, banners and the floating copilot must not cover the focused element), and a non-drag
-  alternative for kanban and any drag view.
-- **RTL / logical properties + script fallback.** Use CSS logical properties (`inline-start`, `inline`,
-  `block`) so one stylesheet mirrors for Arabic/Hebrew; mirror directional icons (chevrons, back/next,
-  progress) and not others (clocks, media); tolerate text expansion (German +35%, Arabic +25%) without
-  hardcoded widths; add Arabic/CJK font fallback stacks, since Archivo and IBM Plex Mono cover neither.
-  Relevant to Gulf and Japan clients; the stylesheet is physical-direction today.
-- **Elevation + z-index ladder.** Two elevation levels stay; add a named stacking order
-  (base < sticky < dropdown < drawer < modal < toast < tooltip) so overlays and the new views' popovers
-  never fight.
-- **Motion intent scale.** Keep the 120–160ms restraint and "nothing else moves"; add a small
-  duration+easing token scale, an intent label per motion (orient / confirm / emphasize) and a ≤100ms
-  feedback-onset floor — so an agent or flow view's motion reads as reasoning, not latency.
-- **The visualization palette (shared by chart, graph, flow and map engines).** Beyond the existing
-  "one hue, several lightness steps": categorical / sequential / divergent / threshold palettes as
-  separate jobs, colour-blind-safe pairs (test under deuteranopia), never colour alone (pair with
-  label / shape / texture), and a data-table alternative for every chart. This one palette is what
-  colours all four engines; build it once.
-- **Iconography + node-glyph sourcing.** Source icons from one open, licensed set (same discipline as
-  the typeface licensing in Step 2b — e.g. an OFL/MIT set), plus the node / marker / edge glyphs the
-  graph, flow and map engines need. Icons are ad-hoc inline SVG today; name the set in the style guide.
+- **Semantic token tier.** Colour by job through a semantic alias layer, so the Step 3 reskin is
+  near-mechanical and the hardcoded gradients and focus rings (`.btn-p`, `.msg.me`, `.tog.on`, the
+  `rgba(0,113,206,…)` rings) stop slipping past the port.
+- **Glass fallback.** Under `prefers-reduced-transparency`, Windows forced-colors, or a browser without
+  `backdrop-filter`, glass falls back to the solid rung, so the page stays legible.
+- **WCAG 2.2.** Targets at least 24×24 (buttons, pips, markers, slots, nodes); a visible, measured focus
+  ring; a focused element never hidden by a sticky header, banner or the agent launcher; a non-drag
+  alternative for every drag.
+- **RTL and other scripts** (when the document names Arabic, Hebrew or CJK readers). CSS logical
+  properties so the page mirrors; mirror directional icons only; allow for text growing 25–35%; add
+  Arabic or CJK fallback fonts, since Archivo and IBM Plex Mono cover neither.
+- **Stacking order.** base < sticky < dropdown < drawer < modal < toast < tooltip.
+- **Motion.** Keep 120–160 ms and "nothing else moves"; feedback starts within 100 ms; each motion
+  has a reason (orient, confirm, emphasise).
+- **One visualization palette for all four engines.** Categorical, sequential, divergent and threshold
+  palettes as separate jobs, colour-blind safe, never colour alone, and a table view for every chart.
+- **Icons from one open, licensed set**, named in the style guide, plus the node, marker and edge
+  glyphs the engines need.
 
-### Parked, by decision (named so nothing is lost)
-Revisit after the core is in. Not on the critical path for a POC: DTCG token JSON export (Figma /
-Tailwind interop) · multi-brand / white-label theming · locale number/date/currency formatting +
-pseudo-localization · onboarding tours / first-run / consistent-help affordance · a UX-writing /
-microcopy system · print / PDF / email-safe rendering · a changelog + deprecation states for the base
-system · executable tooling (token inventory/diff, contrast/ΔE, Playwright theme screenshots) ·
-aesthetic flexibility beyond glass (a glass / flat / solid treatment dial — decide deliberately, it
-risks the signature look).
+**Parked:** design-token JSON export, multi-brand theming, locale formatting and pseudo-localisation,
+product tours, a microcopy system, print and email rendering, executable audit tooling.
 
 ---
 
@@ -1776,7 +1810,7 @@ risks the signature look).
     scope, with what to try instead), tool failed (which step, retry), offline, and read-only.
   - **How it is built.** On the platform's **live agent/chat component** — streamed replies, real
     stages from the agent run, tool outputs rendered as they arrive. Never an automation that stores
-    the answer in an object for the page to pick up on refresh. The build contract says so.
+    the answer in an object for the page to pick up on refresh. The composition contract says so.
   - **AI on a page is not the agent.** A dashboard may carry an **AI insight card** (`.ai:not(.msg)`)
     that summarises and links "Ask about this" into the drawer, and a field may carry an AI-draft
     marker with an inline assist. The conversation itself always opens in the drawer.
@@ -1793,7 +1827,7 @@ risks the signature look).
 
 ## Layout, spacing, density and overlays — the rules the v5 screenshots broke
 
-Every rule below comes from a screenshot of a v5 output. They apply to every screen specimen.
+Every rule below comes from a screenshot of a v5 output. They apply to every screen that is drawn, and the builder applies them to every page it composes.
 
 **Spacing.**
 - Only the spacing scale (`--s-1` 4 px to `--s-12` 48 px). Page padding 24 px (16 px on a phone),
@@ -1845,10 +1879,11 @@ Every rule below comes from a screenshot of a v5 output. They apply to every scr
 ring — never padding, size, alignment or border width (image 1: the selected "On hold" tile grew a
 thick border and centred its text).
 
-**State variants of a screen** (empty, loading, error, filtered-empty, no-access) are drawn **one per
-row, each at real width** in its own device, or — when only the content region changes — as the
-content region alone at its real width. **Never several full app shells side by side** (images 3 and
-6: three shells in one row left a 200 px content area and one word per line).
+**States are drawn once, in the component pages, not per screen.** Empty, loading, error,
+filtered-empty, no-access and UNSET are documented as components, and one of them may appear in context
+on one of the five screens. The builder applies them to every
+page it composes. **Never several full app shells side by side** (images 3 and 6: three shells in one
+row left a 200 px content area and one word per line).
 
 **Overlays — one system** (kit: `.modal`, `.drawer`, `.agent-drawer`, `.ov-hd/.ov-bd/.ov-ft`):
 
@@ -1918,12 +1953,12 @@ The standing lessons, all derived from defects on the record:
   from the calling flow; Pentland's black-and-lime brand shipped electric blue. Only the brand source
   order decides.
 * **Must-haves moved to future scope** — Pentland's material compare, detail pane and docked Copilot
-  were L1 and were dropped. Every L1 ID maps to a manifest row.
+  were L1 and were dropped. Every L1 ID maps to an inventory row.
 * **Journeys never drawn** — refusals, approvals and counters were in the scoping document and nowhere
   on the page. Every journey is a flow (0.7).
 * **Status as brand steps** — Vermont's chart showed fail and pass as shades of blue.
 * **A rail that stops, a bar you can see through** — layout defects in the build that the kit and the
-  build contract now prevent.
+  composition contract now prevent.
 * **Personas without screens** — Vermont's merchandiser had no phone or tablet layout reachable from
   any shell.
 * **A dull dark** — mid-slate grounds and heavy glass; failing contrast on its own tiers. Rebuilt.
@@ -1944,81 +1979,89 @@ The standing lessons, all derived from defects on the record:
 ## The finished-piece rule — no rework after hand-over
 
 **What this skill hands over is the final piece.** The person receiving it should be able to use it
-as it is: open the style guide, take the token block, drop in the logo kit. A run takes as long as it
-needs. Never hand over a partial build, a "first pass", or a list of things still to do.
+as it is: open the style guide, take the token block, drop in the logo kit, give the composition
+contract to the builder. Never hand over a partial build, a "first pass", or a list of things still to do.
 
-**Before handing over, check every item below. Fix anything that fails and check again. Repeat until
-the whole list passes.**
+**Build first, review, then check once.** Do not run the full checklist after every fix. Build the
+page, then do the design review below, then run the render check (Step 6) and the checklist once, fix
+what fails, and re-check only the items that failed.
 
-1. **Complete, checked against the manifest.** Go through the view manifest (0.6) row by row. Each
-   row's link must land on a drawn specimen with the client's own content, never lorem ipsum, a
-   containers-table row or a "same layout" note. Check this with a script, not by memory: list every
-   manifest anchor, confirm each exists, and confirm each section holds rendered markup for the item.
-   Every agent output from 0.3 has its specimen too. Every section of the style guide is built.
-2. **No leftovers.** Search the output for `TODO`, `TBD`, `FIXME`, `lorem`, `[UNVERIFIED]`,
-   `placeholder`, `XXX`, "still to come", "waiting on", empty `href`s and empty sections. None remain.
-   The one allowed exception is the labelled UnifyApps stand-in logo, and only under the conditions in
-   stop 2.
-3. **Every fact settled.** Every gap from research has been closed by your own search, or decided and
-   recorded as `[DERIVED]` with its reason. Nothing is left as an open question for the user to answer
-   later, except the two stops.
-4. **Every state.** Each selected component shows every state in the universal state rule, in both
-   themes.
-5. **Both themes measured.** The contrast audit has run in light and dark, every failure is fixed, and
-   the measured ratios in the token block match the rendered page.
-6. **Looked at.** The page has been rendered and screenshotted in both themes and at phone width, and
-   you have looked at the screenshots. Nothing overlaps, clips, overflows or renders unstyled.
-7. **Works.** The theme switch, tabs, links, copy buttons and any interactive views work. The page
-   loads with no console errors.
-8. **Consistent.** Token names, the port note, the build brief and the style guide agree with each
-   other. Every number stated in one is the number used in the others.
-9. **In scope.** Nothing the BRD put out of scope appears. Dormant views stay dormant and are listed
+### The design review — taste, before the checklist
+
+The checklist proves the page is correct; the review decides whether it is **good**. Done once, before
+the checklist. If the session can start a separate agent, give it the review with only the finished
+file, the expression card and the inspiration board, so the work is not grading itself; otherwise do it
+yourself with fresh eyes on the screenshots.
+
+**1 · Hunt the generic tells.** Each of these makes a system look templated. Any that appears is either
+justified by the concept on the page, in one line, or replaced:
+
+- the same four stat cards across the top of the dashboard
+- a list with a right rail of summary cards as the answer to every page
+- purple or rainbow AI sparkles on every AI element
+- a gradient hero or banner with no reason from the brand
+- empty states with a generic icon and "No data yet"
+- every card the same size in a uniform grid
+- icons decorating labels that do not need them
+- every chart a plain bar or line in the default palette
+- the concept named on the expression card but visible nowhere on the page
+
+**2 · Score the page against the inspiration references**, 1 to 5 each: **distinctiveness** (with the
+logo covered, is it recognisably this client's?), **hierarchy** (is the one most important thing on each
+screen obvious?), **rhythm** (spacing and alignment consistent?), **finish** (states, focus, edges,
+type set with care), **concept** (does the idea show where it should, and stay quiet elsewhere?).
+
+**3 · Fix the three weakest points** and record the scores, before and after, in the port note. A page
+scoring under 4 on distinctiveness or finish is not ready, whatever the checklist says.
+
+**The checklist — ten items:**
+
+1. **Components complete, screens few.** Every component the inventory needs has a full component
+   page (anatomy, coded variants, the static state matrix, a live specimen, micro-interactions, sizes,
+   content rules, accessibility, do and don't). Every hover, focus and press rule has its state class,
+   so the matrix renders without a mouse. Every chosen pattern has a blueprint. **At most five full
+   screens.** Count both with a script.
+2. **Scope and coverage.** Every L1 feature ID and component ID in the document appears in the
+   inventory (checked by script). Nothing the document put out of scope appears; dormant views are listed
    as not built.
-10. **Sources recorded.** The port note lists every source used, with its date, including any search
-    done after `research` failed, and every logo URL tried.
-11. **Hand-over on the page.** The three hand-over answers (below) are written in the style guide's
-    last section, not only in the chat reply.
-12. **Research done to depth.** Every row in the research ledger has met its minimum: searches run,
-    official source found, second source for deep facts. The ledger is in the port note.
-13. **Every journey drawn.** Every journey in the scoping document, and the demo storyline, is a
-    flow on the page with a frame per step and per exception, using the document's own wording for
-    refusals and messages. Count journeys in the document and flows on the page; they match.
-14. **Every L1 feature and CMP ID covered.** A script lists every must-have feature ID and component ID
-    in the document and finds each in the manifest's reference column. None missing.
-15. **Signature components in depth.** Each one shows anatomy, every state, the data variants,
-    interactions, responsive behaviour and at least two variants.
-16. **Agents in drawers.** Every agent has its drawer drawn open over a real screen, with its own
-    outputs; no agent sits in a page layout; the build contract names the live agent component.
-17. **The expression is decided and visible.** The expression card records every dial with its
-    evidence and the logo-off answer; the inspiration board shows what each reference changed; the
-    brand source order applied is in the port note.
-18. **Every persona has a shell.** Each persona's screens are reachable from a drawn shell at its
-    device widths, phone and tablet included where the document names them.
-19. **Build contract on the page**, matching the expression card and the kit classes used.
-20. **One file, rendering clean.** The output is a single self-contained HTML file with fonts and
-    images embedded. The render check (Step 6) returns zero page scroll, zero spills, clips, overlaps
-    or squeezed text in any screen specimen, zero broken images, every font loaded and matching its
-    official file, and no unstyled component class — in light and dark, at 1,280 px and 375 px. Every
-    screen is a device at its real width.
-21. **Overlays consistent.** Every modal and drawer uses a kit size and the shared anatomy; no other
-    widths; the agent docks only at 1,440 px and wider; the launcher hides while a drawer is open.
-22. **Layout and density rules hold.** No row with a large dead area, actions on the header's title
-    row, one line per table cell (two in the first column), at most two chips per cell, cards within
-    their four-line budget, no field names or query syntax in copy, states that do not move the
-    layout, state variants one per row at real width.
-23. **Variants coded, one active set.** Variants exist only for the listed families, at most three per
-    family, coded; at most three style sets; S1 on every screen; the `#style-sets` JSON block present
-    and quoted in the build contract; every chart has its coded views with one Recommended and a table
-    view.
+3. **Journeys and signature work.** Every journey is a flow diagram with the document's exact wording
+   for refusals and messages (count journeys in the document and diagrams on the page; they match). The
+   demo storyline's steps each point to a screen or component page. Each signature component shows anatomy, every state, data
+   variants, interactions, responsive behaviour and two layouts. The main agent's drawer is open on one
+   of the five screens; every other agent is on the agent-drawer component page; no agent sits in a
+   page layout.
+4. **The builder has answers, not options.** The contract and `#build-plan` cover every inventory page
+   (pattern, region fillers, reason) and give rules for unlisted pages; `#style-sets` has one active set;
+   every specimen carries `data-component`, `data-variant` and `data-active`, and every non-active
+   variant is labelled "Reference — not in this app". The contract quotes the default interactions, the
+   live-agent rule and the UX laws, and matches the expression card and kit classes.
+5. **Brand and research settled.** Research questions 1 to 3 met Deep; the rest met their depth or are
+   recorded as `[DERIVED]` with what was tried; the ledger and every source with its date are in the port
+   note. The expression card records the design concept with its evidence, every dial with its evidence, and
+   the logo-off answer; the concept is visible in the signature components, the variants and the one
+   signature interaction.
+6. **Both themes measured.** The contrast audit ran in light and dark; every failure is fixed; the ratios
+   in the token block match the rendered page.
+7. **Renders clean.** One self-contained HTML file, fonts and images embedded. The render check returns
+   zero page scroll, spills, clips, vertical clips, overlaps and squeezed text anywhere on the page —
+   screens, component pages, state matrices, diagrams and the guide's navigation — zero broken images,
+   every font loaded, no unstyled component class, in light and dark, at 1,280 × 800, 1,280 × 680 and
+   375 × 812. The only allowed flags are two-line labels in documentation tables, each checked by eye.
+   Also look at a screenshot of the navigation and of one state matrix at 1,280 × 680.
+8. **Layout and density hold.** No large dead areas; actions on the header's title row; one line per
+   table cell (two in the first column); at most two chips per cell; cards within four lines; no field
+   names or query syntax in copy; states do not move the layout; overlays use the kit sizes and anatomy.
+9. **No leftovers, no generic tells.** No `TODO`, `TBD`, `lorem`, `placeholder`, empty links or empty
+   sections, and no "demo" or "synthetic" labels anywhere. The design review ran, its scores are in the
+   port note, distinctiveness and finish are 4 or more, and every generic tell left is justified. The
+   theme switch, tabs, links and copy buttons work with no console errors. The one allowed exception is
+   the labelled UnifyApps stand-in logo, and only under the conditions in stop 2.
+10. **Consistent and handed over.** Token names, port note, build brief and style guide agree on every
+    number. The three hand-over answers are written in the page's last section.
 
-**Show the result.** The hand-over reply lists all twenty-three items with pass and one line of evidence
-each (for example "1 · pass · 23 of 23 manifest rows link to drawn specimens"). An item that cannot
-show evidence has not passed.
-
-**A run that skips a step fails here.** No brief, no manifest, no ledger, no flows, no expression card
-or no checklist on the page means the piece is not finished, whatever else it contains. The time a
-run takes is not a reason to cut research depth or drawing — a run that was told to hurry still meets
-the minimums and says how long it took.
+**Show the result.** The hand-over reply lists the ten items with pass and one line of evidence each
+(for example "1 · pass · 5 patterns, 31 components, 5 drawn screens"). An item that cannot show
+evidence has not passed.
 
 **A failure found here is fixed here, not reported as a known issue.** Only something that genuinely
 cannot be fixed inside this run (the client's logo file does not exist anywhere) goes into the
@@ -2034,3 +2077,46 @@ Write them in the style guide's last section and repeat them in the reply.
 
 **Answering the third honestly is not a confession, it is the deliverable.** A hand-over that names
 its own weakest part gets fixed; one that hides it gets found.
+---
+
+## Version history — why each layer exists
+
+Read only when a rule seems odd; each line names the run that caused it.
+
+- **v3** — Phase 0 (the selection engine), the view library, the component inventory with the universal
+  state rule, foundation additions.
+- **v4** — the research plan became mandatory, with depths and a ledger.
+- **v5** — after Pentland, ClickUp, Vermont and Topcon came out as one product in four hues: journeys as
+  flows (0.7), signature components (0.8), the agent drawer (0.9), the expression (Step 2c), a fixed
+  brand source order, a rebuilt dark theme, inspiration research, the build contract, rendering safety.
+- **v5.1 / v6** — consistency and density: screens in devices at real width, one overlay system,
+  spacing and density tokens, table and card limits, coded variants and style sets, chart views, the
+  render check.
+- **v7** — after Agthia, Vermont, American Airlines, Asian Paints and Pentland were built and inspected
+  live: every app was the same layout grammar, because the file pre-drew every page and the builder
+  pasted it. The deliverable became a kit, not a page set (0.6); the composition model (component
+  variants, layout patterns, the seeded chooser, the UX laws); a build contract that tells the builder
+  to compose.
+- **v8** — after the first v7 run (Asian Paints) drew 74 screens and took about 50 minutes: at most
+  five full screens, with the depth moved into component pages (anatomy, variants, a static state
+  matrix with state classes, a live specimen, micro-interactions, accessibility, do and don't);
+  foundations show the material properly; patterns as blueprints; every journey, the demo storyline
+  included, as a flow diagram with exact wording; the guide laid out like a design-system site; S1
+  only unless options are asked for; research Deep only for colours, typeface and logo; a ten-item
+  checklist run once; about 4,000 words of repetition removed. Then, so the builder never has to
+  choose and the output stands out: a design concept per client that shapes the signature components,
+  variants and one signature interaction; variants designed per client; all choosing done in this run
+  (best fit first, the seed only for ties) and handed over as `#build-plan` with lookup rules for
+  unlisted pages and `data-active` tags on every specimen; a design review with a list of generic tells
+  and scores for distinctiveness and finish.
+- **v9.1** — after the first V9 run (Fujairah Ports Authority) rendered with three defects the render
+  check did not catch or let pass: the guide's left navigation squeezed to half-height overlapping
+  labels; state matrices forced wide components into narrow columns; swimlane diagrams ran past their
+  column with no scroll cue. Added the rules for each (Rendering safety), a `vclipped` count to the
+  render check, a short-laptop viewport, and made every flag a defect outside two-line table labels.
+- **v10 (POC Studio edition)** — v9.1 adopted into the POC Studio plugin, with these edits: the
+  UnifyApps stand-in logo when no client logo file exists (stop 2, and the one exception to checklist
+  item 9); the builder's block named the composition contract everywhere; the example evidence line
+  matches the five-screen limit; every research request states its search budget, because the
+  `research` skill reads Quick, Standard and Deep as larger counts; no named reviewers in the
+  hand-over questions.

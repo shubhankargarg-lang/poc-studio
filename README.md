@@ -133,7 +133,7 @@ skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
-skills/design-system/              v6 (UnifyApps stand-in logo when no client logo; 'Amogh' removed)
+skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
 skills/general-reviewer/           POC Studio edition (no adapter needed)
 skills/poc-collateral-studio/      (+ assets/UnifyApps_template.pptx)
 assets/unifyapps-logo.png          fallback logo when a client logo cannot be found

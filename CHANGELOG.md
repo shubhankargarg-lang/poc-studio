@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.0
+- Design system skill replaced with v10: a component kit with full component pages (anatomy, coded variants, every state, micro-interactions), pattern blueprints, every journey as a flow diagram and at most five full screens; a per-client design concept; all design choices made in the run and handed to Nebula as `#build-plan` and `#style-sets`, with `data-active` tags on every specimen; a design review before a 10-item checklist; lighter research depths; Fujairah render fixes.
+- POC Studio edits kept in v10: UnifyApps stand-in logo when no client logo exists; no named reviewers in the hand-over questions; every research request states its search budget.
+- Orchestrator: the Nebula hand-off follows the Composition contract, `#build-plan` and active specimens only; the five-screen limit is not to be expanded.
+- Reviewer: design system checked against v10's 10-item list; undrawn pages and shells are never a finding.
+- Research: a search budget stated by the caller sets the depth.
+
 ## 1.17.2
 - Questions that wait on you now nudge the POC owner in the POC's Slack thread (not while autopilot routes questions to the reviewer).
 

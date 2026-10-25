@@ -309,10 +309,12 @@ except at the start (the POC ID must be verified).
 
 ## 3 · Design System
 
-The `design-system` skill (v6) is tested and its output is approved as is. **Call it exactly as it is; do not change,
-extend or second-guess its steps** — it reads the whole scoping document, draws the journeys, signature components,
-agent drawers and persona shells, and writes the build contract for Nebula. Only these session facts are supplied by
-you:
+The `design-system` skill (v10) is tested and its output is approved as is. **Call it exactly as it is; do not change,
+extend or second-guess its steps** — it reads the whole scoping document and produces a design system the builder
+composes from: full component pages (every state and variant), foundations, pattern blueprints, every journey as a
+flow diagram, at most five full screens, and the composition contract with the `#build-plan` and `#style-sets` blocks
+for Nebula. Do not ask it to draw more screens, one per page or per persona: the five-screen limit is deliberate.
+Only these session facts are supplied by you:
 
 - Create the autopilot file. Call `design-system` with:
   - **client name**, **use case** and **website**: from the approved Requirement Gathering / scoping documents (the website is in
@@ -356,9 +358,14 @@ you:
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
   - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell Nebula to quote and follow the
-    **Build contract** section of that file verbatim (shell, agents in drawers on the platform's live agent component,
-    data/table rules, the active style set from the `#style-sets` block, overlays and spacing, colours only from the
-    token block, every state, each role's shell and device layouts).
+    **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
+    the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
+    the active style set from the `#style-sets` block, and only specimens marked `data-active="true"` (never one
+    labelled "Reference — not in this app"). Also from the contract: the shell, agents in drawers on the platform's
+    live agent component, data/table rules, overlays and spacing, colours only from the token block, every state and
+    micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
+    draws at most five screens on purpose; Nebula composes every other page from the kit and patterns, matching the
+    drawn screens' finish, and never copies one screen's content onto another page.
   - **What to build:** a text-to-code app on UnifyApps with the agents, automations and objects listed in the
     build plan (L1 scope only).
   - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
@@ -381,7 +388,7 @@ you:
      status it should change, the notification it should send. Failures, errors and empty results count as failed.
   3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
      records from the seed data, and that the agent opens in its drawer on the live agent component as the design
-     system's build contract requires (not a card on a page).
+     system's composition contract requires (not a card on a page).
   4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
   4a. **Visual acceptance** (scoping §4.1's Visual acceptance block) at 1280×800 on every storyline page: no horizontal
      scroll or clipped column, list rows within the stated height with at least 8 rows visible, no wrapped or broken

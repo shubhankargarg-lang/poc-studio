@@ -66,14 +66,18 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   where "high-level, not configuration-level" applies. Review **Part B** (sections 10–23 and the Appendix) as a build
   spec: it is *meant* to be configuration-level, so detail there is never a finding; check only that it is complete,
   consistent with Part A, and traces to the L1 features.
-- **Design system:** the design-system skill (v6) is tested and its output format is approved as is. Review the single
-  HTML file against the skill's own finished-piece list (23 items: manifest coverage of every L1 feature and CMP ID,
-  every journey drawn as a flow, signature components in depth, agents in drawers, the expression card, a shell per
-  persona and device, the build contract, one clean self-contained file, overlay/density/variant rules) and for brand
-  fit and scope against the scoping document. Journeys, screens and agent drawers drawn in it are expected. Standing
-  human decisions, never a finding: the brand colour settled by the skill's source order without asking, a logo kit
-  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, and the file uploaded to Orbit
-  as a public link.
+- **Design system:** the design-system skill (v10) is tested and its output format is approved as is. Review the single
+  HTML file against the skill's own finished-piece list (10 items: full component pages with every state and coded
+  variant, a blueprint per chosen pattern, at most five full screens; every L1 feature and CMP ID in the page
+  inventory; every journey as a flow diagram with the document's exact wording; signature components in depth; agents
+  in drawers; the composition contract with `#build-plan` and one active set in `#style-sets`, every specimen tagged
+  `data-active`; research to depth and the expression card with its design concept; both themes measured; a clean
+  render check; layout and density rules; the design review with distinctiveness and finish scored 4 or more) and for
+  brand fit and scope against the scoping document. **Five full screens is the limit, not a gap:** pages, states and
+  persona shells that are not drawn as screens are covered by component pages, pattern blueprints, shell blueprints
+  and the build plan, and are never a finding. Standing human decisions, never a finding: the brand colour settled by
+  the skill's source order without asking, a logo kit built from the UnifyApps logo (labelled stand-in) when no client
+  logo file exists, and the file uploaded to Orbit as a public link.
 
 ## Independence
 
@@ -309,7 +313,7 @@ finding or a decision** (scored under R3).
   versus simple model calls are used, with a reason; a **trace table** from every stated ask and input requirement
   to scope, with each cut listed and its approver; one story chain; a data plan (one user across everything); the
   audience's vocabulary; high-level, not configuration-level.
-- **design:** the design-system skill's finished-piece list (v6, 23 items) is the checklist; tokens only; every
+- **design:** the design-system skill's finished-piece list (v10, 10 items) is the checklist; tokens only; every
   state; AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
   used, and approval if it overrides a stated ask; reference research present.
 - **build:** not reviewed in POC Studio (Nebula tests its own flows end to end; the person verifies the app at the
