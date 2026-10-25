@@ -357,7 +357,12 @@ Only these session facts are supplied by you:
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
   - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
-  - **Solution:** create a **new** solution named `<Client> — <Use case>` for this POC. Never reuse a cached or generically named solution for the tenant (e.g. one called "Nebula"), unless its id is already recorded in this workspace's `04-build/build-summary.md` or `state.json`. This is also the answer when Nebula offers a cached solution. If Nebula has already opened a solution, or synced entity manifests whose names belong to another client, stop before building: tell the person in one line, log it, and have Nebula create the new solution instead.
+  - **Solution:** create a **new** solution named `<Client> — <Use case>` for this POC. Never reuse a cached or
+    generically named solution for the tenant (e.g. one called "Nebula"), unless its id is already recorded in this
+    workspace's `04-build/build-summary.md` or `state.json`. This is also the answer when Nebula offers a cached
+    solution. If Nebula has already opened a solution, or synced entity manifests whose names belong to another
+    client, stop before building: tell the person in one line, log it, and have Nebula create the new solution
+    instead.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell Nebula to quote and follow the
     **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
     the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
@@ -367,7 +372,9 @@ Only these session facts are supplied by you:
     micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
     draws at most five screens on purpose; Nebula composes every other page from the kit and patterns, matching the
     drawn screens' finish, and never copies one screen's content onto another page.
-  - **What to build:** a text-to-code app on UnifyApps, built with Nebula's **text-to-code builder** (never the no-code config builder; if Nebula offers or picks the config builder, answer text-to-code), with the agents, automations and objects listed in the
+  - **What to build:** a text-to-code app on UnifyApps, built with Nebula's **text-to-code builder** (never the
+    no-code config builder; if Nebula offers or picks the config builder, answer text-to-code), with the agents,
+    automations and objects listed in the
     build plan (L1 scope only).
   - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
     should keep going; whenever it stops with a question — through AskUserQuestion or as plain text — answer it via
@@ -383,7 +390,9 @@ Only these session facts are supplied by you:
   or browser checks, whatever name the session lists for them; there is no reviewer review of the build):
   1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
      seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
-     every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key or any 500 error).
+     every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key
+     or any 500 error). Records made by these tests carry `origin = test` and are cleared once testing ends, so they
+     never show on demo paths.
   2. **Every automation / workflow** (scoping §14): run each one by its real trigger (the page button, the object event,
      a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
      status it should change, the notification it should send. Failures, errors and empty results count as failed.

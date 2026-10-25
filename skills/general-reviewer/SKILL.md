@@ -110,6 +110,11 @@ reasonably go either way. Standing answers for this pipeline:
 - **Nebula asks which model to use** for agents or LLM tasks: choose the option Nebula recommends; if it recommends
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
 - **Nebula asks to confirm its build plan** ("Start the Nebula build as planned?"): its recommended option ("Start it").
+- **Nebula offers an existing or cached solution** (e.g. one called "Nebula", or one whose entity names belong to
+  another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
+  Nebula's recommended option. Reuse a solution only when its id is already recorded in this workspace's
+  `04-build/build-summary.md` or `state.json`.
+- **Nebula asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
 - **Seed-data file location, public or private:** Nebula's recommended option; if none is marked, private.
 - **Nebula asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).
