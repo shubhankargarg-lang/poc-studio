@@ -107,19 +107,19 @@ Copy each original under its original name into the `files/` folder of the stage
 
 Before starting: make the final Slack retry for any client file still pending (2a, attempt 2), if it has not been made.
 
-Build it with the `docx` skill (read its SKILL.md first). Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Then **exactly these four sections**, nothing else:
+Build it with the `docx` skill (read its SKILL.md first). Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Directly under that, a short summary of at most five lines: the use case in two lines, the score and verdict, and the top 3 questions that need answering (the Blocking ones from Section 3). It is a summary, not a section. Then **exactly these four sections**, nothing else:
 
 ### 1. Client brief
 Plain prose and short tables, readable by someone who has never heard of the client.
 - **Client name** and **website**
-- **Use case**: what the client asked for, in one or two sentences, quoting the client's own words where a client source has them. Say whether the ask was found in the client's words or only in our team's summary.
-- **Problem statement**: who has what problem, and what it costs or slows down, from the sources.
+- **Use case**: what the client asked for, in one or two sentences, quoting the client's own words where a client source has them. Say whether the ask was found in the client's words or only in our team's summary. Add one line naming the kind of use case (e.g. inspection and scoring) and what is being built (e.g. a POC demo on dummy data, or on the client's real data).
+- **Problem statement**: who has what problem, and what it costs or slows down, from the sources. Lead with the client's pain in plain terms (e.g. "launches are delayed because content is incomplete") before any solution or earlier app is described; then say in a sentence how the app would address it.
 - **Personas and journeys** — a required table, from the sources:
 
   | Persona | Device and working conditions | Jobs to be done | Screens or steps seen in the sources | Primary (Y/N) |
   |---|---|---|---|---|
 
-  Always capture these five facts, each with its source or marked Missing: the **primary persona and their first
+  Always capture these five facts, each with its source or marked Missing (write only "Missing" in the table; a default goes in Section 3 or the Stage-1 decisions, never in this table): the **primary persona and their first
   screen**; the **other personas**; the **top 3 end-to-end journeys** (start → end, who does each step); the
   **device and working conditions per persona** (desk, field, phone, offline, bright light…). The primary persona is
   the one who performs the core job and creates the core record (overseers, approvers and analysts are secondary
@@ -129,7 +129,9 @@ Plain prose and short tables, readable by someone who has never heard of the cli
   gives the decision and either its source or a **stated default** marked "Default — confirm". A question to the
   client alone does not count as a decision, and no default is applied without being written here. These decisions
   do not change the checklist score: a default is never scored as Confirmed.
-- **Other important information** found across Slack, Drive and meeting transcripts: the client's current process and stages, systems and tools, brands or units in scope, people and roles, dates and meetings, what our team has already built or decided, and a glossary of client terms (e.g. acronyms used in their files). Each point names its source.
+  When the client states how the app must look or feel (e.g. "a finished, premium product our leadership would be proud to show") or names visual features, add a **Visual requirements** row. List each named feature exactly as the client gave it, as a client requirement, and tag the row "Must-have — design system" so the design system stage carries it. Once the PM or the client answers a default, replace "Default — confirm" with the decision and its source, in this table and the personas table.
+- **What this POC adds** — when earlier work exists (an app or POC our team or the client already built), a short table: Area · Earlier work · What this POC adds. Flag every requirement taken from the earlier work unchanged as "Copied from <earlier work>". Describe the earlier work only here and in the reuse decision; it does not frame the brief.
+- **Other important information** found across Slack, Drive and meeting transcripts: the client's current process as numbered steps (each with who does it, the tool used and the problem that happens at that step), systems and tools, brands or units in scope, people and roles, dates and meetings, what our team has already built or decided, and a glossary of client terms (e.g. acronyms used in their files). Each point names its source. Cite every figure (counts, rates, market statistics) to its primary source with page and period. Mark a figure seen only in a secondary source "Secondary". Once a figure is checked against the primary source, mark it "Confirmed (primary source)" and drop any check-by-hand note. A law or regulation whose current status is not verified keeps "status to be checked": it may drive demo logic, but it stays out of client-facing material as a stated fact until checked.
 
 ### 2. Requirement checklist score
 One table, twelve items, total out of 100 (the weight is in the Max column):
@@ -151,6 +153,8 @@ One table, twelve items, total out of 100 (the weight is in the Max column):
 
 Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us.
 
+A PM's written record of a client call (a brief, call notes, or a Slack message summarising the meeting) counts as a client source when the PM says it is that record. Name it as "client call, <date>, recorded by <PM>", let it confirm item 2, and do not label it "not verbatim" or "our summary". An item cannot be ✅ Confirmed while a **Blocking** question about it is still open in Section 3. Score each source the same way on every item: a source counted as a client source for one item counts as one for all. When the PM or the client answers questions, move each answer into Section 1 as a confirmed decision with its source and remove the answered question from Section 3. Then re-score, and under the table show the new total and which items moved (old → new status).
+
 Under the table: the total, one sentence on what lowers it most, and the verdict:
 - **Ready**: 80 or more, and none of items 2, 3, 8 or 12 is Missing
 - **Ready with assumptions**: 60–79, and none of items 2, 3, 8 or 12 is Missing
@@ -161,12 +165,20 @@ Two numbered tables, each: # · Question · Why it matters · Default if no answ
 - **For the PM**: what our side knows or holds: missing or referenced-but-not-found files, the client's original email, client meetings with no notes (who attended, what was said), the delivery date, our manager.
 - **For the client**: everything only the client knows.
 
-Cover every checklist item that is Inferred or Missing, plus anything in the files that is ambiguous or contradictory. Each question is specific and answerable in a sentence or two (name the system, document, field or date). Put the items that block the build first.
+When every question in a table has been answered, replace that table with one line saying so and pointing to the confirmed decisions in Section 1.
+
+Cover every checklist item that is Inferred or Missing, plus anything in the files that is ambiguous or contradictory. Each question is specific and answerable in a sentence or two (name the system, document, field or date). Mark the 3 or 4 questions that block the work (typically the client's ask, the demo date and audience, the success criteria) as **Blocking** and put them first; mark the rest **Nice to have**. Do not give every question the same weight.
+When no source states them, also ask about:
+- Region-specific needs: languages, messaging channels (e.g. WhatsApp), separate personas for different store or dealer types, and consent under the local data-protection law (e.g. India's DPDP) for personal or health data.
+- AI features: the data each AI feature draws on (e.g. the client's catalogue and product specifications), so its output is grounded rather than invented, and the guardrails it needs (e.g. no medical advice).
+
+Never write any of these into the brief as requirements without a source.
 
 ### 4. Source files
 Two tables.
 - **Files**: File · From (channel or folder, who shared it, date) · Client or internal · Read (Full / Partial / Not reached, with why / **Referenced, not found**, with where it was mentioned) · What it gives. Mark client files "sent in chat". For a file taken from Drive or Gmail because Slack refused it, say so. For a file Not reached, list the times of the Slack attempts and where else it was looked for.
 - **Sources searched**: Source · What was searched · What was found. Include connectors that were not connected.
+Internal working notes (Orbit or ticket IDs, Slack errors and retry times, search logs, connector problems) go only in Section 4. Sections 1–3 carry none of them, so they read cleanly as client-facing content.
 
 ## Step 5 — Deliver
 
