@@ -92,7 +92,9 @@ UnifyApps Headless and is listed at the verify gate.
 4. **Build and verify.** Create the asset with same-origin calls from that tab, exactly as `references/fallback-by-api.md`
    describes for its type, inside the POC's solution. Read every write back. Run the asset's test (a workflow test run,
    an agent test question, a data source query) and record the result. At most two attempts per asset; questions go to
-   the reviewer as usual.
+   the reviewer as usual. A Connection that needs a password, token, API key or OAuth consent is created by the
+   person, like a sign-in (credentials are always theirs): the orchestrator asks them to create it in Orbit's
+   Connections, and you then find it by name and use its id.
 5. **Hand it back to UnifyApps Headless** as a direct change through `ua-change` (no new plan): "Task <n> (<entity>) was
    built outside the builder: <type> `<name>`, id `<id>`. Mark the task done, do not rebuild it, and wire every task
    that waits on it to this id." Then let the build go on.

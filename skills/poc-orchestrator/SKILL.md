@@ -464,7 +464,8 @@ Only these session facts are supplied by you:
   with its tasks and tools, data source, context graph item, governance control), run `platform-master` job
   **3 · Fallback** for it. The other independent tasks keep running. For its sign-in, remove the autopilot file and ask
   the person to sign in to `https://orbit.uat.unifyapps.com` in the browser the skill opens; recreate the autopilot file
-  once they have. platform-master creates the asset over the API from that tab, verifies it, and hands it back to
+  once they have. A Connection that needs a password, token, API key or OAuth consent is created by the person in the
+  same way (credentials are always theirs). platform-master creates the asset over the API from that tab, verifies it, and hands it back to
   UnifyApps Headless as a direct change through `ua-change` (task marked done, dependants wired to the new id). Write
   Orbit **M4b** for each asset built. A page or other app UI that UnifyApps Headless cannot build stays with it and is
   shown at the verify gate.
