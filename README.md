@@ -96,6 +96,43 @@ Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use cas
 client's other use cases, and each use case gets its own folder. Run the same command again later to resume:
 progress is kept in `<client-slug>/<usecase-slug>/state.json`.
 
+## Make one asset
+
+Any one asset can be made on its own, without a POC and without running the other stages. Each command collects
+what that asset needs **in the chat first**, then runs the same stage skill the pipeline uses, unattended, has the
+AI PM review it, saves it in the client folder, writes it to Orbit as a **one-off document** (shown in POC Build Loop
+under **Assets**), shows you the file and its links, and asks you to approve it. Running the same command again later
+(or asking for changes) saves a new version; the older one shows as superseded.
+
+| Command | Makes (Orbit type) | Runs | Assets page |
+|---|---|---|---|
+| `/poc-studio:requirements <Client> \| <Use case> [\| <POC ID>]` | Requirement Gathering document (`requirements`) | `requirement-gathering` | `/assets/requirements` |
+| `/poc-studio:research-report <Client> \| <Use case or topic> \| <Question> [\| <POC ID>]` | Research report, Word (`research`) | `research` | `/assets/research` |
+| `/poc-studio:brd <Client> \| <Use case> [\| <POC ID>]` | BRD / scoping document (`brd`) | `scoping-l1-first` | `/assets/brd` |
+| `/poc-studio:design <Client> \| <Use case> [\| <POC ID>]` | Design system, HTML (`design_system`) | `design-system` | `/assets/design-system` |
+| `/poc-studio:app <Client> \| <Use case> [\| <POC ID>]` | The app, saved as its preview link (`app`) | Stage 4: `ua:setup`, `platform-master`, `ua:plan` (Zen) | `/assets/app` |
+| `/poc-studio:collaterals <Client> \| <Use case> \| <App preview link> [\| <POC ID>]` | Demo script, deck, video — you choose any one, two or all three (`demo_script`, `deck`, `video`) | `poc-collateral-studio` | `/assets/demo-script`, `/assets/deck`, `/assets/video` |
+
+Assets pages are at `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<page>`. The POC ID is optional on
+every command: when it is given and found in Orbit, the row shows a POC chip; a one-off asset never moves a POC.
+
+**What each command asks for** (from the arguments, then from an existing client folder, then in one question):
+
+| Command | Required | Optional |
+|---|---|---|
+| requirements | Client · Use case · Slack and Google Drive connectors | Client website · Gmail and Calendar connectors |
+| research-report | Client · Topic · The question(s) | Purpose (internal check, working draft or client-facing) · Files to read first |
+| brd | Client · Use case · At least one input: an RG document, meeting notes, an email, client files, or a Slack or Drive link | Client website |
+| design | Client · Use case · A BRD or scoping document · Client website ("derive it" is fine) | Client logo · Brand guidelines |
+| app | Client · Use case · A BRD or scoping document · UnifyApps Headless installed and this folder set up (`/ua:setup`) | A design system HTML (else UnifyApps Headless's default look) |
+| collaterals | Client · Use case · Which collaterals (always asked) · The app's **preview link** · Orbit sign-in · The collateral tools | A BRD or scoping document (recommended) · An RG document · The audience |
+
+Only preview links are accepted for an app (`…/agent-api/preview/b/<app id>/main` or `…/p/0/interfaces/<app id>/preview`
+on `orbit.uat.unifyapps.com`); a published or builder link is turned into the preview link from its app id. You never
+type a password: sign-ins happen in the browser window the command opens. The Orbit write needs UnifyApps Headless
+set up in the folder (`/ua:setup` on `orbit.uat.unifyapps.com`); without it the asset is still made, and the write is
+retried on the next one-asset run.
+
 ## Feedback
 
 ```
@@ -135,6 +172,8 @@ Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 .claude-plugin/plugin.json, marketplace.json
 commands/start.md                  /poc-studio:start
 commands/feedback.md               /poc-studio:feedback
+commands/requirements.md, research-report.md, brd.md, design.md, app.md, collaterals.md
+                                   /poc-studio:<asset> — make one asset on its own
 agents/ai-pm.md                    the AI PM, run as an independent subagent
 hooks/                             route questions to the reviewer while a stage runs
 scripts/release.sh                 bump the version everywhere, commit, push
@@ -144,6 +183,7 @@ skills/research/                   (+ references/calling-research.md, source-gui
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
 skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
+skills/asset-run/                  one asset end to end: prerequisites, stage, AI PM, one-off Orbit row, approval
 skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
 skills/ai-pm/                      the AI PM: reviews every stage, re-runs its checks, Stage 4b build walk, lessons

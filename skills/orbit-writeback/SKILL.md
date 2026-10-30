@@ -541,7 +541,8 @@ written as input rows either; only the Requirement Gathering document itself is 
   "saved_at": <epoch ms from a one-line script> }
 ```
 
-Slugs are lower case with every run of non-letters/digits replaced by `-` (as `client_slug` elsewhere).
+Slugs are lower case, with every run of non-letters/digits replaced by `-` and no `-` at the start or end (as
+`client_slug` elsewhere): `[Test] Acme` → `test-acme`.
 
 | type | type-slug (id and app URL) | stage | file_kind | file_link |
 |---|---|---|---|---|
@@ -566,13 +567,15 @@ run; the asset itself is still delivered.
 
 **Version number (every write):**
 1. Read the existing versions: `get_records` on `orbit_studio_document`, filter `document_id` `STARTS_WITH`
-   `SA-<client-slug>__<type-slug>__<usecase-slug>__v`, fields `document_id, version, status`, limit 50. If
+   `SA-<client-slug>__<type-slug>__<usecase-slug>__v`, fields `document_id, version, status`, limit 50 (keep each
+   row's record id from the reply: the superseded updates need it). If
    `STARTS_WITH` is refused, filter `origin` EQUAL `standalone` and `type` EQUAL `<type>` (limit 200) and keep the ids
    with that prefix.
 2. N = the highest `version` + 1, or 1 if there are none. Never trust only the local state: another person may have
    made a version from another laptop.
-3. Upload the file (if the type has one), then create the new row with status `in_review`.
-4. Update every earlier version of the same id prefix whose status is not `superseded` to `superseded`.
+3. Upload the file (if the type has one).
+4. One `apply_record_edits` call: `create` the new row with status `in_review`, and `update` (by record id, only
+   `status`) every earlier version of the same id prefix whose status is not `superseded` to `superseded`.
 5. Read the new row back by `document_id` and confirm it.
 
 This covers a change asked at the chat gate and the same command run again later (another day, another person): both

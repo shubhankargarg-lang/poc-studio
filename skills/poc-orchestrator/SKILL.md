@@ -266,7 +266,8 @@ except at the start (the POC ID must be verified).
 ## 0 · Setup
 
 1. Get the client name, the use case name and the POC ID (all three required; stop and ask if the POC ID is missing).
-   Make the slugs and the workspace tree. If it exists, resume (above) — but if its `state.json` has a **different**
+   Make the slugs and the workspace tree. A `state.json` that holds only one-off runs (a `standalone` key and no
+   `poc_id`) is not a pipeline run: start the run in it and keep its `standalone` key as it is. If it exists, resume (above) — but if its `state.json` has a **different**
    POC ID, stop and ask the person whether this is the same POC (resume) or a new one (then use a new folder
    `<client-slug>/<usecase-slug>-<POC ID>/`).
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
@@ -536,7 +537,8 @@ Only these session facts are supplied by you:
      Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
 - **4b · AI PM build review (v1.0)** — the independent check on UnifyApps Headless's own testing, before publish.
   0. Ask UnifyApps Headless for the app's **preview link** now (the link that opens the app directly with its seed
-     data, without first creating a user in the Matrix app) and save it in `state.json` → `app.preview_url`; the walk
+     data, without first creating a user in the Matrix app; orbit-writeback's **Preview link rule**: work it out from
+     the app id if it gives a published or builder link) and save it in `state.json` → `app.preview_url`; the walk
      runs on it.
   1. Write `04-build/routes.json` from scoping §11 in nav order: `[{"name": "<page>", "route": "<route>"}, …]`
      (UnifyApps Headless's route list if the scoping routes changed), and `04-build/glossary.json` from scoping Appendix B as
