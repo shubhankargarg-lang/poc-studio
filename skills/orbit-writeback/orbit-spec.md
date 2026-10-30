@@ -4,17 +4,17 @@ Paste this whole section into the orchestration skill (or keep it as a reference
 Your job
 While you run a POC build, you keep Orbit · POC Studio (tenant orbit.uat.unifyapps.com) in step with the build. Orbit is read by the POC owner, their team and a Slack bot. You write to it at exactly six moments, listed in When to write. You never write anything else, never delete a row, and never write to any other object or tenant.
 
-All writes go through Nebula's tenant tools, called by a terminal command (so file bytes never pass through this chat). If a write fails, see When a write fails; never skip a step silently.
+All writes go through UnifyApps Headless's tenant tools, called by a terminal command (so file bytes never pass through this chat). If a write fails, see When a write fails; never skip a step silently.
 
 Setup (once per run)
 1. The Orbit folder
-Every Orbit command runs from the Orbit folder: a folder set up with /nebula:setup on orbit.uat.unifyapps.com, solution POC Studio. Its path is the plugin setting orbit_folder. If it is missing or not set up, stop and ask the person to run /nebula:setup there once; do not write from the client's build folder (it may point at another tenant).
+Every Orbit command runs from the Orbit folder: a folder set up with /ua:setup on orbit.uat.unifyapps.com, solution POC Studio. Its path is the plugin setting orbit_folder. If it is missing or not set up, stop and ask the person to run /ua:setup there once; do not write from the client's build folder (it may point at another tenant).
 
 Define, for every command below:
 
 ORBIT_DIR="<orbit_folder>"
-NEB="$(ls -d ~/.claude/plugins/cache/nebula/nebula/*/ | sort -V | tail -1)scripts"
-orbit() { (cd "$ORBIT_DIR" && node "$NEB/tool-calls.mjs" "$@"); }
+UA="$(ls -d ~/.claude/plugins/cache/unifyapps-headless/ua/*/ | sort -V | tail -1)scripts"
+orbit() { (cd "$ORBIT_DIR" && node "$UA/tool-calls.mjs" "$@"); }
 2. The POC id
 The build starts with /poc-studio:start <Client> | <Use case> | <poc_id>.
 
@@ -137,7 +137,7 @@ Documents (create)	each Slack asset: type slack, doc_role input, stage 1_signal_
 gate_pack	g1	g2	g3	g4
 status	in_review (Slack inputs final)	in_review	in_review	final
 Activity (create)	input_added per Slack asset; document_saved per doc; gate_posted gate g1	document_saved ×2; gate_posted gate g2	document_saved; gate_posted gate g3	document_saved ×3; stage_completed gate g4, message Deliver complete: demo-ready
-POC (update)	stage 2_research_assess, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, slack_notification true	stage 4_design_system, current_gate g2, g2_status waiting, status waiting, g2_summary, gate_summary, slack_notification true	stage 6_finalize, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, solution_id (the Nebula solution e_… the build made), slack_notification true	stage 8_demo_ready, current_gate none, g4_status approved, status demo_ready, g4_summary, slack_notification true
+POC (update)	stage 2_research_assess, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, slack_notification true	stage 4_design_system, current_gate g2, g2_status waiting, status waiting, g2_summary, gate_summary, slack_notification true	stage 6_finalize, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, solution_id (the UnifyApps Headless solution e_… the build made), slack_notification true	stage 8_demo_ready, current_gate none, g4_status approved, status demo_ready, g4_summary, slack_notification true
 gN_summary / gate_summary: 2–4 plain sentences on what the phase produced and what the person should check. Record every new document_id in the run state.
 
 Moment 2 — the owner approves a gate in Claude (G1, G2, G3)
@@ -164,7 +164,7 @@ POC (update): status blocked with blocked_on (one line: what is needed), or stat
 
 When a write fails
 A reply with "ok": false or an error: read the message, fix the payload, and send only the rows that failed again (a create that succeeded must not be sent twice).
-AUTH_EXPIRED / signed out: ask the person to sign in again with /nebula:setup in the Orbit folder, then resend.
+AUTH_EXPIRED / signed out: ask the person to sign in again with /ua:setup in the Orbit folder, then resend.
 CONFIRM_REQUIRED: you sent something that deletes; you never should. Stop and tell the person.
 After three failures on one step, stop the write-back for this moment, tell the person in one line what did not reach Orbit, and carry on with the build. Never send slack_notification for a gate whose documents did not all save.
 Never

@@ -11,8 +11,8 @@
     {
       "name": "poc-studio",
       "source": "./",
-      "description": "End-to-end UnifyApps POC pipeline: requirement gathering → scoping → design system → Nebula build → collaterals, reviewed and approval-gated at every stage.",
-      "version": "1.19.0"
+      "description": "End-to-end UnifyApps POC pipeline: requirement gathering → scoping → design system → UnifyApps Headless build → collaterals, reviewed and approval-gated at every stage.",
+      "version": "1.20.0"
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 A Claude Code plugin that runs a UnifyApps POC end to end for one client:
 
-**Requirement Gathering → Scoping → Design System → Nebula build → Collaterals**
+**Requirement Gathering → Scoping → Design System → UnifyApps Headless build → Collaterals**
 
 with a shared **Research** skill any stage can call, and a **General Reviewer** that checks every stage's output and
 answers every clarification question, so the person is only asked to approve (or redirect) at the end of each stage.
@@ -39,7 +39,7 @@ scripts/release.sh 1.4.0 "what changed"
 It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `commands/start.md`,
 then commits and pushes to `main`.
 
-Requires the **Nebula** plugin for stage 4 (`/nebula:setup`) and the **Slack** and **Google Drive** connectors
+Requires the **UnifyApps Headless** plugin for stage 4 (`/ua:setup`) and the **Slack** and **Google Drive** connectors
 (Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video (always,
 whatever its size), so it opens straight from Orbit.
 
@@ -84,9 +84,9 @@ the documents and the build so everything can be traced to the POC.
 
 **Orbit write-back:** at every gate the run uploads the stage's files to Orbit · POC Studio and writes the Document,
 Activity, Iteration and POC rows (skill `orbit-writeback`), so the POC owner, the team and the Slack thread follow the
-run. It uses Nebula's own tenant tools in the session (the same ones Nebula builds with) on
+run. It uses UnifyApps Headless's own tenant tools in the session (the same ones it builds with) on
 `orbit.uat.unifyapps.com`, and uploads files as public tenant links, so the folder you run in must be set up with
-`/nebula:setup` on that tenant.
+`/ua:setup` on that tenant.
 
 The use case name keeps the whole run focused:
 Requirement Gathering searches Slack, Gmail, Drive and Calendar for that use case and sets aside material about the
@@ -111,12 +111,12 @@ the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
-| 4 | Build in Nebula (Sonic mode, Orbit), test every page, automation and agent with Nebula and fix, then publish | `/nebula:setup` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
+| 4 | Build in UnifyApps Headless (Sonic mode, Orbit), test every page, automation and agent with it and fix, then publish | `/ua:setup`, `/ua:plan` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
 what it flags (max 2 rounds), then you **approve or request changes**. Questions raised during a stage — including
-Nebula's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
+UnifyApps Headless's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
 Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 
 ## Contents

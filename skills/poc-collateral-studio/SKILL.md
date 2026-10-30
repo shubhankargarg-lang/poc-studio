@@ -75,11 +75,11 @@ first update, so the user can correct any of them while the work carries on.
 4. **Sign-ins.** Reuse a session the build already has (saved `storageState`, or credentials the
    environment already uses, never typed by you). Only when there is no way in does the run stop: then
    open `kit/auth.mjs` and ask the user to sign in, once, for every persona at the same time.
-   **Orbit:** POC Studio apps are built by Nebula on the Orbit environment
-   (`https://orbit.uat.unifyapps.com/`). Use the app's **preview link** Nebula reported (`<workspace>/04-build/
+   **Orbit:** POC Studio apps are built by UnifyApps Headless on the Orbit environment
+   (`https://orbit.uat.unifyapps.com/`). Use the app's **preview link** UnifyApps Headless reported (`<workspace>/04-build/
    build-summary.md`, `state.json` → `app.preview_url`) as each persona's `url` and `public_url`, for discovery,
    capture and the video recording. **Do not use the published Matrix app URL**: it asks for a user to
-   be created before the app can be used. If no preview link is recorded, get it from Nebula before recording. When the app needs a login, set the persona's `login` to
+   be created before the app can be used. If no preview link is recorded, get it from UnifyApps Headless before recording. When the app needs a login, set the persona's `login` to
    `https://orbit.uat.unifyapps.com/login` (the preview answers 401 without a session instead of redirecting), open
    `kit/auth.mjs` and ask the user to sign in to Orbit there (Google sign-in is fine; it saves only once the preview
    opens); never type or store a password.
@@ -133,8 +133,8 @@ Everything below comes from what was built, not from looking at screens.
    seed data. If an AI text disagrees with a record, or two AI panels disagree with each other (one says
    a swap closes two-thirds of a £14.52 gap, another says it saves £27.17), **fix it in the app**: fix
    the seed data, the prompt, or the cached output. Do not write narration around a wrong screen.
-   **In POC Studio** the app was built by Nebula and approved by the person at the verify gate: route any fix to the
-   app (seed data, prompts, cached outputs) through Nebula in the same session, and list every such fix at the
+   **In POC Studio** the app was built by UnifyApps Headless and approved by the person at the verify gate: route any fix to the
+   app (seed data, prompts, cached outputs) through UnifyApps Headless in the same session, and list every such fix at the
    collaterals approval gate.
    Change only demo data and prompts this build created; for records you did not create, leave them
    untouched and steer the story away from the contradiction instead (another record, another screen),

@@ -7,11 +7,11 @@ description: "Use for every UnifyApps scoping document: turns a validated requir
 
 You are the Scoping stage of the UnifyApps solution plugin:
 
-**Requirement Gathering → Scoping (this skill) → Design System → Nebula build → Collaterals**, with a shared `research` skill any stage can call and a General Reviewer that checks outputs.
+**Requirement Gathering → Scoping (this skill) → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a General Reviewer that checks outputs.
 
 Your job: take whatever Requirement Gathering hands over and produce a **golden scoping document as a Word file (`.docx`)**. That one Word file is what goes to Design and to the build. It must be complete and specific enough that:
 - the Design System skill can design every page and component from it, and
-- Nebula (or a person working by hand) can build the whole app on UnifyApps from it: objects, agents, workflows, pages, seed data.
+- UnifyApps Headless (or a person working by hand) can build the whole app on UnifyApps from it: objects, agents, workflows, pages, seed data.
 
 Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the General Reviewer (resolve mode), never to the user.
 
@@ -41,14 +41,14 @@ Record every fact you take from the inputs in an **evidence log** (`_working/evi
 
 ## 2. Output: one Word document
 
-The deliverable is **one Word file**: `scoping-document.docx` (structure in section 6). Write it to the path the orchestrator gives you (POC Studio: `<workspace>/02-scoping/scoping-document.docx`, with `_working/` beside it), or to `scoping-output/<client>-<short-name>/scoping-document.docx` if it gives none. This same file is handed to the Design System skill and to Nebula; there is no second, machine-readable copy.
+The deliverable is **one Word file**: `scoping-document.docx` (structure in section 6). Write it to the path the orchestrator gives you (POC Studio: `<workspace>/02-scoping/scoping-document.docx`, with `_working/` beside it), or to `scoping-output/<client>-<short-name>/scoping-document.docx` if it gives none. This same file is handed to the Design System skill and to UnifyApps Headless; there is no second, machine-readable copy.
 
 Build it with the `docx` skill: read that skill's SKILL.md **after** the content is drafted and **before** generating the file, and follow its instructions for creating the document.
 
-That single document holds everything. Nothing the DS skill or Nebula needs may live anywhere else:
+That single document holds everything. Nothing the DS skill or UnifyApps Headless needs may live anywhere else:
 - the full prose scope (sections 0–23), split into Part A and Part B;
 - the **complete feature catalogue** as tables (section 10, format in section 7). This is every sub-feature, not a summary, with its build and research columns in Appendix E and F;
-- the **component inventory** (section 23, format in section 8): the named, app-specific building blocks each app needs, so Design knows what to design and Nebula knows what to build;
+- the **component inventory** (section 23, format in section 8): the named, app-specific building blocks each app needs, so Design knows what to design and UnifyApps Headless knows what to build;
 - sources, the glossary, the evidence log and the feature mappings in the Appendix.
 
 **No JSON, YAML or code blocks in the deliverable.** Specs are written as tables and numbered lists that a person can read. (Formulas, routes and field keys appear as plain text in table cells.)
@@ -60,7 +60,7 @@ The prose, the feature tables, the page/object/agent/workflow specs and the comp
 ### Two parts, two readers
 The same file serves two different readers, so it is split into two parts with a Heading 1 divider before each:
 - **Part A — Proposal and decisions** (sections 0–9). For the client, the reviewer and the PM: what we will build and why, the scope decisions, the research, who uses it and how. Someone who reads only Part A should be able to approve or redirect the scope.
-- **Part B — Build specification** (sections 10–23 and the Appendix). For the Design System skill, Nebula and anyone building by hand: the catalogue, pages, data, agents, workflows, rules, seed data and components.
+- **Part B — Build specification** (sections 10–23 and the Appendix). For the Design System skill, UnifyApps Headless and anyone building by hand: the catalogue, pages, data, agents, workflows, rules, seed data and components.
 
 Under each divider, write two or three sentences saying who this part is for and what it contains. Put **How to read this document** as the first Heading 2 in section 0: a table of reader (client sponsor, reviewer, designer, builder) → sections to read → what they get from them.
 
@@ -69,7 +69,7 @@ These rules keep a long document usable. They do not limit length.
 - **One place for each thing.** Acceptance criteria live in 4.1 only; 20.1 references them and adds only build-order checks. Assumptions live in 5.6 only; there is no separate Appendix assumptions log. Thresholds, bands and weights are defined once (14.2) and referenced by ID elsewhere. Never repeat a table or a list word for word; cross-reference it ("see 4.1").
 - **No row twice.** In key/value tables (conventions, spec tables), each row label appears once.
 - **Future scope is said in three places only**: 5.5 (the grouping), 10.3 (the rows and assets), and one "Future scope:" line at the end of a page spec when L2 later adds to that page. Build specs, journeys, integrations and non-functional notes never mention "Phase 2", "Phase 3" or "later phase". If something is not in the build, it is not in the spec.
-- **Lead each Part B section with one line** saying what the section holds and who uses it, e.g. "Every object the build needs, with fields and types; Nebula creates these first."
+- **Lead each Part B section with one line** saying what the section holds and who uses it, e.g. "Every object the build needs, with fields and types; UnifyApps Headless creates these first."
 - **Keep tables narrow.** No table has more than 10 columns. When a record has more attributes, split it into a lean main table and a mapping table keyed by ID (as the catalogue does with Appendix E and F).
 - **Picture the system.** Give the reader at least five diagrams as images with captions: the to-be journey (8.1), the app map (9), the AI and data flow from capture or input to result and action (9), the main record's lifecycle as a state diagram (12.3), and the ER diagram (12). Add others where a flow is easier seen than read.
 
@@ -169,7 +169,7 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 - **Agents**: every agent, using the agent spec (section 6.13). State whether each one is needed and why.
 - **Workflows/automations**: every automation, using the workflow spec (section 6.14), including the exact trigger and path.
 - **Integrations**: every external system, its direction and what moves (section 6.15).
-- **Component inventory**: name the app-specific building blocks each app needs, the way a product team would talk about them, e.g. for a product-enrichment app: *content builder*, *tech pack reviewer*, *content generator*, *asset shot-list checker*, *channel readiness board*; for a PLM app: *line plan matrix*, *PACE decision room*, *stage gate stepper*. Each component groups the pages, UI patterns, objects, agents and workflows that make it work (format in section 8). Different apps get different components. This is what Design designs and Nebula builds against.
+- **Component inventory**: name the app-specific building blocks each app needs, the way a product team would talk about them, e.g. for a product-enrichment app: *content builder*, *tech pack reviewer*, *content generator*, *asset shot-list checker*, *channel readiness board*; for a PLM app: *line plan matrix*, *PACE decision room*, *stage gate stepper*. Each component groups the pages, UI patterns, objects, agents and workflows that make it work (format in section 8). Different apps get different components. This is what Design designs and UnifyApps Headless builds against.
 - **Seed data**: enough records that no page, chart, filter or stage column is ever empty (section 6.19).
 - **Demo operations** (POV/demo framing): a **Reset demo** workflow and what it needs on every object (`origin` = seed / test / user, a snapshot of each seed row or a snapshot object), with dates stored relative to the demo day and shifted on reset so "overdue", "this week" and "stuck > N days" stay true. Reset restores and re-anchors the `origin = seed` records only; it never deletes or changes records with `origin = user` (made by the person while using the app), unless the person asks. Records made by the build test carry `origin = test` and are cleared once testing ends. Put the Reset action in an admin/user menu.
 - **Build surface and platform check**: state whether each app is a no-code app or a code app, and why (a code app suits dense custom UIs such as matrices, drag boards, Gantt and stepped record pages; no-code suits standard list/form/dashboard apps). Then tag every UI pattern, field type, trigger and agent tool you used as *native*, *custom code*, or *not possible / workaround*, from platform knowledge or by asking `research`. Known UnifyApps realities to design around: object picklists and lookups may be simpler in practice than in the spec (say whether you use typed picklists/lookups or string codes joined by key, and use one convention everywhere); nested JSON fields drop null values; numbers read in code nodes may need coercion; some field names (e.g. `version`) collide with system columns; agents may not have every document-generation tool on every tenant; there are no formula or roll-up fields, so computed values must be written by workflows; object names should carry a short solution prefix (e.g. `pc_`, `plm_`) so they don't collide with older objects on a shared tenant.
@@ -430,7 +430,7 @@ One spec per agent in the build scope (every agent that an L1 feature uses; agen
 | Idempotency | How repeated triggers are handled (for webhooks and schedules) |
 | Features powered | L1 feature IDs |
 
-Nebula builds the implementation from this, so the trigger and the path must be exact. Write the path as a numbered list, not prose.
+UnifyApps Headless builds the implementation from this, so the trigger and the path must be exact. Write the path as a numbered list, not prose.
 Check each path in three ways:
 - Read it top to bottom for overwrites: a later step never resets a value an earlier branch set (e.g. a 'Not eligible' band replaced by a score band).
 - Cover the edge states of the records it touches (e.g. an auto-advance when the parent is On hold: what is kept, what is skipped, who is notified).
@@ -475,7 +475,7 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 - **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. Download each image and store it in the app's own file storage; never link to the client's or a retailer's site, since many block it and the image goes blank in the demo. Keep the source URL per image. Where the rights are unclear, use the fallback. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
 - Realistic values that use the client's real brands, products, document formats and regions. Numbers can be dummy, labelled as such.
-- **Demo data rules** (Nebula follows them when it seeds; the build test checks them by script):
+- **Demo data rules** (UnifyApps Headless follows them when it seeds; the build test checks them by script):
   - one demo "today" that every date agrees with; no date after it; overdue items are overdue by whole days;
   - times in business hours (08:00–18:00) in the persona's stated time zone (the client's head-office time zone when none is stated, and say so);
   - statuses agree with the scores, values and dates on the same record;
@@ -513,7 +513,7 @@ Start with the build order: build steps in dependency order (objects and seed �
 A table: problem (P) → objective (O) → components → feature IDs → pages → objects → agents/workflows → success criterion. Every P and every L1 feature appears.
 
 ### 23. Component inventory
-The last section before the Appendix, so Design and Nebula find it in a fixed place. One table per app, in the format of section 8, listing every app-specific component (CMP-…) in the build scope — each serves at least one L1 feature; a component only L2 needs goes to 10.3 — followed by a short list of shared components used by all apps (copilot panel, AI field marker, activity feed, notification centre, global filters, reset demo).
+The last section before the Appendix, so Design and UnifyApps Headless find it in a fixed place. One table per app, in the format of section 8, listing every app-specific component (CMP-…) in the build scope — each serves at least one L1 feature; a component only L2 needs goes to 10.3 — followed by a short list of shared components used by all apps (copilot panel, AI field marker, activity feed, notification centre, global filters, reset demo).
 
 ### Appendix
 Use these Heading 2s:
@@ -521,7 +521,7 @@ Use these Heading 2s:
 - **B. Glossary** of client terms (e.g. PACE, NPD, GSP).
 - **C. Evidence log**: fact → input file and page/slide/sheet → where it's used.
 - **D. Coverage map**: input → domain/process → inside the ask or not → decision (section 1).
-- **"E. Feature build mapping"**: one row per L1 feature, the build columns of section 7. Design and Nebula read this with 10.2.
+- **"E. Feature build mapping"**: one row per L1 feature, the build columns of section 7. Design and UnifyApps Headless read this with 10.2.
 - **"F. Feature research mapping"**: one row per L1 feature, the research columns of section 7.
 
 Assumptions are in 5.6 and are not repeated here.
@@ -537,7 +537,7 @@ Each feature's attributes are split across three tables keyed by ID, so no table
 | ID | Sub-feature | Feature | Description | L1 reason | Primary users | Page / tab | Component | Live |
 |---|---|---|---|---|---|---|---|---|
 
-**Appendix E — Feature build mapping** (one table, or one per app). What Nebula needs to implement each row:
+**Appendix E — Feature build mapping** (one table, or one per app). What UnifyApps Headless needs to implement each row:
 
 | ID | Process stage | Build type | UI pattern | Objects | Agent / WF | Comments |
 |---|---|---|---|---|---|---|

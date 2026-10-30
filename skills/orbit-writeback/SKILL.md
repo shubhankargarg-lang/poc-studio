@@ -19,19 +19,19 @@ about public uploads.
 
 ## Setup (once per run, before Stage 1)
 
-### 1. Nebula's tenant tools (no separate folder)
-All Orbit reads, writes and uploads go through **Nebula's tenant tools, called directly as tools in this session**
-(the same tools Nebula uses while it builds), always with the host `orbit.uat.unifyapps.com`. There is no Orbit
+### 1. UnifyApps Headless's tenant tools (no separate folder)
+All Orbit reads, writes and uploads go through **UnifyApps Headless's tenant tools, called directly as tools in this session**
+(the same tools UnifyApps Headless uses while it builds), always with the host `orbit.uat.unifyapps.com`. There is no Orbit
 folder and no command-line script.
 
 Load them with **one** ToolSearch at the start of every write moment (they are deferred tools), by exact name first:
 
-`select:mcp__plugin_nebula_object__get_records,mcp__plugin_nebula_object__apply_record_edits,mcp__plugin_nebula_application-builder__upload_public_file`
+`select:mcp__plugin_ua_object__get_records,mcp__plugin_ua_object__apply_record_edits,mcp__plugin_ua_application-builder__upload_public_file`
 
-If a name is not found, search for it (`+nebula get_records`, `+nebula apply_record_edits`,
-`+nebula upload_public_file`) and use the tool that comes back under that name.
-- **Nebula's tools are not in the session at all** → Nebula is not installed or not set up in this folder: ask the
-  person to run `/nebula:setup` here (tenant `orbit.uat.unifyapps.com`), then load them again.
+If a name is not found, search for it (`+ua get_records`, `+ua apply_record_edits`,
+`+ua upload_public_file`) and use the tool that comes back under that name.
+- **UnifyApps Headless's tools are not in the session at all** → the `ua` plugin is not installed or not set up in this folder: ask the
+  person to run `/ua:setup` here (tenant `orbit.uat.unifyapps.com`), then load them again.
 - **No record-write tool (`apply_record_edits`) can be found** → say in one line that Orbit write-back is not available
   in this session (reads and uploads may still work), record it in `failed_writes`, and carry on with the run.
 
@@ -289,7 +289,7 @@ blocks the run: if it fails, flag it and carry on.
 | Scoping approved in Claude | **M2a · G2 (BRD)** — see below |
 | Design System done + reviewed, before its Claude gate | **M1b · G2 (Design system)** |
 | Design System approved in Claude | **M2 · G2** (full) |
-| Nebula build published, before the verify gate | **M1 · G3** |
+| UnifyApps Headless build published, before the verify gate | **M1 · G3** |
 | App verified/approved in Claude | **M2 · G3** |
 | Collaterals done + reviewed, approved in Claude | **M1 · G4** (Deliver complete) |
 | Changes asked at any Claude gate | **M3** (phase of that gate) |
@@ -306,7 +306,7 @@ blocks the run: if it fails, flag it and carry on.
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
 | Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
-| POC (update) | stage `2_research_assess`, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, `slack_notification true` | **stage stays `3_scope`**, current_gate g2, g2_status waiting, status waiting, g2_summary (the BRD), gate_summary, `slack_notification true` | stage `4_design_system`, current_gate g2, g2_status waiting, status waiting, g2_summary (BRD approved + design system), gate_summary, `slack_notification true` | stage `6_finalize`, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, `solution_id` (the Nebula solution `e_…`), `slack_notification true` | stage `8_demo_ready`, current_gate none, g4_status approved, status demo_ready, g4_summary, `slack_notification true` |
+| POC (update) | stage `2_research_assess`, current_gate g1, g1_status waiting, status waiting, g1_summary, gate_summary, `slack_notification true` | **stage stays `3_scope`**, current_gate g2, g2_status waiting, status waiting, g2_summary (the BRD), gate_summary, `slack_notification true` | stage `4_design_system`, current_gate g2, g2_status waiting, status waiting, g2_summary (BRD approved + design system), gate_summary, `slack_notification true` | stage `6_finalize`, current_gate g3, g3_status waiting, status waiting, g3_summary, gate_summary, `solution_id` (the UnifyApps Headless solution `e_…`), `slack_notification true` | stage `8_demo_ready`, current_gate none, g4_status approved, status demo_ready, g4_summary, `slack_notification true` |
 
 `gN_summary` / `gate_summary`: 2–4 plain sentences on what the phase produced and what the person should check. For G3, include
 the test results from `04-build/test-report.md` (passed / fixed / still failing).
@@ -340,7 +340,7 @@ Any further text the owner types about that change while it is being reworked is
 `reason` (update) rather than opening a new one.
 
 ### Moment 4 — moving to another stage inside a phase
-POC (update): stage, status running, last_activity. No documents, no slack_notification. In this plugin: when Nebula
+POC (update): stage, status running, last_activity. No documents, no slack_notification. In this plugin: when UnifyApps Headless
 starts building (`5_build`, if not already), and nothing else — the move to `4_design_system` happens only with M1b.
 
 ### Moment 5 — the re-iterated document is ready (G1, G2, G3)
@@ -353,7 +353,7 @@ Activity: `document_saved`, `gate_posted` gN. POC: current_gate gN, gN_status wa
 URL as `file_link`. **Every new app version is posted, whenever it happens:**
 - while G3 is waiting or changes were asked → this M5 (new app document v(N+1), `in_review`, the old one
   `superseded`, gate re-posted with notification);
-- after G3 was approved (e.g. Nebula fixes made during collaterals) → create the app document v(N+1) with status
+- after G3 was approved (e.g. UnifyApps Headless fixes made during collaterals) → create the app document v(N+1) with status
   `approved` and the published URL, set the previous version `superseded`, log `document_saved` (gate g3, message naming
   what changed) and update the POC `g3_summary` and `last_activity`; no notification, no gate change.
 The run state's app version number and Orbit's latest app document must always match.
@@ -370,7 +370,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 ## When a write fails
 - A reply with `"ok": false` or an error: read the message, fix the payload, and send **only the rows that failed**
   again (a create that succeeded must not be sent twice).
-- `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/nebula:setup` in this folder, then resend.
+- `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/ua:setup` in this folder, then resend.
 - `CONFIRM_REQUIRED`: you sent something that deletes; you never should. Stop and tell the person.
 - After three failures on one step, stop the write-back for this moment, tell the person in one line what did not
   reach Orbit, add it to `failed_writes` (with the gate and whether a notification was held back), and carry on with
@@ -393,7 +393,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    always put on Google Drive (any size) through Drive for desktop, shared with the whole company through the
    `POC Studio` folder, and its Drive link is its `file_link` (see "Video to Google Drive").
 4. The POC ID is mandatory; there is no lookup by client slug.
-5. No Orbit folder and no command-line script: reads, writes and uploads are Nebula's tenant tools called directly in
+5. No Orbit folder and no command-line script: reads, writes and uploads are UnifyApps Headless's tenant tools called directly in
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.
 6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
 7. Every name/email field uses the POC owner's name and email from the POC record.
@@ -452,7 +452,7 @@ one can become an edit to one of the plugin's SKILL.md files.
      2. Otherwise decide from the feedback text and this session, by what stage or output it is about:
         intake, the brief, client sources → `requirement-gathering`; outside facts → `research`; the scoping/BRD
         document, L1 scope → `scoping-l1-first`; palette, brand, components, the design system → `design-system`;
-        how the run is driven, gates, the Nebula build, app build quality → `poc-orchestrator`; demo script, deck,
+        how the run is driven, gates, the UnifyApps Headless build, app build quality → `poc-orchestrator`; demo script, deck,
         video → `poc-collateral-studio`; what shows in Orbit, statuses or links, Slack gate messages →
         `orbit-writeback`; the reviewer's checks → `general-reviewer`; the independent reviewer agent → `poc-reviewer`.
      3. It could be several, or none fits clearly → `general` (Orbit's skill analysis places it).
@@ -465,7 +465,7 @@ one can become an edit to one of the plugin's SKILL.md files.
 4. **Nothing else.** No Activity row, no POC update, no `slack_notification`, no Slack message: feedback does not move
    the POC.
 5. **Reply in one line:** `Recorded as FB-<…> for <client_name>, under <skill name or General>. It goes into the next skill analysis.` If the write
-   fails, show the error in one line and what to do (e.g. run `/nebula:setup` here on orbit.uat.unifyapps.com and sign
+   fails, show the error in one line and what to do (e.g. run `/ua:setup` here on orbit.uat.unifyapps.com and sign
    in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not added to
    `failed_writes`.
 

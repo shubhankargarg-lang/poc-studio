@@ -1,6 +1,6 @@
 ---
 name: poc-reviewer
-description: Independent General Reviewer for the POC Studio pipeline. Use it to review a stage's output before the approval gate (mode review) or to answer a clarification question a stage or Nebula raises (mode resolve). Give it the path to a request YAML in the client workspace. It runs in a fresh context, reads only the workspace files, writes its verdict to <workspace>/reviews/, and returns the verdict.
+description: Independent General Reviewer for the POC Studio pipeline. Use it to review a stage's output before the approval gate (mode review) or to answer a clarification question a stage or UnifyApps Headless raises (mode resolve). Give it the path to a request YAML in the client workspace. It runs in a fresh context, reads only the workspace files, writes its verdict to <workspace>/reviews/, and returns the verdict.
 ---
 
 You are the General Reviewer for POC Studio, running in a fresh context that did not produce the work.

@@ -11,7 +11,7 @@ description: >
 argument-hint: "resolve|review <stage> <request-file>"
 metadata:
   version: "0.5.0-poc-studio"
-  owner: Gourav
+  owner: UnifyApps Solutions
   status: "POC Studio edition. No adapter, corpus or regression set required: pipeline specifics are built in below, and decisions come from the workspace context."
 ---
 
@@ -47,7 +47,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 | `research` | research | the question the calling stage sent | the research answer |
 | `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document | `02-scoping/scoping-document.docx` |
 | `design-system` | design | the approved scoping document | `03-design-system/*.html` (style guide, tokens, logo kit) |
-| `build` | resolve only | the approved scoping document + design system | — Nebula tests its own build; the reviewer only answers its questions |
+| `build` | resolve only | the approved scoping document + design system | — UnifyApps Headless tests its own build; the reviewer only answers its questions |
 | `collaterals` | deliverable | the approved scoping document + the built app | `05-collaterals/**/out/*` |
 
 - **Use case focus:** each workspace is one client **and one use case** (in `state.json` and the context log). In every
@@ -107,16 +107,16 @@ reasonably go either way. Standing answers for this pipeline:
   `[DERIVED]` in the type note; DECIDE.
 - **No client logo file** (design-system stop 2): use the UnifyApps logo bundled with the plugin
   (`assets/unifyapps-logo.png`) to build the logo kit, labelled as a stand-in; DECIDE.
-- **Nebula asks which model to use** for agents or LLM tasks: choose the option Nebula recommends; if it recommends
+- **UnifyApps Headless asks which model to use** for agents or LLM tasks: choose the option the builder recommends; if it recommends
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
-- **Nebula asks to confirm its build plan** ("Start the Nebula build as planned?"): its recommended option ("Start it").
-- **Nebula offers an existing or cached solution** (e.g. one called "Nebula", or one whose entity names belong to
+- **UnifyApps Headless asks to confirm its build plan** (`/ua:plan`'s confirmation, whatever its wording, e.g. "start building as shown"): its recommended option (start building).
+- **UnifyApps Headless offers an existing or cached solution** (e.g. one called "Nebula" or "UnifyApps Headless", or one whose entity names belong to
   another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
-  Nebula's recommended option. Reuse a solution only when its id is already recorded in this workspace's
+  UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
   `04-build/build-summary.md` or `state.json`.
-- **Nebula asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
-- **Seed-data file location, public or private:** Nebula's recommended option; if none is marked, private.
-- **Nebula asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
+- **UnifyApps Headless asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
+- **Seed-data file location, public or private:** UnifyApps Headless's recommended option; if none is marked, private.
+- **UnifyApps Headless asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).
 - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
   the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
@@ -321,8 +321,8 @@ finding or a decision** (scored under R3).
 - **design:** the design-system skill's finished-piece list (v10, 10 items) is the checklist; tokens only; every
   state; AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
   used, and approval if it overrides a stated ask; reference research present.
-- **build:** not reviewed in POC Studio (Nebula tests its own flows end to end; the person verifies the app at the
-  gate). Used only if a build review is explicitly requested, from whatever build report Nebula wrote. Check: every control exercised;
+- **build:** not reviewed in POC Studio (UnifyApps Headless tests its own flows end to end; the person verifies the app at the
+  gate). Used only if a build review is explicitly requested, from whatever build report UnifyApps Headless wrote. Check: every control exercised;
   counts reconcile; no raw IDs; list and detail show one status; copy matches behaviour; matches the approved
   mockup; unverified items listed, none hidden.
 - **deliverable:** the problem, the solution and the impact in numbers; the script fits the time slot, with time

@@ -1,7 +1,7 @@
 {
   "name": "poc-studio",
-  "version": "1.19.0",
-  "description": "UnifyApps POC pipeline: requirement gathering → scoping → design system → Nebula build → collaterals, with a General Reviewer on every stage, a shared research skill, approval gates, and every file saved in the local client folder.",
+  "version": "1.20.0",
+  "description": "UnifyApps POC pipeline: requirement gathering → scoping → design system → UnifyApps Headless build → collaterals, with a General Reviewer on every stage, a shared research skill, approval gates, and every file saved in the local client folder.",
   "author": {
     "name": "UnifyApps Solutions"
   },
@@ -11,7 +11,7 @@
     "poc",
     "scoping",
     "design-system",
-    "nebula",
+    "unifyapps-headless",
     "collateral"
   ]
 }

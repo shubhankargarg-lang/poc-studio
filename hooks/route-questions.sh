@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# POC Studio: while <project>/.poc-studio/autopilot exists, a stage (or Nebula) is running and its
+# POC Studio: while <project>/.poc-studio/autopilot exists, a stage (or UnifyApps Headless) is running and its
 # clarification questions must go to the poc-reviewer agent, not the user. Otherwise do nothing.
 cat >/dev/null 2>&1   # drain the hook input
 DIR="${CLAUDE_PROJECT_DIR:-$PWD}"

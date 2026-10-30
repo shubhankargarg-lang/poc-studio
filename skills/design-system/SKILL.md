@@ -1329,7 +1329,7 @@ over the rules for the rest (0.6).
    rotation is a defect.
 3. **Logo kit** — the seven variants with the usage matrix, clear space, minimum sizes, misuse list
    and provenance. With `ink` or `light` chrome, the rail takes the variant that measures on it.
-4. **Composition contract** — a block written for the builder (Nebula), quoted verbatim in the build
+4. **Composition contract** — a block written for the builder (UnifyApps Headless), quoted verbatim in the build
    prompt. The builder reads this, not the skill, so every rule it must follow is here:
    - **Look up, don't choose.** Every design decision is already made in `#build-plan` and
      `#style-sets`. For each page: find its route in `build-plan.pages` and use that pattern and those
@@ -1444,7 +1444,7 @@ holding a P7 feed); never two levels deep.
 
 ### Layer 3 · The chooser — run here, never by the builder
 
-**All choosing happens in this run, by this skill.** The builder (Nebula) works with no person in the
+**All choosing happens in this run, by this skill.** The builder (UnifyApps Headless) works with no person in the
 loop and is good at reproducing what it is given, not at judging which of three options is better; left
 to choose, it falls back to the safest default, and every app turns into a list with a rail. So this
 skill makes every choice, records it, and hands the builder answers, not options.

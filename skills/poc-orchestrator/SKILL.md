@@ -1,6 +1,6 @@
 ---
 name: poc-orchestrator
-description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Design System → Nebula build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
+description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Design System → UnifyApps Headless build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
 ---
 
 # POC Studio orchestrator
@@ -10,7 +10,7 @@ yourself: each stage has its own skill, and you call it, check it with the revie
 person for approval, and hand the approved files to the next stage.
 
 ```
-Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System → 4 Nebula build → 5 Collaterals → Done
+Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System → 4 UnifyApps Headless build → 5 Collaterals → Done
                          │                        │               │                 │                │
                      reviewer + gate         reviewer + gate  reviewer + gate   verify gate     reviewer + gate
                      (research skill available to every stage; reviewer answers every clarification question)
@@ -28,7 +28,7 @@ the person to confirm or correct it before starting. Use the POC ID exactly as g
 
 **The POC ID must exist in Orbit, and Orbit is kept in step with the run.** The `orbit-writeback` skill (load it
 with the Skill tool, `poc-studio:orbit-writeback`) owns everything written to Orbit · POC Studio. The start command runs
-its Setup (Nebula's tenant tools, POC ID check against `orbit_studio_poc`, the POC owner's name and email) before this skill;
+its Setup (UnifyApps Headless's tenant tools, POC ID check against `orbit_studio_poc`, the POC owner's name and email) before this skill;
 if that has not happened in this session, run it first — not found → stop and ask the person to check the POC ID.
 Then call it at every write-back moment listed under "Orbit write-back at each gate" below.
 
@@ -36,7 +36,7 @@ Then call it at every write-back moment listed under "Orbit write-back at each g
 channels, email threads and Drive folders mix them. Every stage works on **this** use case only:
 - Requirement Gathering searches with the client name **and** the use-case terms, keeps material about this use case,
   and lists material about the client's other use cases as "other use case — not used" instead of mixing it in.
-- Scoping, Design System, Nebula and Collaterals receive the use case name with every call, and the reviewer checks
+- Scoping, Design System, UnifyApps Headless and Collaterals receive the use case name with every call, and the reviewer checks
   that each output stays on it.
 - Each use case gets its own workspace, so two POCs for the same client never overwrite each other.
 
@@ -45,16 +45,16 @@ channels, email threads and Drive folders mix them. Every stage works on **this*
 Call each with the Skill tool. Use the plugin-qualified name the session lists (e.g. `poc-studio:scoping-l1-first`);
 if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 
-| Stage | Skill | Owner (flowchart) |
-|---|---|---|
-| 1 Requirement Gathering | `requirement-gathering` | Aastha / Shubhankar |
-| 2 Scoping | `scoping-l1-first` | Shubhankar |
-| 3 Design System | `design-system` | Harshal |
-| 4 Build | `/nebula:setup` (separate Nebula plugin) | Nebula |
-| 5 Collaterals | `poc-collateral-studio` | Utkarsh Vasu |
-| Any stage, outside facts | `research` | Lakshya / Gourav |
-| Every gate, Orbit write-back | `orbit-writeback` | — |
-| Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent | Gourav |
+| Stage | Skill |
+|---|---|
+| 1 Requirement Gathering | `requirement-gathering` |
+| 2 Scoping | `scoping-l1-first` |
+| 3 Design System | `design-system` |
+| 4 Build | `/ua:setup` (then `/ua:plan`; separate UnifyApps Headless plugin, `ua`) |
+| 5 Collaterals | `poc-collateral-studio` |
+| Any stage, outside facts | `research` |
+| Every gate, Orbit write-back | `orbit-writeback` |
+| Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent |
 
 **All research goes through the `research` skill.** When a stage (or you) needs outside facts, the stage's own
 instructions already say to call `research`; make sure it does. Only if `research` is unavailable may a stage
@@ -77,9 +77,9 @@ and any later session — can read them:
     scoping-document.docx               the build plan (Part A proposal, Part B build spec)
     _working/                           scoping's working notes, research, evidence log
   03-design-system/
-    <slug>-design-system.html           the design system HTML Nebula reads (one self-contained file)
+    <slug>-design-system.html           the design system HTML UnifyApps Headless reads (one self-contained file)
   04-build/
-    build-summary.md                    Nebula's result: app name, preview link, published app URL, what was built
+    build-summary.md                    UnifyApps Headless's result: app name, preview link, published app URL, what was built
   05-collaterals/
     <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
   research/                             every research answer, by stage
@@ -130,7 +130,7 @@ reached Orbit is written before the run goes on.
 
 ## Questions never go straight to the person
 
-The stage skills are built not to ask questions. If any stage — or Nebula — still needs an answer:
+The stage skills are built not to ask questions. If any stage — or UnifyApps Headless — still needs an answer:
 
 1. Do not call AskUserQuestion and do not end your turn with a question. Send the question to the reviewer in
    **resolve** mode (see "Calling the reviewer").
@@ -140,7 +140,7 @@ The stage skills are built not to ask questions. If any stage — or Nebula — 
 
 The plugin enforces this with two hooks: while the file `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot` exists,
 AskUserQuestion is blocked and redirected to the reviewer, and ending the turn is blocked once with a reminder (so a
-plain-text question, e.g. from Nebula, is routed too). Create that file when a stage starts running; delete it right before
+plain-text question, e.g. from UnifyApps Headless, is routed too). Create that file when a stage starts running; delete it right before
 you put an approval gate or an `ASK_HUMAN` question to the person; recreate it when the stage work resumes.
 Delete it when the run finishes or stops.
 
@@ -219,7 +219,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
 | Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
-| Nebula starts building | **M4** — stage `5_build` (if not already) |
+| UnifyApps Headless starts building | **M4** — stage `5_build` (if not already) |
 | Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
 
 `slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted). If a write
@@ -253,8 +253,8 @@ except at the start (the POC ID must be verified).
      brand-colour conflicts are settled by the design-system skill's own brand source order, without
      asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
      one local HTML file, uploaded to Orbit as a public link.
-   - Build: Nebula in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: Nebula's
-     recommendation, else Nebula chooses, else any available model; no reviewer review of the build.
+   - Build: UnifyApps Headless in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: the builder's
+     recommendation, else UnifyApps Headless chooses, else any available model; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
    - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
      the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
@@ -313,7 +313,7 @@ The `design-system` skill (v10) is tested and its output is approved as is. **Ca
 extend or second-guess its steps** — it reads the whole scoping document and produces a design system the builder
 composes from: full component pages (every state and variant), foundations, pattern blueprints, every journey as a
 flow diagram, at most five full screens, and the composition contract with the `#build-plan` and `#style-sets` blocks
-for Nebula. Do not ask it to draw more screens, one per page or per persona: the five-screen limit is deliberate.
+for UnifyApps Headless. Do not ask it to draw more screens, one per page or per persona: the five-screen limit is deliberate.
 Only these session facts are supplied by you:
 
 - Create the autopilot file. Call `design-system` with:
@@ -324,7 +324,7 @@ Only these session facts are supplied by you:
     palette and theme by its own brand source order (client material → brand guidelines → live product → website).
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
-    `<slug>-design-system.html` (one self-contained file, as the skill requires). Nebula reads the HTML from this
+    `<slug>-design-system.html` (one self-contained file, as the skill requires). UnifyApps Headless reads the HTML from this
     folder. Do not publish it as an artifact; the only place it goes outside the folder is the Orbit write-back
     (uploaded there as a public link — owner-approved, see the POC data policy), which the skill's "do not publish
     or share it as a link" line does not override.
@@ -344,49 +344,54 @@ Only these session facts are supplied by you:
   G2 on approve (G2 approved, stage `5_build`); M3 on changes; M5 before re-gating.
 - Gate.
 
-## 4 · Build with Nebula
+## 4 · Build with UnifyApps Headless
 
-- **Orbit:** M4 (stage `5_build`, if not already) when Nebula starts.
-- Create the autopilot file. Invoke Nebula's start command, `/nebula:setup` (with the Skill tool as `nebula:setup`,
-  or whatever name the session lists for it). Nebula updates itself when called; no update step is needed. If the Nebula plugin is not installed, stop and tell the person to
-  install it, then continue.
-- Give Nebula, in the invocation and again whenever it asks:
-  - **Mode:** Sonic.
+- **Orbit:** M4 (stage `5_build`, if not already) when UnifyApps Headless starts.
+- Create the autopilot file. Run UnifyApps Headless in two steps (Skill tool names `ua:setup` and `ua:plan`, or
+  whatever names the session lists for them). UnifyApps Headless updates itself when called; no update step is needed.
+  If the UnifyApps Headless plugin (`ua`) is not installed, stop and tell the person to install UnifyApps Headless,
+  then continue.
+  1. **`/ua:setup`** sets up this folder only: tenant `orbit.uat.unifyapps.com`, the person's sign-in, and a **new**
+     solution named `<Client> — <Use case>` (see **Solution** below). It does not ask for a mode.
+  2. **`/ua:plan`** with the build request below. It asks Sonic or Zen: answer **Sonic** (or say Sonic up front in
+     the request).
+- Give UnifyApps Headless, in the build request and again whenever it asks:
+  - **Mode:** Sonic (asked by `/ua:plan` only).
   - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
-  - **POC ID:** `<POC ID>` — give it to Nebula with the build so the build and the app can be traced to this POC.
+  - **POC ID:** `<POC ID>` — give it to UnifyApps Headless with the build so the build and the app can be traced to this POC.
   - **Solution:** create a **new** solution named `<Client> — <Use case>` for this POC. Never reuse a cached or
-    generically named solution for the tenant (e.g. one called "Nebula"), unless its id is already recorded in this
-    workspace's `04-build/build-summary.md` or `state.json`. This is also the answer when Nebula offers a cached
-    solution. If Nebula has already opened a solution, or synced entity manifests whose names belong to another
-    client, stop before building: tell the person in one line, log it, and have Nebula create the new solution
+    generically named solution for the tenant (e.g. one called "Nebula" or "UnifyApps Headless"), unless its id is already recorded in this
+    workspace's `04-build/build-summary.md` or `state.json`. This is also the answer when UnifyApps Headless offers a cached
+    solution. If UnifyApps Headless has already opened a solution, or synced entity manifests whose names belong to another
+    client, stop before building: tell the person in one line, log it, and have UnifyApps Headless create the new solution
     instead.
-  - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell Nebula to quote and follow the
+  - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell UnifyApps Headless to quote and follow the
     **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
     the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
     the active style set from the `#style-sets` block, and only specimens marked `data-active="true"` (never one
     labelled "Reference — not in this app"). Also from the contract: the shell, agents in drawers on the platform's
     live agent component, data/table rules, overlays and spacing, colours only from the token block, every state and
     micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
-    draws at most five screens on purpose; Nebula composes every other page from the kit and patterns, matching the
+    draws at most five screens on purpose; UnifyApps Headless composes every other page from the kit and patterns, matching the
     drawn screens' finish, and never copies one screen's content onto another page.
-  - **What to build:** a text-to-code app on UnifyApps, built with Nebula's **text-to-code builder** (never the
-    no-code config builder; if Nebula offers or picks the config builder, answer text-to-code), with the agents,
+  - **What to build:** a text-to-code app on UnifyApps, built with UnifyApps Headless's **text-to-code builder** (never the
+    no-code config builder; if UnifyApps Headless offers or picks the config builder, answer text-to-code), with the agents,
     automations and objects listed in the
     build plan (L1 scope only).
-  - **Questions:** tell Nebula that its questions will be answered by you (the session), not the person, so it
+  - **Questions:** tell UnifyApps Headless that its questions will be answered by you (the session), not the person, so it
     should keep going; whenever it stops with a question — through AskUserQuestion or as plain text — answer it via
     the reviewer before doing anything else.
-- **Every question Nebula asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
-  answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model Nebula
-  recommends — if it recommends none, ask Nebula to select the most appropriate model for the task — if it cannot,
-  pick any available model. Nebula's plan confirmation ("Start the Nebula build as planned?"): its recommended option
-  ("Start it"). Seed-data file location (public or private): Nebula's recommended option, otherwise **private**.
+- **Every question UnifyApps Headless asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
+  answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model UnifyApps Headless
+  recommends — if it recommends none, ask UnifyApps Headless to select the most appropriate model for the task — if it cannot,
+  pick any available model. The builder's plan confirmation from `/ua:plan` (whatever its wording, e.g. "start building as shown"): its recommended option
+  (start building). Seed-data file location (public or private): UnifyApps Headless's recommended option, otherwise **private**.
   Sign-ins to Orbit are done by the person.
-- **Test everything with Nebula, fix, then publish.** When Nebula reports the build complete, do **not** publish yet.
-  Have Nebula test the whole app itself, in the same session, with its own testing tools (its app-verify / test skill
+- **Test everything with UnifyApps Headless, fix, then publish.** When the builder reports the build complete, do **not** publish yet.
+  Have UnifyApps Headless test the whole app itself, in the same session, with its own testing tools (`ua:app-verify` and `ua:app-test-author`
   or browser checks, whatever name the session lists for them; there is no reviewer review of the build):
   1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
      seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
@@ -413,26 +418,26 @@ Only these session facts are supplied by you:
      filter/badge/KPI counts equal row counts; the default persona's first screen and default tab have data; every AI
      output names its records and count (no "0 AI suggestions"); hero evidence unique; no duplicates or placeholders on
      demo paths; test data kept separate from demo data.
-  5. **Fix and re-test:** every failure goes back to Nebula to fix (same session, Sonic mode), then that page,
+  5. **Fix and re-test:** every failure goes back to UnifyApps Headless to fix (same session, Sonic mode), then that page,
      automation or agent is tested again, and anything the fix touched is re-tested too. Repeat until everything
-     passes, **at most 3 fix rounds per failing item**; questions Nebula asks while fixing go to the reviewer as usual.
+     passes, **at most 3 fix rounds per failing item**; questions UnifyApps Headless asks while fixing go to the reviewer as usual.
   6. **Report:** write `<workspace>/04-build/test-report.md`: one row per page, automation, agent and storyline step,
      with pass/fail, what was fixed and how many rounds, and anything still failing after 3 rounds (with the reason).
      Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
-- **Publish:** once testing is done, tell Nebula to publish the app on Orbit UAT (if its plan has not already
+- **Publish:** once testing is done, tell UnifyApps Headless to publish the app on Orbit UAT (if its plan has not already
   published it) and to report **two links**: the published app URL, and the app's **preview link** (the
-  link that opens the app directly with its seed data, without first creating a user in the Matrix app). If Nebula
+  link that opens the app directly with its seed data, without first creating a user in the Matrix app). If UnifyApps Headless
   does not give the preview link, ask it for it explicitly.
-- Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, the Nebula **solution id**
+- Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, the UnifyApps Headless **solution id**
   (`e_…`, needed for Orbit G3), what was built (objects,
-  agents, automations, pages) as Nebula reported it, the test results (counts passed / fixed / still failing, linking
+  agents, automations, pages) as UnifyApps Headless reported it, the test results (counts passed / fixed / still failing, linking
   `test-report.md`), and anything it could not build. Save both in `state.json` →
   `app.preview_url` and `app.published_url`.
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
   version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
-  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to Nebula (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
-  from the collateral stage) also go through Nebula, are listed at the next gate, and each new app version is posted
+  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
+  from the collateral stage) also go through UnifyApps Headless, are listed at the next gate, and each new app version is posted
   to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
   Records the person created while verifying the app (their own runs, uploads, cases) are kept: fixes and re-seeding
   never delete them unless the person asks.
@@ -446,7 +451,7 @@ Only these session facts are supplied by you:
   - the app's **preview link** from `04-build/build-summary.md` / `state.json` → `app.preview_url` as every persona's
     `url` (and `public_url`) for discovery, capture and the video recording. **Never use the published
     Matrix app URL for these**: it requires creating a user before the app can be used. If no preview link was
-    recorded, ask Nebula for it (same session) before recording;
+    recorded, ask UnifyApps Headless for it (same session) before recording;
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
     Requirement Gathering document (the "today" pain points) as the build session's truth;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
