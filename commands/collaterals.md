@@ -54,7 +54,7 @@ Load the `asset-run` skill (Skill tool: `poc-studio:asset-run`) and follow its *
 **`collaterals`**: take each prerequisite from the arguments, then from an existing workspace for this client and use case
 (offer what you find in one line), then ask for everything still missing in **one** question. Never ask for a password.
 
-- **Required:** Client name · Use case · which collaterals (always asked: demo script, deck, video — any one, two or all three) · the app's preview link (a published or builder link is turned into the preview link) · a valid Orbit sign-in · the collateral tools for the ones chosen.
+- **Required:** Client name · Use case · which collaterals (always asked — demo script, deck, video: any one, two or all three — unless the command already says which, e.g. `deck only` after the preview link) · the app's preview link (a published or builder link is turned into the preview link) · a valid Orbit sign-in · the collateral tools for the ones chosen.
 - **Optional** (asked once, in the same question; the run goes on without it): A BRD or scoping document (strongly recommended: it drives the story and personas) · a Requirement Gathering document · the audience (business, technical or mixed).
 - **If something required is missing:** Ask for what is missing; the person signs in to Orbit themselves in the window that opens.
 

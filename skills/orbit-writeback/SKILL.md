@@ -47,7 +47,8 @@ The POC ID is mandatory (the start command will not run without it). Verify it e
   POC ID and send the correct one." Wait, then check again with the new ID. Nothing starts until it is found.
 - Record found → keep its record id (the POC row's `recordId` for every POC update) and read the **POC owner's name
   and email** from it (the owner fields of the record, e.g. a field named like `owner_name` / `owner_email` or
-  `poc_owner…`; use the record's own field names). Save in the run state. **The owner's name and email are used in
+  `poc_owner…`; use the record's own field names), and its **`client_name` and `use_case`** (every pipeline Document
+  create sends them). Save all of them in the run state (`state.json` → `orbit`), so a resumed session has them. **The owner's name and email are used in
   every name and email field you write** (`created_by`, `actor_name`, `actor_email`), for AI and person actions
   alike; `actor_type` still says `ai` or `person`. If the record has no owner name or email, ask the person once.
 
@@ -179,7 +180,8 @@ written or a new version posted). It makes Orbit post to the POC's Slack thread;
 ## Reconcile check (on every resume, and before M1 · G4)
 
 Before anything else when a run resumes, and again right before writing G4, compare Orbit with the run state:
-1. Read the POC row and this POC's documents (`get_records`, filter `poc` = the POC ID, limit 100).
+1. Read the POC row and this POC's documents (ignore rows with `origin` = `standalone`: one-off documents are never
+   part of a gate) (`get_records`, filter `poc` = the POC ID, limit 100).
 2. For every gate the run state shows **approved** but Orbit does not (`gN_status` not `approved` or
    `gN_owner_approved` not true): write the missing approval **only** — that gate's `in_review` documents →
    `approved`, an Activity `gate_decided` approve (actor_type person, the owner, message "Approval recorded late"),
@@ -556,6 +558,11 @@ Slugs are lower case, with every run of non-letters/digits replaced by `-` and n
 | video | `video` | `7_collaterals` | video | Google Drive link via "Video to Google Drive" (shared drive `POC Studio Video Library`, file name `SA - <Client> - <Use case> - Demo video v<N>.mp4` in its root) |
 
 Collaterals write one row per collateral delivered (up to three), in one `apply_record_edits` call.
+
+**The one-off video** goes through "Video to Google Drive" with these differences: the file name is
+`SA - <Client> - <Use case> - Demo video v<N>.mp4`, where N is the version from the lookup below (never a local
+"next free v<N>"); it goes in the shared drive's **root**, with no `<POC ID> - <Client>` sub-folder (on the fallback
+route, the root of the person's `POC Studio` folder); the connector finds it by that exact name in the drive root.
 
 ### How to write
 

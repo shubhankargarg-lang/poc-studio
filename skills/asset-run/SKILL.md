@@ -28,9 +28,16 @@ once that file exists.
 Unlike the pipeline, a one-off run **asks for what it is missing before the stage starts.** Only once every required
 prerequisite is in hand does the autopilot flag go on and the stage run unattended.
 
+**First, the run flags** (absolute paths under `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/`):
+- Create **`one-off`** (holding the asset name). While it exists, the nudge hook posts nothing to any POC's Slack thread
+  (a one-off asset never posts to a POC). Remove it when the run ends — after § 6, or whenever the run stops.
+- Remove a leftover **`autopilot`** or **`zen-planning`** flag from an interrupted run (no run in this session created
+  it): it would block the questions below.
+
 **Parse the arguments** (`<a> | <b> | …`, as the command shows). Quotes around a value are dropped. A trailing value
-that looks like `POC-<…>-<8 digits>` is the POC ID. A missing separator is read sensibly; anything still unclear is
-asked for in the one question below.
+that looks like `POC-<…>-<8 digits>` is the POC ID. For collaterals, any other value after the preview link (or words
+in the command such as "deck only", "script and video") is the **collaterals choice**. A missing separator is read
+sensibly; anything still unclear is asked for in the one question below.
 
 **Collect each prerequisite in this order, and stop at the first source that has it:**
 1. The command arguments.
@@ -38,10 +45,12 @@ asked for in the one question below.
    Requirement Gathering document, `02-scoping/scoping-document.docx`, `03-design-system/*-design-system.html`,
    `state.json` → `app.preview_url`, earlier one-off outputs in `state.json` → `standalone.runs`. Offer what you find
    in one line ("Found `02-scoping/scoping-document.docx` from 28 Oct — use it?"); the newest file first.
-3. Otherwise ask the person: **one** AskUserQuestion (or one plain question for free text) that lists everything
-   still missing at once. Accept a local file path, a file dropped into the chat, a Slack or Drive link (read through
-   that connector; download the file into the workspace), or pasted text (save it as a `.md` file in the stage's
-   `files/` or `_inputs/` folder, so the stage can read it).
+3. Otherwise ask the person: **one** AskUserQuestion call (it can hold up to four questions — e.g. the collaterals
+   choice as a multi-select next to a missing BRD — or one plain question for free text) that lists everything still
+   missing at once. Accept a local file path, a file dropped into the chat, a Slack or Drive link (read through
+   that connector; download the file into the workspace), or pasted text (save it as a `.md` file in
+   `<workspace>/_inputs/`, never in `01-requirement-gathering/files/`, which a pipeline run treats as the client's
+   discovered files). Files downloaded from a link go to `<workspace>/_inputs/` too.
 
 Never ask for a password or a token. Sign-ins are done by the person, in the window the step opens.
 
@@ -54,20 +63,28 @@ on without it):
 | research-report | Client name · Topic · The question(s) | Purpose: internal check, working draft or client-facing (sets the depth) · Files to read first | Ask |
 | brd | Client name · Use case · **At least one input**: an RG document, meeting notes, an email, client files, or a Slack or Drive link | Client website | Offer two options: "Run `/poc-studio:requirements` first" or "Paste or attach what you have" |
 | design | Client name · Use case · **BRD or scoping document** (.docx or PDF) · Client website (ask once; accept "derive it", then the skill derives it) | Client logo file · Brand guidelines | Offer "Run `/poc-studio:brd` first" or "Attach a BRD" |
-| app | Client name · Use case · **BRD or scoping document** · The UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) | Design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first) | Plugin or setup missing: tell the person what to install or run, then check again |
+| app | Client name · Use case · **BRD or scoping document** · The UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) · The collateral tools (Playwright, for the Stage 4b walk) and a valid Orbit sign-in, as for collaterals below · Not a folder whose UnifyApps Headless setup belongs to a pipeline run (below) | Design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first) | Plugin or setup missing: tell the person what to install or run, then check again |
 | collaterals | Client name · Use case · **Which collaterals** (always asked, below) · **App preview link** (Preview link rule) · Orbit sign-in valid · The collateral tools for the ones chosen | BRD or scoping document (strongly recommended: it drives the story and personas) · RG document · Audience: business, technical or mixed (else the skill decides) | Ask |
 
-**Collaterals — which ones (always asked).** Unless the command text already says which (e.g. "deck only"), ask one
-multi-select AskUserQuestion: "Which collaterals should I create?" with the options **Demo script (PDF)**, **Deck
-(PPT)** and **Demo video (with subtitles)**; the person ticks one, two or all three. Record the choice in the run
-(`"collaterals": ["deck", …]`). Then:
-- **Orbit sign-in:** `node "$R/orbit_signin.mjs" --check`; if it is not valid, run `node "$R/orbit_signin.mjs"` and ask
-  the person to sign in to Orbit in the window that opens (never type a password), then check again.
+**Collaterals — which ones (always asked).** Unless the command already says which (the extra argument or words such
+as "deck only"), ask it as a multi-select question — "Which collaterals should I create?" with the options **Demo
+script (PDF)**, **Deck (PPT)** and **Demo video (with subtitles)** — in the same AskUserQuestion call as anything else
+missing; the person ticks one, two or all three. Record the choice in the run (`"collaterals": ["deck", …]`).
+
+**Tools, then sign-in, then the video route** (collaterals; tools and sign-in also for app), in this order:
 - **Tools:** on a Mac, run the `poc-collateral-setup` doctor (load that skill). If it is not all `ok`, run its install
   and wait for it (about 1 GB the first time; no admin, no Homebrew). On Linux, check `ffmpeg`, `pdftotext`, `soffice`,
-  `node`, `python3` and give the person the one line to paste for anything missing.
+  `node`, `python3` and Playwright Chromium, and give the person the one line to paste for anything missing.
+- **Orbit sign-in:** `node "$R/orbit_signin.mjs" --check`; exit 0 = valid. Any other result (not signed in, expired, or
+  a tool error) → run `node "$R/orbit_signin.mjs"` and ask the person to sign in to Orbit in the window that opens
+  (never type a password), then check again. If it still fails with a tool error, re-run the tools step once.
 - **Video route** (only when the video is chosen): run orbit-writeback's **Video route check** now, as Setup does. It
   never blocks the run; if it fails, say in one line that the video will not ship to Drive automatically, and why.
+
+**App in a pipeline folder.** `/ua:setup` sets up the whole folder for one solution. If this folder's workspace holds a
+pipeline run whose build stage is not `pending` (its app is set up here), say so in one line and ask once: run the
+one-off from a separate folder (recommended: open Claude Code in a new folder and run the command there), or continue
+here knowing `/ua:setup` will point this folder at the one-off's solution.
 
 **Preview link (collaterals).** Apply orbit-writeback's **Preview link rule**: a code app's
 `https://orbit.uat.unifyapps.com/agent-api/preview/b/<app id>/main` or a no-code app's
@@ -93,19 +110,22 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
 
 1. Use the pipeline's tree: `<cwd>/<client-slug>/<usecase-slug>/` (slugs: lower case, every run of non-letters/digits
    → `-`, no `-` at the start or end: `[Test] Acme` → `test-acme`). A research report uses the topic as the use case (`<topic-slug>`). Create the folders the asset needs
-   (`01-requirement-gathering/files/`, `02-scoping/`, `03-design-system/`, `04-build/`, `05-collaterals/`, `research/`,
-   `reviews/`) and `context-log.md` if it does not exist (first line: client, use case, "one-off runs", date).
+   (`_inputs/`, `01-requirement-gathering/files/`, `02-scoping/`, `03-design-system/`, `04-build/`, `05-collaterals/`,
+   `research/`, `reviews/`) and `context-log.md` if it does not exist (first line: client, use case, "one-off runs", date).
 2. **Protect what is already there.** Before a stage writes a file that already exists, copy the existing file to
    `<stage folder>/_previous/<file name> <YYYYMMDD-HHMM>` (never delete). If that file is an output of a pipeline run
    (`state.json` → `stages.<stage>.output`, or the pipeline's fixed output path while that stage is not `pending`),
    write the one-off into `<stage folder>/one-off/` instead, so the pipeline's own file never changes.
 3. Run state goes in `state.json` under the key **`standalone`** (create `state.json` with only this key if there is
-   none). A one-off run never changes `stages`, `orbit`, `poc_id`, `app` or any gate state of a pipeline run in the
-   same workspace.
+   none). A one-off run never changes `stages`, `orbit`, `poc_id`, `app`, `zen_planning_flag`, `autopilot_flag` or any
+   gate state of a pipeline run in the same workspace: wherever an orchestrator section it follows says to save
+   something in those keys, save it in this run's entry under `standalone.runs` instead.
    ```json
    "standalone": { "runs": [ { "asset": "brd", "started_at": "<ISO>", "status": "running | in_review | done",
        "document_id": "SA-acme__brd__invoice-matching__v2", "version": 2, "file_link": "…",
-       "inputs": ["01-requirement-gathering/Requirement Gathering - Acme - Invoice matching.docx"] } ],
+       "inputs": ["01-requirement-gathering/Requirement Gathering - Acme - Invoice matching.docx"],
+       "first_review": 3, "solution": "<app runs: the UnifyApps Headless solution id>",
+       "collaterals": ["<collaterals runs: the ones chosen>"] } ],
      "created_by": "<name>", "created_by_email": "<email, if known>", "failed_writes": [] }
    ```
    Collaterals add one entry per collateral delivered (asset `demo_script`, `deck`, `video`).
@@ -124,7 +144,7 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
 
 ## 3 · Run the stage (unattended)
 
-Create the autopilot flag now (absolute path; record it in `state.json` → `standalone.autopilot_flag`), exactly as the
+Create the autopilot flag now (absolute path; record it in this run's entry), exactly as the
 orchestrator's "Questions never go straight to the person" describes: questions go to the AI PM (`ai-pm` agent,
 resolve mode), and the hooks enforce it. Then call the stage **exactly as the orchestrator's stage section does —
 same arguments, same output path, same rules — with these differences only**, and **skip every Orbit moment those
@@ -139,34 +159,50 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
   "<md>" -o "<docx>" --metadata title="Research — <Client> — <Topic>"`, or python-docx if pandoc is missing. The `.docx`
   is what goes to Orbit.
 - **brd** — orchestrator § 2: `scoping-l1-first` with the use case; **input 1** = what was collected (the RG
-  document, or the notes, emails and files, saved under `01-requirement-gathering/files/`); **input 2** = every client
-  file collected; output `<workspace>/02-scoping/scoping-document.docx` (`_working/` beside it).
+  document, or the notes, emails and files in `_inputs/`); **input 2** = every client file collected (`_inputs/` and,
+  if an RG run made them, `01-requirement-gathering/files/`); output `<workspace>/02-scoping/scoping-document.docx`
+  (`_working/` beside it).
 - **design** — orchestrator § 3, unchanged and unattended: the BRD collected is "the approved scoping document"; the
   website and any logo file or brand guidelines collected are passed with it; output
-  `<workspace>/03-design-system/<slug>-design-system.html`. When the stage is done and before the AI PM review, also
-  open the file locally (`open <file>` on a Mac, `xdg-open` on Linux) so the person sees it straight away.
-- **app** — orchestrator § 4 as written: `/ua:setup` with a **new** solution `<Client> — <Use case>`;
-  `platform-master` pointers; `/ua:plan` in Zen inside the Zen planning window (the person answers Zen's questions and
-  approves the plan, which platform-master reviewed first); the parallel build; UnifyApps Headless's own tests; the
-  browser fallback for any platform asset it cannot build; the **4b AI PM build walk**; publish. Without a design
-  system, leave the build request's design-system item out, tell UnifyApps Headless to use its default look, and give
-  the 4b review the BRD alone as upstream. Finish with the app's **preview link** (Preview link rule) in
-  `04-build/build-summary.md` and the run state. `CONFIRM_REQUIRED` stays the person's.
+  `<workspace>/03-design-system/<slug>-design-system.html`. The file is opened locally for the person in § 5.2,
+  once it has passed review.
+- **app** — orchestrator § 4 as written, writing its files in `04-build/one-off/` (`build-summary.md`,
+  `test-report.md`, `zen-decisions.md`, `platform-*.md`, `routes.json`, `glossary.json`): `/ua:setup`; `platform-master`
+  pointers; `/ua:plan` in Zen inside the Zen planning window (the person answers Zen's questions and approves the plan,
+  which platform-master reviewed first); the parallel build; UnifyApps Headless's own tests; the browser fallback for
+  any platform asset it cannot build; the **4b AI PM build walk**; publish.
+  - **Solution:** the first run of this command for this client and use case creates a **new** solution named
+    `<Client> — <Use case>` and records its id in the run entry (`solution`). A later run of the command, or a change
+    request, reuses that recorded solution (its id is "already recorded in this workspace", as the orchestrator's
+    Solution rule allows) and makes the change as direct changes through `ua-change` — never a second solution.
+  - **No design system:** leave the build request's design-system item out, tell UnifyApps Headless to use its default
+    look, and give the 4b review the BRD alone as upstream (no `#build-plan` fidelity check).
+  - **4b inputs:** when the BRD has no page list (§ 11) or glossary (Appendix B), build `routes.json` from UnifyApps
+    Headless's own route list and leave `glossary.json` empty.
+  - Finish with the app's **preview link** (Preview link rule) in `04-build/one-off/build-summary.md` and the run
+    entry's `file_link` — never in `state.json` → `app`. `CONFIRM_REQUIRED` stays the person's.
 - **collaterals** — orchestrator § 5 with: the preview link from § 1 as every persona's `url` and `public_url`; the
   BRD and RG document if collected (else the skill builds its story from the app and says so in the brief); the
-  bundled template; the audience if given. **Only the collaterals chosen in § 1 are delivered**, still built from
-  one story; when only the video is chosen, the narration script is still written for the video but not delivered.
-  The Orbit session from § 1 is copied to the collateral folder's `auth/<persona>.json` for each persona.
+  bundled template; the audience if given. **Build only the collaterals chosen in § 1**, from one story: skip the
+  deck phases when the deck is not chosen, the script PDF render when the script is not chosen, and the recording
+  and video build when the video is not chosen; keep the brief's `must_show_in` to the chosen ones. When only the
+  video is chosen, the narration script is still written (the video needs it) but not delivered. The Orbit session
+  from § 1 is copied to the collateral folder's `auth/<persona>.json` for each persona.
 
 Update the run's `status` to `in_review` when the stage's output exists.
 
 ## 4 · AI PM review
 
 As the orchestrator's "Calling the reviewer" does: the `ai-pm` agent (`subagent_type` `poc-studio:ai-pm`), a request
-YAML in `<workspace>/reviews/<stage>-review-<n>.request.yaml` with `work_id` = the POC ID if given, else
+YAML in `<workspace>/reviews/<stage>-review-<n>.request.yaml`. **`<n>` is never reused:** it is the highest number
+already in `reviews/` for that stage (pipeline or earlier one-off) plus one, so nothing earlier is overwritten. Record
+this run's first `<n>` in the run entry (`first_review`). `round` counts this run's reviews (1, 2, 3) and restarts
+for a change request; `prior_verdict` is always given explicitly from round 2 on (this run's previous verdict, never
+another run's). `work_id` = the POC ID if given, else
 `SA-<client-slug>__<usecase-slug>`; `stage` from the table above; `artifacts` = the asset's output(s); `upstream` = the
 input the asset was made from (the RG document for a BRD, the BRD for a design system or app, the BRD and the app for
-collaterals; none for requirements and research beyond the question); `owner_profile` as in § 2. Handle the verdict
+collaterals; none for requirements and research beyond the question); `owner_profile` as in § 2; for collaterals,
+`known: ["collaterals chosen: <list>; the others were not requested and are not missing"]`. Handle the verdict
 exactly as the orchestrator's table does: REVISE with a response file (at most 2 REVISE rounds), BLOCK, the round-3
 ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk inside § 3.
 
@@ -182,20 +218,25 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
    - the local file path(s);
    - the Orbit file link(s) — the public upload URL, the Drive link or the app preview link — which open without the app;
    - the app row(s): `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<type-slug>`;
-   - the AI PM gate summary: `python3 "$R/lessons.py" gate <workspace> <stage>`;
+   - the AI PM gate summary: `python3 "$R/lessons.py" gate <workspace> <stage> --since <first_review>` (this run's
+     reviews only);
+   - for a design system, also open the file locally now (`open <file>` on a Mac, `xdg-open` on Linux);
    - any `check_this` assumptions and anything still open.
 3. Ask with AskUserQuestion: **Approve** / **Request changes** (they type the changes in "Other").
 
 ## 6 · The decision
 
 - **Approve** → orbit-writeback "One-off documents" → The decision: the row's (or rows') `status` → `approved`, read
-  back. `python3 "$R/lessons.py" record <workspace> <stage> approved`. Run status `done`. Log it in `context-log.md`.
-  Tell the person in one line that the asset is approved, with its Orbit link. The run ends here.
+  back. `python3 "$R/lessons.py" record <workspace> <stage> approved --since <first_review>`. For a design system, also
+  record its look for the AI PM's logo-off test: `python3 "$R/lessons.py" look "<Client>" "<chrome · surface · shell ·
+  concept>"`, read from the file's expression card. Run status `done`. Log it in `context-log.md`. Remove the
+  `one-off` flag. Tell the person in one line that the asset is approved, with its Orbit link. The run ends here.
 - **Request changes** → log their words verbatim in `context-log.md` (a human decision for every later review),
-  `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>"` and `… record <workspace> <stage> changes`.
-  Recreate the autopilot flag, re-run the stage skill on its own output with those changes (fix only what they
-  asked), review again (§ 4; the round counter restarts), then write the **new version** (§ 5, which makes v(N+1) and
-  supersedes the older one) and ask again (§ 5.2–6).
+  `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>"` and `… record <workspace> <stage> changes
+  --since <first_review>`. Recreate the autopilot flag, re-run the stage skill on its own output with those changes
+  (fix only what they asked; for an app, as direct changes through `ua-change` on the recorded solution), review
+  again (§ 4: `round` restarts at 1, `<n>` keeps counting; set `first_review` to the new first `<n>`), then write the
+  **new version** (§ 5, which makes v(N+1) and supersedes the older one) and ask again (§ 5.2–6).
 
 ## Never
 

@@ -266,10 +266,12 @@ except at the start (the POC ID must be verified).
 ## 0 · Setup
 
 1. Get the client name, the use case name and the POC ID (all three required; stop and ask if the POC ID is missing).
-   Make the slugs and the workspace tree. A `state.json` that holds only one-off runs (a `standalone` key and no
-   `poc_id`) is not a pipeline run: start the run in it and keep its `standalone` key as it is. If it exists, resume (above) — but if its `state.json` has a **different**
+   Make the slugs and the workspace tree. If it exists, resume (above) — but if its `state.json` has a **different**
    POC ID, stop and ask the person whether this is the same POC (resume) or a new one (then use a new folder
    `<client-slug>/<usecase-slug>-<POC ID>/`).
+   A `state.json` that holds only one-off runs (a `standalone` key and no `poc_id`) is not a pipeline run: start the
+   run in it and keep its `standalone` key as it is. Remove a leftover `.poc-studio/one-off` flag (from an interrupted
+   one-off run): while it exists the owner is not nudged in Slack.
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
