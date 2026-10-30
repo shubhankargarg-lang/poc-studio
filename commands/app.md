@@ -54,7 +54,7 @@ Load the `asset-run` skill (Skill tool: `poc-studio:asset-run`) and follow its *
 **`app`**: take each prerequisite from the arguments, then from an existing workspace for this client and use case
 (offer what you find in one line), then ask for everything still missing in **one** question. Never ask for a password.
 
-- **Required:** Client name · Use case · a BRD or scoping document · the UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`).
+- **Required:** Client name · Use case · a BRD or scoping document · the UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) · the collateral tools (Playwright, for the AI PM's browser check before publish) and a valid Orbit sign-in · not a folder whose UnifyApps Headless setup belongs to a pipeline run (if it is, ask once: a separate folder is recommended).
 - **Optional** (asked once, in the same question; the run goes on without it): A design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first).
 - **If something required is missing:** Plugin or setup missing: tell the person what to install or run, then check again.
 

@@ -60,6 +60,8 @@ orbit:
   poc_id: POC-acme-20261018
   poc_record_id: <record id>
   owner: { name: <owner name>, email: <owner email> }
+  client_name: <from the POC row>
+  use_case: <from the POC row>
   documents:            # every document you wrote, by gate
     g1: [{ document_id: …, type: requirements, version: 1, status: in_review, file_link: … }]
   open_iterations:      # iteration rows waiting for a new version

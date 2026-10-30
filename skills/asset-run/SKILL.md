@@ -31,8 +31,10 @@ prerequisite is in hand does the autopilot flag go on and the stage run unattend
 **First, the run flags** (absolute paths under `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/`):
 - Create **`one-off`** (holding the asset name). While it exists, the nudge hook posts nothing to any POC's Slack thread
   (a one-off asset never posts to a POC). Remove it when the run ends — after § 6, or whenever the run stops.
-- Remove a leftover **`autopilot`** or **`zen-planning`** flag from an interrupted run (no run in this session created
-  it): it would block the questions below.
+- A leftover **`autopilot`** or **`zen-planning`** flag would block the questions below. Read the workspace path in
+  it: if that workspace's `state.json` has a pipeline stage `running` or `in_review` (a pipeline may be running in
+  another session in this folder), do not remove it — tell the person in one line and stop. Otherwise it is left from
+  an interrupted run: remove it.
 
 **Parse the arguments** (`<a> | <b> | …`, as the command shows). Quotes around a value are dropped. A trailing value
 that looks like `POC-<…>-<8 digits>` is the POC ID. For collaterals, any other value after the preview link (or words
@@ -168,7 +170,8 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
   once it has passed review.
 - **app** — orchestrator § 4 as written, writing its files in `04-build/one-off/` (`build-summary.md`,
   `test-report.md`, `zen-decisions.md`, `platform-*.md`, `routes.json`, `glossary.json`): `/ua:setup`; `platform-master`
-  pointers; `/ua:plan` in Zen inside the Zen planning window (the person answers Zen's questions and approves the plan,
+  pointers (tell platform-master its output folder is `04-build/one-off/`, for every file it writes); `/ua:plan` in Zen
+  inside the Zen planning window (the person answers Zen's questions and approves the plan,
   which platform-master reviewed first); the parallel build; UnifyApps Headless's own tests; the browser fallback for
   any platform asset it cannot build; the **4b AI PM build walk**; publish.
   - **Solution:** the first run of this command for this client and use case creates a **new** solution named
@@ -194,8 +197,10 @@ Update the run's `status` to `in_review` when the stage's output exists.
 ## 4 · AI PM review
 
 As the orchestrator's "Calling the reviewer" does: the `ai-pm` agent (`subagent_type` `poc-studio:ai-pm`), a request
-YAML in `<workspace>/reviews/<stage>-review-<n>.request.yaml`. **`<n>` is never reused:** it is the highest number
-already in `reviews/` for that stage (pipeline or earlier one-off) plus one, so nothing earlier is overwritten. Record
+YAML in `<workspace>/reviews/<stage>-review-<n>.request.yaml`. **`<n>` is never reused, in every mode:** for review
+files and for the resolve files written when a question goes to the AI PM during the stage
+(`<stage>-resolve-<n>.request.yaml` and its verdict), `<n>` is the highest number already in `reviews/` for that
+stage and mode (pipeline or earlier one-off) plus one, so nothing earlier is overwritten. Record
 this run's first `<n>` in the run entry (`first_review`). `round` counts this run's reviews (1, 2, 3) and restarts
 for a change request; `prior_verdict` is always given explicitly from round 2 on (this run's previous verdict, never
 another run's). `work_id` = the POC ID if given, else
@@ -227,13 +232,14 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
 ## 6 · The decision
 
 - **Approve** → orbit-writeback "One-off documents" → The decision: the row's (or rows') `status` → `approved`, read
-  back. `python3 "$R/lessons.py" record <workspace> <stage> approved --since <first_review>`. For a design system, also
+  back. `python3 "$R/lessons.py" record <workspace> <stage> approved --since <first_review> --work <document_id prefix>`. For a design system, also
   record its look for the AI PM's logo-off test: `python3 "$R/lessons.py" look "<Client>" "<chrome · surface · shell ·
   concept>"`, read from the file's expression card. Run status `done`. Log it in `context-log.md`. Remove the
   `one-off` flag. Tell the person in one line that the asset is approved, with its Orbit link. The run ends here.
 - **Request changes** → log their words verbatim in `context-log.md` (a human decision for every later review),
-  `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>"` and `… record <workspace> <stage> changes
-  --since <first_review>`. Recreate the autopilot flag, re-run the stage skill on its own output with those changes
+  `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>" --work <document_id prefix>` and `… record
+  <workspace> <stage> changes --since <first_review> --work <document_id prefix>` (the `SA-…__v` prefix without its
+  number, so one-off outcomes never count against a pipeline POC in the same folder). Recreate the autopilot flag, re-run the stage skill on its own output with those changes
   (fix only what they asked; for an app, as direct changes through `ua-change` on the recorded solution), review
   again (§ 4: `round` restarts at 1, `<n>` keeps counting; set `first_review` to the new first `<n>`), then write the
   **new version** (§ 5, which makes v(N+1) and supersedes the older one) and ask again (§ 5.2–6).

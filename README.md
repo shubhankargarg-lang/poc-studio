@@ -124,8 +124,8 @@ every command: when it is given and found in Orbit, the row shows a POC chip; a 
 | research-report | Client · Topic · The question(s) | Purpose (internal check, working draft or client-facing) · Files to read first |
 | brd | Client · Use case · At least one input: an RG document, meeting notes, an email, client files, or a Slack or Drive link | Client website |
 | design | Client · Use case · A BRD or scoping document · Client website ("derive it" is fine) | Client logo · Brand guidelines |
-| app | Client · Use case · A BRD or scoping document · UnifyApps Headless installed and this folder set up (`/ua:setup`) | A design system HTML (else UnifyApps Headless's default look) |
-| collaterals | Client · Use case · Which collaterals (always asked) · The app's **preview link** · Orbit sign-in · The collateral tools | A BRD or scoping document (recommended) · An RG document · The audience |
+| app | Client · Use case · A BRD or scoping document · UnifyApps Headless installed and this folder set up (`/ua:setup`) · The collateral tools (for the browser check before publish) and an Orbit sign-in · Not a folder whose setup belongs to a running POC (else it asks first) | A design system HTML (else UnifyApps Headless's default look) |
+| collaterals | Client · Use case · Which collaterals (always asked, unless the command already says which, e.g. `deck only`) · The app's **preview link** · Orbit sign-in · The collateral tools | A BRD or scoping document (recommended) · An RG document · The audience |
 
 Only preview links are accepted for an app (`…/agent-api/preview/b/<app id>/main` or `…/p/0/interfaces/<app id>/preview`
 on `orbit.uat.unifyapps.com`); a published or builder link is turned into the preview link from its app id. You never
