@@ -125,14 +125,19 @@ discovered input, `<source>-<short name>` (`slack-…`, `drive-…`, `gmail-…`
 **Document** — object `orbit_studio_document` (create; afterwards update only `status`)
 
 ```json
-{ "document_id": "<id>", "poc": "<poc_id>", "name": "BRD", "type": "brd", "stage": "3_scope", "gate_pack": "g2",
+{ "document_id": "<id>", "poc": "<poc_id>", "origin": "pipeline", "client_name": "<from the POC row>",
+  "use_case": "<from the POC row>", "name": "BRD", "type": "brd", "stage": "3_scope", "gate_pack": "g2",
   "version": 1, "status": "in_review", "doc_role": "artifact",
   "file_link": "https://orbit.uat.unifyapps.com/api/file/download/…", "file_kind": "docx",
   "file_name": "Acme - BRD v1.docx", "summary": "One or two lines on what the document holds.",
   "created_by": "<POC owner name>", "saved_at": 1792280000000 }
 ```
 
-- `type`: slack · requirements · brd · design_system · app · demo_script · deck · video
+- `type`: slack · requirements · research · brd · design_system · app · demo_script · deck · video
+- **Every Document create in the pipeline** sends `"origin": "pipeline"`, `"client_name"` and `"use_case"` (from the
+  POC row read in Setup). One-off documents (`/poc-studio:<asset>` commands) are written by "One-off documents" below.
+- **App documents** (`type app`) always carry the app's **preview link** as `file_link`, by the "Preview link rule"
+  below, never the published matrix URL.
 - `status`: in_review (its gate is waiting) · approved (gate passed) · final (inputs and Deliver files) · superseded
 - `doc_role`: artifact (the run made it) · input (found in discovery)
 - `file_kind`: docx · pptx · html · pdf · video · image · link · other
@@ -363,7 +368,7 @@ drive, unchanged:
 | | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
 |---|---|---|---|---|---|
 | Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive via "Video to Google Drive" (never `upload_public_file`) |
-| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the published app URL, `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
+| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the app's **preview link** (Preview link rule), `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
 | Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
@@ -439,11 +444,11 @@ Upload the new file. Documents: update the rejected version → `superseded`; cr
 Activity: `document_saved`, `gate_posted` gN. POC: current_gate gN, gN_status waiting, status waiting, gN_summary
 (what changed), `slack_notification true`. Then wait for M2 or M3 again.
 **G3 (the app):** there is no file to upload — the new version is an app document v(N+1) with the (same or new) app
-URL as `file_link`. **Every new app version is posted, whenever it happens:**
+preview link (Preview link rule) as `file_link`. **Every new app version is posted, whenever it happens:**
 - while G3 is waiting or changes were asked → this M5 (new app document v(N+1), `in_review`, the old one
   `superseded`, gate re-posted with notification);
 - after G3 was approved (e.g. UnifyApps Headless fixes made during collaterals) → create the app document v(N+1) with status
-  `approved` and the published URL, set the previous version `superseded`, log `document_saved` (gate g3, message naming
+  `approved` and the preview link, set the previous version `superseded`, log `document_saved` (gate g3, message naming
   what changed) and update the POC `g3_summary` and `last_activity`; no notification, no gate change.
 The run state's app version number and Orbit's latest app document must always match.
 
@@ -492,6 +497,94 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 9. POC data policy: every file, client discovery files included, is uploaded as a public link without warning or asking
    (POCs use dummy data).
 
+## Preview link rule (every app link POC Studio writes or records from)
+
+An app is only ever recorded from, and saved to Orbit as, its **preview link**:
+- a code app: `https://orbit.uat.unifyapps.com/agent-api/preview/b/<app id>/main`;
+- a no-code app: `https://orbit.uat.unifyapps.com/p/0/interfaces/<app id>/preview`.
+
+Given a published link (`*.matrix-uat.unifyapps.com`, `*.tensor-uat.unifyapps.com`) or a builder link, work out the
+preview link from the app id in it. Without an id, ask for the preview link. Never save or record from a matrix link:
+it needs a user to be created before it opens.
+
+## One-off documents (`/poc-studio:<asset>` commands)
+
+The standalone commands (`/poc-studio:requirements`, `research-report`, `brd`, `design`, `app`, `collaterals`, run by
+the `asset-run` skill) write **one-off documents**: rows in `orbit_studio_document` with `origin: "standalone"`, shown in
+POC Build Loop under **Assets** (`https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<type-slug>`). This
+section is the only place they are written from; `asset-run` calls it.
+
+**A one-off run writes nothing else to Orbit.** No Activity, no Iteration, no POC update, no `slack_notification`,
+even when a POC ID was given: a one-off asset never moves a POC. The client files found by `requirements` are not
+written as input rows either; only the Requirement Gathering document itself is written.
+
+### The row (create only; afterwards update only `status`)
+
+```json
+{ "document_id": "SA-<client-slug>__<type-slug>__<usecase-slug>__v<N>",
+  "origin": "standalone",
+  "client_name": "<Client, as typed>",
+  "use_case": "<Use case, as typed (the topic for research)>",
+  "poc": "<POC ID, only if one was given and verified; otherwise leave the key out>",
+  "name": "<readable name, e.g. 'Acme — Invoice matching BRD'>",
+  "type": "<requirements | research | brd | design_system | app | demo_script | deck | video>",
+  "stage": "<from the table below>",
+  "gate_pack": "none",
+  "version": <N>,
+  "status": "in_review",
+  "doc_role": "artifact",
+  "file_link": "<public upload URL | Drive link | app preview link>",
+  "file_kind": "<docx | pdf | pptx | html | video | link>",
+  "file_name": "<e.g. 'Acme - BRD v2.docx'>",
+  "summary": "<one or two lines on what it holds; for a new version, what changed>",
+  "created_by": "<the person running the session>",
+  "saved_at": <epoch ms from a one-line script> }
+```
+
+Slugs are lower case with every run of non-letters/digits replaced by `-` (as `client_slug` elsewhere).
+
+| type | type-slug (id and app URL) | stage | file_kind | file_link |
+|---|---|---|---|---|
+| requirements | `requirements` | `2_research_assess` | docx | `upload_public_file` URL |
+| research | `research` | `2_research_assess` | docx | `upload_public_file` URL |
+| brd | `brd` | `3_scope` | docx | `upload_public_file` URL |
+| design_system | `design-system` | `4_design_system` | html | `upload_public_file` URL (`text/html`; the same 20 MB rule as M1b) |
+| app | `app` | `6_finalize` | link | the app's **preview link** (Preview link rule), never a matrix link |
+| demo_script | `demo-script` | `7_collaterals` | pdf | `upload_public_file` URL |
+| deck | `deck` | `7_collaterals` | pptx | `upload_public_file` URL |
+| video | `video` | `7_collaterals` | video | Google Drive link via "Video to Google Drive" (shared drive `POC Studio Video Library`, file name `SA - <Client> - <Use case> - Demo video v<N>.mp4` in its root) |
+
+Collaterals write one row per collateral delivered (up to three), in one `apply_record_edits` call.
+
+### How to write
+
+The same tools and rules as every other write here: one ToolSearch for `get_records`, `apply_record_edits` and
+`upload_public_file` (Setup § 1), host `orbit.uat.unifyapps.com`; never send `""` or `null` (leave the key out); check
+every result is `"ok": true`. If the tenant tools are not in the session (UnifyApps Headless not installed, or this
+folder not set up with `/ua:setup` on `orbit.uat.unifyapps.com`), treat it as a failed write (below) and say what to
+run; the asset itself is still delivered.
+
+**Version number (every write):**
+1. Read the existing versions: `get_records` on `orbit_studio_document`, filter `document_id` `STARTS_WITH`
+   `SA-<client-slug>__<type-slug>__<usecase-slug>__v`, fields `document_id, version, status`, limit 50. If
+   `STARTS_WITH` is refused, filter `origin` EQUAL `standalone` and `type` EQUAL `<type>` (limit 200) and keep the ids
+   with that prefix.
+2. N = the highest `version` + 1, or 1 if there are none. Never trust only the local state: another person may have
+   made a version from another laptop.
+3. Upload the file (if the type has one), then create the new row with status `in_review`.
+4. Update every earlier version of the same id prefix whose status is not `superseded` to `superseded`.
+5. Read the new row back by `document_id` and confirm it.
+
+This covers a change asked at the chat gate and the same command run again later (another day, another person): both
+make v(N+1), and the older version shows as superseded in the app's "older versions".
+
+**The decision.** Approve → update the row's `status` to `approved` and read it back. Request changes → the next
+version is written by the steps above when the reworked file is ready.
+
+**Failures.** Three tries per write. Then tell the person in one line, keep the row (and file path) in `state.json` →
+`standalone.failed_writes`, and retry it at the start of the next run of any `/poc-studio:<asset>` command in this
+workspace. The local files are the deliverable either way: a failed Orbit write never stops the asset.
+
 ## /feedback — POC-level feedback (`orbit_studio_feedback`)
 
 `/poc-studio:feedback <text>` records one piece of **POC-level** feedback: how a POC run went, what the outputs got
@@ -503,6 +596,9 @@ one can become an edit to one of the plugin's SKILL.md files.
    session is working in (look for `*/*/state.json` under the current folder, or `./orbit-test/state.json`). If the
    session has none, or several and it is not clear which, ask once: "Which POC is this feedback for?" and accept a POC
    ID or a client name.
+   A workspace with no POC ID but with one-off runs (`state.json` → `standalone`): still record the feedback, but
+   `orbit_studio_feedback` needs a `poc`, so ask once for a POC ID. If there is none, say feedback can only be filed
+   against a POC for now, and write nothing.
 2. **Read the POC row** with the `get_records` tool (Setup step 1 loads it) for `client_name` and `stage`:
    - by POC ID: `{"host":"https://orbit.uat.unifyapps.com","objectId":"orbit_studio_poc","filters":[{"field":"poc_id","op":"EQUAL","values":["<poc_id>"]}],"limit":1}`;
      if that filter shape is refused, use `"filter":{"poc_id":"<poc_id>"}`, and if that is refused too, fetch the row
