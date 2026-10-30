@@ -69,9 +69,11 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   review, check that the output stays on that use case: material from the client's other use cases mixed in is a
   blocking R2 finding; client-wide facts (company, systems, brand) are fine.
 - **Collaterals are exactly three:** demo script PDF, demo video (+ .srt) and the deck. A walkthrough PDF or a
-  separate swimlanes document in `out/` is a finding (remove from the delivery), never a missing item.
+  separate swimlanes document in `out/` is a finding (remove from the delivery), never a missing item. A one-off
+  run (`/poc-studio:collaterals`) may ask for fewer: the request's `known` names the ones chosen, and the others are
+  not requested, so never a finding.
 - **Collaterals use the preview link:** the video, screenshots and deck must show the app opened from its
-  preview link (`state.json` → `app.preview_url`), not the published Matrix app's login or user-creation screens; a
+  preview link (`state.json` → `app.preview_url`, or the one-off run's preview link), not the published Matrix app's login or user-creation screens; a
   frame showing those is a blocking R9 finding.
 - **Owner:** the person running the plugin. Approvers: the same person, at the orchestrator's gate after each stage.
 - **Workspace:** the client folder the orchestrator names in the request (`<workspace>`). Verdicts go to

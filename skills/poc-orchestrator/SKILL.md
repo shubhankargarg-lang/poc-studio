@@ -269,6 +269,9 @@ except at the start (the POC ID must be verified).
    Make the slugs and the workspace tree. If it exists, resume (above) — but if its `state.json` has a **different**
    POC ID, stop and ask the person whether this is the same POC (resume) or a new one (then use a new folder
    `<client-slug>/<usecase-slug>-<POC ID>/`).
+   A `state.json` that holds only one-off runs (a `standalone` key and no `poc_id`) is not a pipeline run: start the
+   run in it and keep its `standalone` key as it is. Remove a leftover `.poc-studio/one-off` flag (from an interrupted
+   one-off run): while it exists the owner is not nudged in Slack.
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
@@ -536,7 +539,8 @@ Only these session facts are supplied by you:
      Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
 - **4b · AI PM build review (v1.0)** — the independent check on UnifyApps Headless's own testing, before publish.
   0. Ask UnifyApps Headless for the app's **preview link** now (the link that opens the app directly with its seed
-     data, without first creating a user in the Matrix app) and save it in `state.json` → `app.preview_url`; the walk
+     data, without first creating a user in the Matrix app; orbit-writeback's **Preview link rule**: work it out from
+     the app id if it gives a published or builder link) and save it in `state.json` → `app.preview_url`; the walk
      runs on it.
   1. Write `04-build/routes.json` from scoping §11 in nav order: `[{"name": "<page>", "route": "<route>"}, …]`
      (UnifyApps Headless's route list if the scoping routes changed), and `04-build/glossary.json` from scoping Appendix B as

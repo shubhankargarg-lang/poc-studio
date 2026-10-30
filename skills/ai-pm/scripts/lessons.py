@@ -14,11 +14,13 @@ Home: $POC_STUDIO_LESSONS or ~/.local/poc-studio/lessons/
 usage:
   lessons.py init                                         copy the seed lessons and profiles (first run; never overwrites)
   lessons.py for <stage> [--owner <name>]                 print the checks a review of <stage> must run
-  lessons.py capture <workspace> <stage> "<feedback>"     store gate feedback verbatim in the inbox
+  lessons.py capture <workspace> <stage> "<feedback>" [--work <id>]   store gate feedback verbatim in the inbox
+                                                          (--work: count it under this id, e.g. a one-off run's SA-… id)
   lessons.py inbox                                        list pending inbox items
   lessons.py add --stage <s> --area <a> --check "<…>" --why "<…>" --origin "<…>" [--owner <name>] [--from-inbox <n>]
-  lessons.py gate <workspace> <stage>                     gate summary for the person, from reviews/*.yaml
-  lessons.py record <workspace> <stage> approved|changes  log a gate outcome
+  lessons.py gate <workspace> <stage> [--since <n>]       gate summary for the person, from reviews/<stage>-review-<n>.yaml
+                                                          (n >= since: a one-off run passes its first review number)
+  lessons.py record <workspace> <stage> approved|changes [--since <n>] [--work <id>]   log a gate outcome
   lessons.py miss <workspace> <stage> "<what was missed>" log a miss (the reviewer passed it, the owner caught it)
   lessons.py look <client> "<chrome · surface · shell · concept>"   record a design system's look
   lessons.py stats                                        first-try approval rate, rounds and misses per stage
@@ -65,10 +67,11 @@ def cmd_for(stage, owner=None):
         looks = read(p("recent-looks.md")).strip().splitlines()[-8:]
         print("\n# Recent looks (logo-off test)\n" + ("\n".join(looks) or "(none yet)"))
 
-def cmd_capture(ws, stage, text):
+def cmd_capture(ws, stage, text, work=None):
+    pid = work or poc_id(ws)
     n = len(re.findall(r"^## inbox-\d+", read(p("inbox.md")), re.M)) + 1
-    append(p("inbox.md"), f"## inbox-{n} · pending · {stage} · {poc_id(ws)} · {TODAY}\n\n> " + text.strip().replace("\n", "\n> ") + "\n\n")
-    append(p("metrics.jsonl"), json.dumps({"at": TODAY, "poc": poc_id(ws), "stage": stage, "event": "feedback", "chars": len(text)}) + "\n")
+    append(p("inbox.md"), f"## inbox-{n} · pending · {stage} · {pid} · {TODAY}\n\n> " + text.strip().replace("\n", "\n> ") + "\n\n")
+    append(p("metrics.jsonl"), json.dumps({"at": TODAY, "poc": pid, "stage": stage, "event": "feedback", "chars": len(text)}) + "\n")
     print(f"inbox-{n} captured")
 
 def cmd_inbox():
@@ -92,10 +95,18 @@ def load_yaml(f):
         import yaml; return yaml.safe_load(open(f))
     except ImportError: sys.exit("pip install pyyaml (needed to read verdicts)")
 
-def cmd_gate(ws, stage):
-    vs = []
-    for f in sorted(glob.glob(os.path.join(ws, "reviews", f"{stage}-review-*.yaml"))):
+def review_files(ws, stage, since=1):
+    """Verdict files <stage>-review-<n>.yaml with n >= since, in numeric order (10 after 9)."""
+    out = []
+    for f in glob.glob(os.path.join(ws, "reviews", f"{stage}-review-*.yaml")):
         if f.endswith(".request.yaml"): continue
+        m = re.search(r"-review-(\d+)\.yaml$", f)
+        if m and int(m.group(1)) >= since: out.append((int(m.group(1)), f))
+    return [f for _, f in sorted(out)]
+
+def cmd_gate(ws, stage, since=1):
+    vs = []
+    for f in review_files(ws, stage, since):
         v = load_yaml(f) or {}; v["_file"] = os.path.basename(f); vs.append(v)
     if not vs: print(f"No review verdicts for {stage} in {ws}/reviews"); return
     last = vs[-1]
@@ -120,11 +131,11 @@ def cmd_gate(ws, stage):
     w = last.get("weakest_part")
     if w: print(f"Weakest part (author's own): {w}")
 
-def cmd_record(ws, stage, outcome):
+def cmd_record(ws, stage, outcome, since=1, work=None):
     prior = [json.loads(l) for l in read(p("metrics.jsonl")).splitlines() if l.strip()]
-    first = outcome == "approved" and not any(x["poc"] == poc_id(ws) and x["stage"] == stage and x["event"] in ("changes", "feedback") for x in prior)
-    rounds = len([f for f in glob.glob(os.path.join(ws, "reviews", f"{stage}-review-*.yaml")) if not f.endswith(".request.yaml")])
-    append(p("metrics.jsonl"), json.dumps({"at": TODAY, "poc": poc_id(ws), "stage": stage, "event": outcome, "first_try": first, "ai_pm_rounds": rounds}) + "\n")
+    first = outcome == "approved" and not any(x["poc"] == (work or poc_id(ws)) and x["stage"] == stage and x["event"] in ("changes", "feedback") for x in prior)
+    rounds = len(review_files(ws, stage, since))
+    append(p("metrics.jsonl"), json.dumps({"at": TODAY, "poc": (work or poc_id(ws)), "stage": stage, "event": outcome, "first_try": first, "ai_pm_rounds": rounds}) + "\n")
     print(f"{stage}: {outcome}{' (first try)' if first else ''}")
 
 def cmd_miss(ws, stage, what):
@@ -147,7 +158,10 @@ def cmd_stats():
 def kv(args):
     d, i = {}, 0
     while i < len(args):
-        if args[i].startswith("--"): d[args[i][2:]] = args[i + 1]; i += 2
+        if args[i].startswith("--"):
+            if i + 1 < len(args) and not args[i + 1].startswith("--"): d[args[i][2:]] = args[i + 1]; i += 2
+            else: i += 1
+
         else: i += 1
     return d
 
@@ -157,11 +171,11 @@ if __name__ == "__main__":
     c = a[0]
     if c == "init": cmd_init()
     elif c == "for": cmd_for(a[1], kv(a[2:]).get("owner"))
-    elif c == "capture": cmd_capture(a[1], a[2], a[3])
+    elif c == "capture": cmd_capture(a[1], a[2], a[3], kv(a[4:]).get("work"))
     elif c == "inbox": cmd_inbox()
     elif c == "add": cmd_add(kv(a[1:]))
-    elif c == "gate": cmd_gate(a[1], a[2])
-    elif c == "record": cmd_record(a[1], a[2], a[3])
+    elif c == "gate": cmd_gate(a[1], a[2], int(kv(a[3:]).get("since", 1)))
+    elif c == "record": cmd_record(a[1], a[2], a[3], int(kv(a[4:]).get("since", 1)), kv(a[4:]).get("work"))
     elif c == "miss": cmd_miss(a[1], a[2], a[3])
     elif c == "look": cmd_look(a[1], a[2])
     elif c == "stats": cmd_stats()
