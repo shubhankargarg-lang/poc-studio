@@ -9,6 +9,6 @@ FLAG="$DIR/.poc-studio/autopilot"
 [ -f "$FLAG" ] || exit 0
 printf '%s' "$INPUT" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
 cat <<JSON
-{"decision":"block","reason":"POC Studio autopilot is on (a stage is running). If you are about to end the turn with a question (from the stage or from UnifyApps Headless), do not ask the user: send it to the poc-reviewer agent in resolve mode, apply the answer, log it in context-log.md and continue the stage. If the stage is finished, go to its reviewer review and approval gate (run rm -f \"${FLAG}\" before asking for approval). If you genuinely need the user (an ASK_HUMAN answer or a sign-in), run rm -f \"${FLAG}\" first and then ask."}
+{"decision":"block","reason":"POC Studio autopilot is on (a stage is running). If you are about to end the turn with a question (from the stage or from UnifyApps Headless), do not ask the user: send it to the ai-pm agent in resolve mode, apply the answer, log it in context-log.md and continue the stage. If the stage is finished, go to its reviewer review and approval gate (run rm -f \"${FLAG}\" before asking for approval). If you genuinely need the user (an ASK_HUMAN answer or a sign-in), run rm -f \"${FLAG}\" first and then ask."}
 JSON
 exit 0

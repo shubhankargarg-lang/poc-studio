@@ -537,14 +537,15 @@ one can become an edit to one of the plugin's SKILL.md files.
    - `ticket_no` and `created_at` use the same `Date.now()` value (get it with a one-line script).
    - `skill` is the POC Studio skill or agent the feedback is about, as its key: `requirement-gathering`, `research`,
      `scoping-l1-first`, `design-system`, `poc-orchestrator`, `poc-collateral-studio`, `orbit-writeback`,
-     `general-reviewer`, `poc-reviewer` — or `general`. Choose it in this order:
+     `platform-master`, `ai-pm` — or `general`. Choose it in this order:
      1. The person names a skill or stage in the feedback (or as an argument) → that key.
      2. Otherwise decide from the feedback text and this session, by what stage or output it is about:
         intake, the brief, client sources → `requirement-gathering`; outside facts → `research`; the scoping/BRD
         document, L1 scope → `scoping-l1-first`; palette, brand, components, the design system → `design-system`;
         how the run is driven, gates, the UnifyApps Headless build, app build quality → `poc-orchestrator`; demo script, deck,
         video → `poc-collateral-studio`; what shows in Orbit, statuses or links, Slack gate messages →
-        `orbit-writeback`; the reviewer's checks → `general-reviewer`; the independent reviewer agent → `poc-reviewer`.
+        `orbit-writeback`; the AI PM's reviews, rulings and lessons → `ai-pm`; Stage 4 pointers, the Zen plan review or the
+        browser fallback → `platform-master`.
      3. It could be several, or none fits clearly → `general` (Orbit's skill analysis places it).
    - Optional: `"quote"` (exact short words worth keeping verbatim) and `"channel_ref"` (e.g. the workspace path).
    - `given_by_name` / `given_by_email` are **the person giving the feedback**, not the POC owner: take them from the

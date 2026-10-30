@@ -475,6 +475,28 @@ screens are drawn.
   human-in-the-loop card, before and after, with approve and reject; nothing happens without it.
 
 ---
+## Answering the AI PM (POC Studio, v1.0)
+
+The orchestrator may call this skill again with the AI PM's findings (`<workspace>/reviews/design-system-review-<n>.yaml`)
+instead of a fresh task. Then:
+
+1. **Fix only what is listed.** Edit the existing output in place: the named sections and specimens of the one HTML file only, byte-for-byte elsewhere; leave everything else exactly as it was. Do
+   not re-run the whole pipeline for a handful of findings.
+2. **Answer every finding** in `<workspace>/reviews/design-system-response-<n>.yaml` (same `n` as the review):
+   ```yaml
+   responses:
+     - { finding: F1, status: fixed,    where: "<section / page / specimen / scene>" }
+     - { finding: F2, status: disputed, reason: "<the evidence: an E-, S-, A- or D-ID, a stated ask, a human decision>" }
+     - { finding: F3, status: deferred, reason: "<non-blocking only>" }
+   ```
+   Dispute when the finding is wrong for this client, and say why with evidence; a dispute without evidence is
+   treated as `fixed` and checked. Never dispute a finding that cites a human decision.
+3. **Re-run your own checks** on what you changed (the render check in light and dark on the sections you touched; contrast for any colour you changed), and say what you ran in the response file
+   (`checks: [ ... ]`). The AI PM re-runs them too.
+4. Do not ask the person anything; questions still go to the reviewer in resolve mode.
+
+---
+
 # THE RUN
 
 ## Input contract
@@ -2011,7 +2033,7 @@ logo covered, is it recognisably this client's?), **hierarchy** (is the one most
 screen obvious?), **rhythm** (spacing and alignment consistent?), **finish** (states, focus, edges,
 type set with care), **concept** (does the idea show where it should, and stay quiet elsewhere?).
 
-**3 · Fix the three weakest points** and record the scores, before and after, in the port note. A page
+**3 · Fix the three weakest points** and record the scores, before and after, in the port note. In POC Studio the AI PM rescores the same five dimensions from its own screenshots and re-runs the render check; a self-score more than one point above its score is a finding, so score honestly. A page
 scoring under 4 on distinctiveness or finish is not ready, whatever the checklist says.
 
 **The checklist — ten items:**
