@@ -104,7 +104,8 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
   "slug": "acme-beverages-shelf-compliance",
   "workspace": "<abs path>",
   "connectors": { "slack": true, "gmail": false, "drive": true, "calendar": true },
-  "video_route": { "ok": true, "root": "<local Drive folder>", "account": "…", "company_share": true, "folder_id": "…" },
+  "video_route": { "ok": true, "route": "shared_drive", "root": "<local shared drive folder>", "account": "…",
+                   "drive_id": "0AOY3pnWOezbhUk9PVA", "company_share": true, "folder_id": "0AOY3pnWOezbhUk9PVA" },
   "stages": {
     "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages - Shelf Compliance.docx", "review_rounds": 1 },
     "scoping":       { "status": "in_review" },
@@ -258,10 +259,12 @@ except at the start (the POC ID must be verified).
    - Gmail and Google Calendar are optional: list which are connected and carry on; the Requirement Gathering
      document records the missing ones as "Not connected".
    - **Video route check.** Run the `orbit-writeback` skill's **Video route check** now: Google Drive for desktop is
-     installed and running, it and the Drive connector use the same Google account (a test file written locally is
-     read back through the connector), and the `POC Studio` folder is shared with the whole company. If anything
-     fails, flag in one line that the demo video will not ship to Drive automatically, why, and the fix; re-check
-     when the person says it is fixed. It never blocks the run.
+     installed and running, the company shared drive `POC Studio Video Library` is on this computer, a test file
+     written into it is read back through the Drive connector (same Google account, write access, sync working), and
+     the drive is open to everyone at UnifyApps (`allemployees@unifyapps.com`). If the shared drive route fails, the
+     check falls back to the person's own `POC Studio` folder (the old route). Say in one line which route the video
+     will take; if neither works, flag that the demo video will not ship to Drive automatically, why, and the fix;
+     re-check when the person says it is fixed. It never blocks the run.
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Questions during stages are answered by the reviewer from context and assumptions, not the person (except, in
@@ -281,8 +284,9 @@ except at the start (the POC ID must be verified).
      about public uploads.
    - The person's own Slack, Gmail, Drive and Calendar accounts are read-only: nothing is posted or sent from them.
      The exceptions are owner-approved: Orbit (the `orbit-writeback` uploads and its `slack_notification`, which makes
-     Orbit post the gate to the POC's Slack thread), and the demo video plus the small sync-check file copied into the
-     person's `POC Studio` Drive folder through Drive for desktop.
+     Orbit post the gate to the POC's Slack thread), and the demo video plus the small sync-check file copied through
+     Drive for desktop into the company shared drive `POC Studio Video Library` (or, on the fallback route, the
+     person's `POC Studio` Drive folder).
 4. **Tools, now, in the background** (so the collateral stage is never blocked hours later, and nobody waits).
    - **Mac:** load the `poc-collateral-setup` skill (Skill tool: `poc-studio:poc-collateral-setup`) and follow it:
      if its doctor already passes, say so in one line; otherwise start its `setup.sh` **in the background** (about
@@ -531,7 +535,8 @@ Only these session facts are supplied by you:
 - **Read only** in the person's accounts: nothing is posted, sent, uploaded or deleted in Slack, Gmail, Drive or
   Calendar from them. The only writes outside the local folder are the Orbit write-back (uploads and rows on
   Orbit · POC Studio, and Orbit's own Slack notification) and the demo video (plus the sync-check file) in the
-  person's `POC Studio` Drive folder, both done by `orbit-writeback`.
+  company shared drive `POC Studio Video Library` (or, on the fallback route, the person's `POC Studio` Drive folder),
+  both done by `orbit-writeback`.
 - **Never delete** anything you did not create in this run.
 - **Tools and skills:** when a stage needs a tool or common skill (e.g. `docx`, `pptx`, `xlsx`, `pdf`, LibreOffice,
   pandoc, ffmpeg), install or load it then and continue. For Anthropic's document skills in Claude Code:

@@ -98,8 +98,9 @@ Call it with:
 - `fileName` is the name readers see, e.g. `Acme - BRD v1.docx`, whatever the file is called on disk.
 - At most **20 MB** per upload.
 - **The demo video always goes to Google Drive, whatever its size**, never through `upload_public_file` and never
-  compressed. It goes by the route in **Video to Google Drive** below (copied into the person's Drive for desktop
-  folder, found and linked with the Drive connector). This is the only way the video is stored.
+  compressed. It goes by the route in **Video to Google Drive** below (copied through Drive for desktop into the
+  company shared drive `POC Studio Video Library`, found and linked with the Drive connector). This is the only way the
+  video is stored.
 - Client files with no type below (or Google-native Docs/Sheets/Slides, mail and calendar items): save the
   source's own link (Slack permalink, Drive link, Gmail or Calendar link) with `file_kind link` instead of uploading.
 - MIME: txt `text/plain` · md `text/markdown` · csv `text/csv` · eml `message/rfc822` · json `application/json` ·
@@ -188,11 +189,29 @@ Do not write G4 until G1–G3 show approved in Orbit.
 ## Video to Google Drive
 
 The Drive connector cannot take a large file (it only accepts file bytes inside the tool call) and cannot set
-company-wide link sharing (it shares with an email, a group or a Chat space only). So the video goes through
-**Google Drive for desktop** on the person's computer: Claude Code copies the file into the local Drive folder, the
-Drive app uploads it in the background, and the connector finds it and gives its link. Sharing to everyone in the
-company comes from the `POC Studio` folder, which is set once to "anyone at <company> with the link", and every file
-inside inherits it.
+company-wide link sharing. So the video goes through **Google Drive for desktop** on the person's computer: Claude
+Code copies the file into a local Drive folder, the Drive app uploads it in the background, and the connector finds
+it and gives its link.
+
+**Where it goes — the company shared drive (primary route).** Every POC video goes to one shared drive that the whole
+company already belongs to, so nobody has to create or share a folder of their own:
+
+| | |
+|---|---|
+| Shared drive name | `POC Studio Video Library` |
+| Shared drive id | `0AOY3pnWOezbhUk9PVA` (also the id of its root folder) |
+| Members | `allemployees@unifyapps.com` as Contributor (everyone can add files and open every link) |
+| Local folder (Drive for desktop, macOS) | `~/Library/CloudStorage/GoogleDrive-<email>/Shared drives/POC Studio Video Library/` |
+| Where the video goes | the drive's **root**, as `<POC ID> - <Client> - Demo video v<N>.mp4` (no sub-folders) |
+
+**How the connector finds files in it.** The connector's search does **not** return shared-drive files on a plain
+title search; it finds them only when the query names the folder: always search
+`parentId = '0AOY3pnWOezbhUk9PVA' and title = '<exact file name>'`. Never drop the `parentId` clause, and never look
+for the file by date (Drive for desktop may keep a file's original timestamps).
+
+**Fallback route (only if the shared drive route fails):** the person's own `My Drive/POC Studio/` folder, shared
+with the company, exactly as before (see "Fallback: personal POC Studio folder" below). Last resort: the person drops
+the file into the shared drive by hand.
 
 ### Video route check (in Setup, while the person is at the screen)
 
@@ -200,72 +219,112 @@ Run it once per run in the orchestrator's Setup, and again before the video uplo
 blocks the run: if it fails, flag it and carry on.
 
 1. **Drive connector**: its tools are in the session (Setup already requires this).
-2. **Drive for desktop**: find the local folder and whether the app is running, with Bash:
+2. **Drive for desktop and the shared drive**: find the local folders and whether the app is running, with Bash:
    ```bash
    python3 - <<'PY'
    import glob, json, os, subprocess, sys
-   h = os.path.expanduser("~"); roots = []
-   for acct in glob.glob(f"{h}/Library/CloudStorage/GoogleDrive-*"):          # macOS (stream or mirror)
+   DRIVE = "POC Studio Video Library"
+   h = os.path.expanduser("~"); accounts = []
+   for acct in sorted(glob.glob(f"{h}/Library/CloudStorage/GoogleDrive-*")):     # macOS (stream or mirror)
        email = os.path.basename(acct)[len("GoogleDrive-"):]
-       subs = [d for d in glob.glob(f"{acct}/*") if os.path.isdir(d) and not os.path.basename(d).startswith(("Shared", "."))]
-       for d in subs: roots.append({"email": email, "root": d})
+       # the shared drive sits one level down, in "Shared drives" (or its localised name): match it by its own name
+       shared = [d for d in glob.glob(f"{acct}/*/{glob.escape(DRIVE)}") if os.path.isdir(d)]
+       shared_parent = os.path.dirname(shared[0]) if shared else None             # "Shared drives", any language
+       mydrive = [d for d in sorted(glob.glob(f"{acct}/*")) if os.path.isdir(d) and d != shared_parent
+                  and not os.path.basename(d).startswith(("Shared", ".", "Other computers"))]
+       accounts.append({"email": email, "shared_drive": shared[0] if shared else None,
+                        "my_drive": mydrive[0] if mydrive else None})
    for d in [f"{h}/My Drive", f"{h}/Google Drive/My Drive"] + [f"{c}:/My Drive" for c in "DEFGHIJKLMNOPQRSTUVWXYZ"]:
-       if os.path.isdir(d): roots.append({"email": None, "root": d})        # mirror mode / Windows drive letter
+       if os.path.isdir(d):                                                       # mirror mode / Windows drive letter
+           base = os.path.dirname(d)
+           shared = [s for s in glob.glob(f"{base}/*/{glob.escape(DRIVE)}") if os.path.isdir(s)]
+           accounts.append({"email": None, "shared_drive": shared[0] if shared else None, "my_drive": d})
    if sys.platform == "win32":
        running = "GoogleDriveFS.exe" in subprocess.run(["tasklist"], capture_output=True, text=True).stdout
    else:
        running = subprocess.run(["pgrep", "-if", "Google Drive"], capture_output=True).returncode == 0
-   print(json.dumps({"running": running, "roots": roots}))
+   print(json.dumps({"running": running, "accounts": accounts}))
    PY
    ```
-   With several roots, try first the one whose email is on the POC owner's domain (e.g. `@unifyapps.com`).
+   With several accounts, use the one whose email is on the POC owner's domain (`@unifyapps.com`). Its
+   `shared_drive` is `<shared root>`; if it is `null`, the shared drive route fails for this account (see the table
+   below) and the fallback route is checked instead.
 3. **Same account and sync working (the real test):** write a small file
-   `<root>/POC Studio/_poc-studio-sync-check.txt` containing the POC ID and a fresh random token (`mkdir -p` the
-   folder; the same file is overwritten each run and never deleted). Then, with the connector, search
-   `title = '_poc-studio-sync-check.txt'` every 15 s for up to 3 minutes and read it (`read_file_content`): it passes
-   when the token matches. Seeing the token through the connector proves the connector and Drive for desktop use the
-   same Google account and that sync works.
+   `<shared root>/_poc-studio-sync-check (<email>).txt` containing the POC ID and a fresh random token (one file per
+   person, overwritten each run, never deleted). Then, with the connector, search
+   `parentId = '0AOY3pnWOezbhUk9PVA' and title = '_poc-studio-sync-check (<email>).txt'` every 15 s for up to 3
+   minutes and read it (`read_file_content`): it passes when the token matches. Seeing the token through the
+   connector proves the connector and Drive for desktop use the same Google account, that this account can write to
+   the shared drive, and that sync works.
    The first write may bring up Claude Code's permission prompt (the folder is outside the workspace) and macOS's
    "access files on Google Drive" prompt: the person approves both once.
-4. **Company-wide sharing:** find the `POC Studio` folder with the connector (`title = 'POC Studio'`, folder mime type,
-   `owner = 'me'`) and read its permissions (`get_file_permissions`). It passes when there is a `domain` permission
-   for the owner's email domain with role `reader` or higher. If it is missing, ask the person once to set it
-   themselves (give the folder link): **Share → General access → "<company>" (anyone in the organisation with the
-   link) → Viewer → Done**, then read the permissions again. Claude never changes this setting itself.
-5. Save the result in `state.json` → `video_route`:
-   `{ "ok": true|false, "root": "<local folder>", "account": "<email>", "company_share": true|false,
-   "folder_id": "<POC Studio folder id>", "reason": "<why not, if not ok>", "checked_at": "<ISO time>" }`, and one line
-   in `context-log.md`.
-6. Tell the person in one line:
-   - all passed → "The demo video will go to Google Drive automatically (`<account>`), shared with everyone at
-     `<company>`."
-   - anything failed → "**The demo video will not ship to Drive automatically:** `<reason>`. Fix: `<fix>`. Otherwise
-     you will be asked to drop it into the Drive folder at the end." Say it can be re-checked any time, re-check when
-     they say it is fixed, and carry on either way.
+4. **Company-wide access:** read the sync-check file's permissions (`get_file_permissions`). It passes when there is
+   a `group` permission for `allemployees@unifyapps.com` (any role from `reader` up). Members of a shared drive are
+   inherited by every file in it, so no link-sharing setting is needed and Claude never changes sharing itself.
+5. **If step 2, 3 or 4 fails, check the fallback route** ("Fallback: personal POC Studio folder" below). Save which
+   route will be used.
+6. Save the result in `state.json` → `video_route`:
+   `{ "ok": true|false, "route": "shared_drive"|"personal_folder"|null, "root": "<local folder the video goes to>",
+   "account": "<email>", "drive_id": "0AOY3pnWOezbhUk9PVA", "company_share": true|false,
+   "folder_id": "<parent id the connector searches: the drive id, or the POC Studio folder id on the fallback>",
+   "reason": "<why the shared drive route failed, if it did>", "checked_at": "<ISO time>" }`, and one line in
+   `context-log.md`.
+7. Tell the person in one line:
+   - shared drive route passed → "The demo video will go to the `POC Studio Video Library` shared drive
+     automatically (`<account>`), open to everyone at UnifyApps."
+   - fallback route passed → "The demo video will go to your own `POC Studio` Drive folder: the shared drive route
+     did not work because `<reason>`. Fix: `<fix>`."
+   - neither → "**The demo video will not ship to Drive automatically:** `<reason>`. Fix: `<fix>`. Otherwise you will
+     be asked to drop it into the shared drive at the end." Say it can be re-checked any time, re-check when they say
+     it is fixed, and carry on either way.
 
-| What failed | `reason` | `fix` |
+| What failed (shared drive route) | `reason` | `fix` |
 |---|---|---|
-| No local Drive folder | Google Drive for desktop is not installed or not signed in | Install it and sign in with your company Google account |
+| No local Drive folder | Google Drive for desktop is not installed or not signed in | Install it and sign in with your UnifyApps Google account |
 | Folder found, app not running | Google Drive for desktop is not running | Open Google Drive (it stays in the menu bar) |
-| Could not write the folder | Claude Code or macOS did not allow access to the Drive folder | Approve the access prompts, then re-check |
-| Token not seen in 3 minutes | Drive for desktop is signed in as `<email from the folder name>` but the Drive connector cannot see its files (a different Google account), or sync is paused/offline | Sign both in to the same company account (connector: claude.ai → Settings → Connectors → Google Drive), check Drive is online and not paused |
-| No domain permission | The `POC Studio` folder is not shared with the company, so the video would be visible only to people it is shared with | Set the folder's General access as in step 4 |
+| `shared_drive` is null | The `POC Studio Video Library` shared drive is not on this computer (not a member yet, or the Drive app has not listed it yet) | Open Finder → Google Drive → Shared drives and check it is there; if not, ask the drive's manager to check that `allemployees@unifyapps.com` (or you) is a member, then wait a minute and re-check |
+| Could not write the folder | Claude Code or macOS did not allow access to the Drive folder, or this account is only a Viewer on the drive | Approve the access prompts; if it still fails, ask the drive's manager for Contributor access, then re-check |
+| Token not seen in 3 minutes | Drive for desktop is signed in as `<email from the folder name>` but the Drive connector cannot see its files (a different Google account), or sync is paused/offline | Sign both in to the same UnifyApps account (connector: claude.ai → Settings → Connectors → Google Drive), check Drive is online and not paused |
+| No `allemployees` permission | The shared drive is not open to the whole company, so the video would be visible only to its members | Ask the drive's manager to add `allemployees@unifyapps.com` as a member |
 
 ### Uploading the video (M1 · G4)
 
-1. If `video_route.ok` is not true, run the check again first.
-2. Copy (never move) the final `.mp4` to `<root>/POC Studio/<POC ID> - <Client>/<Client> - Demo video v<N>.mp4`
-   (`mkdir -p`, then `cp`).
-3. With the connector, search `title = '<Client> - Demo video v<N>.mp4'` every 30 s for up to 15 minutes (large
-   files take a while to upload). Take the newest match in that folder.
-4. Read its permissions: a `domain` permission (inherited from `POC Studio`) means everyone in the company can open
-   it. If it is missing, share it with the POC owner's email as `reader` and say at the gate that it is not shared
-   company-wide and why.
-5. Get its link (`get_file_metadata` → `webViewLink`, else `https://drive.google.com/file/d/<id>/view`) and use it as
-   the video document's `file_link`, with `file_kind video`, and "Video on Google Drive" in its `summary`.
-6. **Fallback** (the route failed, or the file did not appear in 15 minutes): ask the person once to drop the file
-   into that Drive folder (give the local path of the video and the folder), wait until they say it is done, then do
-   steps 3–5. Say which reason made it fall back.
+1. If `video_route.ok` is not true, **or `video_route.route` is missing** (a run started before POC Studio 1.22.0,
+   whose check only knew the personal folder), run the check again first.
+2. **Shared drive route** (`video_route.route = shared_drive`):
+   1. Copy (never move) the final `.mp4` to `<shared root>/<POC ID> - <Client> - Demo video v<N>.mp4` (`cp`; no
+      sub-folders). If a file with that name is already there from an earlier run of the same POC, use the next `v<N>`.
+   2. With the connector, search `parentId = '0AOY3pnWOezbhUk9PVA' and title = '<POC ID> - <Client> - Demo video
+      v<N>.mp4'` every 30 s for up to 15 minutes (large files take a while to upload). Take the newest match.
+   3. Read its permissions: the `allemployees@unifyapps.com` group permission (inherited from the drive) means
+      everyone in the company can open it. If it is missing, say at the gate that the video is open only to the
+      drive's members and why.
+3. **Fallback route** (`video_route.route = personal_folder`): the steps in "Fallback: personal POC Studio folder".
+4. Get its link (`get_file_metadata` → `viewUrl` / `webViewLink`, else `https://drive.google.com/file/d/<id>/view`)
+   and use it as the video document's `file_link`, with `file_kind video`, and "Video on Google Drive" in its
+   `summary` (add "shared drive POC Studio Video Library" or "personal POC Studio folder").
+5. **Last resort** (no route passed, or the file did not appear in 15 minutes): ask the person once to drop the file
+   into the `POC Studio Video Library` shared drive (Finder → Google Drive → Shared drives), named
+   `<POC ID> - <Client> - Demo video v<N>.mp4`; give the local path of the video. Wait until they say it is done,
+   then do step 2.2–2.3 and step 4. Say which reason made it fall back.
+
+### Fallback: personal POC Studio folder
+
+Used only when the shared drive route fails and this route passes. It is the route POC Studio used before the shared
+drive, unchanged:
+
+- **Check:** the person's `My Drive` root is `my_drive` from step 2. Write `<my_drive>/POC Studio/_poc-studio-sync-check.txt`
+  (`mkdir -p` the folder) with the POC ID and a fresh token; with the connector, search
+  `title = '_poc-studio-sync-check.txt'` every 15 s for up to 3 minutes and read it: it passes when the token matches.
+  Then find the `POC Studio` folder (`title = 'POC Studio'`, folder mime type, `owner = 'me'`) and read its
+  permissions: company-wide when there is a `domain` permission for the owner's email domain with role `reader` or
+  higher. If it is missing, ask the person once to set it themselves (give the folder link): **Share → General access
+  → "<company>" (anyone in the organisation with the link) → Viewer → Done**. Claude never changes this setting itself.
+- **Upload:** copy the `.mp4` to `<my_drive>/POC Studio/<POC ID> - <Client>/<Client> - Demo video v<N>.mp4`
+  (`mkdir -p`, then `cp`); search `title = '<Client> - Demo video v<N>.mp4'` every 30 s for up to 15 minutes and take
+  the newest match in that folder; read its permissions (a `domain` permission inherited from `POC Studio`); if it is
+  missing, share it with the POC owner's email as `reader` and say at the gate that it is not shared company-wide and
+  why. Then step 4 above.
 
 ## Order inside every moment
 **upload files → Documents → Iteration → Activity → POC last.**
@@ -406,8 +465,9 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
    system.
 2. G4 is written after the owner approves the collaterals in Claude.
 3. The demo script is uploaded as a PDF (`file_kind pdf`); the "walkthrough video" is the demo video. The video is
-   always put on Google Drive (any size) through Drive for desktop, shared with the whole company through the
-   `POC Studio` folder, and its Drive link is its `file_link` (see "Video to Google Drive").
+   always put on Google Drive (any size) through Drive for desktop, in the company shared drive `POC Studio Video
+   Library` (open to everyone through its `allemployees` membership; the person's own `POC Studio` folder is only the
+   fallback), and its Drive link is its `file_link` (see "Video to Google Drive").
 4. The POC ID is mandatory; there is no lookup by client slug.
 5. No Orbit folder and no command-line script: reads, writes and uploads are UnifyApps Headless's tenant tools called directly in
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.

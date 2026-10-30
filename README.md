@@ -51,23 +51,26 @@ starts in seconds. To check it any time: `bash ~/.local/poc-collateral/doctor.sh
 
 ### Demo video on Google Drive
 
-The video goes through **Google Drive for desktop**: the plugin copies it into your local Drive folder, the Drive app
-uploads it, and the Drive connector finds it and puts its link in Orbit. Setup checks this at the start and flags it
-if it will not work. To pass the check:
+Every demo video goes to one company **shared drive, `POC Studio Video Library`**, which everyone at UnifyApps already
+belongs to (`allemployees@unifyapps.com`), so every video opens for anyone in the company and you do not create or
+share any folder yourself. The video goes through **Google Drive for desktop**: the plugin copies it into the shared
+drive's local folder (Finder → Google Drive → Shared drives → POC Studio Video Library), the Drive app uploads it, and
+the Drive connector finds it and puts its link in Orbit. Setup checks this at the start and flags it if it will not
+work. To pass the check:
 
 1. Install Google Drive for desktop and sign in with your company Google account. It must be running (it sits in the
-   menu bar; it does not need a window open).
+   menu bar; it does not need a window open). Check that **Shared drives → POC Studio Video Library** shows in Finder.
 2. Sign the **Google Drive connector** in Claude in to the **same** account.
-3. Once, set your Drive folder `POC Studio` to **Share → General access → UnifyApps (anyone in the organisation with
-   the link) → Viewer**, so every video inside opens for anyone in the company. Setup gives you the folder link.
-4. Approve the two one-time prompts the first time: Claude Code's "write outside this folder" and macOS's "access
+3. Approve the two one-time prompts the first time: Claude Code's "write outside this folder" and macOS's "access
    files on Google Drive". To skip Claude Code's prompt in future, add the Drive folder to your Claude Code settings
    (`~/.claude/settings.json`):
    ```json
    { "permissions": { "additionalDirectories": ["~/Library/CloudStorage"] } }
    ```
 
-If the check fails, the run still goes ahead; at the end you are asked to drop the video into the Drive folder.
+If the shared drive is not available, the run falls back to your own `My Drive/POC Studio` folder (the old route,
+which needs that folder shared with UnifyApps once). If neither works, the run still goes ahead; at the end you are
+asked to drop the video into the shared drive.
 
 ## Use
 
