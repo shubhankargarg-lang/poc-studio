@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.0
+- New skill `platform-master`, the UnifyApps platform expert for Stage 4, built from the platform knowledge of the UnifyApps helper (curated: no process, design or conflicting rules). Before `/ua:plan` it classifies the use case and adds best-practice pointers to the build request; in the Zen planning window it reviews and corrects Zen's plan (up to two rounds) before the person sees it, so the person approves an already-corrected plan; when UnifyApps Headless cannot build a platform asset, it builds it over the API from the person's signed-in browser tab on Orbit UAT and hands it back through `ua-change`. Orchestrator, reviewer standing answers, Orbit (M4b) and README updated.
+
 ## 1.22.0
 - Demo video: saved to the company shared drive `POC Studio Video Library` (open to everyone through `allemployees@unifyapps.com`), in its root as `<POC ID> - <Client> - Demo video v<N>.mp4`, so nobody creates or shares a folder of their own. The Drive connector finds it with `parentId` = the drive id (its plain title search does not return shared-drive files). Video route check and upload updated; the person's own `POC Studio` folder stays as the fallback route, then a manual drop.
 

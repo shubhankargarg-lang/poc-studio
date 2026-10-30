@@ -114,6 +114,10 @@ reasonably go either way. Standing answers for this pipeline:
   UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
   `04-build/build-summary.md` or `state.json`.
 - **UnifyApps Headless asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
+- **UnifyApps Headless says it cannot build an asset, or asks whether to skip one:** DECIDE "hand it to
+  platform-master's browser fallback" when it is a platform asset (Data Object and seed records, Connection,
+  workflow/automation, AI agent with tasks and tools, data source, context graph item, governance control); a page
+  or other app UI stays with UnifyApps Headless and is shown at the verify gate. Never DECIDE to skip it.
 - **Seed-data file location, public or private:** UnifyApps Headless's recommended option; if none is marked, private.
 - **UnifyApps Headless asks for a mode or environment:** Zen mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
 - **A Zen planning question, Zen's plan approval, or any `CONFIRM_REQUIRED (d_…)`** that reaches the reviewer → return
@@ -124,7 +128,8 @@ reasonably go either way. Standing answers for this pipeline:
   approved for every document, including the client files found during discovery. Do not warn about or ask again
   about public uploads. Public uploads are never a finding and never an ASK_HUMAN.
 - **Pre-approved actions (DECIDE, not ASK_HUMAN):** deploying, publishing or testing the POC app on Orbit UAT; creating
-  the app's objects, agents, automations and seed data there; uploading the design system HTML to Orbit as a public link;
+  the app's objects, agents, automations and seed data there (by UnifyApps Headless, or by platform-master's browser
+  fallback in the POC's solution); uploading the design system HTML to Orbit as a public link;
   choosing models as above. Anything touching the client's or a real production system stays row 1.
 - **BLOCK at a gate:** the orchestrator shows unresolved blocking findings at the person's approval gate after round 2;
   the person's override there (finding id + reason) is a human decision.

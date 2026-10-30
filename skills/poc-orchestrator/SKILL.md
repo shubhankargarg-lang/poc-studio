@@ -51,6 +51,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 2 Scoping | `scoping-l1-first` |
 | 3 Design System | `design-system` |
 | 4 Build | `/ua:setup`, then `/ua:plan` in Zen (separate UnifyApps Headless plugin, `ua`) |
+| 4 Build, platform knowledge | `platform-master` (best-practice pointers, Zen plan review, browser fallback) |
 | 5 Collaterals | `poc-collateral-studio` |
 | Any stage, outside facts | `research` |
 | Every gate, Orbit write-back | `orbit-writeback` |
@@ -82,6 +83,9 @@ and any later session — can read them:
     build-summary.md                    UnifyApps Headless's result: app name, preview link, published app URL, what was built
     zen-decisions.md                    Zen's planning questions and the person's answers
     test-report.md                      one row per page, automation, agent and storyline step
+    platform-pointers.md                platform-master: use-case type, style and the pointers given to the build
+    platform-review.md                  platform-master: its review rounds of Zen's plan and the adjustments
+    fallback-<n>.md                     platform-master: one per asset built by the browser fallback
   05-collaterals/
     <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
   research/                             every research answer, by stage
@@ -237,6 +241,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
 | UnifyApps Headless starts (`/ua:setup`) | **M4** — stage `5_build` (if not already) |
 | Person approves the Zen plan (Stage 4) | **M4a** — Activity "Zen plan approved" with the preview path and task count; stage stays `5_build` |
+| platform-master builds an asset by the browser fallback (Stage 4) | **M4b** — Activity "Asset built by fallback" with its type, name and id; stage stays `5_build` |
 | Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
 
 `slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted). If a write
@@ -274,7 +279,8 @@ except at the start (the POC ID must be verified).
      asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
      one local HTML file, uploaded to Orbit as a public link.
    - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person answers Zen's planning questions and approves its
-     plan; builder and test agents run in parallel; deploying/testing the POC app there is pre-approved; model IDs:
+     plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
+     UnifyApps Headless cannot build is built by platform-master's browser fallback (the person signs in); deploying/testing the POC app there is pre-approved; model IDs:
      the builder's recommendation, else UnifyApps Headless chooses, else any available model; every
      `CONFIRM_REQUIRED` is the person's; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
@@ -370,13 +376,16 @@ Only these session facts are supplied by you:
 ## 4 · Build with UnifyApps Headless
 
 - **Orbit:** M4 (stage `5_build`, if not already) when UnifyApps Headless starts.
-- Run UnifyApps Headless in two steps (Skill tool names `ua:setup` and `ua:plan`, or whatever names the session lists
-  for them). UnifyApps Headless updates itself when called; no update step is needed. If the UnifyApps Headless plugin
+- Run Stage 4 in three steps (Skill tool names `ua:setup`, `poc-studio:platform-master` and `ua:plan`, or whatever
+  names the session lists for them). UnifyApps Headless updates itself when called; no update step is needed. If the UnifyApps Headless plugin
   (`ua`) is not installed, stop and tell the person to install UnifyApps Headless, then continue.
   1. **`/ua:setup`** — create the autopilot file first; this step runs under it, and the reviewer answers its
      questions. It sets up this folder only: tenant `orbit.uat.unifyapps.com`, the person's sign-in, and a **new**
      solution named `<Client> — <Use case>` (see **Solution** below).
-  2. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
+  2. **Platform pointers** — still under the autopilot file, load the `platform-master` skill (Skill tool:
+     `poc-studio:platform-master`) and run its job **1 · Pointers**: it classifies the use case from the approved
+     scoping document and writes `04-build/platform-pointers.md`. Its pointers go into the build request below.
+  3. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
      question. Planning runs in the **Zen planning window** (next bullet).
 - **Zen planning window — the person answers Zen's questions and approves its plan.**
   - Right before `/ua:plan` starts, remove the autopilot file and create the Zen planning flag, next to it, holding
@@ -392,13 +401,18 @@ Only these session facts are supplied by you:
   - Zen reads the solution, designs the objects and pages, writes a spec (with `## Assumptions` and "Check this"
     lines on top) and a task graph (one task per entity, each owned by one builder agent), grills plans with 5 or more
     tasks, and writes and opens a preview page. Nothing is written to the tenant before the person's yes.
-  - **When Zen passes its check**, show the person, in this order: the "Check this" assumptions; the preview path;
-    the task list, one line per task (what · entity · agent · waits on); and the steps that will still ask first
-    (every `CONFIRM_REQUIRED`). Then Zen's one question (start / change something / keep for later) belongs to the
-    person:
+  - **When Zen passes its check, the plan is reviewed before the person sees it:** run `platform-master` job
+    **2 · Plan review**. It checks Zen's spec and task graph against the platform and the pointers, gives its
+    adjustments to Zen as Zen's "change something" input, and reviews the revised plan once more (at most two
+    rounds; `04-build/platform-review.md`). The person is not asked anything during this review.
+  - Then show the person the **final** plan, in this order: the "Check this" assumptions; the preview path; the
+    adjustments the platform review applied (one line each, with why); the task list, one line per task (what ·
+    entity · agent · waits on); and the steps that will still ask first (every `CONFIRM_REQUIRED`). Then Zen's one
+    question (start / change something / keep for later) belongs to the person:
     - **Start** → Orbit **M4a**, Activity "Zen plan approved" with the preview path and task count (orbit-writeback;
       stage stays `5_build`), then the run below.
-    - **Change something** → loops back through Zen with the person, still inside the planning window.
+    - **Change something** → loops back through Zen with the person, still inside the planning window; once Zen
+      has revised the plan, the platform review runs on it again (one round) before the person sees it.
     - **Keep for later** → the stage ends as blocked (Orbit **M6**); delete the Zen planning flag; resuming starts
       the window again.
 - **On the person's yes:** delete the Zen planning flag, recreate the autopilot file, and let `ua-change` run the plan
@@ -408,6 +422,8 @@ Only these session facts are supplied by you:
   reviewer answers every question again (except `CONFIRM_REQUIRED`, see "Questions never go straight to the person").
 - Give UnifyApps Headless, in the build request (so Zen does not ask about these) and again whenever it asks:
   - **Mode:** Zen (stated in the request).
+  - **Platform pointers:** the pointers from `04-build/platform-pointers.md`, with the use-case type and style they
+    were chosen for.
   - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
@@ -442,6 +458,16 @@ Only these session facts are supplied by you:
   select the most appropriate model for the task — if it cannot, pick any available model. Seed-data file location
   (public or private): UnifyApps Headless's recommended option, otherwise **private**. Sign-ins to Orbit are done by
   the person.
+- **Browser fallback — an asset UnifyApps Headless cannot build.** When UnifyApps Headless reports that a task cannot
+  be built (it failed after its own retries, or the capability is not available to it) — during the run or during a
+  fix — and the task is a platform asset (Data Object and its seed records, Connection, workflow/automation, AI agent
+  with its tasks and tools, data source, context graph item, governance control), run `platform-master` job
+  **3 · Fallback** for it. The other independent tasks keep running. For its sign-in, remove the autopilot file and ask
+  the person to sign in to `https://orbit.uat.unifyapps.com` in the browser the skill opens; recreate the autopilot file
+  once they have. platform-master creates the asset over the API from that tab, verifies it, and hands it back to
+  UnifyApps Headless as a direct change through `ua-change` (task marked done, dependants wired to the new id). Write
+  Orbit **M4b** for each asset built. A page or other app UI that UnifyApps Headless cannot build stays with it and is
+  shown at the verify gate.
 - **Test everything with UnifyApps Headless, fix, then publish.** When the builder reports the build complete, do **not** publish yet.
   Have UnifyApps Headless test the whole app itself, in the same session, with its own testing tools (`ua:app-verify` and `ua:app-test-author`
   or browser checks, whatever name the session lists for them; there is no reviewer review of the build).
@@ -490,13 +516,15 @@ Only these session facts are supplied by you:
   (`e_…`, needed for Orbit G3), what was built (objects,
   agents, automations, pages) as UnifyApps Headless reported it, the **Zen plan id**, the **preview path** of the plan,
   a link to `zen-decisions.md`, the **task table** (task number · what · entity · agent · waits on · which tasks ran in
-  parallel), the test results (counts passed / fixed / still failing, linking
+  parallel), the **platform** section (use-case type and style from `platform-pointers.md`; the adjustments the plan
+  review applied, linking `platform-review.md`; one row per asset built by the browser fallback: task · type · name ·
+  id · test result, linking its `fallback-<n>.md`), the test results (counts passed / fixed / still failing, linking
   `test-report.md`), and anything it could not build. Save both in `state.json` →
   `app.preview_url` and `app.published_url`.
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
   version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
-  failing), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
+  failing, including any asset the browser fallback could not build), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through UnifyApps Headless, are listed at the next gate, and each new app version is posted
   to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
   Records the person created while verifying the app (their own runs, uploads, cases) are kept: fixes and re-seeding

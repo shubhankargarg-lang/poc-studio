@@ -349,6 +349,7 @@ drive, unchanged:
 | Design System done + reviewed, before its Claude gate | **M1b · G2 (Design system)** |
 | Design System approved in Claude | **M2 · G2** (full) |
 | Person approves the Zen plan (Stage 4, before any builder agent runs) | **M4a** — Activity "Zen plan approved"; stage stays `5_build` |
+| platform-master builds an asset by the browser fallback (Stage 4) | **M4b** — Activity "Asset built by fallback"; stage stays `5_build` |
 | UnifyApps Headless build published, before the verify gate | **M1 · G3** |
 | App verified/approved in Claude | **M2 · G3** |
 | Collaterals done + reviewed, approved in Claude | **M1 · G4** (Deliver complete) |
@@ -417,6 +418,19 @@ Activity (create) only:
 POC (update): `last_activity` "Zen plan approved; building with <n> tasks", `last_activity_at`. The stage stays
 `5_build`; no document, no gate status change, no slack_notification. If the person chooses "keep for later"
 instead, write **M6** (blocked) and nothing here.
+
+### Moment 4b — platform-master builds an asset by the browser fallback (Stage 4)
+Written once per asset, right after platform-master has built and verified it and handed it back to UnifyApps
+Headless. Activity (create) only:
+
+```json
+{ "activity_id": "ACT-…", "poc": "<poc_id>", "type": "document_saved", "stage": "5_build", "gate": "g3",
+  "actor_type": "ai", "actor_name": "<POC owner name>", "actor_email": "<POC owner email>",
+  "message": "Asset built by fallback: <type> <name> (<id>), task <n>", "created_at": 1792280000000 }
+```
+
+`type` is `document_saved` because the Activity object has no build-step type; the message carries the meaning. No POC
+update, no document, no gate status change, no slack_notification.
 
 ### Moment 5 — the re-iterated document is ready (G1, G2, G3)
 Upload the new file. Documents: update the rejected version → `superseded`; create the new version with version N+1,
