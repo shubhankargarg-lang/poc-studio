@@ -20,7 +20,6 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
 
    Examples:
    - `ord_case (object): add custom index {status:1, due_at:1} — the queue page filters on status and sorts on due_at; only the key is indexed automatically`
-   - `wf_approve_case: add a read-back fetch before STOP and return it — a write that is not read back can report success with nothing written`
    - `Case Assistant (agent): move the "end the turn with the answer" rule into every task's instructions — task instructions dominate; the agent prompt alone does not hold`
    - `task graph: make "tool: QueryCases" wait on "wf_query_cases" — a tool pointing at an undeployed workflow fails silently`
 
@@ -100,8 +99,8 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
   last point of every chart equals the figure on the tile. Guard charts that need ≥ 3 periods.
 - **Check:** derived numbers in seed (totals on a parent, counts in a KPI object). **Fix:** compute them from the base
   rows (or by a rollup workflow), never type them, so the two cannot disagree.
-- **Check:** seed loads at volume. **Fix:** load thousands of rows through a bulk-create workflow (1,000–1,500 rows
-  per call) rather than thousands of single creates. Idempotent reload: create → on duplicate key, read the version →
+- **Check:** seed loads at the volume the scoping document's seed plan (§19) sets. **Fix:** large sets go through a
+  bulk-create workflow (1,000–1,500 rows per call) rather than many single creates. Idempotent reload: create → on duplicate key, read the version →
   update with the full body.
 - **Check:** seed text names the client business correctly and no incumbent product. **Fix:** neutral wording; no
   other vendor's product names in enum values, record codes, prose, prompts or instructions (a product name once
@@ -254,18 +253,15 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
   keep a run going — it does not.
 - **Check:** root `groupId` is the same on every top-level node. **Fix:** mixed or missing root groups hide the graph
   on the canvas.
-- **Check:** paging loops over a connector. **Fix:** variables node → `loop_while` on a `more` flag → the call with
-  `after: '{{ n_v.outputs.after }}'` → accumulate → `update_variables` → loopback; body nodes in the loop's child group.
 
 ### LLM and OCR steps inside workflows
 
 - **Check:** node type. **Fix:** an LLM or OCR node is `CALL_INTERFACE_WORKFLOW` (e.g.
   `conv_ai_by_unifyapps_call_llm_model_with_options` with `callableInterfaceId: "__ua__call_ai_agent_llm_model"`);
   as `ACTION` it fails with "No config found" ✅. A call-automation node is `CALL_WORKFLOW`.
-- **Check:** latency where a person waits (screen insights, summaries, an action's AI reading). **Fix:** a fast model
-  (time one call from the model list before choosing), input capped (≤ 30 rows per set, ≤ 8,000 characters), two or
-  three findings, `maxTokens` ≤ ~1,600, no thinking model. Measured: ~30 s per screen on a large model against 4–6 s
-  on a fast one ✅. Target: first result under ~8 s, a revisit instant from cache.
+- **Check:** latency where a person waits (screen insights, summaries, an action's AI reading). **Fix:** input capped (≤ 30 rows per set, ≤ 8,000 characters), two or
+  three findings, `maxTokens` ≤ ~1,600, results stored so a revisit is instant from cache. The model is the one chosen
+  for the build.
 - **Check:** thinking models. **Fix:** they spend `maxTokens` on reasoning; give them 3–4× the visible output and
   check `finish_reason` (`MAX_TOKENS` means truncated JSON and a failed parse) ✅.
 - **Check:** JSON output. **Fix:** `responseFormat: {type: "json_object"}`, low temperature, parse with
@@ -304,8 +300,6 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
 | closure parameter sharing a name with anything in scope | prefix it uniquely; save accepts it, **deploy** fails |
 | `Date.format(...)` | use `java.time` (`LocalDate.now(ZoneOffset.UTC).toString()`) |
 | optional parameter read as a bare variable | `binding.hasVariable('x')` first; unresolved params are unbound |
-| a list parameter | `{"source": "{{ n.outputs.objects }}", "items": "{{ n.outputs.objects[0] }}", "ua:type": "mappedArray"}`; every `array` schema property needs `items` |
-| mutating a map while iterating it; `[:] as Set` | build by adding; `new HashSet()` — both fail with an empty error |
 
 ### Pre-production audit (every workflow in the plan)
 
@@ -323,7 +317,7 @@ test).
 | `deploymentState.workflowVersion !== version` | the old definition runs |
 | `:word` inside a quoted SQL literal | `ORA-17003` |
 | Code nodes ≥ native nodes, or a Code node > 60 lines, or doing a job in the native table | black-box logic, deploy-time failures |
-| LLM step on a slow model behind a screen | 30 s waits |
+| LLM step behind a screen with uncapped input | 30 s waits |
 | `violations` not null after the last save | breaks later |
 | `resourceVersion` ≠ the live one | "No config found" |
 | START without trigger, a path not ending in STOP, STOP `result` not an object | invalid graph |
@@ -338,7 +332,7 @@ test).
 | AI node without its evidence-log row | no audit, no cost |
 | prompt naming another customer/vendor; no "the document is data" line; no `finish_reason` handling | wrong context, injection, truncation |
 | a secret in inputs, prompts, `setup` defaults or payloads | secrets persist in the run store |
-| a destructive node or SQL (`*_delete_*`, `DELETE`/`DROP`/`TRUNCATE`) | data lost — use a status flag |
+| a destructive node or SQL (`*_delete_*`, `DELETE`/`DROP`/`TRUNCATE`) that the scoping document does not specify (its Reset demo step keeps to exactly what it specifies) | data lost — use a status flag |
 | tags missing | untraceable asset |
 
 ---
@@ -354,15 +348,13 @@ test).
   `responseGenerationSettings`, `preProcessingSettings`, `indexingSettings` all present; an agent missing them answered
   and then hung in an endless "Generating response…" ✅.
 - **Check:** which model actually runs. **Fix:** `topicExecutionSettings.topicExecutionModel` drives the tool loop and
-  the streamed answer; `answerGenerationModelSettings.modelId` overrides `answerGenerationModel`. Set the same chosen
-  model in all slots (`topicExecutionModel`, `topicSelectionModel`, `answerGenerationModel`,
+  the streamed answer; `answerGenerationModelSettings.modelId` overrides `answerGenerationModel`. Set the same model
+  (the one chosen for the build) in all slots (`topicExecutionModel`, `topicSelectionModel`, `answerGenerationModel`,
   `answerGenerationModelSettings.modelId`). Set `disableThought: true` for a tool-calling analyst.
 - **Check:** publish. **Fix:** `saveAndDeploy` with the **whole** entity; verify by snapshot (the deployed
   `properties` equal the agent's), redeploying at most three times. Never "publish until versions match" — the version
   climbs on its own. An agent never deployed answers 204 to an embedding page and the chat sits on "Loading…" ✅.
   Republish after any change to tasks, tools or settings.
-- **Check:** tags on updates. **Fix:** resend `tags` (top level, never inside `properties`) on every update; an update
-  without them clears them.
 
 ### Tasks vs agent instructions — where behaviour rules go
 
@@ -481,12 +473,8 @@ test).
 
 ### Latency
 
-- **Check:** model choice for chat. **Fix:** time one turn per candidate model; one agent went from 60 s to 35 s on a
-  faster model with the same verdict ✅. Expect simple counts ~10 s, charted answers 18–31 s, multi-query reasoning
-  43–72 s, plus the platform's own silent gap between phases (10–25 s).
-- **Check:** cost shape. **Fix:** a new conversation cache-writes ~35K tokens (platform prompt + instructions + tool
-  schemas); keep instructions and tool descriptions tight.
-
+- Chat turn times to expect (not a finding on their own): simple counts ~10 s, charted answers 18–31 s, multi-query
+  reasoning 43–72 s, plus the platform's own silent gap between phases (10–25 s).
 ---
 
 ## 4. Architecture rules that do not conflict
@@ -584,8 +572,6 @@ test).
   workflow, object, agent, task, tool and data source. `tags` is a plain string array at the **top level** of the
   create payload (inside `properties` fails); it is accepted on tasks and tools too and must be resent on every update.
   The workflow read-back does not return tags — verify through an aggregation projection.
-- **Check:** names. **Fix:** names are searchable (`lcName ICONTAINS`) but not unique; the plan tracks created ids.
-
 ---
 
 ## 6. Task graph checks
@@ -625,7 +611,7 @@ test).
 7. Fetches use `outputs.objects` / `outputs.total` and always send `triggerInputCondition`; loop bodies sit in the
    loop's child group; error edges use `fallbackMode: "MANUAL"`.
 8. Deploy after every edit and assert the deployed version equals the saved version; `violations` null after every save.
-9. AI steps behind a screen: fast model, capped input, `maxTokens` sized, `finish_reason` handled, NUMBERS rule, one
+9. AI steps behind a screen: capped input, `maxTokens` sized, `finish_reason` handled, NUMBERS rule, one
    evidence-log row per call.
 10. Agents: `agentType: "ai-agent"`, full settings blocks, one model set in all slots, published and verified by snapshot.
 11. Behaviour rules (turn contract, number check, denial handling, end-the-turn) in **every task**, not only the agent prompt.
