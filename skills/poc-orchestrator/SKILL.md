@@ -1,6 +1,6 @@
 ---
 name: poc-orchestrator
-description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Design System → UnifyApps Headless build → Collaterals — with the General Reviewer checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
+description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Design System → UnifyApps Headless build → Collaterals — with the AI PM checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
 ---
 
 # POC Studio orchestrator
@@ -10,10 +10,15 @@ yourself: each stage has its own skill, and you call it, check it with the revie
 person for approval, and hand the approved files to the next stage.
 
 ```
-Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System → 4 UnifyApps Headless build → 5 Collaterals → Done
-                         │                        │               │                 │                │
-                     reviewer + gate         reviewer + gate  reviewer + gate   verify gate     reviewer + gate
-                     (research skill available to every stage; reviewer answers every clarification question)
+Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 3 Design System → 4 Build → 5 Collaterals → Done
+                         │                        │               │             │              │
+                     AI PM + gate           AI PM + gate     AI PM + gate   Zen plan       AI PM + gate
+                                                                            (platform-master review,
+                                                                             you approve) → parallel
+                                                                            build + test → AI PM walk
+                                                                            (4b) → verify gate
+                     (research skill available to every stage; the AI PM — the `ai-pm` skill — reviews every
+                      stage, answers every clarification question, and learns from every gate)
 ```
 
 **Input — three values, all required:** the client name, the use case name and the **POC ID**, from
@@ -55,7 +60,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 5 Collaterals | `poc-collateral-studio` |
 | Any stage, outside facts | `research` |
 | Every gate, Orbit write-back | `orbit-writeback` |
-| Every stage, review + questions | `general-reviewer`, run by the `poc-reviewer` agent |
+| Every stage, review + questions (the AI PM) | `ai-pm`, run by the `ai-pm` agent |
 
 **All research goes through the `research` skill.** When a stage (or you) needs outside facts, the stage's own
 instructions already say to call `research`; make sure it does. Only if `research` is unavailable may a stage
@@ -179,8 +184,8 @@ Sign-ins are the exception: the person always signs in themselves (Orbit, Slack,
 ## Calling the reviewer
 
 The reviewer must not be the session that wrote the work, so run it as a subagent: the Agent tool with
-`subagent_type` `poc-studio:poc-reviewer` (or the name the session lists for the `poc-reviewer` agent). If that
-agent type is unavailable, use a general-purpose subagent and tell it to load the `general-reviewer` skill first.
+`subagent_type` `poc-studio:ai-pm` (or the name the session lists for the `ai-pm` agent). If that
+agent type is unavailable, use a general-purpose subagent and tell it to load the `ai-pm` skill first.
 
 Write the request to `<workspace>/reviews/<stage>-<mode>-<n>.request.yaml` and pass its path in the prompt:
 
@@ -192,6 +197,7 @@ mode: review | resolve
 stage: requirement-gathering | research | scoping | design-system | build | collaterals
 round: 1 | 2 | 3
 owner: the person running POC Studio
+owner_profile: <state.json owner_profile>                   # v1.0: whose taste profile the AI PM applies
 audience: { who: <client audience from the context log, or "client stakeholders" before Stage 1 is approved>, stakes: low }
 artifacts: [ <abs paths of the stage's outputs> ]          # review
 upstream: { path: <approved upstream>, acceptance_criteria: [ ... ] }   # review; scoping 4.1 from stage 3 on
@@ -204,8 +210,8 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 | Verdict / disposition | What you do |
 |---|---|
 | `PASS` | Go to the approval gate. |
-| `REVISE` | Re-run the stage skill on its own output with the fix lines (fix only what is listed), then review again. **At most 2 REVISE rounds**; after the second, go to the gate anyway and show the open findings. |
-| `BLOCK` | Fix the blocking findings the same way, then review again. If it still blocks after round 2, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
+| `REVISE` | Re-run the stage skill on its own output with the fix lines: **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines. Then review again with `prior_verdict`. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
+| `BLOCK` | Fix the blocking findings the same way (with a response file), then review again. If it still blocks after the third review, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
 | `ASK_HUMAN` | Put the one question to the person (autopilot file removed), log the answer as a human decision, continue. |
 | `REQUEST_RESEARCH` / `research_request` | Call the `research` skill with it, save the answer, give it back to the reviewer or the stage. |
 | `DECIDE` (resolve) | Apply the answer, log it, continue. |
@@ -215,14 +221,21 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 ## The approval gate (after every stage)
 
 Remove the autopilot file, then:
-1. Tell the person in a few lines: what the stage produced (with the saved paths), the reviewer's verdict and
-   score, any assumptions marked `check_this`, and any open findings.
+1. Tell the person in a few lines: what the stage produced (with the saved paths), then the **AI PM gate summary**,
+   printed by `python3 "$R/lessons.py" gate <workspace> <stage>`: verdict and score, rounds, findings fixed,
+   **rulings first** (the decisions the AI PM made on disputes), assumptions marked `check_this`, anything still open,
+   minor findings batched for later, and the author's own weakest part. The person checks the AI PM's decisions;
+   they should not have to re-review the artifact from scratch.
 2. Ask with AskUserQuestion: **Approve and continue to <next stage>** / **Request changes** (they can type the
    changes in "Other").
-3. **Approve** → mark the stage `approved` in `state.json`, log it, run the Orbit approval write (M2 / M2a) and
-   **confirm it landed** (orbit-writeback: "Confirm every approval"); only then move on to the next stage.
-   **Changes** → log the feedback verbatim (it is now a human decision for every later review), re-run the stage
-   skill to apply it, review again (round counter restarts for the new feedback), and gate again.
+3. **Approve** → mark the stage `approved` in `state.json`, log it, run `python3 "$R/lessons.py" record <workspace>
+   <stage> approved`, run the Orbit approval write (M2 / M2a) and **confirm it landed** (orbit-writeback: "Confirm
+   every approval"); only then move on to the next stage.
+   **Changes** → log the feedback verbatim (it is now a human decision for every later review), and also
+   `python3 "$R/lessons.py" capture <workspace> <stage> "<their words, verbatim>"` and `… record <workspace> <stage>
+   changes`, so the AI PM turns it into a lesson for every later POC. If the feedback names something the AI PM's
+   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then re-run the stage skill to apply it, review
+   again (round counter restarts for the new feedback), and gate again.
 
 Never advance without an explicit approval.
 
@@ -282,7 +295,9 @@ except at the start (the POC ID must be verified).
      plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
      UnifyApps Headless cannot build is built by platform-master's browser fallback (the person signs in); deploying/testing the POC app there is pre-approved; model IDs:
      the builder's recommendation, else UnifyApps Headless chooses, else any available model; every
-     `CONFIRM_REQUIRED` is the person's; no reviewer review of the build.
+     `CONFIRM_REQUIRED` is the person's; the AI PM reviews the build at Stage 4b, after UnifyApps Headless's own
+     parallel testing and before publish; every fix to the app goes through UnifyApps Headless (a platform asset it
+     cannot build goes to platform-master's browser fallback).
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
    - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
      the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
@@ -305,7 +320,18 @@ except at the start (the POC ID must be verified).
    - From then on, on a Mac, every Bash command that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts
      with `source ~/.local/poc-collateral/env.sh && ` once that file exists (each shell starts fresh).
    Log what was installed in `context-log.md`.
-5. Tell the person in one or two lines what will happen, then start Stage 1.
+5. **AI PM (v1.0).** Let `R` be the ai-pm skill's `scripts/` folder
+   (`find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' -exec dirname {} \;`).
+   - `python3 "$R/lessons.py" init` (seeds the lesson bank once per machine; never overwrites) and
+     `pip install pyyaml` into the shared venv if `python3 -c "import yaml"` fails.
+   - Set `state.json` → `"owner_profile"`: the POC owner's email in lower case, from Orbit setup (`orbit.owner.email`).
+     Every reviewer request carries it as `owner_profile`. A profile is created in the lesson home the first time the
+     AI PM files a personal preference for that owner; none is shipped with the plugin.
+   - **Orbit sign-in, once, now** (not at Stage 5): `node "$R/orbit_signin.mjs" --check`; if it is not valid, remove the
+     autopilot file, run `node "$R/orbit_signin.mjs"` and ask the person to sign in to Orbit in the window that opens.
+     The session (`~/.local/poc-studio/auth/orbit.json`) serves the Stage 4b build walk and the Stage 5 recording,
+     so the rest of the run needs no sign-in unless it expires.
+6. Tell the person in one or two lines what will happen, then start Stage 1.
 
 ## 1 · Requirement Gathering
 
@@ -371,7 +397,8 @@ Only these session facts are supplied by you:
 - Review: `stage: design-system`, upstream = the approved scoping document.
 - **Orbit:** M1b · G2 (the design system, with notification; stage moves to `4_design_system`) before the gate; M2 ·
   G2 on approve (G2 approved, stage `5_build`); M3 on changes; M5 before re-gating.
-- Gate.
+- Gate. On approval also record the look for the AI PM's logo-off test: `python3 "$R/lessons.py" look "<Client>"
+  "<chrome · surface · shell · concept>"`, read from the file's expression card.
 
 ## 4 · Build with UnifyApps Headless
 
@@ -478,9 +505,7 @@ Only these session facts are supplied by you:
   The per-item rules below are unchanged:
   1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
      seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
-     every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key
-     or any 500 error). Records made by these tests carry `origin = test` and are cleared once testing ends, so they
-     never show on demo paths.
+     every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key or any 500 error).
   2. **Every automation / workflow** (scoping §14): run each one by its real trigger (the page button, the object event,
      a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
      status it should change, the notification it should send. Failures, errors and empty results count as failed.
@@ -509,6 +534,24 @@ Only these session facts are supplied by you:
   6. **Report:** write `<workspace>/04-build/test-report.md`: one row per page, automation, agent and storyline step,
      with pass/fail, what was fixed and how many rounds, and anything still failing after 3 rounds (with the reason).
      Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
+- **4b · AI PM build review (v1.0)** — the independent check on UnifyApps Headless's own testing, before publish.
+  0. Ask UnifyApps Headless for the app's **preview link** now (the link that opens the app directly with its seed
+     data, without first creating a user in the Matrix app) and save it in `state.json` → `app.preview_url`; the walk
+     runs on it.
+  1. Write `04-build/routes.json` from scoping §11 in nav order: `[{"name": "<page>", "route": "<route>"}, …]`
+     (UnifyApps Headless's route list if the scoping routes changed), and `04-build/glossary.json` from scoping Appendix B as
+     `{"<client term>": ["<words that must not appear instead>"]}` where the document names such words.
+  2. Check the Orbit session: `node "$R/orbit_signin.mjs" --check`; if expired, remove the autopilot file and have the
+     person sign in again (`node "$R/orbit_signin.mjs"`).
+  3. Review: `stage: build`, `artifacts: [<preview_url>, 04-build/test-report.md, 04-build/routes.json]`, upstream =
+     the approved scoping document plus the design system. The reviewer runs `build_walk.mjs` and judges storyline,
+     fidelity, copy and the reverse trace (ai-pm, stage lenses → build).
+  4. **REVISE / BLOCK:** give UnifyApps Headless the findings as numbered fix lines, in the same session, as direct
+     changes through `ua-change` with independent fixes in parallel ("Fix exactly these, nothing else: F1 …"); a
+     platform asset it cannot build goes to platform-master's browser fallback. UnifyApps Headless fixes, re-runs its
+     own test on what it touched, and its answers per finding (`fixed` / `disputed` with reason) go into the response
+     file. Then the AI PM walks again (round 2, then the round-3 ruling), as for every stage. At most 3 rounds per finding, as in step 5 above.
+  5. The walk's screenshots (`reviews/build-walk-<n>/shots/`) are shown at the verify gate next to the gate summary.
 - **Publish:** once testing is done, tell UnifyApps Headless to publish the app on Orbit UAT (if its plan has not already
   published it) and to report **two links**: the published app URL, and the app's **preview link** (the
   link that opens the app directly with its seed data, without first creating a user in the Matrix app). If UnifyApps Headless
@@ -525,7 +568,8 @@ Only these session facts are supplied by you:
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app
   version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
-  failing, including any asset the browser fallback could not build), and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
+  failing, including any asset the browser fallback could not build), the AI PM gate summary for `build` and the
+  walk's screenshots, and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
   from the collateral stage) also go through UnifyApps Headless, are listed at the next gate, and each new app version is posted
   to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
   Records the person created while verifying the app (their own runs, uploads, cases) are kept: fixes and re-seeding
@@ -545,8 +589,10 @@ Only these session facts are supplied by you:
     Requirement Gathering document (the "today" pain points) as the build session's truth;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
     The deck (problem statement → solution) is built from it.
-- **Login:** if the app needs a sign-in, the skill opens its sign-in browser (`kit/auth.mjs`) on Orbit; remove the
-  autopilot file and ask the person to log in to Orbit there, then continue. Never type a password.
+- **Login:** reuse the Orbit session from Setup: copy `~/.local/poc-studio/auth/orbit.json` to the collateral
+  folder's `auth/<persona>.json` for each persona (`orbit_signin.mjs --check` first). Only if it has expired does the
+  skill open its sign-in browser (`kit/auth.mjs`) on Orbit; then remove the autopilot file and ask the person to log
+  in there, then continue. Never type a password.
 - **Tools first:** on a Mac, run the `poc-collateral-setup` doctor before anything else in this stage. If it is not
   all `ok` (Setup's background install failed or never ran), run that skill's install now and wait for it. Then the
   kit's `kit/setup.sh` reuses the shared tools and takes seconds. Every command in the collateral folder starts with

@@ -158,6 +158,28 @@ records and AI panels during Phase 1 and write `facts.json` from what you verify
 
 ---
 
+## Answering the AI PM (POC Studio, v1.0)
+
+The orchestrator may call this skill again with the AI PM's findings (`<workspace>/reviews/collaterals-review-<n>.yaml`)
+instead of a fresh task. Then:
+
+1. **Fix only what is listed.** Edit the existing output in place: the story, actions, deck.json or app data the finding names; re-voice and re-record only the scenes and acts it touches; leave everything else exactly as it was. Do
+   not re-run the whole pipeline for a handful of findings.
+2. **Answer every finding** in `<workspace>/reviews/collaterals-response-<n>.yaml` (same `n` as the review):
+   ```yaml
+   responses:
+     - { finding: F1, status: fixed,    where: "<section / page / specimen / scene>" }
+     - { finding: F2, status: disputed, reason: "<the evidence: an E-, S-, A- or D-ID, a stated ask, a human decision>" }
+     - { finding: F3, status: deferred, reason: "<non-blocking only>" }
+   ```
+   Dispute when the finding is wrong for this client, and say why with evidence; a dispute without evidence is
+   treated as `fixed` and checked. Never dispute a finding that cites a human decision.
+3. **Re-run your own checks** on what you changed (`lint.mjs`, `check.py`, and `review.py` for a new video version), and say what you ran in the response file
+   (`checks: [ ... ]`). The AI PM re-runs them too.
+4. Do not ask the person anything; questions still go to the reviewer in resolve mode.
+
+---
+
 ## The pipeline
 
 ```bash

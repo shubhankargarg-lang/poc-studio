@@ -1,0 +1,83 @@
+{
+  "_note": "Case-insensitive. Each hit is a candidate finding, not a verdict: the reviewer keeps it only when the line is not justified by the client's own material. Add phrases from real misses; never remove one without a lesson saying why.",
+  "filler": [
+    "seamless",
+    "seamlessly",
+    "unlock",
+    "unlocks",
+    "leverage",
+    "leverages",
+    "empower",
+    "empowers",
+    "robust",
+    "cutting-edge",
+    "state-of-the-art",
+    "end-to-end visibility",
+    "single pane of glass",
+    "game-changer",
+    "game changer",
+    "streamline",
+    "streamlines",
+    "holistic",
+    "synergy",
+    "best-in-class",
+    "world-class",
+    "next-generation",
+    "revolutionize",
+    "revolutionise",
+    "transformative",
+    "supercharge",
+    "effortless",
+    "effortlessly",
+    "harness the power",
+    "the power of",
+    "in today's fast-paced",
+    "at the end of the day",
+    "mission-critical"
+  ],
+  "overclaim": [
+    "no other tool",
+    "no other solution",
+    "first-of-its-kind",
+    "first of its kind",
+    "unlike any",
+    "only platform",
+    "nobody else"
+  ],
+  "narration": [
+    "here we see",
+    "as you can see",
+    "on this screen we have",
+    "let's take a look",
+    "let me show you",
+    "this screen shows"
+  ],
+  "ui_jargon": [
+    "entity",
+    "record_id",
+    "object id",
+    "workflow run",
+    "payload",
+    "lorem",
+    "ipsum",
+    "placeholder",
+    "test 1",
+    "john doe",
+    "TBD",
+    "TODO"
+  ],
+  "vague_buttons": [
+    "submit",
+    "ok",
+    "proceed",
+    "click here",
+    "continue",
+    "go"
+  ],
+  "generic_empty": [
+    "no data yet",
+    "no data available",
+    "nothing to show",
+    "no records found"
+  ]
+}

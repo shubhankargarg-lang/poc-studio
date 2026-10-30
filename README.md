@@ -4,7 +4,7 @@ A Claude Code plugin that runs a UnifyApps POC end to end for one client:
 
 **Requirement Gathering → Scoping → Design System → UnifyApps Headless build → Collaterals**
 
-with a shared **Research** skill any stage can call, and a **General Reviewer** that checks every stage's output and
+with a shared **Research** skill any stage can call, and an **AI PM** that checks every stage's output and
 answers every clarification question, so the person is only asked to approve (or redirect) at the end of each stage.
 
 ## Install
@@ -114,11 +114,15 @@ the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
-| 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
+| 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then walked in a browser by the AI PM (Stage 4b) before it is published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
-After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
-what it flags (max 2 rounds), then you **approve or request changes**. Questions raised during a stage — including
+After each stage: the **AI PM** (the `ai-pm` agent, an independent subagent) re-runs the stage's own checks, reviews
+the output, and negotiates its findings with the stage (fixed / disputed / deferred; a third round is a ruling, not a
+question). Then you **approve or request changes**, starting from its gate summary: verdict, rulings first,
+assumptions to check. In Stage 4 it also walks the built app in a browser (Stage 4b) before publish. Your gate
+feedback becomes a lesson it checks on every later POC (`python3 <ai-pm>/scripts/lessons.py stats` shows first-try
+approvals per stage). Questions raised during a stage — including
 UnifyApps Headless's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
 Two exceptions in Stage 4 come to you: during the **Zen planning window** (while `.poc-studio/zen-planning` exists)
 you answer Zen's clarification questions and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
@@ -131,7 +135,7 @@ Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 .claude-plugin/plugin.json, marketplace.json
 commands/start.md                  /poc-studio:start
 commands/feedback.md               /poc-studio:feedback
-agents/poc-reviewer.md             independent reviewer subagent
+agents/ai-pm.md                    the AI PM, run as an independent subagent
 hooks/                             route questions to the reviewer while a stage runs
 scripts/release.sh                 bump the version everywhere, commit, push
 skills/poc-orchestrator/           the pipeline
@@ -142,7 +146,10 @@ skills/scoping-l1-first/
 skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
 skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
-skills/general-reviewer/           POC Studio edition (no adapter needed)
+skills/ai-pm/                      the AI PM: reviews every stage, re-runs its checks, Stage 4b build walk, lessons
+                                   (+ references/: stage lenses, slop catalogue; scripts/: build walk, scope metrics,
+                                    render check, lessons, Orbit sign-in)
+lessons/lessons.md                 the AI PM's seed lessons (copied once per machine to ~/.local/poc-studio/lessons)
 skills/poc-collateral-studio/      (+ assets/UnifyApps_template.pptx)
 assets/unifyapps-logo.png          fallback logo when a client logo cannot be found
 ```

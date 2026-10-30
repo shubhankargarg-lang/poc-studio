@@ -7,13 +7,13 @@ description: "Use for every UnifyApps scoping document: turns a validated requir
 
 You are the Scoping stage of the UnifyApps solution plugin:
 
-**Requirement Gathering → Scoping (this skill) → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a General Reviewer that checks outputs.
+**Requirement Gathering → Scoping (this skill) → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a AI PM that checks outputs.
 
 Your job: take whatever Requirement Gathering hands over and produce a **golden scoping document as a Word file (`.docx`)**. That one Word file is what goes to Design and to the build. It must be complete and specific enough that:
 - the Design System skill can design every page and component from it, and
 - UnifyApps Headless (or a person working by hand) can build the whole app on UnifyApps from it: objects, agents, workflows, pages, seed data.
 
-Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the General Reviewer (resolve mode), never to the user.
+Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the AI PM (resolve mode), never to the user.
 
 The Pentland example is the quality bar: two flow decks and a one-line email became a 338-feature catalogue, two app build plans and a design system. The brand compliance example is the other bar: one page of meeting notes became a fully specified scoring model with checks, inputs, formulas, thresholds and per-brand weights. Inputs will usually be that thin. Thin input never justifies a thin document.
 
@@ -171,13 +171,35 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 - **Integrations**: every external system, its direction and what moves (section 6.15).
 - **Component inventory**: name the app-specific building blocks each app needs, the way a product team would talk about them, e.g. for a product-enrichment app: *content builder*, *tech pack reviewer*, *content generator*, *asset shot-list checker*, *channel readiness board*; for a PLM app: *line plan matrix*, *PACE decision room*, *stage gate stepper*. Each component groups the pages, UI patterns, objects, agents and workflows that make it work (format in section 8). Different apps get different components. This is what Design designs and UnifyApps Headless builds against.
 - **Seed data**: enough records that no page, chart, filter or stage column is ever empty (section 6.19).
-- **Demo operations** (POV/demo framing): a **Reset demo** workflow and what it needs on every object (`origin` = seed / test / user, a snapshot of each seed row or a snapshot object), with dates stored relative to the demo day and shifted on reset so "overdue", "this week" and "stuck > N days" stay true. Reset restores and re-anchors the `origin = seed` records only; it never deletes or changes records with `origin = user` (made by the person while using the app), unless the person asks. Records made by the build test carry `origin = test` and are cleared once testing ends. Put the Reset action in an admin/user menu.
+- **Demo operations** (POV/demo framing): a **Reset demo** workflow and what it needs on every object (`origin` = seed/demo, an `archived` flag or delete rule, a snapshot of each seed row or a snapshot object), with dates stored relative to the demo day and shifted on reset so "overdue", "this week" and "stuck > N days" stay true. Put the Reset action in an admin/user menu.
 - **Build surface and platform check**: state whether each app is a no-code app or a code app, and why (a code app suits dense custom UIs such as matrices, drag boards, Gantt and stepped record pages; no-code suits standard list/form/dashboard apps). Then tag every UI pattern, field type, trigger and agent tool you used as *native*, *custom code*, or *not possible / workaround*, from platform knowledge or by asking `research`. Known UnifyApps realities to design around: object picklists and lookups may be simpler in practice than in the spec (say whether you use typed picklists/lookups or string codes joined by key, and use one convention everywhere); nested JSON fields drop null values; numbers read in code nodes may need coercion; some field names (e.g. `version`) collide with system columns; agents may not have every document-generation tool on every tenant; there are no formula or roll-up fields, so computed values must be written by workflows; object names should carry a short solution prefix (e.g. `pc_`, `plm_`) so they don't collide with older objects on a shared tenant.
 
 Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a component. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
 
 ### Step 8 — Write, build the Word file, then self-review
 Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
+
+---
+
+## Answering the AI PM (POC Studio, v1.0)
+
+The orchestrator may call this skill again with the AI PM's findings (`<workspace>/reviews/scoping-review-<n>.yaml`)
+instead of a fresh task. Then:
+
+1. **Fix only what is listed.** Edit the existing output in place (the working draft, then regenerate the .docx from it so IDs and counts stay in step); leave everything else exactly as it was. Do
+   not re-run the whole pipeline for a handful of findings.
+2. **Answer every finding** in `<workspace>/reviews/scoping-response-<n>.yaml` (same `n` as the review):
+   ```yaml
+   responses:
+     - { finding: F1, status: fixed,    where: "<section / page / specimen / scene>" }
+     - { finding: F2, status: disputed, reason: "<the evidence: an E-, S-, A- or D-ID, a stated ask, a human decision>" }
+     - { finding: F3, status: deferred, reason: "<non-blocking only>" }
+   ```
+   Dispute when the finding is wrong for this client, and say why with evidence; a dispute without evidence is
+   treated as `fixed` and checked. Never dispute a finding that cites a human decision.
+3. **Re-run your own checks** on what you changed (`check_docx.py` must still print `ok`), and say what you ran in the response file
+   (`checks: [ ... ]`). The AI PM re-runs them too.
+4. Do not ask the person anything; questions still go to the reviewer in resolve mode.
 
 ---
 
@@ -472,7 +494,7 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 - Named **hero records** that carry the demo story, each with the state it's in, its key dates (offsets) and what it demonstrates. One name per record, used identically everywhere.
 - **Story defects**: list the deliberate problems planted in seed records (missing field, failed rule, overdue, over budget, low-confidence AI value) and which record carries each, so every warning, gate block and exception path has something to show and the copilot's example questions have known answers.
 - **Dates**: store as offsets from the demo day and say how reset re-anchors them.
-- **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. Download each image and store it in the app's own file storage; never link to the client's or a retailer's site, since many block it and the image goes blank in the demo. Keep the source URL per image. Where the rights are unclear, use the fallback. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
+- **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
 - Realistic values that use the client's real brands, products, document formats and regions. Numbers can be dummy, labelled as such.
 - **Demo data rules** (UnifyApps Headless follows them when it seeds; the build test checks them by script):
@@ -495,7 +517,7 @@ Start with the build order: build steps in dependency order (objects and seed �
   - **Seed matches the story.** Each step's record is seeded in exactly the state the step needs: other required approvals already submitted, or the item still in Draft if the step sends it. The hero records (19), agent test answers (13) and field examples (12) all agree with the step.
   - **Show the differentiators.** Every headline differentiator from section 6 appears in a step, including its blocked or failing case when that is the point. Trim other steps to stay in time.
   - **Say what cannot be shown live.** Anything that cannot happen live during the demo (e.g. hourly scheduled reminders) goes in 20.4, or gets an admin 'Run now' action.
-- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 3–6 pages, never more than 8 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
+- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
 ### 21. Hand-off to the design system
@@ -505,9 +527,6 @@ Start with the build order: build steps in dependency order (objects and seed �
 - A UI pattern inventory for the build scope only: pattern · pages that use it · special needs (e.g. a side-by-side compare with variance highlighting).
 - The components from section 23 that need custom design (e.g. a match-score gauge or a variant matrix), with their key states.
 - Interactions and transitions that matter (drag to stage, bulk edit preview, AI accept/reject).
-- **Visual requirements** from the Requirement Gathering document (rows tagged "Must-have — design system"):
-  each one copied word for word, with its source, as a must-have the design system carries. They describe how the
-  app must look or feel; they never set colours, a theme or a typeface, which stay with the design-system skill.
 
 ### 22. Traceability matrix
 A table: problem (P) → objective (O) → components → feature IDs → pages → objects → agents/workflows → success criterion. Every P and every L1 feature appears.
@@ -805,7 +824,7 @@ Write a script or check by hand. Every check must pass.
 - [ ] The component inventory covers every app, and every L1 feature maps to a component.
 - [ ] Every L1 row has an L1 reason with evidence; every client-asked item is L1 or has a Decision; every agent the client will see is L1.
 - [ ] Every L2 row is in the future-scope tables with why it can wait and what it depends on.
-- [ ] POV/demo: a reset workflow exists, seed dates are relative to the demo day, and reset touches only `origin = seed` records.
+- [ ] POV/demo: a reset workflow exists and seed dates are relative to the demo day.
 
 **Consistency**
 - [ ] Every L1 feature maps to a page, and to an object or workflow/agent where it needs one.
@@ -830,7 +849,7 @@ Write a script or check by hand. Every check must pass.
 - [ ] The demo storyline touches every module that has L1 features, and uses nothing L2.
 - [ ] Someone with no other context could design and build the app from this Word document alone.
 
-If a check fails, fix the document rather than weakening the check. For client-facing work, also have a separate agent that did not write the document review it for contradictions before you finish.
+If a check fails, fix the document rather than weakening the check. In POC Studio the independent review is the AI PM (ai-pm, stage `scoping`), which re-runs `check_docx.py` and judges the scope; outside POC Studio, have a separate agent that did not write the document review it for contradictions before you finish. The lessons in sections 11–12 are also in the AI PM's lesson bank (L-001 to L-006); add new ones there, not here.
 
 ---
 
