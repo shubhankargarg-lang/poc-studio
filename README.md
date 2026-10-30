@@ -114,7 +114,7 @@ the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
-| 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions and approving the plan, then built and tested by parallel builder agents, fixed, then published | `/ua:setup`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
+| 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
@@ -140,6 +140,8 @@ skills/research/                   (+ references/calling-research.md, source-gui
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
 skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
+skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen plan review, browser fallback
+                                   (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
 skills/general-reviewer/           POC Studio edition (no adapter needed)
 skills/poc-collateral-studio/      (+ assets/UnifyApps_template.pptx)
 assets/unifyapps-logo.png          fallback logo when a client logo cannot be found
