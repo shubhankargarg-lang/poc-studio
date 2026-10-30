@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.22.0
+- Demo video: saved to the company shared drive `POC Studio Video Library` (open to everyone through `allemployees@unifyapps.com`), in its root as `<POC ID> - <Client> - Demo video v<N>.mp4`, so nobody creates or shares a folder of their own. The Drive connector finds it with `parentId` = the drive id (its plain title search does not return shared-drive files). Video route check and upload updated; the person's own `POC Studio` folder stays as the fallback route, then a manual drop.
+
 ## 1.21.0
 - Build: Zen plan with the user answering clarification questions and approving the plan; builder and test agents run in parallel; CONFIRM_REQUIRED always goes to the person; hooks let Zen-planning questions through.
 
