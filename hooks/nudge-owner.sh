@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # POC Studio: when a question waits on the person (AskUserQuestion), nudge the POC owner in the POC's Slack thread
 # through an Orbit workflow. Notify only: never blocks or changes the question, prints nothing, always exits 0.
-# Skipped while .poc-studio/autopilot exists (route-questions.sh sends those questions to the reviewer).
+# Skipped while .poc-studio/autopilot exists (route-questions.sh sends those questions to the reviewer). It fires
+# whenever autopilot is absent, so Zen planning questions in Stage 4 (.poc-studio/zen-planning) and CONFIRM_REQUIRED
+# questions also reach the owner's Slack thread.
 {
   NUDGE_URL="${ORBIT_NUDGE_URL:-https://orbit.uat.unifyapps.com/api-endpoint/trigger-workflow/6ad587d60b01177697d38daa}"
   NUDGE_KEY="${ORBIT_NUDGE_KEY:-onk_ca271da89e044c7a0b22a7954df44c90b30519444281c0fe}"

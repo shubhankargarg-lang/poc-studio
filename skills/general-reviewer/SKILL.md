@@ -47,7 +47,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 | `research` | research | the question the calling stage sent | the research answer |
 | `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document | `02-scoping/scoping-document.docx` |
 | `design-system` | design | the approved scoping document | `03-design-system/*.html` (style guide, tokens, logo kit) |
-| `build` | resolve only | the approved scoping document + design system | — UnifyApps Headless tests its own build; the reviewer only answers its questions |
+| `build` | resolve only | the approved scoping document + design system | — UnifyApps Headless tests its own build; the reviewer answers only `/ua:setup`'s questions and those asked after the person approves the Zen plan (Zen planning and `CONFIRM_REQUIRED` are the person's) |
 | `collaterals` | deliverable | the approved scoping document + the built app | `05-collaterals/**/out/*` |
 
 - **Use case focus:** each workspace is one client **and one use case** (in `state.json` and the context log). In every
@@ -109,14 +109,15 @@ reasonably go either way. Standing answers for this pipeline:
   (`assets/unifyapps-logo.png`) to build the logo kit, labelled as a stand-in; DECIDE.
 - **UnifyApps Headless asks which model to use** for agents or LLM tasks: choose the option the builder recommends; if it recommends
   none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
-- **UnifyApps Headless asks to confirm its build plan** (`/ua:plan`'s confirmation, whatever its wording, e.g. "start building as shown"): its recommended option (start building).
 - **UnifyApps Headless offers an existing or cached solution** (e.g. one called "Nebula" or "UnifyApps Headless", or one whose entity names belong to
   another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
   UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
   `04-build/build-summary.md` or `state.json`.
 - **UnifyApps Headless asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
 - **Seed-data file location, public or private:** UnifyApps Headless's recommended option; if none is marked, private.
-- **UnifyApps Headless asks for a mode or environment:** Sonic mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
+- **UnifyApps Headless asks for a mode or environment:** Zen mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
+- **A Zen planning question, Zen's plan approval, or any `CONFIRM_REQUIRED (d_…)`** that reaches the reviewer → return
+  **ASK_HUMAN**. These belong to the person: the reviewer never answers them, even with a recommended option.
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).
 - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
   the documents and the collaterals use made-up values, never real customer records, so public Orbit links are

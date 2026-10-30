@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # POC Studio: while <project>/.poc-studio/autopilot exists, a stage (or UnifyApps Headless) is running and its
 # clarification questions must go to the poc-reviewer agent, not the user. Otherwise do nothing.
-cat >/dev/null 2>&1   # drain the hook input
+# Two exceptions always reach the user: Zen planning in Stage 4 (while <project>/.poc-studio/zen-planning exists, Zen's
+# clarification questions and its plan approval belong to the user) and any CONFIRM_REQUIRED (d_…) question.
+INPUT="$(cat 2>/dev/null)"   # the hook input (also drains it)
 DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 FLAG="$DIR/.poc-studio/autopilot"
+[ -f "$DIR/.poc-studio/zen-planning" ] && exit 0
+printf '%s' "$INPUT" | grep -Eq 'CONFIRM_REQUIRED|\(d_' && exit 0
 [ -f "$FLAG" ] || exit 0
 WS="$(head -n1 "$FLAG" 2>/dev/null | tr -d '"\\')"
 cat <<EOF

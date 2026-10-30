@@ -50,7 +50,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 1 Requirement Gathering | `requirement-gathering` |
 | 2 Scoping | `scoping-l1-first` |
 | 3 Design System | `design-system` |
-| 4 Build | `/ua:setup` (then `/ua:plan`; separate UnifyApps Headless plugin, `ua`) |
+| 4 Build | `/ua:setup`, then `/ua:plan` in Zen (separate UnifyApps Headless plugin, `ua`) |
 | 5 Collaterals | `poc-collateral-studio` |
 | Any stage, outside facts | `research` |
 | Every gate, Orbit write-back | `orbit-writeback` |
@@ -80,6 +80,8 @@ and any later session — can read them:
     <slug>-design-system.html           the design system HTML UnifyApps Headless reads (one self-contained file)
   04-build/
     build-summary.md                    UnifyApps Headless's result: app name, preview link, published app URL, what was built
+    zen-decisions.md                    Zen's planning questions and the person's answers
+    test-report.md                      one row per page, automation, agent and storyline step
   05-collaterals/
     <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
   research/                             every research answer, by stage
@@ -156,6 +158,19 @@ Record the absolute flag path in `state.json` (`"autopilot_flag"`) at setup and 
 
 Sign-ins are the exception: the person always signs in themselves (Orbit, Slack, etc.); never type a password.
 
+**Two more exceptions, both in Stage 4 (and in any later fix to the app):**
+
+- **Zen planning window.** While `/ua:plan` plans the build in Zen mode, the autopilot file is removed and the Zen
+  planning flag `$CLAUDE_PROJECT_DIR/.poc-studio/zen-planning` exists (its absolute path in `state.json` →
+  `"zen_planning_flag"`). During that window Zen's clarification questions and its plan approval go to the person
+  directly, never to the reviewer; the hooks let them through. Every question and answer is logged as a human
+  decision in `context-log.md` and in `04-build/zen-decisions.md`. On the person's yes, delete the Zen planning flag
+  and recreate the autopilot file (Stage 4 has the steps).
+- **`CONFIRM_REQUIRED`.** When a UnifyApps Headless tool reply contains `CONFIRM_REQUIRED (d_…)` (deletes and some
+  releases), only the person's own AskUserQuestion answer counts: remove the autopilot file, ask the person with
+  AskUserQuestion, with the `(d_…)` id in the question text (one question per id), pass their answer back, then
+  recreate the autopilot file. The reviewer never answers it, and nobody answers it for the person.
+
 ## Calling the reviewer
 
 The reviewer must not be the session that wrote the work, so run it as a subagent: the Agent tool with
@@ -219,7 +234,8 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
 | Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
-| UnifyApps Headless starts building | **M4** — stage `5_build` (if not already) |
+| UnifyApps Headless starts (`/ua:setup`) | **M4** — stage `5_build` (if not already) |
+| Person approves the Zen plan (Stage 4) | **M4a** — Activity "Zen plan approved" with the preview path and task count; stage stays `5_build` |
 | Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
 
 `slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted). If a write
@@ -248,13 +264,16 @@ except at the start (the POC ID must be verified).
      when the person says it is fixed. It never blocks the run.
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
-   - Questions during stages are answered by the reviewer from context and assumptions, not the person.
+   - Questions during stages are answered by the reviewer from context and assumptions, not the person (except, in
+     Stage 4, Zen's planning questions and plan approval and every `CONFIRM_REQUIRED`, which are the person's).
    - Design system: the stage runs unattended (the person is treated as absent for the skill's stops);
      brand-colour conflicts are settled by the design-system skill's own brand source order, without
      asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
      one local HTML file, uploaded to Orbit as a public link.
-   - Build: UnifyApps Headless in Sonic mode on Orbit UAT; deploying/testing the POC app there is pre-approved; model IDs: the builder's
-     recommendation, else UnifyApps Headless chooses, else any available model; no reviewer review of the build.
+   - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person answers Zen's planning questions and approves its
+     plan; builder and test agents run in parallel; deploying/testing the POC app there is pre-approved; model IDs:
+     the builder's recommendation, else UnifyApps Headless chooses, else any available model; every
+     `CONFIRM_REQUIRED` is the person's; no reviewer review of the build.
    - Collaterals: bundled UnifyApps template; no Doc deliverable; the person signs in to Orbit.
    - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
      the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
@@ -347,16 +366,44 @@ Only these session facts are supplied by you:
 ## 4 · Build with UnifyApps Headless
 
 - **Orbit:** M4 (stage `5_build`, if not already) when UnifyApps Headless starts.
-- Create the autopilot file. Run UnifyApps Headless in two steps (Skill tool names `ua:setup` and `ua:plan`, or
-  whatever names the session lists for them). UnifyApps Headless updates itself when called; no update step is needed.
-  If the UnifyApps Headless plugin (`ua`) is not installed, stop and tell the person to install UnifyApps Headless,
-  then continue.
-  1. **`/ua:setup`** sets up this folder only: tenant `orbit.uat.unifyapps.com`, the person's sign-in, and a **new**
-     solution named `<Client> — <Use case>` (see **Solution** below). It does not ask for a mode.
-  2. **`/ua:plan`** with the build request below. It asks Sonic or Zen: answer **Sonic** (or say Sonic up front in
-     the request).
-- Give UnifyApps Headless, in the build request and again whenever it asks:
-  - **Mode:** Sonic (asked by `/ua:plan` only).
+- Run UnifyApps Headless in two steps (Skill tool names `ua:setup` and `ua:plan`, or whatever names the session lists
+  for them). UnifyApps Headless updates itself when called; no update step is needed. If the UnifyApps Headless plugin
+  (`ua`) is not installed, stop and tell the person to install UnifyApps Headless, then continue.
+  1. **`/ua:setup`** — create the autopilot file first; this step runs under it, and the reviewer answers its
+     questions. It sets up this folder only: tenant `orbit.uat.unifyapps.com`, the person's sign-in, and a **new**
+     solution named `<Client> — <Use case>` (see **Solution** below).
+  2. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
+     question. Planning runs in the **Zen planning window** (next bullet).
+- **Zen planning window — the person answers Zen's questions and approves its plan.**
+  - Right before `/ua:plan` starts, remove the autopilot file and create the Zen planning flag, next to it, holding
+    the workspace path (record its absolute path in `state.json` as `"zen_planning_flag"`):
+    ```bash
+    Z="${CLAUDE_PROJECT_DIR:-<cwd at setup>}/.poc-studio/zen-planning"
+    rm -f "<autopilot_flag>" && echo "<workspace>" > "$Z"   # Zen planning: the person answers
+    ```
+  - While it exists, Zen's clarification questions (AskUserQuestion, one decision each, with a recommended option,
+    any number of rounds, often none) go to the **person directly**. Do not route them to the reviewer. Log every
+    question and the person's answer in `<workspace>/context-log.md` as a human decision, and in
+    `<workspace>/04-build/zen-decisions.md` (one entry per question: the question, the options, the answer).
+  - Zen reads the solution, designs the objects and pages, writes a spec (with `## Assumptions` and "Check this"
+    lines on top) and a task graph (one task per entity, each owned by one builder agent), grills plans with 5 or more
+    tasks, and writes and opens a preview page. Nothing is written to the tenant before the person's yes.
+  - **When Zen passes its check**, show the person, in this order: the "Check this" assumptions; the preview path;
+    the task list, one line per task (what · entity · agent · waits on); and the steps that will still ask first
+    (every `CONFIRM_REQUIRED`). Then Zen's one question (start / change something / keep for later) belongs to the
+    person:
+    - **Start** → Orbit **M4a**, Activity "Zen plan approved" with the preview path and task count (orbit-writeback;
+      stage stays `5_build`), then the run below.
+    - **Change something** → loops back through Zen with the person, still inside the planning window.
+    - **Keep for later** → the stage ends as blocked (Orbit **M6**); delete the Zen planning flag; resuming starts
+      the window again.
+- **On the person's yes:** delete the Zen planning flag, recreate the autopilot file, and let `ua-change` run the plan
+  (§ Run a plan). Tell UnifyApps Headless to start **every task that waits on nothing at once**, in parallel, with its
+  builder agents (fde-agent, automation-agent, app-agent, agent-builder, code-app-agent; **up to 6 in parallel**), and
+  each later task as soon as what it waits on is done. Never build the tasks one by one or by hand. From here on, the
+  reviewer answers every question again (except `CONFIRM_REQUIRED`, see "Questions never go straight to the person").
+- Give UnifyApps Headless, in the build request (so Zen does not ask about these) and again whenever it asks:
+  - **Mode:** Zen (stated in the request).
   - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
@@ -381,18 +428,23 @@ Only these session facts are supplied by you:
     no-code config builder; if UnifyApps Headless offers or picks the config builder, answer text-to-code), with the agents,
     automations and objects listed in the
     build plan (L1 scope only).
-  - **Questions:** tell UnifyApps Headless that its questions will be answered by you (the session), not the person, so it
-    should keep going; whenever it stops with a question — through AskUserQuestion or as plain text — answer it via
-    the reviewer before doing anything else.
-- **Every question UnifyApps Headless asks is answered by the reviewer** (resolve mode, `stage: build`), not the person. Standing
-  answers: Sonic mode; Orbit environment; for **model IDs** for agents and LLM tasks, pick the model UnifyApps Headless
-  recommends — if it recommends none, ask UnifyApps Headless to select the most appropriate model for the task — if it cannot,
-  pick any available model. The builder's plan confirmation from `/ua:plan` (whatever its wording, e.g. "start building as shown"): its recommended option
-  (start building). Seed-data file location (public or private): UnifyApps Headless's recommended option, otherwise **private**.
-  Sign-ins to Orbit are done by the person.
+  - **Questions:** tell UnifyApps Headless that its Zen planning questions and its plan approval go to the person, and
+    that every question after the plan is approved will be answered by you (the session), so it should keep going;
+    whenever it stops with a question then — through AskUserQuestion or as plain text — answer it via the reviewer
+    before doing anything else.
+- **After the Zen plan is approved, every question UnifyApps Headless asks is answered by the reviewer** (resolve mode,
+  `stage: build`), not the person — except `CONFIRM_REQUIRED`. Standing answers: Orbit environment; for **model IDs** for
+  agents and LLM tasks, pick the model UnifyApps Headless recommends — if it recommends none, ask UnifyApps Headless to
+  select the most appropriate model for the task — if it cannot, pick any available model. Seed-data file location
+  (public or private): UnifyApps Headless's recommended option, otherwise **private**. Sign-ins to Orbit are done by
+  the person.
 - **Test everything with UnifyApps Headless, fix, then publish.** When the builder reports the build complete, do **not** publish yet.
   Have UnifyApps Headless test the whole app itself, in the same session, with its own testing tools (`ua:app-verify` and `ua:app-test-author`
-  or browser checks, whatever name the session lists for them; there is no reviewer review of the build):
+  or browser checks, whatever name the session lists for them; there is no reviewer review of the build).
+  **Run the independent checks in parallel:** `ua:app-test-author` runs one test-author agent per approved scenario,
+  several at once, for the pages (1) and the storyline scenarios (4–4c); in the same message, run the independent
+  automations (2) and agents (3) through their builder agents. Only checks that depend on each other's results wait.
+  The per-item rules below are unchanged:
   1. **Every page, one by one:** open each page in the app's preview (nav order from scoping §11), check it loads with
      seed data (no empty tables, charts or stage columns), click every button, tab, filter and link on it, and open
      every create/edit form and submit it twice with test data (the second submit must not fail with a duplicate key
@@ -418,9 +470,11 @@ Only these session facts are supplied by you:
      filter/badge/KPI counts equal row counts; the default persona's first screen and default tab have data; every AI
      output names its records and count (no "0 AI suggestions"); hero evidence unique; no duplicates or placeholders on
      demo paths; test data kept separate from demo data.
-  5. **Fix and re-test:** every failure goes back to UnifyApps Headless to fix (same session, Sonic mode), then that page,
-     automation or agent is tested again, and anything the fix touched is re-tested too. Repeat until everything
-     passes, **at most 3 fix rounds per failing item**; questions UnifyApps Headless asks while fixing go to the reviewer as usual.
+  5. **Fix and re-test:** every failure goes back to UnifyApps Headless (same session) as a **direct change through
+     `ua-change`** — no new plan per fix. All independent fixes in one batch go to their builder agents **in
+     parallel**; then that page, automation or agent, and anything the fixes touched, is re-tested, again in
+     parallel. Repeat until everything passes, **at most 3 fix rounds per failing item**; questions UnifyApps Headless
+     asks while fixing go to the reviewer as usual (except `CONFIRM_REQUIRED`).
   6. **Report:** write `<workspace>/04-build/test-report.md`: one row per page, automation, agent and storyline step,
      with pass/fail, what was fixed and how many rounds, and anything still failing after 3 rounds (with the reason).
      Still-failing items are shown to the person at the verify gate; they never block publishing on their own.
@@ -430,7 +484,9 @@ Only these session facts are supplied by you:
   does not give the preview link, ask it for it explicitly.
 - Then write `04-build/build-summary.md`: app name, **preview link**, published app URL, the UnifyApps Headless **solution id**
   (`e_…`, needed for Orbit G3), what was built (objects,
-  agents, automations, pages) as UnifyApps Headless reported it, the test results (counts passed / fixed / still failing, linking
+  agents, automations, pages) as UnifyApps Headless reported it, the **Zen plan id**, the **preview path** of the plan,
+  a link to `zen-decisions.md`, the **task table** (task number · what · entity · agent · waits on · which tasks ran in
+  parallel), the test results (counts passed / fixed / still failing, linking
   `test-report.md`), and anything it could not build. Save both in `state.json` →
   `app.preview_url` and `app.published_url`.
 - **Orbit:** M1 · G3 (the app, `solution_id`) before the verify gate; M2 · G3 on approve; M3 on changes; M5 (new app

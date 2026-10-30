@@ -111,12 +111,15 @@ the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 3 | Design System | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
-| 4 | Build in UnifyApps Headless (Sonic mode, Orbit), test every page, automation and agent with it and fix, then publish | `/ua:setup`, `/ua:plan` | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md` |
+| 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions and approving the plan, then built and tested by parallel builder agents, fixed, then published | `/ua:setup`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
 After each stage: the **reviewer** (an independent subagent, `poc-reviewer`) reviews the output, the stage fixes
 what it flags (max 2 rounds), then you **approve or request changes**. Questions raised during a stage — including
 UnifyApps Headless's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
+Two exceptions in Stage 4 come to you: during the **Zen planning window** (while `.poc-studio/zen-planning` exists)
+you answer Zen's clarification questions and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
+releases) is yours to answer. The hooks let both through, and the POC owner is nudged in Slack while they wait.
 Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 
 ## Contents
