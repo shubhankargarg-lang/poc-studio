@@ -289,6 +289,7 @@ blocks the run: if it fails, flag it and carry on.
 | Scoping approved in Claude | **M2a · G2 (BRD)** — see below |
 | Design System done + reviewed, before its Claude gate | **M1b · G2 (Design system)** |
 | Design System approved in Claude | **M2 · G2** (full) |
+| Person approves the Zen plan (Stage 4, before any builder agent runs) | **M4a** — Activity "Zen plan approved"; stage stays `5_build` |
 | UnifyApps Headless build published, before the verify gate | **M1 · G3** |
 | App verified/approved in Claude | **M2 · G3** |
 | Collaterals done + reviewed, approved in Claude | **M1 · G4** (Deliver complete) |
@@ -342,6 +343,21 @@ Any further text the owner types about that change while it is being reworked is
 ### Moment 4 — moving to another stage inside a phase
 POC (update): stage, status running, last_activity. No documents, no slack_notification. In this plugin: when UnifyApps Headless
 starts building (`5_build`, if not already), and nothing else — the move to `4_design_system` happens only with M1b.
+
+### Moment 4a — the person approves the Zen plan (Stage 4)
+Written right after the person says yes ("start") to UnifyApps Headless's Zen plan, before the builder agents run.
+Activity (create) only:
+
+```json
+{ "activity_id": "ACT-…", "poc": "<poc_id>", "type": "document_saved", "stage": "5_build", "gate": "g3",
+  "actor_type": "person", "actor_name": "<POC owner name>", "actor_email": "<POC owner email>",
+  "message": "Zen plan approved: <n> tasks; preview <preview path>", "created_at": 1792280000000 }
+```
+
+`type` is `document_saved` because the Activity object has no plan-approval type; the message carries the meaning.
+POC (update): `last_activity` "Zen plan approved; building with <n> tasks", `last_activity_at`. The stage stays
+`5_build`; no document, no gate status change, no slack_notification. If the person chooses "keep for later"
+instead, write **M6** (blocked) and nothing here.
 
 ### Moment 5 — the re-iterated document is ready (G1, G2, G3)
 Upload the new file. Documents: update the rejected version → `superseded`; create the new version with version N+1,

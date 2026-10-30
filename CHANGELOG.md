@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.0
+- Build: Zen plan with the user answering clarification questions and approving the plan; builder and test agents run in parallel; CONFIRM_REQUIRED always goes to the person; hooks let Zen-planning questions through.
+
 ## 1.20.0
 - Renamed Nebula to UnifyApps Headless: /ua:setup, mcp__plugin_ua_* tools, new plugin cache path; build stage runs ua:setup then ua:plan (Sonic).
 - Removed people's names from the skills: the owner column in the orchestrator's skill table, and the General Reviewer's owner (now UnifyApps Solutions).

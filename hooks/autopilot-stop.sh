@@ -5,6 +5,7 @@
 INPUT="$(cat 2>/dev/null)"
 DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 FLAG="$DIR/.poc-studio/autopilot"
+[ -f "$DIR/.poc-studio/zen-planning" ] && exit 0   # Zen planning window: the user answers, let the turn end
 [ -f "$FLAG" ] || exit 0
 printf '%s' "$INPUT" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
 cat <<JSON
