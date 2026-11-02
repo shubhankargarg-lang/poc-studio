@@ -21,7 +21,7 @@ general, is filed too.
 4. The ticket carries a `skill` field: the skill or agent the feedback is about (named by the person, or decided from
    the text and this session), or `general` when it could be several or none fits — as the `/feedback` section says.
 5. **Reply in one line:**
-   `Logged FB-<seq> for <client, or General>, under <skill name or General>. Track it: https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<seq>`
+   `Logged FB-<timestamp> for <client, or General>, under <skill name or General>. Track it: https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<timestamp>`
    If the write fails, show the error in one line and what to do.
 6. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
    message: feedback does not move a POC. Never set an assignee, due date, tags or analysis fields, and never update
