@@ -510,6 +510,8 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 4. The POC ID is mandatory; there is no lookup by client slug.
 5. No Orbit folder and no command-line script: reads, writes and uploads are UnifyApps Headless's tenant tools called directly in
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.
+   One exception: files attached to a feedback ticket are uploaded with `orbit agent-builder upload_file` from the
+   Orbit folder (signed-in links), as the `/feedback` section says.
 6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
 7. Every name/email field uses the POC owner's name and email from the POC record.
 8. The design system is uploaded as a public `.html` file like every other document; no `content` or `format` is sent
@@ -641,7 +643,25 @@ deletes a ticket.
      lower-cased with every run of non-letters/digits replaced by `-`, `limit` 10; one row → use it, several → ask
      which.
    - Not found → ask once to correct it, or file without a POC.
-2. **Create the ticket** with one `apply_record_edits` call (How to write: leave out any key that would be `""` or
+2. **Attach files (optional).** The person can give files with their feedback: screenshots, logs, PDFs, files
+   attached in the chat, or paths they mention. Take **at most 10**, each **at most 20 MB** (a larger one is skipped
+   and named in the reply). For each file:
+   1. Copy it into `$TMPDIR`, then upload it **from the Orbit folder** (`orbit-spec.md` § 1: the folder set up with
+      `/ua:setup` on orbit.uat.unifyapps.com):
+      `cp "<the file>" "$TMPDIR/"` then
+      `orbit agent-builder upload_file '{"host":"orbit.uat.unifyapps.com","filePath":"'"$TMPDIR/<file name>"'","contentType":"<mime>"}'`
+   2. The link is `https://orbit.uat.unifyapps.com` + the reply's `file.url`. It opens only for people signed in to
+      orbit.uat.
+   3. Keep one line per uploaded file, in the order given:
+      - image (`png`, `jpg`, `jpeg`, `gif`, `webp`): `![<file name>](<link>)`
+      - any other file: `[<file name>](<link>)`
+
+   MIME types: png `image/png` · jpg/jpeg `image/jpeg` · gif `image/gif` · webp `image/webp` · pdf
+   `application/pdf` · txt/log `text/plain` · csv `text/csv` · json `application/json` · docx, pptx, html, mp4 as in
+   `orbit-spec.md`; anything else `application/octet-stream`.
+   **If an upload fails**, still create the ticket without that file, and name the file in the reply. Never put a
+   file's bytes or base64 in a row, and never put file lines in `quote`.
+3. **Create the ticket** with one `apply_record_edits` call (How to write: leave out any key that would be `""` or
    `null`). Get `now` once with a one-line script (`node -e 'console.log(Date.now())'`):
 
 ```json
@@ -650,13 +670,13 @@ deletes a ticket.
     "ticket_no": "FB-<now>",
     "ticket_key": "FB-<now>",
     "title": "<the person's short title, or their first sentence cut to 90 characters>",
-    "feedback": "<their words, unedited; several points in one message stay in one ticket>",
+    "feedback": "<their words, unedited; then, if files were attached, a blank line and one file line per file>",
     "channel": "claude",
     "channel_ref": "<the workspace path, or <client-slug>/<usecase-slug>>",
     "given_by_name": "<the person giving the feedback>",
     "given_by_email": "<their email, if known>",
     "source": "user",
-    "status": "open",
+    "status": "to_be_assigned",
     "priority": "none",
     "skill": "<skill key, or general>",
     "poc": "<poc_id, only when known and verified>",
@@ -666,6 +686,13 @@ deletes a ticket.
     "updated_at": <now> } }] }
 ```
 
+   - `feedback`: the person's text first, unedited (several points in one message stay in one ticket). With files,
+     append after it **one blank line, then the file lines** from step 2, one per line. The POC Build Loop app shows
+     image lines as thumbnails and other files as chips.
+   - `status` is always `"to_be_assigned"` on create (or leave it out: the field defaults to it). The field allows
+     **only** `to_be_assigned`, `in_progress`, `blocked`, `in_qa`, `qa_rejected`, `done`; **never send** `open`,
+     `in_proposal`, `in_review`, `incorporated`, `resolved`, `not_incorporated` or `dismissed` (the platform rejects
+     them: "status invalid; oneOf fail").
    - The ticket ID is `FB-<now>`: the same `Date.now()` value as `created_at` (e.g. `FB-1793634938058`). `ticket_no`
      (the primary key) and `ticket_key` are the same value. Do not send `ticket_seq` and do not read the last ticket
      to number it.
@@ -695,12 +722,12 @@ deletes a ticket.
         | `ai-pm` | the AI PM's reviews, rulings, lessons |
 
      3. It could be several, or none fits clearly → `general`.
-   - **On a duplicate-key error** (another ticket in the same millisecond): get a new `now` and create again,
-     **at most 3 times**.
+   - **On a duplicate-key error** (another ticket in the same millisecond): retry with `now + 1` (as the ID,
+     `created_at` and `updated_at`), **at most 3 times**.
    - Still failing → show the error in one line and what to do (e.g. run `/ua:setup` here on orbit.uat.unifyapps.com
      and sign in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not
      added to `failed_writes`.
-3. **Create the activity row** right after, one `apply_record_edits` call on `orbit_studio_feedback_event`:
+4. **Create the activity row** right after, one `apply_record_edits` call on `orbit_studio_feedback_event`:
 
 ```json
 { "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback_event",
@@ -718,11 +745,13 @@ deletes a ticket.
 ```
 
    If only this row fails, say so in one line; the ticket still stands.
-4. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<now>`, and
+5. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<now>`, and
    confirm it.
-5. **Reply in one line:**
-   `Logged FB-<now> for <client, or General>, under <skill name or General>. Track it: https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<now>`
-6. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
+6. **Reply in one line:**
+   `Logged FB-<now> (To be Assigned) → https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<now>`
+   Add ` · attached N files` when files were attached. Any file that could not be attached: one more short line
+   naming it and why (too large, upload failed).
+7. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
    message.
 
 ### Ticket status
@@ -735,8 +764,8 @@ deletes a ticket.
 - Reply in 2–4 lines: the title; status (by its label); priority (by its label); the assignee (`assignee_name`, or
   "Unassigned"); the client or POC (or General); the newest activity line; and the link
   `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<n>`.
-- Status labels: `open` New · `in_proposal` In proposal · `in_review` Under review · `incorporated` / `resolved`
-  Incorporated · `not_incorporated` Not incorporated · `dismissed` Dismissed.
+- Status labels: `to_be_assigned` To be Assigned · `in_progress` In-Progress · `blocked` Blocked · `in_qa` In QA ·
+  `qa_rejected` QA Rejected · `done` Done. A missing status reads as To be Assigned.
 - Priority labels: `urgent` Urgent · `high` High · `medium` Medium · `low` Low · `none` (or missing) No priority.
 
 ## Testing a moment by hand
