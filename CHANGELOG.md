@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.32.0
+- **Observability log.** New orbit-writeback **Moment 7 — a skill finished**: right after each skill run returns, one create-only row in `orbit_studio_skill_run` for POC Build Loop's Observability view, in full runs and in every one-off command. Logged: each stage skill run and re-run, each AI PM review round (with `reviews_run_id`, `verdict`, `round`), each platform-master job, the Stage 4 build by UnifyApps Headless, each research call, and one `poc-orchestrator` "POC started" row per session. Not logged: orbit-writeback's own moments and the AI PM's resolve answers.
+- Rows carry `run_group` (one per session) and `sequence` (continuing from the POC's highest), inputs, 3–6 lines of reasoning, the output summary and decisions, documents, timing, the plugin version, the model, and tokens (measured for AI PM subagents, estimated as characters ÷ 4 elsewhere). One-off rows are `origin: one_off` with no `poc`.
+- Written with the same `apply_record_edits` tool as every other moment. A failed write is retried once, then noted in one line; it never blocks or slows a build. Gate `gate_decided` Activity rows are unchanged.
+
 ## 1.31.0
 - **Run modes: Sonic or Zen**, asked once at the start of every run (`/poc-studio:start` and each one-asset command) and kept in `state.json` → `mode` (a run without one is Zen). **Zen** is the loop as before. **Sonic**: the AI PM's final verdict is each gate (PASS, or the third review's rulings with nothing blocking), so the run moves to the next stage by itself; in Stage 4 the AI PM answers Zen planning's questions and approves its plan after platform-master's review and the builder check.
 - Still asked of the person in Sonic: sign-ins, every `CONFIRM_REQUIRED`, the AI PM's ASK_HUMAN items (credentials, real data, spend, sending or publishing outside Orbit UAT), a BLOCK after the third review, a Not ready requirements verdict, rebuilding pages already built, and a missing tool or connector.

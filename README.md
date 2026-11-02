@@ -153,6 +153,14 @@ Every run (`/poc-studio:start` and each one-asset command) asks once, at the sta
 In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
 Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
 
+## Observability
+
+Every skill run is logged to Orbit (`orbit_studio_skill_run`), in full runs and one-off runs alike, and shows in POC
+Build Loop's **Observability** view: one row per stage skill run, AI PM review round, platform-master job, build and
+research call, plus a "POC started" row. Each row has the inputs, 3–6 lines of reasoning, the output and its decisions,
+the verdict for reviews, timing, and tokens (measured for AI PM reviews, estimated elsewhere). A failed log write
+never blocks a run.
+
 ## Feedback
 
 ```
