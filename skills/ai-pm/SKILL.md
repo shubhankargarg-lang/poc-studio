@@ -144,7 +144,10 @@ reasonably go either way. Standing answers for this pipeline:
   another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
   UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
   `04-build/build-summary.md` or `state.json`.
-- **UnifyApps Headless asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always.
+- **UnifyApps Headless asks which builder to use** (text-to-code or the no-code config builder): DECIDE text-to-code, always:
+  the app and its pages use task kinds `code-app` / `code-publish`, owned by `code-app-agent`; never `app`,
+  `page-layout`, `page-bind`, `publish` or `app-agent`. Whether to rebuild pages **already built** the no-code way is
+  not yours: ASK_HUMAN (finished work would be redone).
 - **UnifyApps Headless says it cannot build an asset, or asks whether to skip one:** DECIDE "hand it to
   platform-master's browser fallback" when it is a platform asset (Data Object and seed records, Connection,
   workflow/automation, AI agent with tasks and tools, data source, context graph item, governance control); a page

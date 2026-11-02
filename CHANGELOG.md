@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.30.0
+- **Exact builder terms, so a POC app is never built as a no-code config app.** A build said "text-to-code" in its prose while Zen's task graph used no-code task kinds, so every page went to `app-agent` (`application-builder`). The plugin now names what actually decides the builder: the app, its pages and its publish use task kinds `code-app` / `code-publish`, owned by `code-app-agent` (`code-builder` tools); never `app`, `page-layout`, `page-bind`, `publish` or `app-agent`.
+- **Orchestrator:** a Builder terms table; the build request carries those exact words; a builder check reads the task graph before the plan is shown and again before the first task starts; a no-code page task found during the run stops new page tasks and asks the person whether to rebuild. `app-agent` is removed from the builder list.
+- **platform-master:** the plan review checks task kinds and owners first, every round; a no-code app task is never left as a "Check this" line.
+- **AI PM:** standing answer names the task kinds; rebuilding pages already built the no-code way is the person's decision (ASK_HUMAN).
+- **Scoping:** the app is always a text-to-code app (Code Builder); scoping no longer offers "no-code" for the app or a page.
+
 ## 1.29.0
 - **Feedback ticket statuses follow POC Build Loop's six values:** new tickets are created as `to_be_assigned` (To be Assigned); `open` and the other old values are never sent (the platform now rejects them). `status FB-<n>` shows the new labels: To be Assigned, In-Progress, Blocked, In QA, QA Rejected, Done.
 - **Attachments:** screenshots, logs, PDFs or paths given with `/poc-studio:feedback` (up to 10, 20 MB each) are uploaded with `orbit agent-builder upload_file` from the Orbit folder and appended to the feedback text as one line each (`![name](link)` for images, `[name](link)` for other files), which the app shows as thumbnails and chips. A failed upload still files the ticket and names the file.
