@@ -591,12 +591,29 @@ observability:
 - **Tokens:** use the measured counts when the run reports them (an AI PM subagent's usage). Otherwise **estimate**:
   `tokens_in` ≈ characters of the instruction plus every file the skill read, ÷ 4; `tokens_out` ≈ characters of
   everything it wrote (files and messages), ÷ 4. Round to the nearest 100.
-- **How to write it:** build the row with a short script (it pulls the times, ids, version and verdict from files),
-  save it as `$TMPDIR/orbit-skill-run.json`, and pass that JSON to `apply_record_edits`; never retype long text by
-  hand. Check the reply: every item in `results` says `"ok": true`. Record the `run_id` in `observability.runs`.
-- **A failed write never blocks or slows anything.** Retry once; if it still fails, say one line ("Observability log
-  for `<skill>` didn't save") and carry on. It is not added to `failed_writes`, not retried later, and no gate or
-  skill waits for it.
+- **The run flag and the hook.** At the start of a run (orchestrator Setup, or a one-off run's start) write
+  `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/observability` (holding the `run_group`); delete it when the run ends or
+  stops. While it exists, the plugin's `skill-run-log.sh` hook saves each logged skill's start time in
+  `.poc-studio/skill-starts/<skill>` and reminds the session, in the tool result, to write the row when the skill
+  returns (for an AI PM review, right when its subagent returns). Use that start time as `started_at`.
+- **How to write it (always through the builder, never by hand).** The object validates every write against its
+  schema, so one wrong type fails the row. Let `O` be this skill's `scripts/` folder
+  (`find ~/.claude/plugins -path '*orbit-writeback/scripts/skill_run_row.py' -exec dirname {} \; | head -1`).
+  1. Write the fields you have, as one JSON object, to `$TMPDIR/skill-run-in.json` with a short script (never retype
+     long text by hand). Loose values are fine: the builder turns "104k" into 104000, "v1" into 1, "REVISE" into
+     `revise`, seconds into milliseconds, a command name (`brd`) into its skill, drops empty values and unknown keys,
+     leaves `poc` off one-off rows, fills `phase`/`gate` from the skill, makes `run_id`, `duration_ms` and `created_at`.
+     Estimated tokens: `python3 "$O/skill_run_row.py" --estimate <files read or written>`.
+  2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --out $TMPDIR/orbit-skill-run.json`. Exit 0 → send that
+     file's JSON with `apply_record_edits` exactly as it is. Exit 2 → the row lacks `skill` or `started_at`: add it
+     (the hook's start file, or now) and build again.
+  3. Check the reply: every item in `results` says `"ok": true`. Record the `run_id` in `observability.runs`.
+- **If Orbit refuses the row**, read the error and retry **once**, changed only as needed: a duplicate `run_id` →
+  build again without `run_id` (a new one is made); an error on `poc` (no such POC) → build again without `poc`;
+  an error naming any other field → build again without that field. If the retry fails too, say one line
+  ("Observability log for `<skill>` didn't save: <error>") and carry on.
+- **A failed write never blocks or slows anything.** It is not added to `failed_writes`, not retried later, and no
+  gate or skill waits for it.
 - It replaces nothing: the `gate_decided` Activity rows are still written at every gate (the view's approval lines
   come from them).
 

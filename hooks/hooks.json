@@ -1,5 +1,5 @@
 {
-  "description": "POC Studio: while a stage is running, route clarification questions to the reviewer instead of the user",
+  "description": "POC Studio: route clarification questions to the reviewer while a stage runs, and remind the session to log each skill run to Orbit (Observability)",
   "hooks": {
     "PreToolUse": [
       {
@@ -15,6 +15,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Skill|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/skill-run-log.sh\"",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [
@@ -23,6 +33,18 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/autopilot-stop.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/skill-run-log.sh\"",
+            "timeout": 10
           }
         ]
       }

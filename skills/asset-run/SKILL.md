@@ -157,7 +157,8 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
    in lower case (leave it out if unknown).
 
 **Observability log.** When the command starts, make this run's `observability.run_group` (`"GRP-" + Date.now()`;
-a chain from "Approve and make <next asset>" keeps the same group and goes on counting `sequence`). Then, right
+a chain from "Approve and make <next asset>" keeps the same group and goes on counting `sequence`) and write it into
+the run flag `.poc-studio/observability` (removed with the `one-off` flag when the run ends). Then, right
 after each skill run returns (the stage skill and each re-run of it, each AI PM review round, each platform-master
 job, the build, each `research` call), write its one row: orbit-writeback **Moment 7**, with `origin: one_off`,
 **no `poc` key** (even when a POC ID was given), `gate: none`, `triggered_by: command` (or `iteration` for a re-run

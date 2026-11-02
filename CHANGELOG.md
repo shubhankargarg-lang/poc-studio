@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.32.1
+- **Observability rows are built by a script, checked against the live `orbit_studio_skill_run` schema** (40 fields; `run_id`, `skill`, `started_at` required; schema validation on). `orbit-writeback/scripts/skill_run_row.py` turns loose values into the stored types and codes ("104k" → 104000, "v1" → 1, "REVISE" → `revise`, seconds → ms, `brd` → `scoping-l1-first`), drops empty values and unknown keys, never sends `poc` on a one-off row, and refuses a row it cannot make valid; the session sends its output as is.
+- **New hook `skill-run-log.sh`** (PreToolUse and PostToolUse on Skill and Agent): while a run's `.poc-studio/observability` flag exists, it saves each logged skill's start time and reminds the session to write the row when the skill returns (an AI PM review, right when it returns). Notify only; never blocks.
+- A refused row is retried once with only the failing part changed (new `run_id`, no `poc`, or without the named field), then noted in one line.
+
 ## 1.32.0
 - **Observability log.** New orbit-writeback **Moment 7 — a skill finished**: right after each skill run returns, one create-only row in `orbit_studio_skill_run` for POC Build Loop's Observability view, in full runs and in every one-off command. Logged: each stage skill run and re-run, each AI PM review round (with `reviews_run_id`, `verdict`, `round`), each platform-master job, the Stage 4 build by UnifyApps Headless, each research call, and one `poc-orchestrator` "POC started" row per session. Not logged: orbit-writeback's own moments and the AI PM's resolve answers.
 - Rows carry `run_group` (one per session) and `sequence` (continuing from the POC's highest), inputs, 3–6 lines of reasoning, the output summary and decisions, documents, timing, the plugin version, the model, and tokens (measured for AI PM subagents, estimated as characters ÷ 4 elsewhere). One-off rows are `origin: one_off` with no `poc`.

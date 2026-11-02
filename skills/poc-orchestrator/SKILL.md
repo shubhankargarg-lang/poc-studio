@@ -408,7 +408,8 @@ except at the start (the POC ID must be verified).
      The session (`~/.local/poc-studio/auth/orbit.json`) serves the Stage 4b build walk and the Stage 5 recording,
      so the rest of the run needs no sign-in unless it expires.
 6. **Observability log (orbit-writeback Moment 7).** Make `observability.run_group` (`"GRP-" + Date.now()`, new for
-   this session, also on resume), read the highest `sequence` already logged for this POC, then write the
+   this session, also on resume) and write it into the run flag `.poc-studio/observability` (the hook needs it; delete
+   the flag when the run finishes or stops). Read the highest `sequence` already logged for this POC, then write the
    `poc-orchestrator` row ("POC started", or "POC resumed" on resume). From here on, see "Observability log" below.
 7. Tell the person in one or two lines what will happen, then start Stage 1.
 
