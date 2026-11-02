@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.29.0
+- **Feedback ticket statuses follow POC Build Loop's six values:** new tickets are created as `to_be_assigned` (To be Assigned); `open` and the other old values are never sent (the platform now rejects them). `status FB-<n>` shows the new labels: To be Assigned, In-Progress, Blocked, In QA, QA Rejected, Done.
+- **Attachments:** screenshots, logs, PDFs or paths given with `/poc-studio:feedback` (up to 10, 20 MB each) are uploaded with `orbit agent-builder upload_file` from the Orbit folder and appended to the feedback text as one line each (`![name](link)` for images, `[name](link)` for other files), which the app shows as thumbnails and chips. A failed upload still files the ticket and names the file.
+- New reply: `Logged FB-<epoch> (To be Assigned) → <link>` (plus ` · attached N files`). A key clash retries with `now + 1`, up to 3 times.
+
 ## 1.28.1
 - Feedback ticket IDs are timestamps again: `FB-<Date.now()>` (the same value as `created_at`, e.g. `FB-1793634938058`). No `ticket_seq`, no read of the last ticket to number it; a duplicate-key error retries with a new timestamp, at most 3 times. Everything else from 1.28.0 (tickets, optional POC, `created` activity row, link reply, `status`) is unchanged.
 
