@@ -138,6 +138,21 @@ type a password: sign-ins happen in the browser window the command opens. The Or
 set up in the folder (`/ua:setup` on `orbit.uat.unifyapps.com`); without it the asset is still made, and the write is
 retried on the next one-asset run.
 
+## Run modes: Sonic or Zen
+
+Every run (`/poc-studio:start` and each one-asset command) asks once, at the start, which mode to use:
+
+| | Zen | Sonic |
+|---|---|---|
+| AI PM reviews every stage | yes | yes |
+| Who approves each gate | you | the AI PM; the run moves on by itself |
+| Stage 4 build plan (Zen planning) | you answer its questions and approve it | the AI PM does, after platform-master's review and the builder check |
+| Slack gate messages | yes | none |
+| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built |
+
+In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
+Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
+
 ## Feedback
 
 ```

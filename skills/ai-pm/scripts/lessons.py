@@ -20,7 +20,9 @@ usage:
   lessons.py add --stage <s> --area <a> --check "<…>" --why "<…>" --origin "<…>" [--owner <name>] [--from-inbox <n>]
   lessons.py gate <workspace> <stage> [--since <n>]       gate summary for the person, from reviews/<stage>-review-<n>.yaml
                                                           (n >= since: a one-off run passes its first review number)
-  lessons.py record <workspace> <stage> approved|changes [--since <n>] [--work <id>]   log a gate outcome
+  lessons.py record <workspace> <stage> approved|changes|auto [--since <n>] [--work <id>]   log a gate outcome
+                                                          (auto: approved by the AI PM in Sonic run mode; never a
+                                                          first-try human approval, kept out of the approval stats)
   lessons.py miss <workspace> <stage> "<what was missed>" log a miss (the reviewer passed it, the owner caught it)
   lessons.py look <client> "<chrome · surface · shell · concept>"   record a design system's look
   lessons.py stats                                        first-try approval rate, rounds and misses per stage
@@ -133,6 +135,7 @@ def cmd_gate(ws, stage, since=1):
 
 def cmd_record(ws, stage, outcome, since=1, work=None):
     prior = [json.loads(l) for l in read(p("metrics.jsonl")).splitlines() if l.strip()]
+    if outcome not in ("approved", "changes", "auto"): sys.exit("outcome must be approved, changes or auto")
     first = outcome == "approved" and not any(x["poc"] == (work or poc_id(ws)) and x["stage"] == stage and x["event"] in ("changes", "feedback") for x in prior)
     rounds = len(review_files(ws, stage, since))
     append(p("metrics.jsonl"), json.dumps({"at": TODAY, "poc": (work or poc_id(ws)), "stage": stage, "event": outcome, "first_try": first, "ai_pm_rounds": rounds}) + "\n")

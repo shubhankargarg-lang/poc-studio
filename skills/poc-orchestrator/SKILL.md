@@ -113,6 +113,7 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
 
 ```json
 { "poc_id": "POC-acme-20261018",
+  "mode": "zen",
   "orbit": { "poc_id": "POC-acme-20261018", "poc_record_id": "<record id>", "owner": { "name": "…", "email": "…" },
              "documents": {}, "open_iterations": [], "failed_writes": [] },
   "client": "Acme Beverages", "use_case": "Shelf Compliance",
@@ -149,6 +150,48 @@ person asks. A run started before Wireframes existed has no `wireframes` entry: 
 alone, as before); otherwise add it as `pending`, and Wireframes runs next after Scoping. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
 reached Orbit is written before the run goes on.
 
+## Run mode: Sonic or Zen (asked at the start of every run)
+
+Every run has one **run mode**, chosen by the person when the run starts (`commands/start.md` Step 2, or `asset-run`
+§ 1 for a one-off) and kept in `state.json` → `"mode"`: `"zen"` or `"sonic"`. A run with no `mode` (started before
+this existed) is `zen`. On resume, use the stored mode and name it in the resume line; change it only when the person
+asks. (These are POC Studio's run modes. They are not UnifyApps Headless's own `/ua:plan` modes: Stage 4 always plans
+with `/ua:plan` in Zen, in both run modes; this skill calls that step "Zen planning".)
+
+- **Zen** — as described everywhere in this skill: the AI PM reviews every stage, then the person approves each gate
+  (and, in Stage 4, answers Zen planning's questions and approves its plan).
+- **Sonic** — the AI PM reviews every stage **and its final verdict is the gate**: the run moves to the next stage
+  without asking the person. Everything else is unchanged: the same stages, reviews, REVISE rounds, rulings, files,
+  Orbit writes and checks.
+
+**Sonic flag.** In Sonic, create `${CLAUDE_PROJECT_DIR:-<cwd at setup>}/.poc-studio/sonic` (holding the workspace path)
+at setup or resume, record its absolute path in `state.json` → `"sonic_flag"`, and delete it when the run finishes or
+stops. In Zen, delete a leftover `sonic` flag (from an interrupted Sonic run) at setup or resume. The hooks read it. The autopilot file stays on across stages in Sonic; it is removed only for the person's
+items below, and recreated right after.
+
+**What reaches the person in Sonic — only what the run cannot move past without them:**
+1. Sign-ins (Orbit, Slack, Drive, the browser fallback): the person always signs in themselves.
+2. Every `CONFIRM_REQUIRED (d_…)` (deletes and some releases).
+3. An `ASK_HUMAN` from the AI PM (credentials or OAuth for a connection, real customer data, spend, sending or
+   publishing outside Orbit UAT, an irreversible choice).
+4. A `BLOCK` still standing after the third review (the person can override it, as in Zen).
+5. A Requirement Gathering verdict of **Not ready** (proceeding on it is the person's call).
+6. In Stage 4, whether to rebuild pages already built the no-code way (finished work would be redone).
+7. A run blocked by a missing tool, connector or input that only the person can provide (Setup's connector check).
+Each one is asked as today (autopilot removed, one question, logged as a human decision); then the run carries on in
+Sonic.
+
+**The Sonic gate** (instead of "The approval gate" below). After the stage's last review:
+- `PASS`, or the third review's rulings with no blocking finding left → **approved by the AI PM**. Mark the stage
+  `approved` in `state.json`, log "Approved by the AI PM (Sonic)" with the gate summary
+  (`python3 "$R/lessons.py" gate <workspace> <stage>`) in `context-log.md`, run
+  `python3 "$R/lessons.py" record <workspace> <stage> auto`, run the Orbit approval write in its Sonic form (orbit-writeback:
+  "Sonic mode") and confirm it landed, then tell the person in **one line** (stage, verdict, rounds, the saved path) and
+  start the next stage at once. No AskUserQuestion.
+- Anything in the list above → ask the person, then continue.
+- The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, re-run, review),
+  and the run goes on in Sonic afterwards.
+
 ## Questions never go straight to the person
 
 The stage skills are built not to ask questions. If any stage — or UnifyApps Headless — still needs an answer:
@@ -179,7 +222,7 @@ Sign-ins are the exception: the person always signs in themselves (Orbit, Slack,
 
 **Two more exceptions, both in Stage 4 (and in any later fix to the app):**
 
-- **Zen planning window.** While `/ua:plan` plans the build in Zen mode, the autopilot file is removed and the Zen
+- **Zen planning window (Zen run mode only; in Sonic the AI PM answers, see Stage 4).** While `/ua:plan` plans the build in Zen mode, the autopilot file is removed and the Zen
   planning flag `$CLAUDE_PROJECT_DIR/.poc-studio/zen-planning` exists (its absolute path in `state.json` →
   `"zen_planning_flag"`). During that window Zen's clarification questions and its plan approval go to the person
   directly, never to the reviewer; the hooks let them through. Every question and answer is logged as a human
@@ -229,6 +272,8 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 
 ## The approval gate (after every stage)
 
+This is the gate in **Zen** run mode. In **Sonic**, use "The Sonic gate" under "Run mode" instead.
+
 Remove the autopilot file, then:
 1. Tell the person in a few lines: what the stage produced (with the saved paths), then the **AI PM gate summary**,
    printed by `python3 "$R/lessons.py" gate <workspace> <stage>`: verdict and score, rounds, findings fixed,
@@ -246,7 +291,7 @@ Remove the autopilot file, then:
    last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then re-run the stage skill to apply it, review
    again (round counter restarts for the new feedback), and gate again.
 
-Never advance without an explicit approval.
+In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
 
 ## Orbit write-back at each gate
 
@@ -257,7 +302,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | In the run | Orbit moment (orbit-writeback) |
 |---|---|
 | Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file) · G2a (scoping doc) · G2w (wireframes PDF) · G2b (design system) · G3 (published app) |
-| Person approves | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
+| Person approves (Zen) or the AI PM approves (Sonic) | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
 | Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
@@ -266,7 +311,8 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | platform-master builds an asset by the browser fallback (Stage 4) | **M4b** — Activity "Asset built by fallback" with its type, name and id; stage stays `5_build` |
 | Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
 
-`slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted). If a write
+`slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted), and
+**never in Sonic** (orbit-writeback: "Sonic mode"). If a write
 fails three times, tell the person in one line and carry on; the run never stops because Orbit is unreachable,
 except at the start (the POC ID must be verified).
 
@@ -297,8 +343,10 @@ except at the start (the POC ID must be verified).
      re-check when the person says it is fixed. It never blocks the run.
 3. Write `state.json` and the first lines of `context-log.md` (client, **use case**, date, connectors), then these **standing
    human decisions** (the owner set them for every run; the reviewer applies them):
+   - Run mode: `<Sonic | Zen>`, chosen by the person at the start ("Run mode" above).
    - Questions during stages are answered by the reviewer from context and assumptions, not the person (except, in
-     Stage 4, Zen's planning questions and plan approval and every `CONFIRM_REQUIRED`, which are the person's).
+     Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED`, which is
+     the person's).
    - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); a map
      page follows the wireframes skill's map-component reference; the approved manifest is the design system's
      component list.
@@ -306,8 +354,8 @@ except at the start (the POC ID must be verified).
      brand-colour conflicts are settled by the design-system skill's own brand source order, without
      asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
      one local HTML file, uploaded to Orbit as a public link.
-   - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person answers Zen's planning questions and approves its
-     plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
+   - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person (Zen run mode) or the AI PM (Sonic run mode)
+     answers Zen's planning questions and approves its plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
      UnifyApps Headless cannot build is built by platform-master's browser fallback (the person signs in); deploying/testing the POC app there is pre-approved; model IDs:
      the builder's recommendation, else UnifyApps Headless chooses, else any available model; every
      `CONFIRM_REQUIRED` is the person's; the AI PM reviews the build at Stage 4b, after UnifyApps Headless's own
@@ -359,7 +407,8 @@ except at the start (the POC ID must be verified).
 - **Orbit:** M1 · G1 before the gate (RG + every discovered client file); M2 on approve; M3 on changes; M5 before
   re-gating.
 - Gate. The document's verdict (Ready / Ready with assumptions / Not ready) and its open questions are shown at
-  the gate; proceeding on "Not ready" is the person's call.
+  the gate; proceeding on "Not ready" is the person's call (in Sonic too: a Not ready verdict stops for the person;
+  Ready or Ready with assumptions is approved by the AI PM).
 - Log the client name, website, use case (as the document confirmed or refined it) and stated asks from the
   approved document in `context-log.md`.
 
@@ -451,7 +500,15 @@ Only these session facts are supplied by you:
      scoping document and writes `04-build/platform-pointers.md`. Its pointers go into the build request below.
   3. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
      question. Planning runs in the **Zen planning window** (next bullet).
-- **Zen planning window — the person answers Zen's questions and approves its plan.**
+- **Zen planning in Sonic run mode.** Do not create the Zen planning flag and keep the autopilot file on: Zen's
+  clarification questions go to the AI PM in resolve mode (`stage: build`), like any other question. When Zen has
+  written its plan, platform-master's plan review and the builder check (below) run as in Zen; then the AI PM approves
+  the plan (resolve mode, question "Approve Zen's plan?", with the spec, task graph, preview and
+  `04-build/platform-review.md`): **DECIDE start** → answer Zen "start", Orbit **M4a** in its Sonic form, and run
+  the plan; **SEND_BACK** → its lines go to Zen as "change something", then review again. Log every question,
+  answer and the approval in `04-build/zen-decisions.md` and `context-log.md` as the AI PM's. Then continue at
+  "On the person's yes" below (in Sonic: on the AI PM's start).
+- **Zen planning window (Zen run mode) — the person answers Zen's questions and approves its plan.**
   - Right before `/ua:plan` starts, remove the autopilot file and create the Zen planning flag, next to it, holding
     the workspace path (record its absolute path in `state.json` as `"zen_planning_flag"`):
     ```bash
@@ -479,8 +536,8 @@ Only these session facts are supplied by you:
       has revised the plan, the platform review runs on it again (one round) before the person sees it.
     - **Keep for later** → the stage ends as blocked (Orbit **M6**); delete the Zen planning flag; resuming starts
       the window again.
-- **Builder check before anything is built.** Before Zen's plan is shown to the person, and again on the person's
-  yes before the first task starts, read the task graph yourself: every task that builds the app, a page or the app
+- **Builder check before anything is built.** Before Zen's plan is shown to the person (in Sonic: before the AI PM
+  approves it), and again on the yes before the first task starts, read the task graph yourself: every task that builds the app, a page or the app
   publish must have kind `code-app` or `code-publish` and owner `code-app-agent`. Any task with kind `app`,
   `page-layout`, `page-bind` or `publish`, or owned by `app-agent`, means the plan is a no-code config app: do not show
   or start it; give Zen "change something" with the Builder terms line from the build request, and check again. Never
@@ -541,7 +598,8 @@ Only these session facts are supplied by you:
     text-to-code app: task kinds `code-app` and `code-publish`, owned by `code-app-agent` with `code-builder` tools.
     Never use task kinds `app`, `page-layout`, `page-bind` or `publish`, never `app-agent`, never the no-code config
     builder (`application-builder`)." If UnifyApps Headless offers or picks the config builder, answer text-to-code.
-  - **Questions:** tell UnifyApps Headless that its Zen planning questions and its plan approval go to the person, and
+  - **Questions:** tell UnifyApps Headless that its Zen planning questions and its plan approval go to the person (in
+    Sonic: that you, the session, will answer them and approve the plan), and
     that every question after the plan is approved will be answered by you (the session), so it should keep going;
     whenever it stops with a question then — through AskUserQuestion or as plain text — answer it via the reviewer
     before doing anything else.
