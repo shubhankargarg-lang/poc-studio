@@ -156,6 +156,13 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
    into the shared venv if `python3 -c "import yaml"` fails. `owner_profile` for review requests = `created_by_email`
    in lower case (leave it out if unknown).
 
+**Observability log.** When the command starts, make this run's `observability.run_group` (`"GRP-" + Date.now()`;
+a chain from "Approve and make <next asset>" keeps the same group and goes on counting `sequence`). Then, right
+after each skill run returns (the stage skill and each re-run of it, each AI PM review round, each platform-master
+job, the build, each `research` call), write its one row: orbit-writeback **Moment 7**, with `origin: one_off`,
+**no `poc` key** (even when a POC ID was given), `gate: none`, `triggered_by: command` (or `iteration` for a re-run
+after the person asked for changes). A failed write never holds the run: one retry, one line, carry on.
+
 ## 3 · Run the stage (unattended)
 
 Create the autopilot flag now (absolute path; record it in this run's entry), exactly as the
@@ -291,6 +298,7 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
 ## Never
 
 - Change the full pipeline's state, files or Orbit rows: no Activity, Iteration or POC update, no `slack_notification`.
+  (The Observability rows of Moment 7 are the one exception: one-off skill runs are logged, without a `poc`.)
 - Write a matrix link to Orbit or record from one.
 - Delete a file or an Orbit row (earlier versions become `superseded`; earlier files go to `_previous/`).
 - Type a password, or answer a `CONFIRM_REQUIRED` for the person.

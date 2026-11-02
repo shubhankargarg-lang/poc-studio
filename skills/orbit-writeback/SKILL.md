@@ -1,6 +1,6 @@
 ---
 name: orbit-writeback
-description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run, files feedback tickets in POC Build Loop and reads their status (/poc-studio:feedback), or runs one write-back moment by hand when the person asks to test it — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
+description: Keeps Orbit · POC Studio (orbit.uat.unifyapps.com) in step with a POC Studio run, files feedback tickets in POC Build Loop and reads their status (/poc-studio:feedback), logs one Observability row per skill run (Moment 7), or runs one write-back moment by hand when the person asks to test it — uploads each gate's files and writes Document, Activity, Iteration and POC rows at the six write-back moments (gate posted, gate approved, changes asked, stage moved, new version ready, blocked). Called by the poc-orchestrator before and after every gate; also verifies the POC ID at start.
 ---
 
 # Orbit write-back (POC Studio)
@@ -68,6 +68,8 @@ orbit:
     - { iteration_id: …, gate: g2, document_id: … }
   failed_writes: []     # anything that did not reach Orbit after 3 tries
 ```
+
+and, beside `orbit`, `observability` (Moment 7's run group, last sequence and run ids).
 
 ## How to write
 
@@ -496,6 +498,108 @@ deliver) **without** `related_document` and **without** `g4_status` (Orbit has n
 POC (update): status `blocked` with `blocked_on` (one line: what is needed — a sign-in, a tool install, a missing
 file), or status `stopped`. When it resumes: status running and a new last_activity. No slack_notification.
 
+### Moment 7 — a skill finished (`orbit_studio_skill_run`, the Observability view)
+
+POC Build Loop's **Observability** view reads one row per skill run from `orbit_studio_skill_run`. Write **exactly one
+row right after each logged skill run returns**, in a full run (poc-orchestrator) and in every one-off run
+(asset-run), with the same `apply_record_edits` tool and the same write rules as every other moment (one call, leave
+out every key that has no value, never `""` or `null`). **Create only:** never update or delete a skill-run row.
+
+**Which runs get a row:**
+
+| Run | `skill` | `label` (short, plain) |
+|---|---|---|
+| The orchestrator's Setup, once per session (full runs only) | `poc-orchestrator` | "POC started" (or "POC resumed") |
+| Requirement Gathering | `requirement-gathering` | "RG doc v<N>" |
+| Scoping | `scoping-l1-first` | "BRD v<N>" (a REVISE re-run: "BRD v<N> · <k> fixes") |
+| Wireframes | `wireframes` | "<n> frames" |
+| Design system | `design-system` | "Design system v<N>" |
+| Each platform-master job | `platform-master` | "Pointers", "Plan review, round <r>", "Fallback: <asset>" |
+| The Stage 4 build by UnifyApps Headless (from the plan's start to publish) | `unifyapps-headless` | "App build · <n> tasks" |
+| Collaterals | `poc-collateral-studio` | what was made, e.g. "Script, deck, video" |
+| Each `research` call | `research` | the question, cut to 60 characters |
+| Each AI PM **review** (review mode, every round, the 4b build walk included) | `ai-pm` | "<what it reviewed> review, round <r>", e.g. "BRD review, round 1" |
+
+Not logged: orbit-writeback's own moments, and the AI PM's resolve-mode answers (they are in `context-log.md`).
+
+**Run state** (full run: `state.json` → `observability`; one-off: this run's entry → `observability`):
+
+```yaml
+observability:
+  run_group: GRP-1793630000000     # "GRP-" + Date.now(), made once when the session's command starts; reused for every row
+  sequence: 6                      # the last sequence written
+  runs: { "scoping-l1-first|BRD v1": RUN-1793639000000-1190 }   # run_id by skill + label, so a review can point at it
+```
+
+- **`sequence`:** from 1, +1 per row. A full run continues from the highest `sequence` already logged for this `poc`:
+  at Setup or resume, `get_records` on `orbit_studio_skill_run` with filter `poc` EQUAL the POC ID, sort
+  `{field: "sequence", order: "DESC"}`, `limit` 1 (none → 0). A one-off run counts within its `run_group`, from 1.
+- **Times:** note `started_at` (`node -e 'console.log(Date.now())'`) when the skill starts and `ended_at` when it
+  returns.
+
+**The row** (field names exactly as stored; single-selects take the code):
+
+```json
+{ "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_skill_run",
+  "edits": [{ "op": "create", "properties": {
+    "run_id": "RUN-<Date.now()>-<4 random digits>",
+    "run_group": "<observability.run_group>",
+    "poc": "<poc_id: full runs only; leave the key out for one-off runs>",
+    "origin": "poc | one_off",
+    "client_name": "<client>", "use_case": "<use case>",
+    "primary_document_id": "<document_id of the main document this run saved, when it saved one>",
+    "phase": "understand | plan | build | deliver",
+    "gate": "g1 | g2 | g3 | g4 | none",
+    "sequence": <n>,
+    "skill": "<from the table>", "label": "<from the table>",
+    "reviews_run_id": "<ai-pm only: run_id of the run it reviewed, from observability.runs>",
+    "verdict": "<ai-pm only: pass | revise | block | ask_human>",
+    "round": <1, 2, … when the same skill re-runs for the same gate>,
+    "triggered_by": "orchestrator | person | command | iteration",
+    "actor_name": "<the person running the session>", "actor_email": "<their email, if known>",
+    "plugin_version": "<version in the plugin's .claude-plugin/plugin.json>",
+    "model": "<the model id the skill ran on>",
+    "started_at": <ms>, "ended_at": <ms>, "duration_ms": <ended_at - started_at>,
+    "tokens_in": <n>, "tokens_out": <n>,
+    "input_ask": "<the instruction the skill was given; on a re-run after changes, with the person's gate comment>",
+    "input_documents": [{ "name": "BRD", "version": 1, "document_id": "<…>", "link": "<…>" }],
+    "reasoning": ["<3–6 short plain sentences: what it checked, what it noticed, what it decided and why>"],
+    "output_summary": "<one line, e.g. Sent 3 fixes back to scoping-l1-first>",
+    "output_decisions": ["<the changes or decisions it made, one per line>"],
+    "output_documents": [{ "name": "BRD", "version": 2, "document_id": "<…>", "link": "<…>" }],
+    "created_at": <ms> } }] }
+```
+
+- **`phase` / `gate`:** requirement-gathering `understand`/`g1` · scoping-l1-first, wireframes, design-system
+  `plan`/`g2` · platform-master, unifyapps-headless `build`/`g3` · poc-collateral-studio `deliver`/`g4` · an ai-pm
+  review or a research call takes the phase and gate of the stage it serves · the orchestrator's row `understand`/
+  `none`. In a one-off run, `phase` by the asset and `gate` `none`.
+- **`origin` / `poc`:** `poc` for a full run (send `poc`); `one_off` for a one-off run (**never send `poc`**, even when
+  the one-off was given a POC ID: a blank or foreign lookup is rejected).
+- **`triggered_by`:** `orchestrator` for every run inside a full run, AI PM review rounds included; `command` for a
+  one-off run's first pass; `iteration` for a re-run after the person asked for changes (`input_ask` then carries
+  their words); `person` when the person runs a step by hand (e.g. testing a moment).
+- **`round`:** 1 for the first run of that skill for the gate; +1 for each re-run (REVISE fixes, changes asked).
+- **Documents:** `input_documents` and `output_documents` use the Orbit document rows this run already wrote or read
+  (`document_id`, `version`, `file_link` as `link`). A run that saved no Orbit document (an AI PM review, a research
+  call, platform-master's pointers) has no `output_documents` and no `primary_document_id`: its result is in
+  `output_summary` and `output_decisions`.
+- **AI PM rows:** `verdict` from the verdict file (`PASS` → `pass`, `REVISE` → `revise`, `BLOCK` → `block`,
+  `ASK_HUMAN` → `ask_human`; an `INVALID_REQUEST` gets no row, only the corrected review does); `reasoning` from its findings and decision; `output_decisions` = its fix lines (or
+  "No changes" on a pass); `reviews_run_id` = the `run_id` of the stage run it reviewed.
+- **`model`:** the session's model id; for an AI PM review, the model its subagent ran on when the Agent result says.
+- **Tokens:** use the measured counts when the run reports them (an AI PM subagent's usage). Otherwise **estimate**:
+  `tokens_in` ≈ characters of the instruction plus every file the skill read, ÷ 4; `tokens_out` ≈ characters of
+  everything it wrote (files and messages), ÷ 4. Round to the nearest 100.
+- **How to write it:** build the row with a short script (it pulls the times, ids, version and verdict from files),
+  save it as `$TMPDIR/orbit-skill-run.json`, and pass that JSON to `apply_record_edits`; never retype long text by
+  hand. Check the reply: every item in `results` says `"ok": true`. Record the `run_id` in `observability.runs`.
+- **A failed write never blocks or slows anything.** Retry once; if it still fails, say one line ("Observability log
+  for `<skill>` didn't save") and carry on. It is not added to `failed_writes`, not retried later, and no gate or
+  skill waits for it.
+- It replaces nothing: the `gate_decided` Activity rows are still written at every gate (the view's approval lines
+  come from them).
+
 ## When a write fails
 - A reply with `"ok": false` or an error: read the message, fix the payload, and send **only the rows that failed**
   again (a create that succeeded must not be sent twice).
@@ -512,6 +616,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 - Send `slack_notification: true` outside moments 1 and 5, or at all in a Sonic run.
 - Put a file's bytes or text in a row: upload it and save the link (no exceptions, the design system included).
 - Write to any other object or tenant.
+- Update or delete an `orbit_studio_skill_run` row (Moment 7 only creates them).
 - Write assignee, due date, tags or analysis fields on a feedback ticket, or update or delete a ticket.
 
 ## Decisions (where this differs from `orbit-spec.md`)
@@ -553,7 +658,8 @@ the `asset-run` skill) write **one-off documents**: rows in `orbit_studio_docume
 POC Build Loop under **Assets** (`https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<type-slug>`). This
 section is the only place they are written from; `asset-run` calls it.
 
-**A one-off run writes nothing else to Orbit.** No Activity, no Iteration, no POC update, no `slack_notification`,
+**A one-off run writes nothing else to Orbit** apart from its Observability rows (Moment 7, `origin: one_off`, no
+`poc`). No Activity, no Iteration, no POC update, no `slack_notification`,
 even when a POC ID was given: a one-off asset never moves a POC. The client files found by `requirements` are not
 written as input rows either; only the Requirement Gathering document itself is written.
 

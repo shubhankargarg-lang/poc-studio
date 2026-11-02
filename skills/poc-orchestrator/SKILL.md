@@ -293,6 +293,16 @@ Remove the autopilot file, then:
 
 In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
 
+## Observability log (after every skill run)
+
+Right after each of these returns, write its one `orbit_studio_skill_run` row (orbit-writeback **Moment 7**, which has
+the fields and the list): every stage skill run (requirement-gathering, scoping-l1-first, wireframes, design-system,
+poc-collateral-studio), every REVISE or changes re-run of one, every AI PM **review** round (the 4b build walk
+included), every platform-master job, the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
+publish), and every `research` call. Note each run's start time before it begins. The row is written before the next
+step (the review, the gate), but a failed write never holds anything: one retry, one line, carry on. Not logged:
+orbit-writeback's own moments and the AI PM's resolve-mode answers.
+
 ## Orbit write-back at each gate
 
 Every gate is mirrored to Orbit by the `orbit-writeback` skill (its table "The plugin's gates → Orbit moments" is the
@@ -310,6 +320,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | Person approves the Zen plan (Stage 4) | **M4a** — Activity "Zen plan approved" with the preview path and task count; stage stays `5_build` |
 | platform-master builds an asset by the browser fallback (Stage 4) | **M4b** — Activity "Asset built by fallback" with its type, name and id; stage stays `5_build` |
 | Run blocked (sign-in, tools, missing input) / stopped / resumed | **M6** |
+| Any logged skill run returns (stage skill, AI PM review, platform-master job, build, research), and the orchestrator's Setup | **M7** — one `orbit_studio_skill_run` row (see "Observability log") |
 
 `slack_notification: true` is sent only by M1 and M5 (when files are written or a new version is posted), and
 **never in Sonic** (orbit-writeback: "Sonic mode"). If a write
@@ -396,7 +407,10 @@ except at the start (the POC ID must be verified).
      autopilot file, run `node "$R/orbit_signin.mjs"` and ask the person to sign in to Orbit in the window that opens.
      The session (`~/.local/poc-studio/auth/orbit.json`) serves the Stage 4b build walk and the Stage 5 recording,
      so the rest of the run needs no sign-in unless it expires.
-6. Tell the person in one or two lines what will happen, then start Stage 1.
+6. **Observability log (orbit-writeback Moment 7).** Make `observability.run_group` (`"GRP-" + Date.now()`, new for
+   this session, also on resume), read the highest `sequence` already logged for this POC, then write the
+   `poc-orchestrator` row ("POC started", or "POC resumed" on resume). From here on, see "Observability log" below.
+7. Tell the person in one or two lines what will happen, then start Stage 1.
 
 ## 1 · Requirement Gathering
 
