@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.28.1
+- Feedback ticket IDs are timestamps again: `FB-<Date.now()>` (the same value as `created_at`, e.g. `FB-1793634938058`). No `ticket_seq`, no read of the last ticket to number it; a duplicate-key error retries with a new timestamp, at most 3 times. Everything else from 1.28.0 (tickets, optional POC, `created` activity row, link reply, `status`) is unchanged.
+
 ## 1.28.0
 - **Feedback becomes tickets.** `/poc-studio:feedback <text>` files a ticket on POC Build Loop's Feedback page (https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback) with a sequential ID `FB-<n>` (next number read from Orbit; a clash retries with the next number, at most 3 times), `status: open`, `priority: none` unless stated, and one `created` row on the new `orbit_studio_feedback_event` object. The reply gives the ticket ID and its link. Assignee, priority, status, due date and tags are set in the app; the plugin never updates or deletes a ticket.
 - **A POC is optional.** Feedback from a one-off asset workspace is filed without a POC (and without asking); otherwise the person can pick **No POC (general)**. The old "feedback can only be filed against a POC" rule is gone.

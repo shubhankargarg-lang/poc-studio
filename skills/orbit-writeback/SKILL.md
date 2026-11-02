@@ -618,7 +618,7 @@ workspace. The local files are the deliverable either way: a failed Orbit write 
 `/poc-studio:feedback <text>` files one piece of feedback as a **ticket** on POC Build Loop's Feedback page
 (https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback): how a POC or a one-off asset went, what the outputs
 got wrong, what should change in POC Studio. It is **not** a change request on one document (that is an Iteration,
-Moment 3, unchanged). Each ticket has its own ID (`FB-<seq>`), a status, a priority and an activity history; people
+Moment 3, unchanged). Each ticket has its own ID (`FB-<Date.now()>`), a status, a priority and an activity history; people
 triage it in the app (assignee, priority, status). Feedback does not feed the skill analysis: skill proposals are made
 from iterations only. **A POC is optional.**
 
@@ -641,18 +641,14 @@ deletes a ticket.
      lower-cased with every run of non-letters/digits replaced by `-`, `limit` 10; one row → use it, several → ask
      which.
    - Not found → ask once to correct it, or file without a POC.
-2. **Next number.** `get_records` on `orbit_studio_feedback`:
-   `{"host":"https://orbit.uat.unifyapps.com","objectId":"orbit_studio_feedback","sort":{"field":"ticket_seq","order":"DESC"},"limit":1,"fields":["ticket_seq"]}`.
-   seq = that `ticket_seq` + 1, or 1 if there are none. **Never compute it from local state.**
-3. **Create the ticket** with one `apply_record_edits` call (How to write: leave out any key that would be `""` or
+2. **Create the ticket** with one `apply_record_edits` call (How to write: leave out any key that would be `""` or
    `null`). Get `now` once with a one-line script (`node -e 'console.log(Date.now())'`):
 
 ```json
 { "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback",
   "edits": [{ "op": "create", "properties": {
-    "ticket_no": "FB-<seq>",
-    "ticket_key": "FB-<seq>",
-    "ticket_seq": <seq>,
+    "ticket_no": "FB-<now>",
+    "ticket_key": "FB-<now>",
     "title": "<the person's short title, or their first sentence cut to 90 characters>",
     "feedback": "<their words, unedited; several points in one message stay in one ticket>",
     "channel": "claude",
@@ -670,8 +666,9 @@ deletes a ticket.
     "updated_at": <now> } }] }
 ```
 
-   - `ticket_no` (the primary key) and `ticket_key` are the same `FB-<seq>`; `ticket_seq` is the integer and has a
-     unique index, so every create sets it.
+   - The ticket ID is `FB-<now>`: the same `Date.now()` value as `created_at` (e.g. `FB-1793634938058`). `ticket_no`
+     (the primary key) and `ticket_key` are the same value. Do not send `ticket_seq` and do not read the last ticket
+     to number it.
    - `poc`, `poc_stage` (and `client_name` when there is no client at all): leave the key out when unknown.
    - `priority` is `"none"` unless the person clearly states one: `urgent`, `high`, `medium` or `low`.
    - Optional: `"quote"` (exact short words worth keeping verbatim).
@@ -698,19 +695,19 @@ deletes a ticket.
         | `ai-pm` | the AI PM's reviews, rulings, lessons |
 
      3. It could be several, or none fits clearly → `general`.
-   - **On a duplicate or unique-key error** (someone filed at the same moment): repeat step 2 and the create with the
-     new number, **at most 3 times**.
+   - **On a duplicate-key error** (another ticket in the same millisecond): get a new `now` and create again,
+     **at most 3 times**.
    - Still failing → show the error in one line and what to do (e.g. run `/ua:setup` here on orbit.uat.unifyapps.com
      and sign in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not
      added to `failed_writes`.
-4. **Create the activity row** right after, one `apply_record_edits` call on `orbit_studio_feedback_event`:
+3. **Create the activity row** right after, one `apply_record_edits` call on `orbit_studio_feedback_event`:
 
 ```json
 { "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback_event",
   "edits": [{ "op": "create", "properties": {
     "event_id": "FEV-<now>-<4 random digits>",
-    "ticket": "FB-<seq>",
-    "ticket_key": "FB-<seq>",
+    "ticket": "FB-<now>",
+    "ticket_key": "FB-<now>",
     "type": "created",
     "message": "Ticket created from Claude Code",
     "actor_name": "<given_by_name>",
@@ -721,23 +718,23 @@ deletes a ticket.
 ```
 
    If only this row fails, say so in one line; the ticket still stands.
-5. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<seq>`, and
+4. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<now>`, and
    confirm it.
-6. **Reply in one line:**
-   `Logged FB-<seq> for <client, or General>, under <skill name or General>. Track it: https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<seq>`
-7. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
+5. **Reply in one line:**
+   `Logged FB-<now> for <client, or General>, under <skill name or General>. Track it: https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<now>`
+6. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
    message.
 
 ### Ticket status
 
-`/poc-studio:feedback status FB-12` (also `status 12`, `fb 12`, `FB-12` or `12`) is a **read only**; write nothing.
-- Read the ticket: `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-12`, `limit` 1. Not found →
+`/poc-studio:feedback status FB-<n>` (also `status <n>`, `fb <n>`, `FB-<n>` or just `<n>`, e.g. `FB-1793634938058`) is a **read only**; write nothing.
+- Read the ticket: `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<n>`, `limit` 1. Not found →
   say so in one line.
-- Read its activity: `get_records` on `orbit_studio_feedback_event`, filter `ticket_key` EQUAL `FB-12`, sort
+- Read its activity: `get_records` on `orbit_studio_feedback_event`, filter `ticket_key` EQUAL `FB-<n>`, sort
   `{field: "created_at", order: "DESC"}`, `limit` 5.
 - Reply in 2–4 lines: the title; status (by its label); priority (by its label); the assignee (`assignee_name`, or
   "Unassigned"); the client or POC (or General); the newest activity line; and the link
-  `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-12`.
+  `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<n>`.
 - Status labels: `open` New · `in_proposal` In proposal · `in_review` Under review · `incorporated` / `resolved`
   Incorporated · `not_incorporated` Not incorporated · `dismissed` Dismissed.
 - Priority labels: `urgent` Urgent · `high` High · `medium` Medium · `low` Low · `none` (or missing) No priority.
