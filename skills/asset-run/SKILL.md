@@ -31,10 +31,19 @@ prerequisite is in hand does the autopilot flag go on and the stage run unattend
 **First, the run flags** (absolute paths under `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/`):
 - Create **`one-off`** (holding the asset name). While it exists, the nudge hook posts nothing to any POC's Slack thread
   (a one-off asset never posts to a POC). Remove it when the run ends — after § 6, or whenever the run stops.
-- A leftover **`autopilot`** or **`zen-planning`** flag would block the questions below. Read the workspace path in
+- A leftover **`autopilot`**, **`zen-planning`** or **`sonic`** flag would block or misroute the questions below. Read the workspace path in
   it: if that workspace's `state.json` has a pipeline stage `running` or `in_review` (a pipeline may be running in
   another session in this folder), do not remove it — tell the person in one line and stop. Otherwise it is left from
   an interrupted run: remove it.
+
+**Run mode.** Every one-off run also asks, once, **"Which mode for this run?"**: **Zen** (the AI PM reviews, then you
+approve the asset; for an app, you also answer Zen planning's questions and approve its plan) or **Sonic** (the AI PM
+reviews and approves; you are asked only for what the run cannot pass without you: sign-ins, `CONFIRM_REQUIRED`
+steps, credentials, a BLOCK after the third review, a Not ready requirements verdict). Put it in the same
+AskUserQuestion call as the missing prerequisites (step 3 below), or ask it on its own when nothing else is missing.
+A chain from "Approve and make <next asset>" keeps the mode it started with and does not ask again. Record it in this
+run's entry (`mode`); in Sonic, create the **`sonic`** flag next to `one-off` and remove it when the run ends. The
+poc-orchestrator's "Run mode" section defines both modes; this skill follows it.
 
 **Parse the arguments** (`<a> | <b> | …`, as the command shows). Quotes around a value are dropped. A trailing value
 that looks like `POC-<…>-<8 digits>` is the POC ID. For collaterals, any other value after the preview link (or words
@@ -126,7 +135,7 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
    gate state of a pipeline run in the same workspace: wherever an orchestrator section it follows says to save
    something in those keys, save it in this run's entry under `standalone.runs` instead.
    ```json
-   "standalone": { "runs": [ { "asset": "brd", "started_at": "<ISO>", "status": "running | in_review | done",
+   "standalone": { "runs": [ { "asset": "brd", "mode": "zen | sonic", "started_at": "<ISO>", "status": "running | in_review | done",
        "document_id": "SA-acme__brd__invoice-matching__v2", "version": 2, "file_link": "…",
        "inputs": ["01-requirement-gathering/Requirement Gathering - Acme - Invoice matching.docx"],
        "first_review": 3, "solution": "<app runs: the UnifyApps Headless solution id>",
@@ -172,7 +181,8 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
   `test-report.md`, `zen-decisions.md`, `platform-*.md`, `routes.json`, `glossary.json`): `/ua:setup`; `platform-master`
   pointers (tell platform-master its output folder is `04-build/one-off/`, for every file it writes); `/ua:plan` in Zen
   inside the Zen planning window (the person answers Zen's questions and approves the plan,
-  which platform-master reviewed first); the parallel build; UnifyApps Headless's own tests; the browser fallback for
+  which platform-master reviewed first; in Sonic run mode, the AI PM does, as orchestrator § 4 "Zen planning in Sonic
+  run mode" says); the parallel build; UnifyApps Headless's own tests; the browser fallback for
   any platform asset it cannot build; the **4b AI PM build walk**; publish.
   - **Solution:** the first run of this command for this client and use case creates a **new** solution named
     `<Client> — <Use case>` and records its id in the run entry (`solution`). A later run of the command, or a change
@@ -221,7 +231,12 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
    `SA - <Client> - <Use case> - Demo video v<N>.mp4`), the row, earlier versions `superseded`, the read-back.
    Collaterals: one row per collateral delivered, in one `apply_record_edits` call. Record `document_id`, `version`
    and `file_link` in the run. A failed write never stops the asset (orbit-writeback, Failures).
-2. **Remove the autopilot flag**, then show the person, in this order:
+2. **Sonic run mode:** do not ask. When the last review is `PASS`, or the third review's rulings leave no blocking
+   finding, the AI PM has approved the asset: go straight to **§ 6 Approve** (with `lessons.py record … auto` instead
+   of `approved`), then show the person, in one short message, the items below and "approved by the AI PM (Sonic)".
+   Do not chain to the next asset in Sonic. A BLOCK still standing after the third review, or a Not ready
+   requirements verdict, is asked as in Zen (step 3, with **Approve** meaning the person overrides it).
+   **Zen run mode:** **remove the autopilot flag**, then show the person, in this order:
    - the local file path(s);
    - the Orbit file link(s) — the public upload URL, the Drive link or the app preview link — which open without the app;
    - the app row(s): `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<type-slug>`;
@@ -245,10 +260,11 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
 ## 6 · The decision
 
 - **Approve** → orbit-writeback "One-off documents" → The decision: the row's (or rows') `status` → `approved`, read
-  back. `python3 "$R/lessons.py" record <workspace> <stage> approved --since <first_review> --work <document_id prefix>`. For a design system, also
+  back. `python3 "$R/lessons.py" record <workspace> <stage> approved --since <first_review> --work <document_id prefix>`
+  (`auto` instead of `approved` when the AI PM approved it in Sonic). For a design system, also
   record its look for the AI PM's logo-off test: `python3 "$R/lessons.py" look "<Client>" "<chrome · surface · shell ·
   concept>"`, read from the file's expression card. Run status `done`. Log it in `context-log.md`. Remove the
-  `one-off` flag. Tell the person in one line that the asset is approved, with its Orbit link. The run ends here.
+  `one-off` flag (and the `sonic` flag). Tell the person in one line that the asset is approved, with its Orbit link. The run ends here.
 - **Approve and make <next asset>** → everything **Approve** does, then tell the person in one line that the asset
   is approved and the next one is starting, and run the next asset as its own one-off, exactly as if its command had
   been typed with the same arguments (`<Client> | <Use case> [| <POC ID>]`; collaterals add the app's preview link):

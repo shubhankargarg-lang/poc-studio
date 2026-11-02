@@ -8,6 +8,12 @@ FLAG="$DIR/.poc-studio/autopilot"
 [ -f "$DIR/.poc-studio/zen-planning" ] && exit 0   # Zen planning window: the user answers, let the turn end
 [ -f "$FLAG" ] || exit 0
 printf '%s' "$INPUT" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+if [ -f "$DIR/.poc-studio/sonic" ]; then
+cat <<JSON
+{"decision":"block","reason":"POC Studio is in Sonic mode with autopilot on. If you are about to end the turn with a question (from the stage or from UnifyApps Headless), do not ask the user: send it to the ai-pm agent in resolve mode, apply the answer, log it in context-log.md and continue. If the stage is finished, run its AI PM review; the AI PM's verdict is the gate (the orchestrator's 'The Sonic gate'): record the approval, write it to Orbit and start the next stage without asking. Only an ASK_HUMAN answer, a BLOCK still standing after the third review, a Not ready requirement-gathering verdict, a no-code rebuild decision, a missing tool or connector, or a sign-in goes to the user: run rm -f \"${FLAG}\" first and then ask. If the whole run is finished, delete the autopilot and sonic flags and end."}
+JSON
+exit 0
+fi
 cat <<JSON
 {"decision":"block","reason":"POC Studio autopilot is on (a stage is running). If you are about to end the turn with a question (from the stage or from UnifyApps Headless), do not ask the user: send it to the ai-pm agent in resolve mode, apply the answer, log it in context-log.md and continue the stage. If the stage is finished, go to its reviewer review and approval gate (run rm -f \"${FLAG}\" before asking for approval). If you genuinely need the user (an ASK_HUMAN answer or a sign-in), run rm -f \"${FLAG}\" first and then ask."}
 JSON

@@ -153,7 +153,17 @@ reasonably go either way. Standing answers for this pipeline:
   workflow/automation, AI agent with tasks and tools, data source, context graph item, governance control); a page
   or other app UI stays with UnifyApps Headless and is shown at the verify gate. Never DECIDE to skip it.
 - **Seed-data file location, public or private:** UnifyApps Headless's recommended option; if none is marked, private.
-- **UnifyApps Headless asks for a mode or environment:** Zen mode, Orbit environment (`https://orbit.uat.unifyapps.com/`).
+- **UnifyApps Headless asks for a mode or environment:** Zen mode (its `/ua:plan` planning mode, in both POC Studio run
+  modes), Orbit environment (`https://orbit.uat.unifyapps.com/`).
+- **Sonic run mode** (the workspace's `state.json` → `mode` is `"sonic"`): your final review verdict is the stage's
+  gate, so nobody re-checks it after you. Judge every review as if you were the one approving it to the client;
+  `check_this` assumptions still go in the verdict (they are logged, not asked). Zen planning's clarification
+  questions come to you in resolve mode: answer them from the approved documents and these standing answers. The
+  question "Approve Zen's plan?" (with the spec, task graph, preview and platform-master's review): **DECIDE start**
+  only when the builder check passes (app tasks `code-app` / `code-publish` under `code-app-agent`), every L1 item of
+  Part B has a task, and `platform-review.md` has nothing open that would break on the platform; otherwise
+  **SEND_BACK** with the lines Zen must change. What stays the person's in Sonic is unchanged: decision row 1, a
+  BLOCK after round 3, a Not ready requirement-gathering verdict, and a rebuild of pages already built.
 - **A Zen planning question, Zen's plan approval, or any `CONFIRM_REQUIRED (d_…)`** that reaches the reviewer → return
   **ASK_HUMAN**. These belong to the person: the reviewer never answers them, even with a recommended option.
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).

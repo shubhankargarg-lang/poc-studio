@@ -415,6 +415,23 @@ Record every new `document_id` in the run state.
   `failed_writes` and the reconcile check below writes it later). Record the confirmation in the run state
   (`orbit.confirmed: [g1, g2a, g2w, g2, g3]`).
 
+### Sonic mode (the run's `state.json` → `mode` is `"sonic"`)
+
+In Sonic run mode the AI PM approves each gate (poc-orchestrator: "The Sonic gate"). The moments, rows, order and checks
+are the same as above, with these differences only:
+- **No `slack_notification` at all** in moments 1 and 5 (gates are posted and approved silently). Never hold one back
+  for later either.
+- **M2 / M2a / M2w and M4a**: the Activity has `actor_type: "ai"` (names and emails stay the POC owner's, as Setup
+  says) and the message says who approved it: "Approved by the AI PM (Sonic mode)" (M2a: "BRD approved by the AI PM
+  (Sonic mode)"; M2w: "Wireframes approved by the AI PM (Sonic mode)"; M4a: "Zen plan approved by the AI PM (Sonic
+  mode): <n> tasks; preview <preview path>"). The POC row gets the same keys as in Zen, `gN_owner_approved true`
+  included, because the app and the Reconcile check read that key as "this gate is approved"; `last_activity` says
+  "… approved by the AI PM (Sonic)".
+- **G4** (collaterals): `gate_decided` g4 approve with `actor_type: "ai"`, same message.
+- **Reconcile check** on a Sonic run: a late approval is written with `actor_type: "ai"` and the message "Approval
+  recorded late (AI PM, Sonic mode)".
+- **M3** (changes the person types during a Sonic run) is written exactly as in Zen, `actor_type: "person"`.
+
 ### Moment 3 — the owner asks for changes instead of approving
 Iteration (create): status open, phase of the gate, **reason = their exact words**, related_document = the version
 they rejected, skill = the stage skill. Add it to `open_iterations`. Activity: `iteration_logged` and `gate_decided`
@@ -492,7 +509,7 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 ## Never
 - Create or delete POC rows, or delete any row.
 - Write `manager_*` fields, `pinned`, `slack_channel_id`, `slack_thread_ts` (Orbit and its people own these).
-- Send `slack_notification: true` outside moments 1 and 5.
+- Send `slack_notification: true` outside moments 1 and 5, or at all in a Sonic run.
 - Put a file's bytes or text in a row: upload it and save the link (no exceptions, the design system included).
 - Write to any other object or tenant.
 - Write assignee, due date, tags or analysis fields on a feedback ticket, or update or delete a ticket.

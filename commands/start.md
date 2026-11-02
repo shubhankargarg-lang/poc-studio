@@ -10,10 +10,10 @@ The arguments are `<client name> | <use case name> | <POC ID>` (e.g. `Acme | Inv
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.30.0**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.31.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.30.0"
+LOADED="1.31.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -47,7 +47,7 @@ Then act on the last line it printed:
   three commands, then the same `/poc-studio:start` command again:
   `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
 - **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.30.0, then carry on.
+  are continuing on v1.31.0, then carry on.
 
 ## Step 1 — verify the POC ID in Orbit (after the update check, before anything else)
 
@@ -65,7 +65,18 @@ Only once Step 0 has finished and the POC ID has been given:
    tell the person what is needed (install UnifyApps Headless, or run `/ua:setup` here on `orbit.uat.unifyapps.com` and sign in
    themselves — never type a password), then run the check again. Never skip it.
 
-## Step 2 — run the pipeline
+## Step 2 — choose the run mode (once the POC ID is verified)
+
+Ask with AskUserQuestion, one question, before anything runs: **"Which mode for this POC run?"**
+- **Zen** — the AI PM reviews every stage, and you approve each gate (and Zen planning's build plan in Stage 4).
+- **Sonic** — the AI PM reviews every stage and approves it; the run moves on by itself. You are asked only for what
+  the run cannot pass without you (sign-ins, deletes and other `CONFIRM_REQUIRED` steps, credentials, a block the AI
+  PM cannot clear, a Not ready requirement-gathering verdict).
+
+Pass the answer to the orchestrator; it keeps it in `state.json` → `mode` (its "Run mode" section). **Resuming** a run
+that already has a mode: do not ask again; say the mode in the resume line, and switch only if the person asks.
+
+## Step 3 — run the pipeline
 
 Load the `poc-orchestrator` skill from this plugin (Skill tool: `poc-studio:poc-orchestrator`) and follow it exactly,
 starting with Setup. If the client name, the use case name or the POC ID is missing above, ask once for the missing

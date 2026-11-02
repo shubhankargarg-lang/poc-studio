@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.31.0
+- **Run modes: Sonic or Zen**, asked once at the start of every run (`/poc-studio:start` and each one-asset command) and kept in `state.json` → `mode` (a run without one is Zen). **Zen** is the loop as before. **Sonic**: the AI PM's final verdict is each gate (PASS, or the third review's rulings with nothing blocking), so the run moves to the next stage by itself; in Stage 4 the AI PM answers Zen planning's questions and approves its plan after platform-master's review and the builder check.
+- Still asked of the person in Sonic: sign-ins, every `CONFIRM_REQUIRED`, the AI PM's ASK_HUMAN items (credentials, real data, spend, sending or publishing outside Orbit UAT), a BLOCK after the third review, a Not ready requirements verdict, rebuilding pages already built, and a missing tool or connector.
+- Hooks read a new `.poc-studio/sonic` flag and route approval gates to the AI PM too. Orbit: Sonic approvals are written with `actor_type: ai` ("Approved by the AI PM (Sonic mode)") and no `slack_notification`. `lessons.py record … auto` logs Sonic approvals apart from human first-try approvals. One-off runs in Sonic approve the asset without asking and do not chain.
+
 ## 1.30.0
 - **Exact builder terms, so a POC app is never built as a no-code config app.** A build said "text-to-code" in its prose while Zen's task graph used no-code task kinds, so every page went to `app-agent` (`application-builder`). The plugin now names what actually decides the builder: the app, its pages and its publish use task kinds `code-app` / `code-publish`, owned by `code-app-agent` (`code-builder` tools); never `app`, `page-layout`, `page-bind`, `publish` or `app-agent`.
 - **Orchestrator:** a Builder terms table; the build request carries those exact words; a builder check reads the task graph before the plan is shown and again before the first task starts; a no-code page task found during the run stops new page tasks and asks the person whether to rebuild. `app-agent` is removed from the builder list.
