@@ -29,7 +29,9 @@ Reference files (read the one a job names; read the others only when the plan ne
 | `references/governance.md` | AI governance controls on agents, when the use case needs them |
 
 Your work fits inside the POC Studio run as it is: the approved scoping document (Part B is the build spec, L1 only),
-the design system's composition contract, the new solution `<Client> — <Use case>`, the text-to-code builder, Zen mode,
+the design system's composition contract, the new solution `<Client> — <Use case>`, a text-to-code app (Code Builder:
+task kinds `code-app` / `code-publish`, owner `code-app-agent`; never `app` / `page-layout` / `page-bind` / `publish`
+or `app-agent`), Zen mode,
 Orbit UAT and the POC data policy (dummy seed data) are fixed inputs. You add platform knowledge to them; you never
 change them.
 
@@ -69,6 +71,10 @@ before its one question (start / change something / keep for later) is put to th
      one map per page, and not a map inside a card);
    - a page's layout differs from its approved wireframe frame (`02b-wireframes/png/`), or a region holds a component
      the manifest does not give it;
+   - **a task that builds the app, a page or the app publish has kind `app`, `page-layout`, `page-bind` or `publish`, or
+     owner `app-agent`** (that is the no-code config builder): the adjustment is "rebuild as text-to-code: kind
+     `code-app` / `code-publish`, owner `code-app-agent`". This is checked first, on every round, and is never moved
+     to "Check this": a plan that still has one after round 2 goes back to the orchestrator as not ready;
    - the task graph orders tasks wrongly (an entity built before what it depends on), or chains tasks that could run in
      parallel.
 3. Write `04-build/platform-review.md`: round number, then one line per adjustment —

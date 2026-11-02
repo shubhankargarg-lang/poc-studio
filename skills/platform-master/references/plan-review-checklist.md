@@ -579,8 +579,13 @@ test).
 - **Check:** every entity in the spec has exactly one task, and every task builds exactly one entity. **Fix:** add the
   missing task; split a task that builds two; merge duplicates. Agent tasks and tools, data sources, indexes and the
   evidence-log object count as entities if the spec lists them.
-- **Check:** each task's owner fits the entity kind (e.g. workflows with automation-agent, AI agents with
-  agent-builder, pages with the app builders). **Fix:** reassign.
+- **Check (first, always): the app is text-to-code.** Every task that builds the app, a page or the app publish has
+  kind `code-app` or `code-publish` and owner `code-app-agent` (`code-builder` tools). **Fix:** any task with kind
+  `app`, `page-layout`, `page-bind` or `publish`, or owned by `app-agent` (`application-builder`, the no-code config
+  builder), becomes `code-app` / `code-publish` under `code-app-agent`. The spec saying "text-to-code" is not enough:
+  the task kinds decide which builder runs.
+- **Check:** each task's owner fits the entity kind (objects and seed data with fde-agent, workflows with
+  automation-agent, AI agents with agent-builder, the app and its pages with code-app-agent). **Fix:** reassign.
 - **Check:** waits-on order. **Fix:**
   1. objects (and their indexes) before the seed that loads them and the workflows that read or write them;
   2. a callable workflow before any workflow that `CALL_WORKFLOW`s it;

@@ -479,11 +479,34 @@ Only these session facts are supplied by you:
       has revised the plan, the platform review runs on it again (one round) before the person sees it.
     - **Keep for later** → the stage ends as blocked (Orbit **M6**); delete the Zen planning flag; resuming starts
       the window again.
+- **Builder check before anything is built.** Before Zen's plan is shown to the person, and again on the person's
+  yes before the first task starts, read the task graph yourself: every task that builds the app, a page or the app
+  publish must have kind `code-app` or `code-publish` and owner `code-app-agent`. Any task with kind `app`,
+  `page-layout`, `page-bind` or `publish`, or owned by `app-agent`, means the plan is a no-code config app: do not show
+  or start it; give Zen "change something" with the Builder terms line from the build request, and check again. Never
+  let a plan whose prose says text-to-code but whose task kinds are no-code through.
+- **During the run**, if a task that builds the app or a page is reported with a no-code kind or by `app-agent` (the
+  graph changed, or a task was added), stop starting new page tasks, tell the person in one line (how many tasks
+  are already built which way), and ask whether to rebuild the app as text-to-code or keep it: this is the person's
+  decision, not the reviewer's, because finished work would be redone.
 - **On the person's yes:** delete the Zen planning flag, recreate the autopilot file, and let `ua-change` run the plan
   (§ Run a plan). Tell UnifyApps Headless to start **every task that waits on nothing at once**, in parallel, with its
-  builder agents (fde-agent, automation-agent, app-agent, agent-builder, code-app-agent; **up to 6 in parallel**), and
+  builder agents (fde-agent, automation-agent, agent-builder, code-app-agent; **up to 6 in parallel**; never
+  `app-agent`, see Builder terms below), and
   each later task as soon as what it waits on is done. Never build the tasks one by one or by hand. From here on, the
   reviewer answers every question again (except `CONFIRM_REQUIRED`, see "Questions never go straight to the person").
+- **Builder terms (exact; use these words, never a paraphrase).** A POC Studio app is always a **text-to-code
+  app** (UnifyApps **Code Builder**), never a **no-code config app** (Text2Config / application builder). What decides
+  it is the task kind and its owner in Zen's task graph, not the prose:
+
+  | | Text-to-code app (always) | No-code config app (never for the POC app) |
+  |---|---|---|
+  | Task kinds for the app, its pages and its publish | `code-app`, `code-publish` | `app`, `page-layout`, `page-bind`, `publish` |
+  | Owner agent | `code-app-agent` | `app-agent` |
+  | Its tools | `code-builder` (with a git checkout) | `application-builder` |
+
+  Objects, seed data, workflows, AI agents and data sources keep their own kinds and owners (`fde-agent`,
+  `automation-agent`, `agent-builder`); only the app and its pages are bound by this table.
 - Give UnifyApps Headless, in the build request (so Zen does not ask about these) and again whenever it asks:
   - **Mode:** Zen (stated in the request).
   - **Platform pointers:** the pointers from `04-build/platform-pointers.md`, with the use-case type and style they
@@ -513,10 +536,11 @@ Only these session facts are supplied by you:
     micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
     draws at most five screens on purpose; UnifyApps Headless composes every other page from the kit and patterns, matching the
     drawn screens' finish, and never copies one screen's content onto another page.
-  - **What to build:** a text-to-code app on UnifyApps, built with UnifyApps Headless's **text-to-code builder** (never the
-    no-code config builder; if UnifyApps Headless offers or picks the config builder, answer text-to-code), with the agents,
-    automations and objects listed in the
-    build plan (L1 scope only).
+  - **What to build:** a **text-to-code app** (UnifyApps Code Builder) with the agents, automations and objects listed
+    in the build plan (L1 scope only). Put these exact words in the request: "Build the app and every page as a
+    text-to-code app: task kinds `code-app` and `code-publish`, owned by `code-app-agent` with `code-builder` tools.
+    Never use task kinds `app`, `page-layout`, `page-bind` or `publish`, never `app-agent`, never the no-code config
+    builder (`application-builder`)." If UnifyApps Headless offers or picks the config builder, answer text-to-code.
   - **Questions:** tell UnifyApps Headless that its Zen planning questions and its plan approval go to the person, and
     that every question after the plan is approved will be answered by you (the session), so it should keep going;
     whenever it stops with a question then — through AskUserQuestion or as plain text — answer it via the reviewer
