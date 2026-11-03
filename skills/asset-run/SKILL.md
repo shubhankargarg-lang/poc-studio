@@ -206,7 +206,9 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
     entry's `file_link` — never in `state.json` → `app`. `CONFIRM_REQUIRED` stays the person's.
 - **collaterals** — orchestrator § 5 with: the preview link from § 1 as every persona's `url` and `public_url`; the
   BRD and RG document if collected (else the skill builds its story from the app and says so in the brief); the
-  bundled template; the audience if given. **Build only the collaterals chosen in § 1**, from one story: skip the
+  bundled template; the audience if given; for the deck's technical blueprint, `04-build/build-summary.md` or
+  `04-build/one-off/build-summary.md` when the folder has one, otherwise the list of automations and agents read from
+  the app's solution (the skill records which). **Build only the collaterals chosen in § 1**, from one story: skip the
   deck phases when the deck is not chosen, the script PDF render when the script is not chosen, and the recording
   and video build when the video is not chosen; keep the brief's `must_show_in` to the chosen ones. When only the
   video is chosen, the narration script is still written (the video needs it) but not delivered. The Orbit session
@@ -225,8 +227,8 @@ this run's first `<n>` in the run entry (`first_review`). `round` counts this ru
 for a change request; `prior_verdict` is always given explicitly from round 2 on (this run's previous verdict, never
 another run's). `work_id` = the POC ID if given, else
 `SA-<client-slug>__<usecase-slug>`; `stage` from the table above; `artifacts` = the asset's output(s); `upstream` = the
-input the asset was made from (the RG document for a BRD, the BRD for wireframes, the BRD and any approved wireframes for a design system or an app, the BRD and the app for
-collaterals; none for requirements); `owner_profile` as in § 2; for collaterals,
+input the asset was made from (the RG document for a BRD, the BRD for wireframes, the BRD and any approved wireframes for a design system or an app, the BRD, the app and the build
+summary (or the solution's automation and agent list) for collaterals; none for requirements); `owner_profile` as in § 2; for collaterals,
 `known: ["collaterals chosen: <list>; the others were not requested and are not missing"]`. Handle the verdict
 exactly as the orchestrator's table does: REVISE with a response file (at most 2 REVISE rounds), BLOCK, the round-3
 ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk inside § 3.
@@ -291,7 +293,14 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
 - **Request changes** → log their words verbatim in `context-log.md` (a human decision for every later review),
   `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>" --work <document_id prefix>` and `… record
   <workspace> <stage> changes --since <first_review> --work <document_id prefix>` (the `SA-…__v` prefix without its
-  number, so one-off outcomes never count against a pipeline POC in the same folder). Recreate the autopilot flag, re-run the stage skill on its own output with those changes
+  number, so one-off outcomes never count against a pipeline POC in the same folder). **Check it is clear first**
+  (in Zen and Sonic, for every asset): the AI PM in resolve mode as § 4 does (`<stage>-resolve-<n>`), question "Is
+  this change request clear?", artifacts = their words verbatim, everything they attached (files, links, a new design
+  system, screenshots), the current approved asset and its input; lens `change-clarity`. **DECIDE** → tell the person
+  the `reading` in one line. **ASK_HUMAN** → with the autopilot flag still removed, ask its 1–3 questions in one
+  AskUserQuestion call (recommended option first) and log each answer as a human decision. Nothing is reworked until
+  the reading is settled; for an app, this is 4c's step 1b. Then recreate the autopilot flag, re-run the stage skill
+  on its own output with those changes and that reading
   (fix only what they asked; **for an app, follow the orchestrator's 4c · Changes after the build**: the AI PM triages
   the change first; small → direct changes through `ua-change` on the recorded solution; big or very big → when this
   folder has approved wireframes, the wireframes' Update mode and its change sheet are shown to the person and

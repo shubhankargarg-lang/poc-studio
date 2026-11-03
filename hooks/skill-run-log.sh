@@ -36,6 +36,9 @@ if tool == "Skill":
     msg = (f"POC Studio observability: `{skill}` is starting (started_at {start}, saved in .poc-studio/skill-starts/{skill}). "
            f"When this skill run returns, before the next step, write its one orbit_studio_skill_run row "
            f"(orbit-writeback Moment 7): build it with skill_run_row.py, then apply_record_edits.")
+    if skill == "platform-master":
+        msg += (" Exception: if this is job 1b · Question review (a Zen planning question), do not write a row now: write one "
+                "row for the whole planning window when the plan is approved, with started_at = state.json → zen_planning_started_at.")
     if skill == "unifyapps-headless":
         msg = (f"POC Studio observability: the UnifyApps Headless build is starting (started_at {start}). Write its one "
                f"`unifyapps-headless` row (Moment 7) when the app is published, not now.")

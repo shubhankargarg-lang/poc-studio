@@ -90,9 +90,65 @@ manifest's list); the render's own look.
 
 ---
 
+## change-clarity (resolve, on every change request, any stage)
+
+Runs before anything is reworked: at every approval gate (requirements, BRD/scoping, wireframes, design system, the
+built app, collaterals), in Zen and Sonic, in a full run or a one-off. Read the person's words, everything they
+attached, the current approved artifact and its upstream, and the human decisions in the context log. Decide
+whether one sensible reading exists. Go by what each reading would redo, not by how long the request is.
+
+**Vague — ASK_HUMAN** when any of these holds:
+- The person supplies a **new artifact or reference** (a design system, a file, a screenshot, a website, a
+  document) and does not say which parts to take or how it relates to the approved one.
+- The request **conflicts** with an approved upstream document or a logged human decision.
+- The scope is **open-ended or a matter of taste**: "make it better", "more modern", "cleaner", "like this one".
+- It can be **read two ways**, and one reading would redo finished, approved work (a whole design system, many
+  pages, the data model, the storyline).
+- It **names something that does not exist** in the artifact (a page, a section, a component, a field).
+
+**Clear — DECIDE** with a `reading` when all of these hold:
+- It names the place and the change ("rename the 'Cases' tab to 'Claims'", "add the due date to the queue table").
+- The change is small and easy to undo.
+- There is one sensible reading, and it touches nothing the person did not name.
+
+**How to ask.** 1–3 questions, each with 2–4 options. Each option is a complete reading in plain words. Put your
+recommended option first. `why` says what makes the request vague, in one line, and `cost_if_wrong` says what would
+be redone. Ask only what the words and attachments leave open.
+
+**The default when in doubt.** A new artifact that would replace an approved one is never adopted in full without
+asking. The recommended option keeps the approved one and takes only what the person named. When they named
+nothing, recommend the smallest sensible part (for a design system: its colours and type, on the current styling).
+
+**Worked example (a real incident).** After the app was built, the person shared a new design system that looked
+very different from the approved one and asked to "use this". The build adopted all of it and dropped the existing
+styling. The person only wanted part of it. The right answer was ASK_HUMAN:
+
+```yaml
+disposition: ASK_HUMAN
+answer: { clear: false, attachments: [ { item: "new-ds.html", use: "to be confirmed" } ] }
+why: "A new design system was supplied without saying which parts to use; using all of it would restyle every page."
+ask_human:
+  - { to: <owner>, question: "How should the new design system be used?",
+      options: [ "Keep the current styling and take only its colours and type",
+                 "Use it only for some components (name them)",
+                 "Replace the current design system with it in full" ],
+      recommended: "Keep the current styling and take only its colours and type",
+      cost_if_wrong: "every page restyled, then restored", meanwhile: "nothing is reworked until answered" }
+```
+
+**In the next review.** The `reading`, or the person's answers, is the upstream for the change. In the review of the
+reworked artifact:
+- anything changed beyond the reading is a blocking R2 finding (fix line: restore it from the approved version);
+- a stage or builder note that says it switched to the new input because it was very different, or that it chose a
+  reading the person did not give, is a blocking R2 finding, even when the result looks good.
+
+**Never:** asking about a change that is clear by the rules above; asking for approval of the reading of a clear
+change (it is logged and shown in the next gate summary).
+
 ## change-triage (resolve, after the build — orchestrator 4c)
 
-Classify the person's change request before anything touches the app. Read their words, the approved spec and
+Classify the person's change request before anything touches the app. Read their words (with the `change-clarity`
+reading or the person's answers to it), the approved spec and
 manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go by what the change does to the
 **layout**, not by how many words the request has.
 
@@ -117,6 +173,7 @@ manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go 
 - The after frame does what the person asked, in their words, and still answers the page's question (the
   `wireframes` lens applies to each changed frame).
 - New components in the manifest delta are slots with a `note` saying they are new in this change.
+- The change matches the `change-clarity` reading (or the person's answers); anything beyond it is blocking.
 
 **Never:** that the design system was not updated (standing decision: the build styles new components from its kit
 and tokens); that unchanged frames were not re-reviewed.
@@ -200,9 +257,19 @@ render the deck and script PDF to images and look at every page.
 **Judge:**
 - **Opening.** The first narration line names the client's pain (RG pain points), not a feature (K1).
 - **Wow by 1:30.** The core action from scoping §20.2 lands before 90 s in `build/placed.json` (K2).
-- **Every number** on a slide or in narration is in `facts.json` or on its screen; big stats are outcomes (K4).
+- **Every number** on a slide or in narration is in `facts.json` or on its screen; big stats are outcomes (K4). The
+  opening slide's fixed figures and the blueprint's counts (taken from `blueprint.json`) are excepted.
 - **One subject, one story** across video, script and deck: same record, same numbers, same names.
 - **Ending.** Next steps are the client's path, not our fixes (K6). Length 4–5 min unless the brief records why.
 - **Preview link** frames only: no Matrix login or user-creation screen anywhere (blocking R9).
+- **Deck frame.** The first slide is the UnifyApps opening slide and the last is the "Thank You" slide, both
+  unchanged from the template (a missing or edited one is a finding, unless the person asked to leave it out:
+  `"open"` / `"close": false`, recorded in `brief.json` decisions).
+- **Technical blueprint.** Re-run `node kit/blueprint.mjs` (exit 0). Its slides follow the story and come before
+  next steps: the architecture, then every automation and AI agent on as many slides as needed. Compare `built`
+  with `04-build/build-summary.md` (or the solution): a built automation or agent missing from the list, or a listed
+  one that was never built, is blocking (R9). Systems not connected in the POC are marked simulated or go-live, never
+  live. No secrets or key values on any slide.
 
-**Never:** the bundled template; the voice; the absence of a walkthrough PDF or a swimlanes document.
+**Never:** the bundled template; the opening and closing slides' fixed text; the voice; the absence of a
+walkthrough PDF or a swimlanes document; a blueprint that runs to several slides.

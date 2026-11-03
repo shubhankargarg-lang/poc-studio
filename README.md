@@ -148,7 +148,7 @@ Every run (`/poc-studio:start` and each one-asset command) asks once, at the sta
 | Who approves each gate | you | the AI PM; the run moves on by itself |
 | Stage 4 build plan (Zen planning) | you answer its questions and approve it | the AI PM does, after platform-master's review and the builder check |
 | Slack gate messages | yes | none |
-| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build |
+| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build, clarification questions when a change you asked for is vague |
 
 In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
 Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
@@ -186,17 +186,19 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 | 2b | Wireframes (Plan phase, between the BRD and the design system): one low-fidelity frame per page, generic regions as named component slots, map pages per the map reference; the manifest is the design system's component list | `wireframes` | `02b-wireframes/<slug>-wireframes.pdf`, `png/`, `wireframe-manifest.json` |
 | 3 | Design System (only the wireframes' components, plus the baseline: sign-in, empty/error/loading states, toast, confirm) | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
 | 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then walked in a browser by the AI PM (Stage 4b) before it is published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
-| 5 | Collaterals (UnifyApps template) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
+| 5 | Collaterals (UnifyApps template; the deck opens with the UnifyApps cover, carries a technical blueprint — architecture plus every automation and agent built — and closes with the Thank You slide) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
 After each stage: the **AI PM** (the `ai-pm` agent, an independent subagent) re-runs the stage's own checks, reviews
 the output, and negotiates its findings with the stage (fixed / disputed / deferred; a third round is a ruling, not a
 question). Then you **approve or request changes**, starting from its gate summary: verdict, rulings first,
-assumptions to check. In Stage 4 it also walks the built app in a browser (Stage 4b) before publish. Your gate
+assumptions to check. When you request changes, the AI PM first checks they are clear: it states how it reads them in
+one line, or asks you up to three short questions when they are vague, before anything is reworked. In Stage 4 it also walks the built app in a browser (Stage 4b) before publish. Your gate
 feedback becomes a lesson it checks on every later POC (`python3 <ai-pm>/scripts/lessons.py stats` shows first-try
 approvals per stage). Questions raised during a stage — including
 UnifyApps Headless's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
 Two exceptions in Stage 4 come to you: during the **Zen planning window** (while `.poc-studio/zen-planning` exists)
-you answer Zen's clarification questions and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
+you answer Zen's clarification questions (each one first reviewed by platform-master, which may add its own option,
+marked "Platform-master: …") and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
 releases) is yours to answer. The hooks let both through, and the POC owner is nudged in Slack while they wait.
 Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 
@@ -234,7 +236,7 @@ skills/wireframes/                 low-fidelity wireframes from the BRD: render.
                                    coverage.py (against the BRD), references/: spec format, example, map component
 skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
 skills/asset-run/                  one asset end to end: prerequisites, stage, AI PM, one-off Orbit row, approval
-skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen plan review, browser fallback
+skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen question review, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
 skills/ai-pm/                      the AI PM: reviews every stage, re-runs its checks, Stage 4b build walk, lessons
                                    (+ references/: stage lenses, slop catalogue; scripts/: build walk, scope metrics,

@@ -17,7 +17,7 @@ One POC → **three** collaterals, all generated from one story so they never di
 |---|---|---|
 | 1 | Demo script (time, screen, on-screen action, narration, features) | `out/<Slug>_Demo_Script.pdf` |
 | 2 | Demo video, narrated in US English, with subtitles | `out/<Slug>_Demo.mp4` + `.srt` |
-| 3 | PPT built from the UnifyApps template | `out/<Slug>_Deck.pptx` |
+| 3 | PPT built from the UnifyApps template: the UnifyApps opening slide, the story, the technical blueprint (architecture + every automation and agent), the closing slide | `out/<Slug>_Deck.pptx` |
 
 **Only these three are delivered.** No walkthrough PDF and no swimlanes document. The "today vs. with UnifyApps"
 swimlane is drawn only as a **slide inside the deck** (Phase 6 below): its picture is a working file in `build/`,
@@ -144,8 +144,8 @@ Everything below comes from what was built, not from looking at screens.
 5. **Harvest what makes the story concrete:** the real navigation (routes, sidebar labels, tab
    names), stable selectors (add `data-testid` to the elements the story clicks if they lack one), the
    customer's own vocabulary from the requirements, the discovery pain points for the "today" swimlane,
-   and the real architecture (apps, workflows, agents, objects, connections) for the "how it's built"
-   slide and the technical act.
+   and the real architecture (apps, workflows, agents, objects, connections) for the technical blueprint
+   (`blueprint.json`) and the technical act.
 6. **Write `internal.md`** for everything the team should know but the customer must not see: known
    bugs, features left out and why (a copilot erroring), UAT links, test accounts, workarounds. This
    file never feeds a collateral; `check.py` fails any customer file that contains such notes.
@@ -209,7 +209,8 @@ below omit it for brevity. On a Mac, if `~/.local/poc-collateral/env.sh` does no
 | 4 Trim | `python3 kit/trim.py` | the same film with every silent wait cut out; `build/trim.json` | every slow step shows click → short beat → result |
 | 5 Review | `python3 kit/review.py <n>`, then look at every frame | `review/v<n>/report.md`, contact sheet | all must-show items `shown`; no MUST FIX |
 | 6 Deck swimlane | write `swimlanes.json`; `node kit/swimlanes.mjs`; then `mkdir -p build/swimlanes && mv out/swimlane_*.png out/*_Swimlanes.pdf build/swimlanes/` | `build/swimlane_with_deck.png` for the deck slide (nothing left in `out/`) | each step maps to a scene or discovery |
-| 8 Deck | `python3 kit/deck.py --inspect`; write `deck.json`; `python3 kit/deck.py` | `out/<Slug>_Deck.pptx` | every slide rendered and checked |
+| 7 Blueprint | write `blueprint.json` from the build (see "Blueprint"); `node kit/blueprint.mjs` | `build/blueprint/blueprint-1.png` (architecture), `blueprint-2…n.png` (what was built) | exit 0: diagram and list name the same things; every automation and agent built is listed |
+| 8 Deck | `python3 kit/deck.py --inspect`; write `deck.json`; `python3 kit/deck.py` | `out/<Slug>_Deck.pptx` (opening slide first, closing slide last, added by the script) | every slide rendered and checked |
 | 9 Final | `python3 kit/check.py` again (it now scans all outputs) | | 0 must-fix |
 
 Re-runs are surgical: `python3 kit/narrate.py a3 b1` re-voices two scenes; `ACTS=B` re-records one
@@ -373,6 +374,10 @@ eyebrows SemiBold caps in olive; body Regular. Footer on every page: UnifyApps w
 Confidential" centre, page number right. Every film carries **"Powered and built by UnifyApps"**
 bottom-right. The customer's own brand stays on their app only.
 
+**Two slides are not re-themed:** the deck's opening slide (dark green UnifyApps cover: "Agentic automation for
+the enterprise", the three proof points) and closing slide ("Thank You") are template slides 4 and 5, added by
+`kit/deck.py` first and last exactly as they are. Never edit their text or use them as a `from` for another slide.
+
 ---
 
 ## Review in iterations (after every version of every collateral)
@@ -400,7 +405,8 @@ After each version `v<n>`:
    `pdftoppm -r 60 -png out/<file>.pdf review/v<n>/pages/<name>` for the PDFs, and
    `soffice --headless --convert-to pdf --outdir review/v<n> out/<Slug>_Deck.pptx` then
    `pdftoppm` for the deck. Look for overflow, overlap, tables running into the footer, empty slots,
-   template sample text left behind, unreadable diagrams, font fallback, and stray `*` or `**`.
+   template sample text left behind (the opening and closing slides' fixed text is not sample text), unreadable
+   diagrams, font fallback, and stray `*` or `**`.
 5. Fix (app data, story, actions, copy, deck.json), regenerate only what changed, and produce `v<n+1>`.
    Append what changed to `review/CHANGELOG.md`. **Ship only when every must-show item is `shown`
    in every collateral it is marked for and `check.py` reports 0 must-fix.**
@@ -449,7 +455,7 @@ connected at go-live. Persona sets the wording depth.
 
 ## Deck (`deck.json`)
 
-Every slide is a copy of one of the template's three slides, so master, background, footer and
+Every content slide is a copy of one of the template's three content slides, so master, background, footer and
 fonts carry over. Run `python3 kit/deck.py --inspect` first: it lists each template slide's text
 slots `T#` and pictures `P#` (the current template: slide 1 "Today's challenges" with 5 icon steps,
 "Where it breaks down" 2×2 and "The result"; slide 2 "Reinvented" with 3 steps, a wide screenshot
@@ -469,11 +475,23 @@ An `image` slide keeps the title, trims the picture's empty margins and fits it 
 and the footer (`top_in`, `bottom_in`, `left_in`, `right_in` adjust the box); it warns when the
 picture ends up under 80% of the slide width.
 
-Default storyline (adjust by persona): 1 Today's challenges (slide 1) · 2 Reinvented (slide 2,
-real screenshot) · 3 What each persona gets (slide 3, one per persona) · 4 Swimlane with UnifyApps
-(image slide) · 5 How it's built (**technical: required**), an image slide of an architecture
-diagram drawn in the theme from the real build (Apps, Agents, Workflows, Data; customer systems
-marked live / simulated / go-live) · 6 Next steps / go-live path.
+Default storyline (adjust by persona): **Opening slide** (added by the script) · 1 Today's challenges (slide 1) ·
+2 Reinvented (slide 2, real screenshot) · 3 What each persona gets (slide 3, one per persona) · 4 Swimlane with
+UnifyApps (image slide) · 5 **Technical blueprint (every persona, required)**: one image slide per
+`build/blueprint/blueprint-<n>.png`, in order: the architecture, then the automations and agents on as many slides as
+the list needs · 6 Next steps / go-live path · **Closing slide** (added by the script).
+
+Blueprint slides are image slides on template slide 1 with `"top_in": 1.25, "bottom_in": 0.55`; the slide title
+carries the message, so `blueprint.json` needs no `headline`:
+
+```json
+{ "from": 1, "image": "build/blueprint/blueprint-1.png", "top_in": 1.25, "bottom_in": 0.55,
+  "text": { "T0": "TECHNICAL BLUEPRINT · <POC ID>", "T1": ["How it’s built: ", "<the architecture in a few words>", "."] } },
+{ "from": 1, "image": "build/blueprint/blueprint-2.png", "top_in": 1.25, "bottom_in": 0.55,
+  "text": { "T0": "TECHNICAL BLUEPRINT · WHAT WAS BUILT", "T1": ["What was built: ", "<n> automations, <n> AI agents", "."] } }
+```
+
+A continued list page keeps the same title with "(continued)" in the eyebrow. Keep each title to one line.
 
 - **Big stats are outcomes**, not backlog: "seconds from photo to scored visit", "every finding
   linked to its clause", "3 brands on one record". Every figure is real (POC data or `facts.json`).
@@ -483,11 +501,55 @@ marked live / simulated / go-live) · 6 Next steps / go-live path.
   (pilot, connect systems, roll out), never our fixes ("fix the agent's model connection").
 - Icons: `lucide:<name>` (lucide-static), recoloured to match the icon they replace.
 
+## Blueprint (`blueprint.json`)
+
+The technical blueprint shows the client **what was built and how it fits together**: a high-level architecture and a
+list of every automation and AI agent. It goes in the deck (Phase 7 → slides in Phase 8), never as a separate file.
+
+**Source of truth:** the build, never the plan. In POC Studio read `04-build/build-summary.md` (what UnifyApps
+Headless reported it built: objects, agents, automations, pages, the solution) and set `"source"` to its path,
+relative to the collateral folder (`../../04-build/build-summary.md`; a one-off run: `../../04-build/one-off/build-summary.md`);
+the script fails when that file is missing and warns about any name that does not appear in it. Use scoping §11–§14 only for what each item does and when it
+runs. Without a build summary (a one-off run), list the solution's automations and agents from the app's builder or
+ask UnifyApps Headless for the list, and record the source in `brief.json` → `decisions`. Never list something the
+scoping document planned but the build does not have; never leave out something that was built.
+
+```json
+{ "source": "../../04-build/build-summary.md",
+  "what": "Self-serve wire payments for BMO's corporate clients, with a back office for BMO. Built on UnifyApps.",
+  "principles": ["**Rules decide every wire**, never a model.", "**Money waits for a person's Confirm.**"],
+  "users":   [ {"id": "dev", "label": "Client developer", "to": ["portal", "copilot"]} ],
+  "doors":   [ {"id": "portal", "label": "Client portal", "sub": "4 pages · code app", "kind": "app"},
+               {"id": "copilot", "label": "Copilot agent", "sub": "own records only", "kind": "agent"} ],
+  "groups":  [ {"label": "Core API", "items": ["Token", "Wire R1–R7"]}, {"label": "AI", "items": ["Copilot"]} ],
+  "data":    [ {"label": "BPS Transaction", "sub": "every wire, mode"} ],
+  "systems": [ {"label": "Salesforce", "sub": "accounts", "status": "simulated"} ],
+  "env": "Env: BPS_TOKEN_SIGNING_SECRET (signs tokens)",
+  "key": ["Wire R1–R7", "BPS Transaction"],
+  "built": [
+    {"name": "Copilot", "type": "agent", "trigger": "Chat drawer in the portal", "does": "Prepares a wire from plain English; submits only after Confirm.", "tools": ["Copilot Submit"]},
+    {"name": "Token", "type": "automation", "trigger": "API call", "does": "Issues a signed token for the client's API calls.", "objects": ["BPS Client"]},
+    {"name": "Wire R1–R7", "type": "automation", "trigger": "Console, API or Copilot", "does": "Runs rules R1–R7 in order; the first failure decides.", "objects": ["BPS Account", "BPS Transaction"]} ] }
+```
+
+- **`built`** is the list: one entry per automation and per AI agent, **named exactly as in the build**, with when it
+  runs and one plain sentence on what it does (outcome first), the objects it reads or writes, and an agent's tools.
+- **The diagram** has four layers: `users` (personas and outside callers; `to` = the doors they use), `doors` (apps,
+  API groups, agents in drawers; `kind` app / api / agent), the UnifyApps layer (`groups` of `built` names, grouped
+  by job), and the bottom row (`data` objects, then `systems` with `status` live / simulated / golive). Every `built`
+  name is in a group (a user-facing agent may be a door instead), and every group item is in `built`: the script
+  exits 1 otherwise. `key` outlines the hero path (at most 3). `principles` (optional, at most 4) are the design
+  rules a technical reader should trust; `env` (optional) names the environment variables.
+- **Big builds:** when the groups do not fit as chips, the architecture draws each group's first three items and
+  "+N more" (the list pages name them all), and the list runs to as many pages as it needs. Nothing is cut.
+- No secrets, keys or tokens anywhere; environment variables by name only. The client's systems keep their real
+  names; anything not connected in the POC is `simulated` or `golive`, never shown as live.
+
 ## Delivery
 
 Send each collateral as it passes review (script first, so the user can redirect early). The final message lists the
 three files (script PDF, video with its .srt subtitles, deck), the persona, voice and length, coverage status, `check.py` result, and anything
-simulated. Keep `story.json`, `coverage.json`, `facts.json`, `deck.json`, `swimlanes.json`,
+simulated. Keep `story.json`, `coverage.json`, `facts.json`, `deck.json`, `swimlanes.json`, `blueprint.json`,
 `internal.md` and `review/` so the next iteration is surgical. `internal.md` goes to the team, never
 to the customer.
 
@@ -1124,7 +1186,13 @@ for a, s in scenes:
         if CLAIM.search(x) and not any(c in x for c in cued):
             verify.append(f"{s['id']}: told, not shown? \"{x}\" (nothing on screen is cued in this sentence; show it, or check the screen has the button/state that makes it true)")
 
-# 5. internal notes in what the customer will receive
+# 5. internal notes in what the customer will receive (the blueprint slides are pictures: scan their source text)
+if os.path.exists("blueprint.json"):
+    _b = json.load(open("blueprint.json"))
+    _t = [_b.get("what", ""), _b.get("env", ""), *_b.get("principles", [])]
+    _t += [str(x.get(k, "")) for x in _b.get("built", []) for k in ("name", "trigger", "does")]
+    _t += [str(x.get(k, "")) for g in ("users", "doors", "data", "systems") for x in _b.get(g, []) for k in ("label", "sub")]
+    outs["blueprint.json (deck blueprint slides)"] = "\n".join(t for t in _t if t)
 INTERNAL = re.compile(r"\b(error|bug|fix(?:ed|es)?|todo|tbd|fixme|uat|staging|preview|localhost|sandbox|model connection|not shown|workaround|hack|internal only|confirm (?:the wording|with)|placeholder|lorem|dummy)\b", re.I)
 extra = [t.lower() for t in brief.get("internal_terms", [])]
 mail = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
@@ -1220,7 +1288,7 @@ export const md = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&l
   .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/\*([^*]+)\*/g, '<em>$1</em>');
 
 let browser;
-async function page(html, w, h) {
+export async function page(html, w, h) {
   browser ??= await launch();
   const p = await browser.newPage({ viewport: { width: w, height: h } });
   fs.mkdirSync('build/html', { recursive: true });
@@ -1784,6 +1852,191 @@ if (which !== 'script') await walkthrough();
 await done();
 ```
 
+### `kit/blueprint.mjs`
+
+```js
+// kit/blueprint.mjs: blueprint.json -> the technical blueprint slides for the deck, in the template theme.
+//   build/blueprint/blueprint-1.png      architecture: what it is, the counts, and the high-level diagram
+//                                        (users -> front doors -> automations and agents -> data and systems)
+//   build/blueprint/blueprint-2..n.png   what was built: every automation and AI agent, one row each; as many
+//                                        pages as the list needs (rows never split, a page never overflows)
+// Each picture is content only (transparent, 1920 x 854): the deck slide gives the eyebrow, title and footer.
+// usage: node kit/blueprint.mjs            (exit 1 when the diagram and the list disagree, or a page overflows)
+import fs from 'node:fs';
+import { page, done, md } from './render.mjs';
+import { readJSON } from './lib.mjs';
+
+const bp = readJSON('blueprint.json');
+if (!bp) { console.error('MUST FIX\n  blueprint.json not found or not valid JSON'); process.exit(1); }
+const W = 1920, H = 854, OUT = 'build/blueprint';
+const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const STATUS = { live: 'Live', simulated: 'Simulated in POC', golive: 'Connected at go-live' };
+const built = bp.built || [];
+const autos = built.filter((b) => b.type !== 'agent'), agents = built.filter((b) => b.type === 'agent');
+const byName = Object.fromEntries(built.map((b) => [b.name, b]));
+const errors = [];
+if (!built.length) errors.push('"built" is empty: list every automation and AI agent the build made');
+
+// ---- the diagram and the list must name the same things ----
+const inGroups = new Set((bp.groups || []).flatMap((g) => g.items));
+for (const n of inGroups) if (!byName[n]) errors.push(`diagram names "${n}", which is not in "built"`);
+for (const b of built) if (!inGroups.has(b.name) && !(bp.doors || []).some((d) => d.label === b.name))
+  errors.push(`"${b.name}" is in "built" but not on the diagram (add it to a group, or as a door for a user-facing agent)`);
+for (const b of built) if (!b.does) errors.push(`"${b.name}": say what it does ("does")`);
+const doorIds = new Set((bp.doors || []).map((d) => d.id));
+for (const u of bp.users || []) for (const t of u.to || []) if (!doorIds.has(t)) errors.push(`user "${u.label}" goes to unknown door "${t}"`);
+// cross-check against the build summary when it is given: every built name should appear there
+if (bp.source && !fs.existsSync(bp.source)) errors.push(`"source" ${bp.source} not found (the path is relative to the collateral folder, e.g. ../../04-build/build-summary.md)`);
+else if (bp.source) {
+  const txt = fs.readFileSync(bp.source, 'utf8').toLowerCase();
+  for (const b of built) if (!txt.includes(b.name.toLowerCase())) console.warn(`WARN "${b.name}" does not appear in ${bp.source}: check it was built under this name`);
+}
+
+const counts = bp.counts || [
+  [(bp.doors || []).filter((d) => d.kind === 'app').length, 'app'], [autos.length, 'automation'], [agents.length, 'AI agent'],
+  [(bp.data || []).length, 'data object'], [(bp.systems || []).length, 'connected system'],
+].filter(([n]) => n > 0).map(([n, label]) => ({ n, label: n === 1 ? label : label + 's' }));
+const key = new Set(bp.key || []);
+
+const STYLE = `
+body{width:${W}px;height:${H}px;position:relative;overflow:hidden}
+.wrap{position:absolute;inset:0;display:grid;grid-template-columns:400px 1fr;gap:28px;padding:6px 8px}
+.side{display:flex;flex-direction:column;gap:16px;min-height:0}
+.card{padding:20px 22px}
+.h{font-size:22px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.lead{font-size:17px;line-height:1.45}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--olive);border-radius:8px;padding:10px 14px}
+.tile b{display:block;font-size:34px;font-weight:300;color:var(--ink);line-height:1.1}
+.tile span{font-size:14px}
+.pr li{font-size:15.5px;line-height:1.4;margin:0 0 6px 18px}
+.pr b{color:var(--ink)}
+.dia{position:relative;padding:18px 26px 16px;display:flex;flex-direction:column;justify-content:space-evenly;gap:26px;min-height:0}
+.dia .h{margin:0}
+.row{display:flex;flex-direction:column;gap:8px;position:relative}
+.lab{position:relative;z-index:1;align-self:flex-start;background:var(--card);padding-right:8px;font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--em)}
+.items{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.node{position:relative;z-index:1;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 18px;text-align:center;min-width:170px}
+.node b{display:block;font-size:17px;font-weight:600;color:var(--ink)}
+.node i{display:block;font-style:normal;font-size:13.5px;margin-top:2px}
+.door{border:1.5px solid var(--olive);background:var(--card)}
+.door.agent{background:var(--olive)} .door.agent b,.door.agent i{color:#fff}
+.engine{position:relative;z-index:1;background:#EEEDE6;border:2px solid var(--olive);border-radius:12px;padding:12px 16px;display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.grp{display:flex;flex-direction:column;gap:7px}
+.grp .chips{display:flex;gap:7px;flex-wrap:wrap;max-width:520px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 11px;font-size:14.5px;color:var(--ink);white-space:nowrap}
+.chip.agent{background:var(--olive);color:#fff;border-color:var(--olive)}
+.key{border:2px solid var(--olive);font-weight:600}
+.sys{border-style:dashed}
+.badge{display:inline-block;margin-top:4px;font-size:11.5px;padding:1px 8px;border-radius:9px;background:var(--disc);color:var(--em)}
+.env{position:relative;z-index:1;align-self:center;background:var(--sand2);border:1px solid var(--line);border-radius:8px;padding:6px 18px;font-size:14px;margin-top:-8px}
+svg.wires{position:absolute;inset:0;z-index:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th{background:var(--olive);color:#fff;font-weight:600;text-align:left;padding:9px 12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.35}
+td.n{color:var(--em);width:38px} td.nm{font-weight:600;color:var(--ink);width:260px}
+td.ty{width:120px} td.tr{width:230px} td.ob{width:300px;font-size:14px}
+.pill{display:inline-block;padding:1px 9px;border-radius:9px;font-size:12.5px;background:var(--disc);color:var(--em)}
+.pill.agent{background:var(--olive);color:#fff}
+.tbl{position:absolute;inset:0;padding:6px 8px;display:flex;flex-direction:column}
+.tbl .card{padding:6px 10px;flex:1;overflow:hidden}
+`;
+
+function chip(name) {
+  const b = byName[name] || {};
+  return `<span class="chip ${b.type === 'agent' ? 'agent' : ''} ${key.has(name) ? 'key' : ''}">${esc(name)}</span>`;
+}
+function node(d, cls = '') {
+  const status = d.status ? `<span class="badge">${STATUS[d.status] || esc(d.status)}</span>` : '';
+  return `<div class="node ${cls} ${key.has(d.label) ? 'key' : ''}" ${d.id ? `data-id="${esc(d.id)}"` : ''}><b>${esc(d.label)}</b>${d.sub ? `<i>${esc(d.sub)}</i>` : ''}${status}</div>`;
+}
+
+function architecture(compact = false) {
+  const side = `<div class="side">
+    <div class="card"><div class="h">What it is</div><div class="lead">${md(bp.what || '')}</div></div>
+    <div class="tiles">${counts.map((c) => `<div class="tile"><b>${c.n}</b><span>${esc(c.label)}</span></div>`).join('')}</div>
+    ${(bp.principles || []).length ? `<div class="card pr"><div class="h">Design principles</div><ul>${bp.principles.map((p) => `<li>${md(p)}</li>`).join('')}</ul></div>` : ''}
+  </div>`;
+  // compact (a big build): each group shows its first three items and "+N more"; the list pages name them all
+  const show = (g) => (compact && g.items.length > 4 ? [...g.items.slice(0, 3).map(chip), `<span class="chip">+${g.items.length - 3} more</span>`] : g.items.map(chip)).join('');
+  const groups = (bp.groups || []).map((g) => `<div class="grp"><div class="lab">${esc(g.label)}</div><div class="chips">${show(g)}</div></div>`).join('');
+  const bottom = [...(bp.data || []).map((d) => node(d, 'obj')), ...(bp.systems || []).map((d) => node(d, 'sys'))].join('');
+  const dia = `<div class="card dia" id="dia">
+    ${bp.headline ? `<div class="h">${md(bp.headline)}</div>` : ''}
+    <div class="row" id="users"><div class="lab">Users</div><div class="items">${(bp.users || []).map((u) => node({ ...u, id: 'u:' + (u.id || u.label) })).join('')}</div></div>
+    <div class="row" id="doors"><div class="lab">Front doors</div><div class="items">${(bp.doors || []).map((d) => node(d, `door ${d.kind === 'agent' ? 'agent' : ''}`)).join('')}</div></div>
+    <div class="row"><div class="lab">${autos.length} automation${autos.length === 1 ? '' : 's'}${agents.length ? ` · ${agents.length} AI agent${agents.length === 1 ? '' : 's'}` : ''} · UnifyApps</div><div class="engine" id="engine">${groups}</div></div>
+    <div class="row" id="bottom"><div class="lab">Data${(bp.systems || []).length ? ' and connected systems' : ''}</div><div class="items">${bottom}</div></div>
+    ${bp.env ? `<div class="env">${esc(bp.env)}</div>` : ''}
+    <svg class="wires" id="wires"></svg></div>`;
+  return `<div class="wrap">${side}${dia}</div>`;
+}
+
+// Elbow connectors drawn after layout, from the real positions of the boxes.
+const WIRE = (users) => `(() => {
+  const dia = document.getElementById('dia'), R = dia.getBoundingClientRect(), svg = document.getElementById('wires');
+  const box = (el) => { const r = el.getBoundingClientRect(); return { x: r.left - R.left + r.width / 2, t: r.top - R.top, b: r.bottom - R.top, l: r.left - R.left, r: r.right - R.left }; };
+  const col = getComputedStyle(document.documentElement).getPropertyValue('--olive2').trim() || '#828750';
+  let d = '';
+  const elbow = (a, b) => { const m = (a.y + b.y) / 2; d += 'M' + a.x + ' ' + a.y + ' V' + m + ' H' + b.x + ' V' + (b.y - 6) + ' '; heads.push(b); };
+  const heads = [];
+  const users = ${JSON.stringify(users)};
+  for (const u of users) { const ue = document.querySelector('[data-id="' + CSS.escape('u:' + u.id) + '"]'); if (!ue) continue;
+    for (const t of u.to) { const de = document.querySelector('#doors [data-id="' + CSS.escape(t) + '"]'); if (!de) continue;
+      const a = box(ue), b = box(de); elbow({ x: a.x, y: a.b }, { x: b.x, y: b.t }); } }
+  const eng = box(document.getElementById('engine'));
+  for (const de of document.querySelectorAll('#doors .node')) { const a = box(de); elbow({ x: a.x, y: a.b }, { x: Math.min(Math.max(a.x, eng.l + 20), eng.r - 20), y: eng.t }); }
+  for (const be of document.querySelectorAll('#bottom .node')) { const b = box(be); elbow({ x: Math.min(Math.max(b.x, eng.l + 20), eng.r - 20), y: eng.b }, { x: b.x, y: b.t }); }
+  svg.innerHTML = '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6"/>' +
+    heads.map((h) => '<path d="M' + (h.x - 5) + ' ' + (h.y - 7) + ' L' + h.x + ' ' + (h.y - 1) + ' L' + (h.x + 5) + ' ' + (h.y - 7) + ' Z" fill="' + col + '"/>').join('');
+  const over = dia.scrollHeight > dia.clientHeight + 2 || [...dia.querySelectorAll('.node,.engine')].some((e) => e.getBoundingClientRect().bottom > R.bottom)
+    || [...document.querySelectorAll('.side > *')].some((e) => e.getBoundingClientRect().bottom > ${H});
+  return over;
+})()`;
+
+function table(rows, start) {
+  return `<div class="tbl"><div class="card" id="tc"><table><thead><tr><th></th><th>Name</th><th>Type</th><th>Runs when</th><th>What it does</th><th>Reads / writes · tools</th></tr></thead><tbody>
+  ${rows.map((b, i) => `<tr><td class="n">${start + i + 1}</td><td class="nm">${esc(b.name)}</td>
+    <td class="ty"><span class="pill ${b.type === 'agent' ? 'agent' : ''}">${b.type === 'agent' ? 'AI agent' : 'Automation'}</span></td>
+    <td class="tr">${esc(b.trigger || '')}</td><td>${md(b.does || '')}</td>
+    <td class="ob">${esc([...(b.objects || []), ...(b.tools || []).map((t) => 'tool: ' + t)].join(' · '))}</td></tr>`).join('')}
+  </tbody></table></div></div>`;
+}
+
+fs.mkdirSync(OUT, { recursive: true });
+for (const f of fs.readdirSync(OUT)) if (/^blueprint-\d+\.png$/.test(f)) fs.unlinkSync(`${OUT}/${f}`);  // our own previous render
+const shots = [];
+{
+  const users = (bp.users || []).map((u) => ({ id: u.id || u.label, to: u.to || [] }));
+  for (const compact of [false, true]) {
+    const p = await page(`<style>${STYLE}</style>${architecture(compact)}`, W, H);
+    const over = await p.evaluate(WIRE(users));
+    if (over && !compact) { await p.close(); console.log('architecture: too many items for full chips; drawing groups compact (the list pages name every item)'); continue; }
+    if (over) errors.push('architecture page overflows even compact: shorten "what", drop "principles", use fewer, wider groups, or list fewer data objects and systems');
+    const f = `${OUT}/blueprint-1.png`; await p.screenshot({ path: f, omitBackground: true }); await p.close(); shots.push(f); break;
+  }
+}
+// What was built: agents first, then automations, in the order given; as many pages as needed.
+const list = [...agents, ...autos];
+let i = 0, n = 2;
+while (i < list.length) {
+  const p = await page(`<style>${STYLE}</style>${table(list.slice(i), i)}`, W, H);
+  const fit = await p.evaluate(() => {
+    const c = document.getElementById('tc').getBoundingClientRect(); let k = 0;
+    for (const tr of document.querySelectorAll('tbody tr')) { if (tr.getBoundingClientRect().bottom > c.bottom - 4) break; k++; }
+    return k;
+  });
+  if (fit === 0) { errors.push(`row "${list[i].name}" is taller than a page: shorten its "does"`); await p.close(); break; }
+  await p.evaluate((k) => { [...document.querySelectorAll('tbody tr')].slice(k).forEach((tr) => tr.remove()); }, fit);
+  const f = `${OUT}/blueprint-${n++}.png`; await p.screenshot({ path: f, omitBackground: true }); await p.close(); shots.push(f);
+  i += fit;
+}
+await done();
+console.log(`${shots.length} blueprint page(s): ${shots.join(', ')}`);
+console.log(`built: ${autos.length} automations, ${agents.length} AI agents, ${(bp.data || []).length} data objects`);
+if (errors.length) { console.error('MUST FIX\n  ' + errors.join('\n  ')); process.exit(1); }
+```
+
 ### `kit/deck.py`
 
 ```python
@@ -1798,12 +2051,16 @@ await done();
 # An image value can be {"path": "...", "y": 0.4} to choose which band of a tall screenshot fills a wide frame.
 # Text keys are a slot id (T#) or a unique sample text. A list fills the runs in order (keeps the italic olive run).
 # "lucide:<name>" renders that line icon in the colour of the icon it replaces. Screenshots are cropped to fill.
+# Template slides 4 (the UnifyApps opening slide) and 5 (the "Thank You" closing slide) are added by this script,
+# first and last, exactly as they are in the template: never list them in deck.json. "open": false / "close": false
+# at the top of deck.json leaves one out (only when the person asked).
 import sys, json, copy, io, os, re
 from pptx import Presentation
 from pptx.util import Emu
 from PIL import Image
 
 TPL = "brand/template.pptx"
+OPEN, CLOSE = 4, 5  # template slides added as they are, first and last
 def slots(slide):
     T, P = [], []
     for sh in sorted(slide.shapes, key=lambda s: (s.top or 0, s.left or 0)):
@@ -1814,7 +2071,8 @@ def slots(slide):
 if "--inspect" in sys.argv:
     prs = Presentation(TPL)
     for i, s in enumerate(prs.slides, 1):
-        T, P = slots(s); print(f"\n=== template slide {i}")
+        T, P = slots(s); print(f"\n=== template slide {i}" + {OPEN: "  (opening slide: added first by this script, as is)", CLOSE: "  (closing slide: added last by this script, as is)"}.get(i, ""))
+        if i in (OPEN, CLOSE): continue
         for k, sh in enumerate(T):
             runs = [r.text for p in sh.text_frame.paragraphs for r in p.runs]
             print(f"  T{k:<3} {'|'.join(runs)[:90]!r}")
@@ -1882,6 +2140,7 @@ def swap_picture(slide, pic, stream):
 
 made = []
 for n, sd in enumerate(spec["slides"], 1):
+    if sd.get("from", 1) in (OPEN, CLOSE): raise SystemExit(f"slide {n}: template slide {sd['from']} is the opening/closing slide; it is added automatically, do not list it")
     src = originals[sd.get("from", 1) - 1]; s = duplicate(src); T, P = slots(s)
     sample = {}
     for k, sh in enumerate(T): sample.setdefault(sh.text_frame.text.strip(), []).append(k)
@@ -1917,10 +2176,17 @@ for n, sd in enumerate(spec["slides"], 1):
     if sd.get("notes"): s.notes_slide.notes_text_frame.text = sd["notes"]
     made.append(s)
 
-# Drop the template's sample slides from this OUTPUT copy only (the template file itself is never changed).
+# Drop the template's sample slides from this OUTPUT copy only (the template file itself is never changed), keep the
+# opening and closing slides as they are, and put them first and last.
 lst = prs.slides._sldIdLst
-for sl in originals:
+keep = {OPEN: spec.get("open", True), CLOSE: spec.get("close", True)}
+ends = {}
+for i, sl in enumerate(originals, 1):
     for sid in list(lst):
-        if prs.slides.get(int(sid.get("id"))) is sl: prs.part.drop_rel(sid.rId); lst.remove(sid)
-os.makedirs("out", exist_ok=True); out = f"out/{brief['slug']}_Deck.pptx"; prs.save(out); print(out, len(made), "slides")
+        if prs.slides.get(int(sid.get("id"))) is sl:
+            if keep.get(i): ends[i] = sid
+            else: prs.part.drop_rel(sid.rId); lst.remove(sid)
+if OPEN in ends: lst.remove(ends[OPEN]); lst.insert(0, ends[OPEN])
+if CLOSE in ends: lst.remove(ends[CLOSE]); lst.append(ends[CLOSE])
+os.makedirs("out", exist_ok=True); out = f"out/{brief['slug']}_Deck.pptx"; prs.save(out); print(out, len(made) + len(ends), "slides" + (" (with the opening and closing slides)" if len(ends) == 2 else ""))
 ```

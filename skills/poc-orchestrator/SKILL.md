@@ -58,7 +58,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 2b Wireframes | `wireframes` |
 | 3 Design System | `design-system` |
 | 4 Build | `/ua:setup`, then `/ua:plan` in Zen (separate UnifyApps Headless plugin, `ua`) |
-| 4 Build, platform knowledge | `platform-master` (best-practice pointers, Zen plan review, browser fallback) |
+| 4 Build, platform knowledge | `platform-master` (best-practice pointers, Zen question review, Zen plan review, browser fallback) |
 | 5 Collaterals | `poc-collateral-studio` |
 | Any stage, outside facts | `research` |
 | Every gate, Orbit write-back | `orbit-writeback` |
@@ -96,7 +96,8 @@ and any later session — can read them:
     zen-decisions.md                    Zen's planning questions and the person's answers
     test-report.md                      one row per page, automation, agent and storyline step
     platform-pointers.md                platform-master: use-case type, style and the pointers given to the build
-    platform-review.md                  platform-master: its review rounds of Zen's plan and the adjustments
+    platform-review.md                  platform-master: its question review of Zen's planning questions, its review
+                                        rounds of Zen's plan and the adjustments
     fallback-<n>.md                     platform-master: one per asset built by the browser fallback
   05-collaterals/
     <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
@@ -180,8 +181,10 @@ items below, and recreated right after.
 6. In Stage 4, whether to rebuild pages already built the no-code way (finished work would be redone).
 6a. In 4c, approving the updated wireframes for a big or very big change after the build (the person sees the
    change before the app changes).
+6b. The clarification questions of the AI PM's change-clarity check, when a change request the person typed is
+   vague or can be read two ways (at any stage, before anything is reworked).
 7. A run blocked by a missing tool, connector or input that only the person can provide (Setup's connector check).
-Each one is asked as today (autopilot removed, one question, logged as a human decision); then the run carries on in
+Each one is asked as today (autopilot removed, one question — up to three for the change-clarity check, item 6b — logged as a human decision); then the run carries on in
 Sonic.
 
 **The Sonic gate** (instead of "The approval gate" below). After the stage's last review:
@@ -192,9 +195,10 @@ Sonic.
   "Sonic mode") and confirm it landed, then tell the person in **one line** (stage, verdict, rounds, the saved path) and
   start the next stage at once. No AskUserQuestion.
 - Anything in the list above → ask the person, then continue.
-- The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, re-run, review),
-  and the run goes on in Sonic afterwards. Once the app is built, changes always go through **4c · Changes after the
-  build**.
+- The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, the clarity
+  check, re-run, review), and the run goes on in Sonic afterwards. The clarity check's `ASK_HUMAN` questions go to the
+  person in Sonic too (remove the autopilot file, ask, recreate it): the change is their own iteration. Once the app
+  is built, changes always go through **4c · Changes after the build**.
 
 ## Questions never go straight to the person
 
@@ -203,7 +207,8 @@ The stage skills are built not to ask questions. If any stage — or UnifyApps H
 1. Do not call AskUserQuestion and do not end your turn with a question. Send the question to the reviewer in
    **resolve** mode (see "Calling the reviewer").
 2. Apply its answer, log it in `context-log.md`, and carry on.
-3. Only an `ASK_HUMAN` disposition reaches the person, and then only as one question with the reviewer's
+3. Only an `ASK_HUMAN` disposition reaches the person, and then only as one question (up to three for the change-clarity
+   check, asked in one AskUserQuestion call) with the reviewer's
    recommended option first.
 
 The plugin enforces this with two hooks: while the file `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot` exists,
@@ -268,7 +273,7 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 | `PASS` | Go to the approval gate. |
 | `REVISE` | Re-run the stage skill on its own output with the fix lines: **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines. Then review again with `prior_verdict`. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
 | `BLOCK` | Fix the blocking findings the same way (with a response file), then review again. If it still blocks after the third review, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
-| `ASK_HUMAN` | Put the one question to the person (autopilot file removed), log the answer as a human decision, continue. |
+| `ASK_HUMAN` | Put its question to the person (autopilot file removed; the change-clarity check may carry 1–3, asked in one AskUserQuestion call), log the answer as a human decision, continue. |
 | `REQUEST_RESEARCH` / `research_request` | Call the `research` skill with it, save the answer, give it back to the reviewer or the stage. |
 | `DECIDE` (resolve) | Apply the answer, log it, continue. |
 | `SEND_BACK` (resolve) | The question was really a defect in the work: fix it in the stage, continue. |
@@ -292,8 +297,16 @@ Remove the autopilot file, then:
    **Changes** → log the feedback verbatim (it is now a human decision for every later review), and also
    `python3 "$R/lessons.py" capture <workspace> <stage> "<their words, verbatim>"` and `… record <workspace> <stage>
    changes`, so the AI PM turns it into a lesson for every later POC. If the feedback names something the AI PM's
-   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then re-run the stage skill to apply it, review
-   again (round counter restarts for the new feedback), and gate again.
+   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then **check it is clear** before anything is
+   reworked: the AI PM in resolve mode (`stage: <this stage>`, question "Is this change request clear?", artifacts =
+   their words verbatim, everything they attached (files, links, a new design system, screenshots), the current
+   approved artifact and its upstream; lens `change-clarity`).
+   - **DECIDE** → tell the person the `reading` in one line and go on.
+   - **ASK_HUMAN** → the autopilot file is still removed: ask its 1–3 questions in one AskUserQuestion call
+     (recommended option first), log each answer as a human decision, and use the chosen options as the reading.
+   Nothing is reworked until the reading is settled. Then re-run the stage skill to apply it, limited to the reading
+   ("change only this; leave everything else as it is"), review again (round counter restarts for the new feedback;
+   the reading is the upstream for the change), and gate again. Once the app is built, 4c runs this check instead.
 
 In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
 
@@ -302,7 +315,8 @@ In Zen, never advance without the person's explicit approval; in Sonic, never ad
 Right after each of these returns, write its one `orbit_studio_skill_run` row (orbit-writeback **Moment 7**, which has
 the fields and the list): every stage skill run (requirement-gathering, scoping-l1-first, wireframes, design-system,
 poc-collateral-studio), every REVISE or changes re-run of one, every AI PM **review** round (the 4b build walk
-included), every platform-master job, the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
+included), every platform-master job (the question review as one row for the whole planning window, written when the plan is
+approved, with `started_at` = the time `/ua:plan` started, saved in `state.json` → `zen_planning_started_at`), the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
 publish), and every `research` call. Note each run's start time before it begins. The row is written before the next
 step (the review, the gate), but a failed write never holds anything: one retry, one line, carry on. Not logged:
 orbit-writeback's own moments and the AI PM's resolve-mode answers.
@@ -518,15 +532,19 @@ Only these session facts are supplied by you:
   2. **Platform pointers** — still under the autopilot file, load the `platform-master` skill (Skill tool:
      `poc-studio:platform-master`) and run its job **1 · Pointers**: it classifies the use case from the approved
      scoping document and writes `04-build/platform-pointers.md`. Its pointers go into the build request below.
-  3. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
+  3. **`/ua:plan`** with the build request below (save its start time in `state.json` → `zen_planning_started_at`). The request itself says **Zen**, so `/ua:plan` skips its mode
      question. Planning runs in the **Zen planning window** (next bullet).
 - **Zen planning in Sonic run mode.** Do not create the Zen planning flag and keep the autopilot file on: Zen's
-  clarification questions go to the AI PM in resolve mode (`stage: build`), like any other question. When Zen has
+  clarification questions go to the AI PM in resolve mode (`stage: build`), like any other question, each one first
+  through platform-master job **1b · Question review**, with its option or "agrees" note in the options the AI PM
+  chooses from. When Zen has
   written its plan, platform-master's plan review and the builder check (below) run as in Zen; then the AI PM approves
   the plan (resolve mode, question "Approve Zen's plan?", with the spec, task graph, preview and
   `04-build/platform-review.md`): **DECIDE start** → answer Zen "start", Orbit **M4a** in its Sonic form, and run
   the plan; **SEND_BACK** → its lines go to Zen as "change something", then review again. Log every question,
-  answer and the approval in `04-build/zen-decisions.md` and `context-log.md` as the AI PM's. Then continue at
+  answer and the approval in `04-build/zen-decisions.md` and `context-log.md` as the AI PM's. When the AI PM picks a
+  platform-master option, send Zen platform-master's answer for Zen word for word and log it as "Platform-master:
+  <label> — chosen by the AI PM" (the plan review looks for that line). Then continue at
   "On the person's yes" below (in Sonic: on the AI PM's start).
 - **Zen planning window (Zen run mode) — the person answers Zen's questions and approves its plan.**
   - Right before `/ua:plan` starts, remove the autopilot file and create the Zen planning flag, next to it, holding
@@ -539,6 +557,17 @@ Only these session facts are supplied by you:
     any number of rounds, often none) go to the **person directly**. Do not route them to the reviewer. Log every
     question and the person's answer in `<workspace>/context-log.md` as a human decision, and in
     `<workspace>/04-build/zen-decisions.md` (one entry per question: the question, the options, the answer).
+  - Before each question reaches the person, run `platform-master` job **1b · Question review** on it, and ask it
+    with platform-master's input:
+    - An added option goes after Zen's options, with platform-master's label (`Platform-master: …`) and description
+      (`Suggested by platform-master — …`) exactly as given. A question holds at most four options: when Zen already
+      gave four, platform-master's option takes the place of Zen's last non-recommended option, and the question text
+      names the option it replaced so the person can still choose it under "Other".
+    - "Agrees" → add `Platform-master agrees.` to the end of that option's description.
+    - Nothing to add → ask Zen's question as it is.
+    - When the person picks the platform-master option, send Zen platform-master's answer for Zen as the person's
+      answer, word for word, so the spec and the builders' tasks carry it. Log it in `zen-decisions.md` and
+      `context-log.md` as "Platform-master: <label> — chosen by the person".
   - Zen reads the solution, designs the objects and pages, writes a spec (with `## Assumptions` and "Check this"
     lines on top) and a task graph (one task per entity, each owned by one builder agent), grills plans with 5 or more
     tasks, and writes and opens a preview page. Nothing is written to the tenant before the person's yes.
@@ -732,25 +761,37 @@ and a built page does not.
 1. **Log it.** Their words verbatim in `context-log.md`; Orbit **M3** (Iteration, phase build, reason = their words);
    `lessons.py capture <workspace> build "<their words>"` and `… record <workspace> build changes`. More text about
    the same change is added to the same iteration.
+1b. **Check it is clear.** The AI PM in resolve mode (`stage: build`, question "Is this change request clear?",
+   artifacts: their words verbatim, everything they attached (files, links, a new design system, screenshots), the
+   approved `02b-wireframes/`, the design system, `04-build/build-summary.md` and the scoping document; lens
+   `change-clarity`). Save the answer to `04-build/changes/CR-<n>.clarity.yaml`. **DECIDE** → tell the person the
+   `reading` in one line. **ASK_HUMAN** → in Zen and in Sonic, remove the autopilot file, ask its 1–3 questions in one
+   AskUserQuestion call (recommended option first), log each answer as a human decision in `context-log.md` and in
+   the same file, then recreate the autopilot file. Nothing is triaged or touched until the reading is settled, and
+   the reading goes with the change to every later step (wireframes Update mode, `ua-change` fix lines, the scoped
+   re-plan). A new design system or other replacement artifact is used in full only when the person chose that option.
 2. **Triage.** The AI PM in resolve mode (`stage: build`, question "Triage this change request", options
-   `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md`; lens
-   `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
+   `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md` and
+   `04-build/changes/CR-<n>.clarity.yaml`; lens `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
    workspace) and tell the person in one line: the tier, the pages it touches, why. When `stages.wireframes` is
    `skipped` there are no frames to update: `big` and `very-big` go to step 4 without the wireframes, and say so.
 3. **Small** → straight to the app: the change as numbered fix lines to UnifyApps Headless as direct changes through
    `ua-change` (same session, independent fixes in parallel, no new plan), then step 5.
 4. **Big or very big → wireframes first. The app is not touched until the person approves.**
-   - Create the autopilot file. Call `wireframes` in **Update mode** (wireframes skill) with their words, the triage
+   - Create the autopilot file. Call `wireframes` in **Update mode** (wireframes skill) with their words, the clarity
+     reading (`04-build/changes/CR-<n>.clarity.yaml`), the triage
      and the approved `02b-wireframes/`. It edits only the affected frames, re-renders and writes
      `02b-wireframes/changes/CR-<n>/change-sheet.pdf` (before | after per page) and `change-summary.json`. The design
      system is not updated: a new component is styled by the build from its kit and tokens.
    - Review: `stage: wireframes`, lens `wireframes-update`, artifacts = the change sheet, `change-summary.json` and the
-     new spec; upstream = `_previous/v<N>` (the approved wireframes), the triage and their words. REVISE as usual.
+     new spec; upstream = `_previous/v<N>` (the approved wireframes), the clarity reading, the triage and their words.
+     REVISE as usual.
    - **Show the person** (in Zen and in Sonic; remove the autopilot file): open the change sheet locally (`open` on a
      Mac, `xdg-open` on Linux), list pages added, changed and removed and any new component in one line each, the AI
      PM summary, then AskUserQuestion: **Approve wireframes and update the app** / **Change the wireframes** (they
      type what in "Other") / **Drop this change**.
-     - **Change the wireframes** → Update mode again on the current spec with their words, review, show again. The
+     - **Change the wireframes** → the clarity check (step 1b) on their words, then Update mode again on the
+       current spec with them and the reading, review, show again. The
        app is still untouched.
      - **Drop this change** → restore `_previous/v<N>` as the current wireframes, close the iteration (M5 with no new
        version, note "dropped"), and go back to where the run was.
@@ -769,7 +810,8 @@ and a built page does not.
 5. **Test what was touched, then the AI PM walk.** UnifyApps Headless re-tests the changed and new pages and anything
    that depends on them (Stage 4's test rules, at most 3 fix rounds); add rows to `04-build/test-report.md`. Then the
    AI PM build walk (4b) on the preview link, with the updated frames as upstream. Publish, update
-   `build-summary.md` (a "Changes" section: CR-<n>, tier, pages, wireframes version), Orbit **M5** (new app version,
+   `build-summary.md` (update "what was built" — objects, agents, automations, pages, by their names in the
+   solution — and add a "Changes" section: CR-<n>, tier, pages, wireframes version), Orbit **M5** (new app version,
    closing the iteration), and gate again (the verify gate, or the stage the change came from).
 
 ## 5 · Collaterals
@@ -785,7 +827,11 @@ and a built page does not.
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
     Requirement Gathering document (the "today" pain points) as the build session's truth;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
-    The deck (problem statement → solution) is built from it.
+    The deck (problem statement → solution) is built from it, with the UnifyApps opening slide first and the
+    closing slide last (added by the skill's `deck.py`);
+  - `04-build/build-summary.md` as the source of the deck's **technical blueprint** (`blueprint.json` → `source`):
+    every automation and AI agent the build made, named as built, plus the high-level architecture. The blueprint
+    can take as many slides as the build needs.
 - **Login:** reuse the Orbit session from Setup: copy `~/.local/poc-studio/auth/orbit.json` to the collateral
   folder's `auth/<persona>.json` for each persona (`orbit_signin.mjs --check` first). Only if it has expired does the
   skill open its sign-in browser (`kit/auth.mjs`) on Orbit; then remove the autopilot file and ask the person to log
@@ -794,7 +840,8 @@ and a built page does not.
   all `ok` (Setup's background install failed or never ran), run that skill's install now and wait for it. Then the
   kit's `kit/setup.sh` reuses the shared tools and takes seconds. Every command in the collateral folder starts with
   `source env.sh && `. On Linux, `kit/setup.sh` installs what is missing into the project folder.
-- Review: `stage: collaterals`, artifacts = everything in `out/`.
+- Review: `stage: collaterals`, artifacts = everything in `out/` plus `blueprint.json` and `build/blueprint/`;
+  upstream includes `04-build/build-summary.md` (the blueprint's source of truth).
 - **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, first the **Reconcile check**
   (G1–G3 must show approved in Orbit), then **M1 · G4** (upload script PDF, deck,
   video; demo_ready) — do it before marking the run done.

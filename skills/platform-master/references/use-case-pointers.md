@@ -136,6 +136,9 @@ Add all of these to the build request. Each starts the way it goes into the requ
   product's objects. That keeps the product's model clean when a real connector replaces it.
 - The build should **give every generated person a unique full name and no honorific or gender guess**, and the
   agent should disambiguate people by code, never by name alone.
+- When the app adds documents or web pages to an agent's knowledge set, the build should **have the workflow create
+  each source itself** (a record on the system object `knowledge`, `sourceType` `FILE` or `WEBSITE`) and take the
+  item's status from that source's own indexing status. A workflow can add sources; do not plan around the opposite.
 
 **What appears on screens**
 - The build should show **no internal codes, raw ids, raw JSON, object prefixes or "(s)" plurals** on any screen.

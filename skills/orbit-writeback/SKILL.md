@@ -525,7 +525,7 @@ out every key that has no value, never `""` or `null`). **Create only:** never u
 | Scoping | `scoping-l1-first` | "BRD v<N>" (a REVISE re-run: "BRD v<N> · <k> fixes") |
 | Wireframes | `wireframes` | "<n> frames" |
 | Design system | `design-system` | "Design system v<N>" |
-| Each platform-master job | `platform-master` | "Pointers", "Plan review, round <r>", "Fallback: <asset>" |
+| Each platform-master job | `platform-master` | "Pointers", "Question review · <n> questions, <k> options added" (one row for the whole Zen planning window, written when the plan is approved; `started_at` = `state.json` → `zen_planning_started_at`), "Plan review, round <r>", "Fallback: <asset>" |
 | The Stage 4 build by UnifyApps Headless (from the plan's start to publish) | `unifyapps-headless` | "App build · <n> tasks" |
 | Collaterals | `poc-collateral-studio` | what was made, e.g. "Script, deck, video" |
 | Each `research` call | `research` | the question, cut to 60 characters |
@@ -858,7 +858,7 @@ deletes a ticket.
         | `design-system` | palette, brand, components, the design system |
         | `poc-orchestrator` | how the run is driven, gates, the UnifyApps Headless build, app quality |
         | `asset-run` | the one-asset commands (`/poc-studio:requirements`, `brd`, `wireframes`, `design`, `app`, `collaterals`) |
-        | `platform-master` | Stage 4 pointers, the Zen plan review, the browser fallback |
+        | `platform-master` | Stage 4 pointers, the Zen question review, the Zen plan review, the browser fallback |
         | `poc-collateral-studio` | demo script, deck, video |
         | `orbit-writeback` | what shows in Orbit, statuses, links, Slack gate messages |
         | `ai-pm` | the AI PM's reviews, rulings, lessons |

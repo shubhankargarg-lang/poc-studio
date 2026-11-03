@@ -471,6 +471,15 @@ test).
   different account returns zero chunks and the agent loops. Tabular files go to a text-to-SQL path and do not answer
   prose questions.
 
+### Knowledge sets
+
+- 🔴 **Check:** the plan assumes no workflow can add a source to a knowledge set, and routes documents or web pages
+  added from the app some other way. **Fix:** the workflow creates the source with
+  `storage_by_unifyapps_create_record` on the system object `knowledge` (`sourceType` `FILE` or `WEBSITE`; shape in
+  `api-spec.md` "Knowledge sources from a workflow") and stores the returned source id on the app's record ✅.
+- **Check:** an item is shown as available as soon as it is submitted. **Fix:** read the source back until its
+  `status` is `COMPLETED` or `FAILED` (bounded), and show the item's status from that.
+
 ### Latency
 
 - Chat turn times to expect (not a finding on their own): simple counts ~10 s, charted answers 18–31 s, multi-query
