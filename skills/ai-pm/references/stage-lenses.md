@@ -204,5 +204,13 @@ render the deck and script PDF to images and look at every page.
 - **One subject, one story** across video, script and deck: same record, same numbers, same names.
 - **Ending.** Next steps are the client's path, not our fixes (K6). Length 4–5 min unless the brief records why.
 - **Preview link** frames only: no Matrix login or user-creation screen anywhere (blocking R9).
+- **Deck frame.** The first slide is the UnifyApps opening slide and the last is the "Thank You" slide, both
+  unchanged from the template (a missing or edited one is a finding).
+- **Technical blueprint.** Re-run `node kit/blueprint.mjs` (exit 0). Its slides follow the story and come before
+  next steps: the architecture, then every automation and AI agent on as many slides as needed. Compare `built`
+  with `04-build/build-summary.md` (or the solution): a built automation or agent missing from the list, or a listed
+  one that was never built, is blocking (R9). Systems not connected in the POC are marked simulated or go-live, never
+  live. No secrets or key values on any slide.
 
-**Never:** the bundled template; the voice; the absence of a walkthrough PDF or a swimlanes document.
+**Never:** the bundled template; the opening and closing slides' fixed text; the voice; the absence of a
+walkthrough PDF or a swimlanes document; a blueprint that runs to several slides.

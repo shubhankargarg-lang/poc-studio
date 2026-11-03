@@ -785,7 +785,11 @@ and a built page does not.
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
     Requirement Gathering document (the "today" pain points) as the build session's truth;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
-    The deck (problem statement → solution) is built from it.
+    The deck (problem statement → solution) is built from it, with the UnifyApps opening slide first and the
+    closing slide last (added by the skill's `deck.py`);
+  - `04-build/build-summary.md` as the source of the deck's **technical blueprint** (`blueprint.json` → `source`):
+    every automation and AI agent the build made, named as built, plus the high-level architecture. The blueprint
+    can take as many slides as the build needs.
 - **Login:** reuse the Orbit session from Setup: copy `~/.local/poc-studio/auth/orbit.json` to the collateral
   folder's `auth/<persona>.json` for each persona (`orbit_signin.mjs --check` first). Only if it has expired does the
   skill open its sign-in browser (`kit/auth.mjs`) on Orbit; then remove the autopilot file and ask the person to log

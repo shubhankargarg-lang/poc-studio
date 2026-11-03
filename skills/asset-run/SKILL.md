@@ -206,7 +206,9 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
     entry's `file_link` — never in `state.json` → `app`. `CONFIRM_REQUIRED` stays the person's.
 - **collaterals** — orchestrator § 5 with: the preview link from § 1 as every persona's `url` and `public_url`; the
   BRD and RG document if collected (else the skill builds its story from the app and says so in the brief); the
-  bundled template; the audience if given. **Build only the collaterals chosen in § 1**, from one story: skip the
+  bundled template; the audience if given; for the deck's technical blueprint, `04-build/build-summary.md` or
+  `04-build/one-off/build-summary.md` when the folder has one, otherwise the list of automations and agents read from
+  the app's solution (the skill records which). **Build only the collaterals chosen in § 1**, from one story: skip the
   deck phases when the deck is not chosen, the script PDF render when the script is not chosen, and the recording
   and video build when the video is not chosen; keep the brief's `must_show_in` to the chosen ones. When only the
   video is chosen, the narration script is still written (the video needs it) but not delivered. The Orbit session
