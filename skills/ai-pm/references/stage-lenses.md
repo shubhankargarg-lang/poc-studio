@@ -257,12 +257,14 @@ render the deck and script PDF to images and look at every page.
 **Judge:**
 - **Opening.** The first narration line names the client's pain (RG pain points), not a feature (K1).
 - **Wow by 1:30.** The core action from scoping §20.2 lands before 90 s in `build/placed.json` (K2).
-- **Every number** on a slide or in narration is in `facts.json` or on its screen; big stats are outcomes (K4).
+- **Every number** on a slide or in narration is in `facts.json` or on its screen; big stats are outcomes (K4). The
+  opening slide's fixed figures and the blueprint's counts (taken from `blueprint.json`) are excepted.
 - **One subject, one story** across video, script and deck: same record, same numbers, same names.
 - **Ending.** Next steps are the client's path, not our fixes (K6). Length 4–5 min unless the brief records why.
 - **Preview link** frames only: no Matrix login or user-creation screen anywhere (blocking R9).
 - **Deck frame.** The first slide is the UnifyApps opening slide and the last is the "Thank You" slide, both
-  unchanged from the template (a missing or edited one is a finding).
+  unchanged from the template (a missing or edited one is a finding, unless the person asked to leave it out:
+  `"open"` / `"close": false`, recorded in `brief.json` decisions).
 - **Technical blueprint.** Re-run `node kit/blueprint.mjs` (exit 0). Its slides follow the story and come before
   next steps: the architecture, then every automation and AI agent on as many slides as needed. Compare `built`
   with `04-build/build-summary.md` (or the solution): a built automation or agent missing from the list, or a listed

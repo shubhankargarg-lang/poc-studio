@@ -191,12 +191,14 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 After each stage: the **AI PM** (the `ai-pm` agent, an independent subagent) re-runs the stage's own checks, reviews
 the output, and negotiates its findings with the stage (fixed / disputed / deferred; a third round is a ruling, not a
 question). Then you **approve or request changes**, starting from its gate summary: verdict, rulings first,
-assumptions to check. In Stage 4 it also walks the built app in a browser (Stage 4b) before publish. Your gate
+assumptions to check. When you request changes, the AI PM first checks they are clear: it states how it reads them in
+one line, or asks you up to three short questions when they are vague, before anything is reworked. In Stage 4 it also walks the built app in a browser (Stage 4b) before publish. Your gate
 feedback becomes a lesson it checks on every later POC (`python3 <ai-pm>/scripts/lessons.py stats` shows first-try
 approvals per stage). Questions raised during a stage — including
 UnifyApps Headless's (e.g. which model to use) — go to the reviewer, not to you; a hook enforces this while a stage runs.
 Two exceptions in Stage 4 come to you: during the **Zen planning window** (while `.poc-studio/zen-planning` exists)
-you answer Zen's clarification questions and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
+you answer Zen's clarification questions (each one first reviewed by platform-master, which may add its own option,
+marked "Platform-master: …") and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
 releases) is yours to answer. The hooks let both through, and the POC owner is nudged in Slack while they wait.
 Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
 

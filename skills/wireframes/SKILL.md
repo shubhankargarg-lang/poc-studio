@@ -93,7 +93,8 @@ designing things nobody asked for.
 ## Update mode (a change request after the app is built)
 
 Called by the orchestrator's **4c · Changes after the build** (and `asset-run` § 6 for a one-off app) when the AI PM
-has triaged a change as **big** or **very big**. Input: the person's words verbatim, the AI PM's triage (its
+has triaged a change as **big** or **very big**. Input: the person's words verbatim, the AI PM's change-clarity reading (or the person's answers), the AI PM's
+triage (its
 `affected_pages`, `new_pages`, `components`), and the approved `02b-wireframes/`. The app is not touched in this step.
 
 1. **Keep the approved version.** Move the current spec, `png/`, PDF and manifest to

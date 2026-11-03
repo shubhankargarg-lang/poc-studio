@@ -144,8 +144,8 @@ Everything below comes from what was built, not from looking at screens.
 5. **Harvest what makes the story concrete:** the real navigation (routes, sidebar labels, tab
    names), stable selectors (add `data-testid` to the elements the story clicks if they lack one), the
    customer's own vocabulary from the requirements, the discovery pain points for the "today" swimlane,
-   and the real architecture (apps, workflows, agents, objects, connections) for the "how it's built"
-   slide and the technical act.
+   and the real architecture (apps, workflows, agents, objects, connections) for the technical blueprint
+   (`blueprint.json`) and the technical act.
 6. **Write `internal.md`** for everything the team should know but the customer must not see: known
    bugs, features left out and why (a copilot erroring), UAT links, test accounts, workarounds. This
    file never feeds a collateral; `check.py` fails any customer file that contains such notes.
@@ -507,15 +507,16 @@ The technical blueprint shows the client **what was built and how it fits togeth
 list of every automation and AI agent. It goes in the deck (Phase 7 → slides in Phase 8), never as a separate file.
 
 **Source of truth:** the build, never the plan. In POC Studio read `04-build/build-summary.md` (what UnifyApps
-Headless reported it built: objects, agents, automations, pages, the solution) and set `"source"` to its path; the
-script warns about any name that does not appear there. Use scoping §11–§14 only for what each item does and when it
+Headless reported it built: objects, agents, automations, pages, the solution) and set `"source"` to its path,
+relative to the collateral folder (`../../04-build/build-summary.md`; a one-off run: `../../04-build/one-off/build-summary.md`);
+the script fails when that file is missing and warns about any name that does not appear in it. Use scoping §11–§14 only for what each item does and when it
 runs. Without a build summary (a one-off run), list the solution's automations and agents from the app's builder or
 ask UnifyApps Headless for the list, and record the source in `brief.json` → `decisions`. Never list something the
 scoping document planned but the build does not have; never leave out something that was built.
 
 ```json
-{ "source": "../04-build/build-summary.md",
-  "what": "A self-serve wire payments sandbox for BMO's corporate clients, with a back office for BMO. Built on UnifyApps.",
+{ "source": "../../04-build/build-summary.md",
+  "what": "Self-serve wire payments for BMO's corporate clients, with a back office for BMO. Built on UnifyApps.",
   "principles": ["**Rules decide every wire**, never a model.", "**Money waits for a person's Confirm.**"],
   "users":   [ {"id": "dev", "label": "Client developer", "to": ["portal", "copilot"]} ],
   "doors":   [ {"id": "portal", "label": "Client portal", "sub": "4 pages · code app", "kind": "app"},
@@ -527,6 +528,7 @@ scoping document planned but the build does not have; never leave out something 
   "key": ["Wire R1–R7", "BPS Transaction"],
   "built": [
     {"name": "Copilot", "type": "agent", "trigger": "Chat drawer in the portal", "does": "Prepares a wire from plain English; submits only after Confirm.", "tools": ["Copilot Submit"]},
+    {"name": "Token", "type": "automation", "trigger": "API call", "does": "Issues a signed token for the client's API calls.", "objects": ["BPS Client"]},
     {"name": "Wire R1–R7", "type": "automation", "trigger": "Console, API or Copilot", "does": "Runs rules R1–R7 in order; the first failure decides.", "objects": ["BPS Account", "BPS Transaction"]} ] }
 ```
 
@@ -1184,7 +1186,13 @@ for a, s in scenes:
         if CLAIM.search(x) and not any(c in x for c in cued):
             verify.append(f"{s['id']}: told, not shown? \"{x}\" (nothing on screen is cued in this sentence; show it, or check the screen has the button/state that makes it true)")
 
-# 5. internal notes in what the customer will receive
+# 5. internal notes in what the customer will receive (the blueprint slides are pictures: scan their source text)
+if os.path.exists("blueprint.json"):
+    _b = json.load(open("blueprint.json"))
+    _t = [_b.get("what", ""), _b.get("env", ""), *_b.get("principles", [])]
+    _t += [str(x.get(k, "")) for x in _b.get("built", []) for k in ("name", "trigger", "does")]
+    _t += [str(x.get(k, "")) for g in ("users", "doors", "data", "systems") for x in _b.get(g, []) for k in ("label", "sub")]
+    outs["blueprint.json (deck blueprint slides)"] = "\n".join(t for t in _t if t)
 INTERNAL = re.compile(r"\b(error|bug|fix(?:ed|es)?|todo|tbd|fixme|uat|staging|preview|localhost|sandbox|model connection|not shown|workaround|hack|internal only|confirm (?:the wording|with)|placeholder|lorem|dummy)\b", re.I)
 extra = [t.lower() for t in brief.get("internal_terms", [])]
 mail = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
@@ -1859,6 +1867,7 @@ import { page, done, md } from './render.mjs';
 import { readJSON } from './lib.mjs';
 
 const bp = readJSON('blueprint.json');
+if (!bp) { console.error('MUST FIX\n  blueprint.json not found or not valid JSON'); process.exit(1); }
 const W = 1920, H = 854, OUT = 'build/blueprint';
 const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const STATUS = { live: 'Live', simulated: 'Simulated in POC', golive: 'Connected at go-live' };
@@ -1866,6 +1875,7 @@ const built = bp.built || [];
 const autos = built.filter((b) => b.type !== 'agent'), agents = built.filter((b) => b.type === 'agent');
 const byName = Object.fromEntries(built.map((b) => [b.name, b]));
 const errors = [];
+if (!built.length) errors.push('"built" is empty: list every automation and AI agent the build made');
 
 // ---- the diagram and the list must name the same things ----
 const inGroups = new Set((bp.groups || []).flatMap((g) => g.items));
@@ -1876,16 +1886,16 @@ for (const b of built) if (!b.does) errors.push(`"${b.name}": say what it does (
 const doorIds = new Set((bp.doors || []).map((d) => d.id));
 for (const u of bp.users || []) for (const t of u.to || []) if (!doorIds.has(t)) errors.push(`user "${u.label}" goes to unknown door "${t}"`);
 // cross-check against the build summary when it is given: every built name should appear there
-if (bp.source && fs.existsSync(bp.source)) {
+if (bp.source && !fs.existsSync(bp.source)) errors.push(`"source" ${bp.source} not found (the path is relative to the collateral folder, e.g. ../../04-build/build-summary.md)`);
+else if (bp.source) {
   const txt = fs.readFileSync(bp.source, 'utf8').toLowerCase();
   for (const b of built) if (!txt.includes(b.name.toLowerCase())) console.warn(`WARN "${b.name}" does not appear in ${bp.source}: check it was built under this name`);
 }
 
 const counts = bp.counts || [
-  [(bp.doors || []).filter((d) => d.kind === 'app').length, 'apps'],
-  [autos.length, 'automations'], [agents.length, agents.length === 1 ? 'AI agent' : 'AI agents'],
-  [(bp.data || []).length, 'data objects'], [(bp.systems || []).length, 'connected systems'],
-].filter(([n]) => n > 0).map(([n, label]) => ({ n, label }));
+  [(bp.doors || []).filter((d) => d.kind === 'app').length, 'app'], [autos.length, 'automation'], [agents.length, 'AI agent'],
+  [(bp.data || []).length, 'data object'], [(bp.systems || []).length, 'connected system'],
+].filter(([n]) => n > 0).map(([n, label]) => ({ n, label: n === 1 ? label : label + 's' }));
 const key = new Set(bp.key || []);
 
 const STYLE = `
@@ -1919,7 +1929,7 @@ body{width:${W}px;height:${H}px;position:relative;overflow:hidden}
 .key{border:2px solid var(--olive);font-weight:600}
 .sys{border-style:dashed}
 .badge{display:inline-block;margin-top:4px;font-size:11.5px;padding:1px 8px;border-radius:9px;background:var(--disc);color:var(--em)}
-.env{position:relative;z-index:1;align-self:center;background:var(--sand2);border:1px solid var(--line);border-radius:8px;padding:6px 18px;font-size:14px;margin-top:-18px}
+.env{position:relative;z-index:1;align-self:center;background:var(--sand2);border:1px solid var(--line);border-radius:8px;padding:6px 18px;font-size:14px;margin-top:-8px}
 svg.wires{position:absolute;inset:0;z-index:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 table{width:100%;border-collapse:collapse;font-size:15.5px}
 th{background:var(--olive);color:#fff;font-weight:600;text-align:left;padding:9px 12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
@@ -1979,7 +1989,8 @@ const WIRE = (users) => `(() => {
   for (const be of document.querySelectorAll('#bottom .node')) { const b = box(be); elbow({ x: Math.min(Math.max(b.x, eng.l + 20), eng.r - 20), y: eng.b }, { x: b.x, y: b.t }); }
   svg.innerHTML = '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6"/>' +
     heads.map((h) => '<path d="M' + (h.x - 5) + ' ' + (h.y - 7) + ' L' + h.x + ' ' + (h.y - 1) + ' L' + (h.x + 5) + ' ' + (h.y - 7) + ' Z" fill="' + col + '"/>').join('');
-  const over = dia.scrollHeight > dia.clientHeight + 2 || [...dia.querySelectorAll('.node,.engine')].some((e) => e.getBoundingClientRect().bottom > R.bottom);
+  const over = dia.scrollHeight > dia.clientHeight + 2 || [...dia.querySelectorAll('.node,.engine')].some((e) => e.getBoundingClientRect().bottom > R.bottom)
+    || [...document.querySelectorAll('.side > *')].some((e) => e.getBoundingClientRect().bottom > ${H});
   return over;
 })()`;
 
@@ -2001,7 +2012,7 @@ const shots = [];
     const p = await page(`<style>${STYLE}</style>${architecture(compact)}`, W, H);
     const over = await p.evaluate(WIRE(users));
     if (over && !compact) { await p.close(); console.log('architecture: too many items for full chips; drawing groups compact (the list pages name every item)'); continue; }
-    if (over) errors.push('architecture page overflows even compact: shorten "what", drop "principles", or use fewer, wider groups');
+    if (over) errors.push('architecture page overflows even compact: shorten "what", drop "principles", use fewer, wider groups, or list fewer data objects and systems');
     const f = `${OUT}/blueprint-1.png`; await p.screenshot({ path: f, omitBackground: true }); await p.close(); shots.push(f); break;
   }
 }

@@ -227,8 +227,8 @@ this run's first `<n>` in the run entry (`first_review`). `round` counts this ru
 for a change request; `prior_verdict` is always given explicitly from round 2 on (this run's previous verdict, never
 another run's). `work_id` = the POC ID if given, else
 `SA-<client-slug>__<usecase-slug>`; `stage` from the table above; `artifacts` = the asset's output(s); `upstream` = the
-input the asset was made from (the RG document for a BRD, the BRD for wireframes, the BRD and any approved wireframes for a design system or an app, the BRD and the app for
-collaterals; none for requirements); `owner_profile` as in § 2; for collaterals,
+input the asset was made from (the RG document for a BRD, the BRD for wireframes, the BRD and any approved wireframes for a design system or an app, the BRD, the app and the build
+summary (or the solution's automation and agent list) for collaterals; none for requirements); `owner_profile` as in § 2; for collaterals,
 `known: ["collaterals chosen: <list>; the others were not requested and are not missing"]`. Handle the verdict
 exactly as the orchestrator's table does: REVISE with a response file (at most 2 REVISE rounds), BLOCK, the round-3
 ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk inside § 3.

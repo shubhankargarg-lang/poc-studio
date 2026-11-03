@@ -525,7 +525,7 @@ out every key that has no value, never `""` or `null`). **Create only:** never u
 | Scoping | `scoping-l1-first` | "BRD v<N>" (a REVISE re-run: "BRD v<N> · <k> fixes") |
 | Wireframes | `wireframes` | "<n> frames" |
 | Design system | `design-system` | "Design system v<N>" |
-| Each platform-master job | `platform-master` | "Pointers", "Question review · <n> questions, <k> options added" (one row for the whole Zen planning window, written when the plan is approved), "Plan review, round <r>", "Fallback: <asset>" |
+| Each platform-master job | `platform-master` | "Pointers", "Question review · <n> questions, <k> options added" (one row for the whole Zen planning window, written when the plan is approved; `started_at` = `state.json` → `zen_planning_started_at`), "Plan review, round <r>", "Fallback: <asset>" |
 | The Stage 4 build by UnifyApps Headless (from the plan's start to publish) | `unifyapps-headless` | "App build · <n> tasks" |
 | Collaterals | `poc-collateral-studio` | what was made, e.g. "Script, deck, video" |
 | Each `research` call | `research` | the question, cut to 60 characters |
