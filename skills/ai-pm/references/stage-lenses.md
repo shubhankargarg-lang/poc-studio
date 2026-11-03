@@ -90,6 +90,39 @@ manifest's list); the render's own look.
 
 ---
 
+## change-triage (resolve, after the build — orchestrator 4c)
+
+Classify the person's change request before anything touches the app. Read their words, the approved spec and
+manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go by what the change does to the
+**layout**, not by how many words the request has.
+
+| Tier | What the change does | Route |
+|---|---|---|
+| `small` | Copy or labels; a bug or broken control; seed or demo data; an agent's or automation's logic, prompt or output; a field or column added to an existing table, form or card; a status, filter value or sort; colour, spacing or type within the design system tokens; one state of one component | Direct fix through `ua-change` on the items named. No wireframes. |
+| `big` | Adds or removes a page, drawer, modal or panel; changes a page's regions or their order; moves the hero or the primary CTA; changes the navigation or which persona sees a page; needs a component or variant that is not in the manifest; changes a step of the demo storyline (§20.2) | Wireframes first (only the affected frames), the person approves, then targeted `ua-change` fixes on those pages only. |
+| `very-big` | A new persona or role shell; a new navigation structure; about half the pages or more change layout; a change to the data model (objects or fields) that several pages bind to | Wireframes first, the person approves, then a scoped re-plan (`/ua:plan`, Zen) limited to the affected pages and objects. |
+
+- A request with several parts takes the tier of its largest part; the small parts ride along in the same fix.
+- `affected_pages` lists every existing page whose frame will change, by page ID; `new_pages` lists pages to add.
+  Pages that only show new data in an existing slot are `small`, not affected.
+- When small or big could both fit, answer **big**.
+
+## wireframes-update (review of the change sheet, after the build)
+
+**Re-run:** `diff.py` on `_previous/v<N>` and the current folder; `render.py`; `coverage.py`.
+
+**Judge:**
+- Every page in the triage's `affected_pages` and `new_pages` appears in the change sheet, and **no other page does**:
+  an unrequested change to another frame is blocking (fix line: restore it from `_previous/v<N>`).
+- The after frame does what the person asked, in their words, and still answers the page's question (the
+  `wireframes` lens applies to each changed frame).
+- New components in the manifest delta are slots with a `note` saying they are new in this change.
+
+**Never:** that the design system was not updated (standing decision: the build styles new components from its kit
+and tokens); that unchanged frames were not re-reviewed.
+
+---
+
 ## design-system (kind: design)
 
 **Re-run:**

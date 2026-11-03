@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.34.0
+- **Changes after the build are triaged first; big ones go back to the wireframes before the app.** A change asked at the verify gate (or later) went straight to UnifyApps Headless, which could re-plan and rebuild the whole app. New orchestrator step **4c · Changes after the build**: the AI PM triages every change (`change-triage` lens) as **small** (direct `ua-change` fix, as before), **big** (wireframes first, then targeted fixes on the affected pages only) or **very big** (wireframes first, then a re-plan limited to the affected pages on the existing solution). The whole app is never re-planned for a change request.
+- **Wireframes Update mode**: edits only the affected frames, keeps the approved version in `02b-wireframes/_previous/v<N>/`, and writes a before/after change sheet with the new `wireframes/scripts/diff.py` (`changes/CR-<n>/change-sheet.pdf`, `change-summary.json`: pages added/changed/removed, component delta, app-level changes). The AI PM reviews it with the new `wireframes-update` lens (only the triaged pages may change).
+- **You approve the updated wireframes**, in Zen and in Sonic (Approve and update the app / Change the wireframes / Drop this change). Hooks and the AI PM let this through in Sonic.
+- The design system is not updated for a change; new components are styled from its kit and tokens.
+- Orbit: the approved wireframes become a new wireframes version (`from_iteration`, change sheet uploaded); the iteration stays open until the new app version's M5. A dropped change closes the iteration.
+- One-off `/poc-studio:app` change requests use the same triage (wireframes first when the folder has approved wireframes).
+
 ## 1.33.0
 - **Feedback tickets: full shape incl. ticket_key; status list updated.** Tickets filed by v1.27 and earlier had no `ticket_key`, `priority` or `updated_at` (and no `created` activity row), so POC Build Loop could not change their status or owner. Every ticket is now built by `orbit-writeback/scripts/feedback_ticket.py`: `ticket_key` = `ticket_no` = `FB-<ms>`, status `to_be_assigned`, priority `none`, `updated_at` = `created_at`, `poc` and `client_name` only for a POC; no `source`, `poc_stage` or other old fields. The `created` row in `orbit_studio_feedback_event` uses the same ms. A clash retries with now+1 (up to 3 times) for both keys.
 - Status list now includes `research` (To be Assigned, Research, In-Progress, Blocked, In QA, QA Rejected, Done).

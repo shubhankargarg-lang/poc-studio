@@ -489,6 +489,17 @@ preview link (Preview link rule) as `file_link`. **Every new app version is post
   what changed) and update the POC `g3_summary` and `last_activity`; no notification, no gate change.
 The run state's app version number and Orbit's latest app document must always match.
 
+**Wireframes updated for a change after the build (orchestrator 4c, big or very big).** The change was logged as M3
+at G3 (phase build). When the person approves the updated wireframes: upload the new wireframes PDF **and** the change
+sheet (`changes/CR-<n>/change-sheet.pdf`); Documents: the wireframes document's current version → `superseded`; create
+version N+1 with status `approved` (the person approved it), `from_iteration <iteration_id>`, summary = the pages
+added, changed and removed. Activity: `document_saved` (gate g2, message "Wireframes v<N+1> for change: <one line>",
+actor_type person). POC: `last_activity` only; no gate status change, no notification. **The iteration stays open**:
+it is closed by the new app version's M5 above, which then names the wireframes version it was built from in its
+summary. A dropped change (the person chose "Drop this change") closes the iteration with status done, no
+`resolved_document`, and an Activity `document_saved` "Change dropped: <one line>". One-off runs write the wireframes
+version as a one-off document ("One-off documents") instead.
+
 **G4 changes:** collaterals are written only once approved, so a change asked at the collaterals gate is M3 (phase
 deliver) **without** `related_document` and **without** `g4_status` (Orbit has not seen G4 yet): Iteration + activities
 + POC `status running` and `last_activity` only. When they are approved, M1 · G4 sends the documents with

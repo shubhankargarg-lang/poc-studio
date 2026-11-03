@@ -17,6 +17,7 @@ Start → 0 Setup → 1 Requirement Gathering → 2 Scoping → 2b Wireframes �
                                                                              you approve) → parallel
                                                                             build + test → AI PM walk
                                                                             (4b) → verify gate
+                     (changes asked after the build: 4c triages them; big ones go back to the wireframes first)
                      (research skill available to every stage; the AI PM — the `ai-pm` skill — reviews every
                       stage, answers every clarification question, and learns from every gate)
 ```
@@ -177,6 +178,8 @@ items below, and recreated right after.
 4. A `BLOCK` still standing after the third review (the person can override it, as in Zen).
 5. A Requirement Gathering verdict of **Not ready** (proceeding on it is the person's call).
 6. In Stage 4, whether to rebuild pages already built the no-code way (finished work would be redone).
+6a. In 4c, approving the updated wireframes for a big or very big change after the build (the person sees the
+   change before the app changes).
 7. A run blocked by a missing tool, connector or input that only the person can provide (Setup's connector check).
 Each one is asked as today (autopilot removed, one question, logged as a human decision); then the run carries on in
 Sonic.
@@ -190,7 +193,8 @@ Sonic.
   start the next stage at once. No AskUserQuestion.
 - Anything in the list above → ask the person, then continue.
 - The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, re-run, review),
-  and the run goes on in Sonic afterwards.
+  and the run goes on in Sonic afterwards. Once the app is built, changes always go through **4c · Changes after the
+  build**.
 
 ## Questions never go straight to the person
 
@@ -315,6 +319,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 | Person approves (Zen) or the AI PM approves (Sonic) | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
+| A big or very big change after the build: updated wireframes approved (4c) | **M5** — new wireframes version (`from_iteration`, change sheet uploaded); the iteration stays open until the new app version's M5 |
 | Collaterals approved | **M1 · G4** — upload script PDF, deck, video; demo_ready |
 | UnifyApps Headless starts (`/ua:setup`) | **M4** — stage `5_build` (if not already) |
 | Person approves the Zen plan (Stage 4) | **M4a** — Activity "Zen plan approved" with the preview path and task count; stage stays `5_build` |
@@ -710,11 +715,62 @@ Only these session facts are supplied by you:
   version, no upload) before re-gating.
 - **Gate — verify the published AI solution:** remove the autopilot file, show the test summary (and any item still
   failing, including any asset the browser fallback could not build), the AI PM gate summary for `build` and the
-  walk's screenshots, and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → pass them to UnifyApps Headless (same session), let it fix and re-test, post the new app version (M5), gate again. Later fixes to the app (e.g.
-  from the collateral stage) also go through UnifyApps Headless, are listed at the next gate, and each new app version is posted
-  to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
+  walk's screenshots, and ask the person to open the published app on Orbit, verify it and approve moving forward to collaterals. Approve → M2 · G3, confirmed in Orbit → Stage 5. Changes → **4c · Changes after the build** (triage first;
+  never pass them straight to UnifyApps Headless), then post the new app version (M5) and gate again. Later changes
+  to the app (e.g. from the collateral stage, or typed after the run) go through 4c the same way, are listed at the
+  next gate, and each new app version is posted to Orbit as an approved app document (orbit-writeback, Moment 5 · G3).
   Records the person created while verifying the app (their own runs, uploads, cases) are kept: fixes and re-seeding
   never delete them unless the person asks.
+
+## 4c · Changes after the build
+
+Every change the person asks for once the app exists (at the verify gate, during collaterals, or after the run) comes
+here. Re-planning and rebuilding the whole app for a change request is never right: the triage decides how much of the
+app is touched, and a change to the layout is shown as wireframes first, because a wireframe takes seconds to redo
+and a built page does not.
+
+1. **Log it.** Their words verbatim in `context-log.md`; Orbit **M3** (Iteration, phase build, reason = their words);
+   `lessons.py capture <workspace> build "<their words>"` and `… record <workspace> build changes`. More text about
+   the same change is added to the same iteration.
+2. **Triage.** The AI PM in resolve mode (`stage: build`, question "Triage this change request", options
+   `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md`; lens
+   `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
+   workspace) and tell the person in one line: the tier, the pages it touches, why. When `stages.wireframes` is
+   `skipped` there are no frames to update: `big` and `very-big` go to step 4 without the wireframes, and say so.
+3. **Small** → straight to the app: the change as numbered fix lines to UnifyApps Headless as direct changes through
+   `ua-change` (same session, independent fixes in parallel, no new plan), then step 5.
+4. **Big or very big → wireframes first. The app is not touched until the person approves.**
+   - Create the autopilot file. Call `wireframes` in **Update mode** (wireframes skill) with their words, the triage
+     and the approved `02b-wireframes/`. It edits only the affected frames, re-renders and writes
+     `02b-wireframes/changes/CR-<n>/change-sheet.pdf` (before | after per page) and `change-summary.json`. The design
+     system is not updated: a new component is styled by the build from its kit and tokens.
+   - Review: `stage: wireframes`, lens `wireframes-update`, artifacts = the change sheet, `change-summary.json` and the
+     new spec; upstream = `_previous/v<N>` (the approved wireframes), the triage and their words. REVISE as usual.
+   - **Show the person** (in Zen and in Sonic; remove the autopilot file): open the change sheet locally (`open` on a
+     Mac, `xdg-open` on Linux), list pages added, changed and removed and any new component in one line each, the AI
+     PM summary, then AskUserQuestion: **Approve wireframes and update the app** / **Change the wireframes** (they
+     type what in "Other") / **Drop this change**.
+     - **Change the wireframes** → Update mode again on the current spec with their words, review, show again. The
+       app is still untouched.
+     - **Drop this change** → restore `_previous/v<N>` as the current wireframes, close the iteration (M5 with no new
+       version, note "dropped"), and go back to where the run was.
+     - **Approve** → Orbit **M5** for the wireframes (new wireframes version, `from_iteration`, the change sheet PDF
+       uploaded alongside); `stages.wireframes_version` +1 in `state.json`. Then:
+   - **Big** → the approved change as numbered fix lines to UnifyApps Headless through `ua-change`, limited to the
+     triage's pages: "Change exactly these pages to match their updated frames in `02b-wireframes/png/` (listed:
+     PG-…); add the new pages PG-… from their frames; leave every other page as it is. New components: style them
+     from the design system's kit and tokens." Platform assets it cannot build go to platform-master's fallback.
+   - **Very big** → a **scoped re-plan**: `/ua:plan` on the **existing solution** (its id from `build-summary.md`)
+     with a build request limited to the affected pages, new pages and changed objects, pointing at the updated
+     frames and manifest; platform-master job 2 reviews the plan and the builder check runs, as in Stage 4; Zen's
+     questions and plan approval follow the run mode (Zen planning window in Zen, the AI PM in Sonic). Pages not in
+     the triage are never in the task graph: if Zen's plan includes them, send "change something: only these
+     pages". Rebuilding pages already built stays the person's decision.
+5. **Test what was touched, then the AI PM walk.** UnifyApps Headless re-tests the changed and new pages and anything
+   that depends on them (Stage 4's test rules, at most 3 fix rounds); add rows to `04-build/test-report.md`. Then the
+   AI PM build walk (4b) on the preview link, with the updated frames as upstream. Publish, update
+   `build-summary.md` (a "Changes" section: CR-<n>, tier, pages, wireframes version), Orbit **M5** (new app version,
+   closing the iteration), and gate again (the verify gate, or the stage the change came from).
 
 ## 5 · Collaterals
 

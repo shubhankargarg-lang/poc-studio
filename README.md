@@ -148,7 +148,7 @@ Every run (`/poc-studio:start` and each one-asset command) asks once, at the sta
 | Who approves each gate | you | the AI PM; the run moves on by itself |
 | Stage 4 build plan (Zen planning) | you answer its questions and approve it | the AI PM does, after platform-master's review and the builder check |
 | Slack gate messages | yes | none |
-| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built |
+| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build |
 
 In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
 Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
@@ -199,6 +199,20 @@ Two exceptions in Stage 4 come to you: during the **Zen planning window** (while
 you answer Zen's clarification questions and approve its plan, and every `CONFIRM_REQUIRED (d_…)` (deletes and some
 releases) is yours to answer. The hooks let both through, and the POC owner is nudged in Slack while they wait.
 Research answers are saved in `research/`, reviewer verdicts in `reviews/`.
+
+### Changes after the app is built
+
+A change you ask for once the app exists (at the verify gate, during collaterals, after the run, or on a one-off
+`/poc-studio:app`) is triaged by the AI PM before anything touches the app:
+
+| Tier | Examples | What happens |
+|---|---|---|
+| Small | copy, a broken button, seed data, agent or automation logic, a column on an existing table | fixed directly in the app (UnifyApps Headless `ua-change`) |
+| Big | a new page, drawer or modal; a page's regions rearranged; a new component; a storyline step | only the affected wireframes are updated and you see a before/after sheet (`02b-wireframes/changes/CR-<n>/change-sheet.pdf`); after you approve, only those pages are changed in the app |
+| Very big | a new persona, a new navigation, about half the pages, a data model change | wireframes first as above; after you approve, a re-plan limited to the affected pages on the same solution |
+
+You always approve the updated wireframes yourself, in Zen and in Sonic. The design system is not updated for a change:
+new components are styled from its kit and tokens. The whole app is never re-planned for a change request.
 
 ## Contents
 

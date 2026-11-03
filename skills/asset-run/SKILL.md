@@ -292,7 +292,12 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
   `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>" --work <document_id prefix>` and `… record
   <workspace> <stage> changes --since <first_review> --work <document_id prefix>` (the `SA-…__v` prefix without its
   number, so one-off outcomes never count against a pipeline POC in the same folder). Recreate the autopilot flag, re-run the stage skill on its own output with those changes
-  (fix only what they asked; for an app, as direct changes through `ua-change` on the recorded solution), review
+  (fix only what they asked; **for an app, follow the orchestrator's 4c · Changes after the build**: the AI PM triages
+  the change first; small → direct changes through `ua-change` on the recorded solution; big or very big → when this
+  folder has approved wireframes, the wireframes' Update mode and its change sheet are shown to the person and
+  approved first (never by the AI PM, even in Sonic), the approved wireframes become a new one-off wireframes version
+  in Orbit, then targeted `ua-change` fixes (big) or a scoped re-plan on the recorded solution (very big); without
+  wireframes, say so in one line and go straight to the fix or the scoped re-plan; never re-plan the whole app), review
   again (§ 4: `round` restarts at 1, `<n>` keeps counting; set `first_review` to the new first `<n>`), then write the
   **new version** (§ 5, which makes v(N+1) and supersedes the older one) and ask again (§ 5.2–6).
 

@@ -163,7 +163,17 @@ reasonably go either way. Standing answers for this pipeline:
   only when the builder check passes (app tasks `code-app` / `code-publish` under `code-app-agent`), every L1 item of
   Part B has a task, and `platform-review.md` has nothing open that would break on the platform; otherwise
   **SEND_BACK** with the lines Zen must change. What stays the person's in Sonic is unchanged: decision row 1, a
-  BLOCK after round 3, a Not ready requirement-gathering verdict, and a rebuild of pages already built.
+  BLOCK after round 3, a Not ready requirement-gathering verdict, a rebuild of pages already built, and
+  approving updated wireframes for a change after the build.
+- **Change triage after the build** (question "Triage this change request", `stage: build`, options `small` /
+  `big` / `very-big`; orchestrator 4c). Read the person's words, `02b-wireframes/` (spec and manifest), scoping §11
+  and `04-build/build-summary.md`, then **DECIDE** the tier using the `change-triage` lens in
+  `references/stage-lenses.md`. The answer carries `tier`, `affected_pages` (page IDs), `new_pages` (titles),
+  `components` (new or changed, by manifest name) and a one-line `reason`. When in doubt between small and big,
+  choose **big** (a wireframe the person can reject is cheaper than a page built wrong). Never ASK_HUMAN for a triage;
+  the person sees and approves the wireframes anyway.
+- **Approving updated wireframes after the build** (the change sheet of 4c) is never yours, in Zen or Sonic: return
+  ASK_HUMAN if it reaches you. You still **review** the sheet (`stage: wireframes`, lens `wireframes-update`).
 - **A Zen planning question, Zen's plan approval, or any `CONFIRM_REQUIRED (d_…)`** that reaches the reviewer → return
   **ASK_HUMAN**. These belong to the person: the reviewer never answers them, even with a recommended option.
 - **Sign-ins** are never answered by the reviewer: the person signs in themselves (row 1).

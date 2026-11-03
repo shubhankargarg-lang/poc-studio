@@ -90,6 +90,33 @@ designing things nobody asked for.
   system's styling. Map pages follow `map-component.md` (platform-master adds it as a pointer).
 - **AI PM:** reviews this stage (lens `wireframes`) and, at Stage 4b, checks the built pages against the frames.
 
+## Update mode (a change request after the app is built)
+
+Called by the orchestrator's **4c · Changes after the build** (and `asset-run` § 6 for a one-off app) when the AI PM
+has triaged a change as **big** or **very big**. Input: the person's words verbatim, the AI PM's triage (its
+`affected_pages`, `new_pages`, `components`), and the approved `02b-wireframes/`. The app is not touched in this step.
+
+1. **Keep the approved version.** Move the current spec, `png/`, PDF and manifest to
+   `02b-wireframes/_previous/v<N>/` (`N` = the approved version; never delete it). Copy the spec back as the working
+   spec.
+2. **Edit only what the change needs.** Change the affected pages' entries in the spec, add new pages (and their
+   extra frames, rule 6) in nav order with new page IDs, remove a page only if the person asked. Every rule above still
+   holds (low fidelity, slots, one name per component, real copy from the person's words or the scoping document).
+   Leave every other page's entry byte for byte as it was. The design system is not updated: a new component is
+   added as a slot with a `note` saying it is new in this change, and the build styles it from the design system's
+   kit and tokens.
+3. **Render and check** as in Steps 3–5 (coverage still runs against the scoping document; a page the person added
+   that the document does not have is expected, not a gap).
+4. **Make the change sheet** (before | after for every page that differs, and the manifest delta):
+   ```bash
+   W="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/wireframes/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$W" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/diff.py' | head -1)")"
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; python3 "$W/diff.py" "<workspace>/02b-wireframes/_previous/v<N>" "<workspace>/02b-wireframes" "<workspace>/02b-wireframes/changes/CR-<n>" --request "<the person's words>"
+   ```
+   Check its list against the triage: every affected page appears, and nothing else does. A page that changed
+   without being asked for is undone. `NO_CHANGES` means the edit did not land: fix the spec.
+5. Return `changes/CR-<n>/change-sheet.pdf`, `change-summary.json`, the pages added, removed and changed, and the
+   components added (not in the design system) in one line each.
+
 ## Answering the AI PM
 
 Answer each finding in the response file as `fixed`, `disputed` (with the §11 line or CMP ID behind it) or `deferred`.
