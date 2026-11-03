@@ -293,7 +293,14 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
 - **Request changes** → log their words verbatim in `context-log.md` (a human decision for every later review),
   `python3 "$R/lessons.py" capture <workspace> <stage> "<their words>" --work <document_id prefix>` and `… record
   <workspace> <stage> changes --since <first_review> --work <document_id prefix>` (the `SA-…__v` prefix without its
-  number, so one-off outcomes never count against a pipeline POC in the same folder). Recreate the autopilot flag, re-run the stage skill on its own output with those changes
+  number, so one-off outcomes never count against a pipeline POC in the same folder). **Check it is clear first**
+  (in Zen and Sonic, for every asset): the AI PM in resolve mode as § 4 does (`<stage>-resolve-<n>`), question "Is
+  this change request clear?", artifacts = their words verbatim, everything they attached (files, links, a new design
+  system, screenshots), the current approved asset and its input; lens `change-clarity`. **DECIDE** → tell the person
+  the `reading` in one line. **ASK_HUMAN** → with the autopilot flag still removed, ask its 1–3 questions in one
+  AskUserQuestion call (recommended option first) and log each answer as a human decision. Nothing is reworked until
+  the reading is settled; for an app, this is 4c's step 1b. Then recreate the autopilot flag, re-run the stage skill
+  on its own output with those changes and that reading
   (fix only what they asked; **for an app, follow the orchestrator's 4c · Changes after the build**: the AI PM triages
   the change first; small → direct changes through `ua-change` on the recorded solution; big or very big → when this
   folder has approved wireframes, the wireframes' Update mode and its change sheet are shown to the person and

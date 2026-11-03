@@ -148,7 +148,7 @@ Every run (`/poc-studio:start` and each one-asset command) asks once, at the sta
 | Who approves each gate | you | the AI PM; the run moves on by itself |
 | Stage 4 build plan (Zen planning) | you answer its questions and approve it | the AI PM does, after platform-master's review and the builder check |
 | Slack gate messages | yes | none |
-| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build |
+| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build, clarification questions when a change you asked for is vague |
 
 In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
 Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.

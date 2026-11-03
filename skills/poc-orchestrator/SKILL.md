@@ -181,6 +181,8 @@ items below, and recreated right after.
 6. In Stage 4, whether to rebuild pages already built the no-code way (finished work would be redone).
 6a. In 4c, approving the updated wireframes for a big or very big change after the build (the person sees the
    change before the app changes).
+6b. The clarification questions of the AI PM's change-clarity check, when a change request the person typed is
+   vague or can be read two ways (at any stage, before anything is reworked).
 7. A run blocked by a missing tool, connector or input that only the person can provide (Setup's connector check).
 Each one is asked as today (autopilot removed, one question, logged as a human decision); then the run carries on in
 Sonic.
@@ -193,9 +195,10 @@ Sonic.
   "Sonic mode") and confirm it landed, then tell the person in **one line** (stage, verdict, rounds, the saved path) and
   start the next stage at once. No AskUserQuestion.
 - Anything in the list above → ask the person, then continue.
-- The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, re-run, review),
-  and the run goes on in Sonic afterwards. Once the app is built, changes always go through **4c · Changes after the
-  build**.
+- The person may still type changes at any time; they are handled as Zen's **Request changes** (M3, the clarity
+  check, re-run, review), and the run goes on in Sonic afterwards. The clarity check's `ASK_HUMAN` questions go to the
+  person in Sonic too (remove the autopilot file, ask, recreate it): the change is their own iteration. Once the app
+  is built, changes always go through **4c · Changes after the build**.
 
 ## Questions never go straight to the person
 
@@ -293,8 +296,16 @@ Remove the autopilot file, then:
    **Changes** → log the feedback verbatim (it is now a human decision for every later review), and also
    `python3 "$R/lessons.py" capture <workspace> <stage> "<their words, verbatim>"` and `… record <workspace> <stage>
    changes`, so the AI PM turns it into a lesson for every later POC. If the feedback names something the AI PM's
-   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then re-run the stage skill to apply it, review
-   again (round counter restarts for the new feedback), and gate again.
+   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then **check it is clear** before anything is
+   reworked: the AI PM in resolve mode (`stage: <this stage>`, question "Is this change request clear?", artifacts =
+   their words verbatim, everything they attached (files, links, a new design system, screenshots), the current
+   approved artifact and its upstream; lens `change-clarity`).
+   - **DECIDE** → tell the person the `reading` in one line and go on.
+   - **ASK_HUMAN** → the autopilot file is still removed: ask its 1–3 questions in one AskUserQuestion call
+     (recommended option first), log each answer as a human decision, and use the chosen options as the reading.
+   Nothing is reworked until the reading is settled. Then re-run the stage skill to apply it, limited to the reading
+   ("change only this; leave everything else as it is"), review again (round counter restarts for the new feedback;
+   the reading is the upstream for the change), and gate again. Once the app is built, 4c runs this check instead.
 
 In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
 
@@ -746,9 +757,18 @@ and a built page does not.
 1. **Log it.** Their words verbatim in `context-log.md`; Orbit **M3** (Iteration, phase build, reason = their words);
    `lessons.py capture <workspace> build "<their words>"` and `… record <workspace> build changes`. More text about
    the same change is added to the same iteration.
+1b. **Check it is clear.** The AI PM in resolve mode (`stage: build`, question "Is this change request clear?",
+   artifacts: their words verbatim, everything they attached (files, links, a new design system, screenshots), the
+   approved `02b-wireframes/`, the design system, `04-build/build-summary.md` and the scoping document; lens
+   `change-clarity`). Save the answer to `04-build/changes/CR-<n>.clarity.yaml`. **DECIDE** → tell the person the
+   `reading` in one line. **ASK_HUMAN** → in Zen and in Sonic, remove the autopilot file, ask its 1–3 questions in one
+   AskUserQuestion call (recommended option first), log each answer as a human decision in `context-log.md` and in
+   the same file, then recreate the autopilot file. Nothing is triaged or touched until the reading is settled, and
+   the reading goes with the change to every later step (wireframes Update mode, `ua-change` fix lines, the scoped
+   re-plan). A new design system or other replacement artifact is used in full only when the person chose that option.
 2. **Triage.** The AI PM in resolve mode (`stage: build`, question "Triage this change request", options
-   `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md`; lens
-   `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
+   `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md` and
+   `04-build/changes/CR-<n>.clarity.yaml`; lens `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
    workspace) and tell the person in one line: the tier, the pages it touches, why. When `stages.wireframes` is
    `skipped` there are no frames to update: `big` and `very-big` go to step 4 without the wireframes, and say so.
 3. **Small** → straight to the app: the change as numbered fix lines to UnifyApps Headless as direct changes through
