@@ -171,7 +171,7 @@ never blocks a run.
 Files one piece of feedback as a ticket (`FB-<n>`) on POC Build Loop's Feedback page
 (https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback) and gives back its ID and link. It can be about a POC,
 a one-off asset, or POC Studio in general (no POC needed). Screenshots, logs or other files given with it (up to 10,
-20 MB each) are attached to the ticket. Tickets start as To be Assigned and are triaged there: assignee, priority, status (To be Assigned, In-Progress, Blocked, In QA, QA Rejected, Done).
+20 MB each) are attached to the ticket. Tickets start as To be Assigned and are triaged there: assignee, priority, status (To be Assigned, Research, In-Progress, Blocked, In QA, QA Rejected, Done). `/poc-studio:feedback` checks for a newer POC Studio first and asks you to update before filing.
 `status FB-<n>` shows a ticket's status, priority, assignee and latest activity from Orbit. Feedback does not move a
 POC or post to Slack, and skill proposals now come from iterations (change requests at gates) only. (Plain `/feedback`
 is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
