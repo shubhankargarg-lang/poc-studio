@@ -234,7 +234,7 @@ skills/wireframes/                 low-fidelity wireframes from the BRD: render.
                                    coverage.py (against the BRD), references/: spec format, example, map component
 skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
 skills/asset-run/                  one asset end to end: prerequisites, stage, AI PM, one-off Orbit row, approval
-skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen plan review, browser fallback
+skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen question review, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
 skills/ai-pm/                      the AI PM: reviews every stage, re-runs its checks, Stage 4b build walk, lessons
                                    (+ references/: stage lenses, slop catalogue; scripts/: build walk, scope metrics,

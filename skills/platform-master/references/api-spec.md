@@ -883,6 +883,33 @@ Publishes an entity (used for agents). Send the **whole entity object** as read,
 
 Discover any type's fields with `POST /api/aggregation/metadata` (§10).
 
+### Knowledge sources from a workflow
+✅ UAT
+
+A workflow adds a source to a knowledge set by creating a record of the system object `knowledge`
+(`storage_by_unifyapps_create_record`, `object_type: "knowledge"`).
+
+| Field | Value |
+|---|---|
+| `knowledgeSetId` | the set's id |
+| `accessibleTo` | `["knowledge_set/<set id>"]` |
+| `name` | the title readers see |
+| `sourceType` | `"FILE"` or `"WEBSITE"` |
+| `status` | `"DRAFT"` — the platform then indexes it |
+| `enabled` | `true` |
+| `fileDetails` (FILE) | `{name, fileExtension, fileType, source, sourceType:"URL", url}`; omit `size` |
+| `websiteImportInfo` (WEBSITE) | `{urlList:[<url>], specificWebpages:true, crawlDepth:0, webpageFetchLimit:1, includeDocuments:false}` |
+
+For a FILE, store the file first with `files_by_unifyapps_upload_file {option:"url", url, fileName, mimeType}`,
+then `utility_by_unifyapps_create_unifyapps_path_for_file {file: <upload>.fileDetails}`; use
+`<upload>.fileDetails.source` and the returned path in `fileDetails`.
+⛔ `utility_by_unifyapps_create_unifyapps_file_from_url` returns a URL-typed file that the path step refuses.
+
+**Indexing status:** `storage_by_unifyapps_get_record_by_id {object_type:"knowledge", id}` → `properties.status`
+(`COMPLETED` / `FAILED`).
+
+Remove a source with the agent-builder knowledge tools, never a storage delete.
+
 ---
 
 ## 9. AI agents, tasks, tools

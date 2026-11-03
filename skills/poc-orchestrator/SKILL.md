@@ -58,7 +58,7 @@ if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 | 2b Wireframes | `wireframes` |
 | 3 Design System | `design-system` |
 | 4 Build | `/ua:setup`, then `/ua:plan` in Zen (separate UnifyApps Headless plugin, `ua`) |
-| 4 Build, platform knowledge | `platform-master` (best-practice pointers, Zen plan review, browser fallback) |
+| 4 Build, platform knowledge | `platform-master` (best-practice pointers, Zen question review, Zen plan review, browser fallback) |
 | 5 Collaterals | `poc-collateral-studio` |
 | Any stage, outside facts | `research` |
 | Every gate, Orbit write-back | `orbit-writeback` |
@@ -96,7 +96,8 @@ and any later session — can read them:
     zen-decisions.md                    Zen's planning questions and the person's answers
     test-report.md                      one row per page, automation, agent and storyline step
     platform-pointers.md                platform-master: use-case type, style and the pointers given to the build
-    platform-review.md                  platform-master: its review rounds of Zen's plan and the adjustments
+    platform-review.md                  platform-master: its question review of Zen's planning questions, its review
+                                        rounds of Zen's plan and the adjustments
     fallback-<n>.md                     platform-master: one per asset built by the browser fallback
   05-collaterals/
     <slug>-collateral/out/              the 3 collaterals: demo script PDF, demo video (+ .srt), deck .pptx
@@ -302,7 +303,7 @@ In Zen, never advance without the person's explicit approval; in Sonic, never ad
 Right after each of these returns, write its one `orbit_studio_skill_run` row (orbit-writeback **Moment 7**, which has
 the fields and the list): every stage skill run (requirement-gathering, scoping-l1-first, wireframes, design-system,
 poc-collateral-studio), every REVISE or changes re-run of one, every AI PM **review** round (the 4b build walk
-included), every platform-master job, the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
+included), every platform-master job (the question review as one row for the whole planning window), the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
 publish), and every `research` call. Note each run's start time before it begins. The row is written before the next
 step (the review, the gate), but a failed write never holds anything: one retry, one line, carry on. Not logged:
 orbit-writeback's own moments and the AI PM's resolve-mode answers.
@@ -521,7 +522,9 @@ Only these session facts are supplied by you:
   3. **`/ua:plan`** with the build request below. The request itself says **Zen**, so `/ua:plan` skips its mode
      question. Planning runs in the **Zen planning window** (next bullet).
 - **Zen planning in Sonic run mode.** Do not create the Zen planning flag and keep the autopilot file on: Zen's
-  clarification questions go to the AI PM in resolve mode (`stage: build`), like any other question. When Zen has
+  clarification questions go to the AI PM in resolve mode (`stage: build`), like any other question, each one first
+  through platform-master job **1b · Question review**, with its option or "agrees" note in the options the AI PM
+  chooses from. When Zen has
   written its plan, platform-master's plan review and the builder check (below) run as in Zen; then the AI PM approves
   the plan (resolve mode, question "Approve Zen's plan?", with the spec, task graph, preview and
   `04-build/platform-review.md`): **DECIDE start** → answer Zen "start", Orbit **M4a** in its Sonic form, and run
@@ -539,6 +542,17 @@ Only these session facts are supplied by you:
     any number of rounds, often none) go to the **person directly**. Do not route them to the reviewer. Log every
     question and the person's answer in `<workspace>/context-log.md` as a human decision, and in
     `<workspace>/04-build/zen-decisions.md` (one entry per question: the question, the options, the answer).
+  - Before each question reaches the person, run `platform-master` job **1b · Question review** on it, and ask it
+    with platform-master's input:
+    - An added option goes after Zen's options, with platform-master's label (`Platform-master: …`) and description
+      (`Suggested by platform-master — …`) exactly as given. A question holds at most four options: when Zen already
+      gave four, platform-master's option takes the place of Zen's last non-recommended option, and the question text
+      names the option it replaced so the person can still choose it under "Other".
+    - "Agrees" → add `Platform-master agrees.` to the end of that option's description.
+    - Nothing to add → ask Zen's question as it is.
+    - When the person picks the platform-master option, send Zen platform-master's answer for Zen as the person's
+      answer, word for word, so the spec and the builders' tasks carry it. Log it in `zen-decisions.md` and
+      `context-log.md` as "Platform-master: <label> — chosen by the person".
   - Zen reads the solution, designs the objects and pages, writes a spec (with `## Assumptions` and "Check this"
     lines on top) and a task graph (one task per entity, each owned by one builder agent), grills plans with 5 or more
     tasks, and writes and opens a preview page. Nothing is written to the tenant before the person's yes.
