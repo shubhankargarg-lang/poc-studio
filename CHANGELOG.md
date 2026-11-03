@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.33.0
+- **Feedback tickets: full shape incl. ticket_key; status list updated.** Tickets filed by v1.27 and earlier had no `ticket_key`, `priority` or `updated_at` (and no `created` activity row), so POC Build Loop could not change their status or owner. Every ticket is now built by `orbit-writeback/scripts/feedback_ticket.py`: `ticket_key` = `ticket_no` = `FB-<ms>`, status `to_be_assigned`, priority `none`, `updated_at` = `created_at`, `poc` and `client_name` only for a POC; no `source`, `poc_stage` or other old fields. The `created` row in `orbit_studio_feedback_event` uses the same ms. A clash retries with now+1 (up to 3 times) for both keys.
+- Status list now includes `research` (To be Assigned, Research, In-Progress, Blocked, In QA, QA Rejected, Done).
+- Every write's reply is checked (`feedback_ticket.py check`): "Logged" is said only when every item is `"ok": true`; otherwise the platform's error is shown.
+- **`/poc-studio:feedback` now checks for a newer POC Studio first**, as `/poc-studio:start` does, and stops until the person updates. Everyone on an older version must update.
+- `feedback_ticket.py --self-test`: a dry run that builds sample tickets with and without a POC and checks the shape; nothing is sent.
+
 ## 1.32.1
 - **Observability rows are built by a script, checked against the live `orbit_studio_skill_run` schema** (40 fields; `run_id`, `skill`, `started_at` required; schema validation on). `orbit-writeback/scripts/skill_run_row.py` turns loose values into the stored types and codes ("104k" → 104000, "v1" → 1, "REVISE" → `revise`, seconds → ms, `brd` → `scoping-l1-first`), drops empty values and unknown keys, never sends `poc` on a one-off row, and refuses a row it cannot make valid; the session sends its output as is.
 - **New hook `skill-run-log.sh`** (PreToolUse and PostToolUse on Skill and Agent): while a run's `.poc-studio/observability` flag exists, it saves each logged skill's start time and reminds the session to write the row when the skill returns (an AI PM review, right when it returns). Notify only; never blocks.

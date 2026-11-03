@@ -771,7 +771,7 @@ deletes a ticket.
    workspace this session is working in (look for `*/*/state.json` under the current folder, or
    `./orbit-test/state.json`).
    - A one-off asset workspace (`state.json` → `standalone`) without a POC ID → file it with **no POC**, and do not
-     ask. `client_name` = that `state.json`'s client.
+     ask (no `poc`, no `client_name`; the workspace slug goes in `channel_ref`).
    - No POC and no one-off runs in this session (or several POCs and it is not clear which) → ask once: "Which POC is
      this feedback for?", with the POCs found under this folder as options (show poc_id and client) and
      **"No POC (general)"**. A POC ID or client name typed in is accepted too.
@@ -801,49 +801,40 @@ deletes a ticket.
    `orbit-spec.md`; anything else `application/octet-stream`.
    **If an upload fails**, still create the ticket without that file, and name the file in the reply. Never put a
    file's bytes or base64 in a row, and never put file lines in `quote`.
-3. **Create the ticket** with one `apply_record_edits` call (How to write: leave out any key that would be `""` or
-   `null`). Get `now` once with a one-line script (`node -e 'console.log(Date.now())'`):
+3. **Build the ticket and its `created` row with the builder, never by hand.** POC Build Loop finds and changes a
+   ticket by `ticket_key`, so a ticket without it (or without `priority` and `updated_at`) cannot be moved or assigned
+   in the app. Let `O` be this skill's `scripts/` folder
+   (`find ~/.claude/plugins -path '*orbit-writeback/scripts/feedback_ticket.py' -exec dirname {} \; | head -1`).
+   1. Write what you have, as one JSON object, to `$TMPDIR/fb/in.json` with a short script:
+      `title` (the person's short title, or their first sentence), `feedback` (their words, unedited; several points
+      in one message stay in one ticket), `given_by_name`, `given_by_email` (if known), `skill`, `quote` (their own
+      exact short words worth keeping, if any), `channel_ref` (the workspace slug `<client-slug>/<usecase-slug>`, or
+      the thread), `poc` and `client_name` **only when the ticket is about a verified POC**, `priority` only when the
+      person clearly states one, and `attachments` (`[{"name", "link"}]` from step 2).
+   2. `python3 "$O/feedback_ticket.py" build $TMPDIR/fb/in.json --out-dir $TMPDIR/fb` → prints `FB-<ms>` and writes
+      `ticket.json` and `event.json`. Exit 2 → it names what is missing (title, feedback or given_by_name): ask for it
+      once, then build again.
+   The builder writes exactly this shape (and nothing else; it leaves out any field with no value, never `""` or `null`):
 
 ```json
 { "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback",
   "edits": [{ "op": "create", "properties": {
-    "ticket_no": "FB-<now>",
-    "ticket_key": "FB-<now>",
-    "title": "<the person's short title, or their first sentence cut to 90 characters>",
-    "feedback": "<their words, unedited; then, if files were attached, a blank line and one file line per file>",
-    "channel": "claude",
-    "channel_ref": "<the workspace path, or <client-slug>/<usecase-slug>>",
-    "given_by_name": "<the person giving the feedback>",
-    "given_by_email": "<their email, if known>",
-    "source": "user",
-    "status": "to_be_assigned",
-    "priority": "none",
-    "skill": "<skill key, or general>",
-    "poc": "<poc_id, only when known and verified>",
-    "client_name": "<from the POC row; for a one-off run, the client from state.json>",
-    "poc_stage": "<the POC row's stage, only with a POC>",
-    "created_at": <now>,
-    "updated_at": <now> } }] }
+    "ticket_no": "FB-<ms>", "ticket_key": "FB-<ms>",
+    "title": "<one line>", "feedback": "<full text, then a blank line and one line per attachment>",
+    "status": "to_be_assigned", "priority": "none", "channel": "claude", "skill": "<skill key, or general>",
+    "poc": "<poc_id: only for a POC>", "client_name": "<only with a POC>",
+    "given_by_name": "<the person filing it>", "given_by_email": "<their email>",
+    "quote": "<their own words>", "channel_ref": "<workspace slug or thread>",
+    "created_at": <ms>, "updated_at": <the same ms> } }] }
 ```
 
-   - `feedback`: the person's text first, unedited (several points in one message stay in one ticket). With files,
-     append after it **one blank line, then the file lines** from step 2, one per line. The POC Build Loop app shows
-     image lines as thumbnails and other files as chips.
-   - `status` is always `"to_be_assigned"` on create (or leave it out: the field defaults to it). The field allows
-     **only** `to_be_assigned`, `in_progress`, `blocked`, `in_qa`, `qa_rejected`, `done`; **never send** `open`,
-     `in_proposal`, `in_review`, `incorporated`, `resolved`, `not_incorporated` or `dismissed` (the platform rejects
-     them: "status invalid; oneOf fail").
-   - The ticket ID is `FB-<now>`: the same `Date.now()` value as `created_at` (e.g. `FB-1793634938058`). `ticket_no`
-     (the primary key) and `ticket_key` are the same value. Do not send `ticket_seq` and do not read the last ticket
-     to number it.
-   - `poc`, `poc_stage` (and `client_name` when there is no client at all): leave the key out when unknown.
-   - `priority` is `"none"` unless the person clearly states one: `urgent`, `high`, `medium` or `low`.
-   - Optional: `"quote"` (exact short words worth keeping verbatim).
+   - `status` is always `to_be_assigned`. The field allows only `to_be_assigned`, `research`, `in_progress`,
+     `blocked`, `in_qa`, `qa_rejected`, `done`; **never send** `open`, `incorporated`, `dismissed` or any other old
+     value. Never send `source`, `poc_stage`, `gate`, `ticket_seq`, `assignee_*`, `due_date`, `tags`,
+     `analysis_status`, `analysis_run_id`, `skill_proposal` or `incorporated_in_version`.
    - `given_by_name` / `given_by_email` are **the person giving the feedback**, not the POC owner: take them from the
      connected Slack profile of the session's user if there is one, else from `git config user.name` /
-     `git config user.email`, else ask once. Leave `given_by_email` out if it is not known.
-   - **Never send** `assignee_name`, `assignee_email`, `due_date`, `tags` (people set these in the app),
-     `analysis_status`, `analysis_run_id`, `skill_proposal` or `incorporated_in_version`.
+     `git config user.email`, else ask once.
    - `skill` is the POC Studio skill or agent the feedback is about, as its key. Choose it in this order:
      1. The person names a skill or stage in the feedback (or as an argument) → that key.
      2. Otherwise decide from the feedback text and this session:
@@ -862,37 +853,29 @@ deletes a ticket.
         | `ai-pm` | the AI PM's reviews, rulings, lessons |
 
      3. It could be several, or none fits clearly → `general`.
-   - **On a duplicate-key error** (another ticket in the same millisecond): retry with `now + 1` (as the ID,
-     `created_at` and `updated_at`), **at most 3 times**.
-   - Still failing → show the error in one line and what to do (e.g. run `/ua:setup` here on orbit.uat.unifyapps.com
-     and sign in, then run `/poc-studio:feedback` again). A failed feedback write is not retried later and is not
-     added to `failed_writes`.
-4. **Create the activity row** right after, one `apply_record_edits` call on `orbit_studio_feedback_event`:
-
-```json
-{ "host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_feedback_event",
-  "edits": [{ "op": "create", "properties": {
-    "event_id": "FEV-<now>-<4 random digits>",
-    "ticket": "FB-<now>",
-    "ticket_key": "FB-<now>",
-    "type": "created",
-    "message": "Ticket created from Claude Code",
-    "actor_name": "<given_by_name>",
-    "actor_email": "<given_by_email, if known>",
-    "actor_type": "person",
-    "channel": "claude",
-    "created_at": <the ticket's created_at> } }] }
-```
-
-   If only this row fails, say so in one line; the ticket still stands.
-5. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<now>`, and
-   confirm it.
-6. **Reply in one line:**
-   `Logged FB-<now> (To be Assigned) → https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<now>`
+4. **Create the ticket:** send `ticket.json` as it is with `apply_record_edits`. Save the reply to
+   `$TMPDIR/fb/reply.json` and run `python3 "$O/feedback_ticket.py" check $TMPDIR/fb/reply.json`: it passes only when
+   every item in `results` says `"ok": true`.
+   - **A `ticket_no` clash** (duplicate or unique-key error): `python3 "$O/feedback_ticket.py" retry $TMPDIR/fb`
+     (now+1 for `ticket_no`, `ticket_key`, both times and the event) and send again, **at most 3 times**.
+   - **Any other error, or still failing:** show the platform's error message in one line and what to do (e.g. run
+     `/ua:setup` here on orbit.uat.unifyapps.com and sign in, then `/poc-studio:feedback` again). **Never say
+     "Logged" for a write that failed.** A failed ticket is not retried later and not added to `failed_writes`.
+5. **Create the activity row** right after, only once the ticket saved: send `event.json` as it is
+   (`orbit_studio_feedback_event`, type `created`, the ticket's ms; its `ticket` field links to the ticket, so the
+   ticket must exist first) and check the reply the same way. If only this row fails, keep the ticket and say so in
+   one line ("Ticket saved; its activity row didn't: <error>").
+6. **Read back** the ticket with `get_records` on `orbit_studio_feedback`, filter `ticket_key` EQUAL `FB-<ms>`, and
+   confirm `ticket_key`, `priority` and `updated_at` are there.
+7. **Reply in one line:**
+   `Logged FB-<ms> (To be Assigned) → https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<ms>`
    Add ` · attached N files` when files were attached. Any file that could not be attached: one more short line
    naming it and why (too large, upload failed).
-7. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
+8. **Nothing else.** No Iteration row, no Activity row on the POC, no POC update, no `slack_notification`, no Slack
    message.
+
+**This is the only place that creates a feedback ticket.** Any other step that files feedback on the person's behalf
+follows these steps, with the builder.
 
 ### Ticket status
 
@@ -904,8 +887,8 @@ deletes a ticket.
 - Reply in 2–4 lines: the title; status (by its label); priority (by its label); the assignee (`assignee_name`, or
   "Unassigned"); the client or POC (or General); the newest activity line; and the link
   `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/feedback/FB-<n>`.
-- Status labels: `to_be_assigned` To be Assigned · `in_progress` In-Progress · `blocked` Blocked · `in_qa` In QA ·
-  `qa_rejected` QA Rejected · `done` Done. A missing status reads as To be Assigned.
+- Status labels: `to_be_assigned` To be Assigned · `research` Research · `in_progress` In-Progress · `blocked`
+  Blocked · `in_qa` In QA · `qa_rejected` QA Rejected · `done` Done. A missing status reads as To be Assigned.
 - Priority labels: `urgent` Urgent · `high` High · `medium` Medium · `low` Low · `none` (or missing) No priority.
 
 ## Testing a moment by hand
