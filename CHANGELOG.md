@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.35.0
 - **Deck: UnifyApps opening and closing slides.** The bundled template now holds the UnifyApps cover ("Agentic automation for the enterprise") and the "Thank You" slide as template slides 4 and 5 (slides 1–3 unchanged, so existing `deck.json` files still work). `kit/deck.py` adds them first and last, exactly as they are; `"open": false` / `"close": false` leaves one out.
 - **Deck: technical blueprint.** New `kit/blueprint.mjs` renders, from `blueprint.json`, an architecture slide (what it is, counts, and a four-layer diagram: users → front doors → automations and agents → data and connected systems, with live / simulated / go-live status) and a "what was built" list of every automation and AI agent (when it runs, what it does, objects and tools) on as many slides as it needs. Built from `04-build/build-summary.md`, never the plan; the script fails when the diagram and the list disagree. Big builds collapse the diagram's groups to "+N more" and keep every item in the list.
 - AI PM collaterals lens checks the opening/closing slides and that the blueprint lists exactly what was built.
