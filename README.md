@@ -158,8 +158,11 @@ Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
 Every skill run is logged to Orbit (`orbit_studio_skill_run`), in full runs and one-off runs alike, and shows in POC
 Build Loop's **Observability** view: one row per stage skill run, AI PM review round, platform-master job, build and
 research call, plus a "POC started" row. Each row has the inputs, 3–6 lines of reasoning, the output and its decisions,
-the verdict for reviews, timing, and tokens (measured for AI PM reviews, estimated elsewhere). A failed log write
-never blocks a run.
+the verdict for reviews, timing, and tokens (measured for AI PM reviews, estimated elsewhere, never empty). Every
+re-run (after an AI PM REVISE or your change request) gets its own row, and a review is never logged ahead of the run
+it checked. Rows are kept in a local ledger (`.poc-studio/skill-runs/`): one that fails to save is sent again at the
+next step, the log is checked against Orbit at every gate and at the end, and the run ends with one line saying every
+run was saved (or which were not). Logging never blocks a run.
 
 ## Feedback
 

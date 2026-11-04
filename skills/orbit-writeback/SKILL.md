@@ -547,6 +547,12 @@ observability:
   `{field: "sequence", order: "DESC"}`, `limit` 1 (none → 0). A one-off run counts within its `run_group`, from 1.
 - **Times:** note `started_at` (`node -e 'console.log(Date.now())'`) when the skill starts and `ended_at` when it
   returns.
+- **Re-runs always get their own row.** A stage skill that runs again — to apply an AI PM REVISE, or the person's
+  change request — is a new run: its own row, written as soon as it returns and **before** the review of it. Label
+  "<doc> v<N> · <k> fixes" (a REVISE) or "<doc> v<N+1> · changes" (a change request), `round` +1, `triggered_by`
+  `orchestrator` (REVISE) or `iteration` (changes, with the person's words in `input_ask`), `input_ask` = the fix lines
+  for a REVISE. When the person asks for changes, first run `skill_run_row.py note-change <skill> --gate <gN>`; if they
+  drop the change instead, `skill_run_row.py change-dropped <skill>`.
 
 **The row** (field names exactly as stored; single-selects take the code):
 
@@ -606,25 +612,43 @@ observability:
   `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/observability` (holding the `run_group`); delete it when the run ends or
   stops. While it exists, the plugin's `skill-run-log.sh` hook saves each logged skill's start time in
   `.poc-studio/skill-starts/<skill>` and reminds the session, in the tool result, to write the row when the skill
-  returns (for an AI PM review, right when its subagent returns). Use that start time as `started_at`.
+  returns (for an AI PM review, right when its subagent returns). Use that start time as `started_at`. When an AI PM
+  review returns, the hook also names any re-run that has no row yet and any rows still pending. The ledger
+  (`.poc-studio/skill-runs/`) stays when the flag is deleted: it is the record the report and the checks read.
 - **How to write it (always through the builder, never by hand).** The object validates every write against its
   schema, so one wrong type fails the row. Let `O` be this skill's `scripts/` folder
-  (`find ~/.claude/plugins -path '*orbit-writeback/scripts/skill_run_row.py' -exec dirname {} \; | head -1`).
+  (`find ~/.claude/plugins -path '*orbit-writeback/scripts/skill_run_row.py' -exec dirname {} \; | head -1`) and
+  `LG` the run's `.poc-studio` folder (the one holding the `observability` flag; its absolute path is in `state.json`
+  → `observability.ledger`, or the one-off run's entry). Pass `--ledger "$LG"` to every builder call: the builder keeps
+  every row in a local ledger there (`skill-runs/`), so no row is ever lost.
   1. Write the fields you have, as one JSON object, to `$TMPDIR/skill-run-in.json` with a short script (never retype
      long text by hand). Loose values are fine: the builder turns "104k" into 104000, "v1" into 1, "REVISE" into
      `revise`, seconds into milliseconds, a command name (`brd`) into its skill, drops empty values and unknown keys,
      leaves `poc` off one-off rows, fills `phase`/`gate` from the skill, makes `run_id`, `duration_ms` and `created_at`.
-     Estimated tokens: `python3 "$O/skill_run_row.py" --estimate <files read or written>`.
-  2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --out $TMPDIR/orbit-skill-run.json`. Exit 0 → send that
-     file's JSON with `apply_record_edits` exactly as it is. Exit 2 → the row lacks `skill` or `started_at`: add it
-     (the hook's start file, or now) and build again.
-  3. Check the reply: every item in `results` says `"ok": true`. Record the `run_id` in `observability.runs`.
-- **If Orbit refuses the row**, read the error and retry **once**, changed only as needed: a duplicate `run_id` →
+     Tokens are never left empty: give measured counts when you have them; otherwise add `files_read` and
+     `files_written` (paths) and the builder estimates both.
+  2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --out $TMPDIR/orbit-skill-run.json --ledger "$LG"`.
+     - Exit 0 → send that file's JSON with `apply_record_edits` exactly as it is.
+     - Exit 2 → the row lacks `skill` or `started_at`: add it (the hook's start file, or now) and build again.
+     - Exit 3 → another row must come first: a review is never logged before the run it checked (`reviews_run_id`
+       must be a logged run), and a re-run after a REVISE or a change request must have its own row before the
+       review of it. Write the row the message names, then build this one again.
+  3. Save the reply to a file and run `python3 "$O/skill_run_row.py" saved <run_id> <reply.json> --ledger "$LG"`: exit 0
+     only when every item in `results` says `"ok": true`. Record the `run_id` in `observability.runs`.
+- **If Orbit refuses the row**, read the error and fix it at once, changed only as needed: a duplicate `run_id` →
   build again without `run_id` (a new one is made); an error on `poc` (no such POC) → build again without `poc`;
-  an error naming any other field → build again without that field. If the retry fails too, say one line
-  ("Observability log for `<skill>` didn't save: <error>") and carry on.
-- **A failed write never blocks or slows anything.** It is not added to `failed_writes`, not retried later, and no
-  gate or skill waits for it.
+  an error naming any other field → build again without that field.
+- **Nothing is lost: the outbox.** A row whose `saved` check did not pass stays pending in the ledger. Before every
+  write-back moment, at every gate decision and at the end of the run, run `python3 "$O/skill_run_row.py" pending
+  --ledger "$LG"` and send each listed file again (then `saved`), until the list is empty. It never blocks or slows the
+  run: no gate or skill waits for it, and it is not part of `failed_writes`.
+- **Check against Orbit.** At every gate approval, on resume, and at the end of the run, read this POC's rows back
+  (`get_records` on `orbit_studio_skill_run`, filter `poc` EQUAL the POC ID — one-off: `run_group` EQUAL the run's group —
+  with enough `limit` for every row), save the reply, and run `skill_run_row.py reconcile <reply.json> --ledger "$LG"`:
+  a row Orbit does not have goes back to pending and is sent again.
+- **Report.** At the end of the run (and when the person asks), `skill_run_row.py report --ledger "$LG"` prints one line —
+  "Observability: <n> runs logged, all saved in Orbit." — or names each row not saved and each re-run with no row.
+  Put that line in the closing message as it is.
 - It replaces nothing: the `gate_decided` Activity rows are still written at every gate (the view's approval lines
   come from them).
 

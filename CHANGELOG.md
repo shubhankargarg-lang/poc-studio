@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.36.0
+- **Observability: every skill run is logged, including every re-run.** Re-runs after an AI PM REVISE or a change request were never logged (the hook only fires when a skill is first loaded), so the view jumped from "changes asked" to "approved". Now:
+  - each re-run gets its own row before the review of it (label "<doc> v<N> · <k> fixes" or "· changes", round +1, `triggered_by` iteration for changes); the REVISE step, the gate's change step, 4c and asset-run say so where the re-run happens;
+  - `skill_run_row.py` keeps a local ledger (`.poc-studio/skill-runs/`) and refuses (exit 3) a review row whose run is not logged, or that comes after a REVISE or change request whose re-run has no row; `note-change` / `change-dropped` record change requests;
+  - the hook names any re-run with no row and any rows not yet saved when an AI PM review returns;
+  - tokens are never empty: estimated from `files_read` / `files_written` when not measured;
+  - outbox: a row that did not save stays pending and is sent again before every moment, at every gate and at the end (`pending`, `saved`); nothing is dropped after one retry any more;
+  - check against Orbit at every gate approval, on resume and at the end (`reconcile`), and an end-of-run line from `report`: "Observability: <n> runs logged, all saved in Orbit."
+
 ## 1.35.0
 - **Deck: UnifyApps opening and closing slides.** The bundled template now holds the UnifyApps cover ("Agentic automation for the enterprise") and the "Thank You" slide as template slides 4 and 5 (slides 1–3 unchanged, so existing `deck.json` files still work). `kit/deck.py` adds them first and last, exactly as they are; `"open": false` / `"close": false` leaves one out.
 - **Deck: technical blueprint.** New `kit/blueprint.mjs` renders, from `blueprint.json`, an architecture slide (what it is, counts, and a four-layer diagram: users → front doors → automations and agents → data and connected systems, with live / simulated / go-live status) and a "what was built" list of every automation and AI agent (when it runs, what it does, objects and tools) on as many slides as it needs. Built from `04-build/build-summary.md`, never the plan; the script fails when the diagram and the list disagree. Big builds collapse the diagram's groups to "+N more" and keep every item in the list.

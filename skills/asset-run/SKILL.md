@@ -162,7 +162,11 @@ the run flag `.poc-studio/observability` (removed with the `one-off` flag when t
 after each skill run returns (the stage skill and each re-run of it, each AI PM review round, each platform-master
 job, the build, each `research` call), write its one row: orbit-writeback **Moment 7**, with `origin: one_off`,
 **no `poc` key** (even when a POC ID was given), `gate: none`, `triggered_by: command` (or `iteration` for a re-run
-after the person asked for changes). A failed write never holds the run: one retry, one line, carry on.
+after the person asked for changes). A re-run always gets its own row before the review of it (orbit-writeback
+Moment 7: "Re-runs always get their own row"; on a change request run `skill_run_row.py note-change <skill>` first).
+Every builder call takes `--ledger` with the run flag's folder (recorded in the run entry as `observability.ledger`).
+A failed write never holds the run: it stays pending and is sent again at the next step ("Nothing is lost"); at the
+approval, run the check against Orbit and end the closing message with the `skill_run_row.py report` line.
 
 ## 3 · Run the stage (unattended)
 
