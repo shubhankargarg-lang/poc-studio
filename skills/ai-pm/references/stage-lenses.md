@@ -26,6 +26,10 @@ is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 - Is the **use case** held to this one? Material from the client's other use cases is listed as "not used", not mixed in.
 - Are the **stated asks verbatim** (quotes, with source)? A paraphrased ask is a finding: later stages trace to it.
 - Does every gap carry the question that would close it, and a default the run will use meanwhile?
+- **AI inputs and samples.** Every AI feature that reads documents or images is in the table with its samples and
+  kind; files our team made are never "real"; item 9 is scored by the rule (Confirmed only with a real or
+  anonymised-real sample for every input); with no samples, a Blocking client question and the person's recorded
+  choice; sample files sit in `files/samples/` and are tagged in Section 4.
 - Is there enough to find a **wow moment**? If the document gives scoping nothing to build a demo climax around,
   say so as a `check_this` decision, not a block.
 

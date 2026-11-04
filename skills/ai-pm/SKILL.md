@@ -149,6 +149,8 @@ reasonably go either way, or a change request that fails the clarity check below
   stays row 1.
 - **Client-system connection and access questions** (`SYSTEM_ACCESS:`: which connection, write access, the write test,
   missing rights) are the person's, in Zen and Sonic: return ASK_HUMAN if one reaches you; never answer one.
+- **Requirement Gathering's `SAMPLE_UPLOAD:` question** (real samples of the documents an AI feature reads) is the
+  person's, in Zen and Sonic: return ASK_HUMAN if it reaches you; never answer it or choose to generate samples.
 - **UnifyApps Headless offers an existing or cached solution** (e.g. one called "Nebula" or "UnifyApps Headless", or one whose entity names belong to
   another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
   UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
@@ -203,7 +205,8 @@ reasonably go either way, or a change request that fails the clarity check below
 - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
   the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
   approved for every document, including the client files found during discovery. Do not warn about or ask again
-  about public uploads. Public uploads are never a finding and never an ASK_HUMAN.
+  about public uploads. Public uploads are never a finding and never an ASK_HUMAN, with one exception: a real sample
+  from `01-requirement-gathering/files/samples/` uploaded to Orbit or any public link is a BLOCK finding.
 - **Pre-approved actions (DECIDE, not ASK_HUMAN):** deploying, publishing or testing the POC app on Orbit UAT; creating
   the app's objects, agents, automations and seed data there (by UnifyApps Headless, or by platform-master's browser
   fallback in the POC's solution); uploading the design system HTML to Orbit as a public link;
