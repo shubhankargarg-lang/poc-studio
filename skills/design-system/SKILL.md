@@ -1,6 +1,6 @@
 ---
 name: "design-system"
-description: "Build a client design system from the scoping document (or BRD), a client name and a website, plus the approved wireframes when POC Studio has them, and ship it as ONE self-contained HTML file with the composition contract the builder follows. A creative director researches the client's world, drafts three directions from three different sources, checks them against the register of apps already made and picks one; the run then samples the real brand and logo, skins house Design Language v3.4 onto it preserving luminance, designs every component the app needs (with variants and drawn states), shows the client's hero object with real images, and opens with a showcase of three screens and two or three close-ups. A render scan and the creative director's judgement pass (at most two rounds) close the run, and the app's fingerprint goes into the shared register. Audited in light and dark. Use before any screen is drawn."
+description: "Build a client design system from the scoping document (or BRD), a client name and a website, plus the approved wireframes when POC Studio has them, and ship it as ONE self-contained HTML file with the composition contract the builder follows. A creative director researches the client's world, drafts three directions from three different sources, checks them against the register of apps already made and picks one; the run then samples the real brand and logo, skins house Design Language v3.4 onto it preserving luminance, designs every component the app needs (with variants and drawn states), shows the client's hero object as HTML/CSS picture mockups, and opens with a showcase of three screens and two or three close-ups. A render scan and the creative director's judgement pass (at most two rounds) close the run, and the app's fingerprint goes into the shared register. Audited in light and dark. Use before any screen is drawn."
 ---
 
 # Design system for a POC (v12.6)
@@ -26,7 +26,7 @@ designs each one to its brief in the manifest (`purpose`, `shows`, `does`, `volu
 it a richer form than its grey frame when the brief is better served (a list of products becomes their pictures; a
 timeline row leads with the item's image), marking the change with `data-form-change` and keeping the frame's layout.
 
-**How a run goes, about 40 to 45 minutes** (the Pentland v12 run took about 32; v12.1 draws more):
+**How a run goes** (pictures are drawn as HTML/CSS mockups, never fetched, so no time goes to finding images):
 
 | # | Step | Time |
 |---|---|---|
@@ -1130,29 +1130,15 @@ people pick, check or approve one, at a size they can judge it by eye, on a neut
 stays honest in both themes. When the hero object has no picture, the director names what stands in for one (a
 document page, a map position, a chart shape) and that leads instead.
 
-**Real images, without being asked.** When `hero_object.picture` is set in the manifest (or the scoping document's
-21.1 says the hero object has a picture), the run uses **real images of the client's own items**; nobody needs to
-ask for them. Drawn stand-ins are the last resort.
-1. **Where to look, in this order:** files the person attached; the client's own sites (the brand's product pages,
-   press or media kit, and the sites of the brands the app works on, e.g. a sub-brand's store); the client's own
-   listings on retailers (their Amazon or marketplace pages). Never stock photos, never another company's products.
-   Use the fetch tool, the shell or the browser, whichever reaches the site; a blocked site is tried another way
-   once, then skipped.
-2. **Match the seed data.** Each image is the named item in its named variant (the colourway, the size, the site) and
-   the same kind of shot for the same role: the main shot is the studio shot the channel requires (for retail, on
-   white), on-model and detail shots only where the record's role says so. Never swap a seed record for another one
-   because it has a picture: a record with no image found shows the app's real fallback state ("Main shot due").
-3. **Embed them.** Download once, resize to at most 800 px on the long side, embed as WebP data URIs; never hotlink.
-   Keep all images together under 8 MB.
-4. **Record each one.** Every picture of the hero object carries `data-media` and `data-source` (the page URL it
-   came from, `attached`, or `drawn` for a stand-in). The port note lists the sources. `check_ds.py` fails the file
-   when fewer than 60 % of the pictures are real or any picture has no `data-source`.
-5. **A missing picture is designed, never a hatched box.** When a seed record has no image in its colourway, draw
-   its stand-in as the item's own silhouette (a jacket, a boot) in the brand's style, on the same well, with one line
-   ("Packshot due · DAM team"), so a wall with gaps still looks finished. Never swap the record or borrow another
-   colourway's photo.
-6. **Only when nothing is reachable** (every source refused), draw stand-ins in SVG of the client's own kind of item,
-   mark them `data-source="drawn"`, and say in the hand-over which sites were tried, so the person can attach images.
+**Pictures are HTML/CSS mockups.** The design system never fetches, downloads or embeds photos: no image search,
+no client or retailer sites for pictures, no resizing, no data-URI photos. When the hero object has a picture
+(`hero_object.picture`, or scoping 21.1), draw it as a mockup in HTML and CSS (inline SVG where a shape needs it) on
+the neutral well (`.media-well`): the item's own silhouette or shape in the brand's style (a jacket, a boot, a can, a
+document page, a site plan), its colourway as a swatch, its name and variant label, and the record's state. Mark every
+such picture `data-media` (and `data-source="drawn"`). A seed record whose picture is missing in the app shows the
+app's real fallback state on the same well, with one line ("Packshot due · DAM team"), never a hatched box. **The real
+images belong to the app:** the build seeds them from the scoping document's §19 "Files and images" (client-supplied
+files first, then the client's own public product pages); say in the hand-over which pictures the build must source.
 
 ## Step 2c · Choose the expression — so it looks like this client, and only this client
 

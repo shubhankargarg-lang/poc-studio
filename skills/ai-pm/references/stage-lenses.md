@@ -235,8 +235,9 @@ command with `source ~/.local/poc-collateral/env.sh 2>/dev/null;`, as the skill 
   `lessons/recent-looks.md`. Same navigation + surface + shape + idea as a recent client is a finding.
 - **Brand check.** Fetch the client's live site once; compare hue family, light-to-dark balance and chrome with the
   expression card. A black-led brand shipped on a colour rail is blocking.
-- **Hero shown as itself.** The hero object appears as a picture (real images tagged `data-source`) where it has one;
-  shown as text only is a finding.
+- **Hero shown as itself.** Where the hero object has a picture, it appears as a picture mockup (HTML/CSS on its media
+  well, `data-media`) wherever people meet it; shown as text only is a finding. Real photos are not expected here: the
+  build seeds them.
 - **The direction is visible** (`#direction`) in the signature component and the showcase, not only on the card.
 - **Profile rules** (e.g. no coloured side stripes: reject a `TB` status-stripe variant in the active set).
 - **Weakest part.** The skill names its lowest score. Fixable inside the run → finding; not fixable → the gate summary.
@@ -245,7 +246,7 @@ command with `source ~/.local/poc-collateral/env.sh 2>/dev/null;`, as the skill 
 byte-for-byte". A full re-run of the design system for a few findings is a wasted hour.
 
 **Never:** the three-screen showcase; components marked Added with a reason; the skill's steps; a brand settled by its
-source order; the labelled UnifyApps stand-in logo; real product images and the public Orbit upload.
+source order; the labelled UnifyApps stand-in logo; picture mockups in place of photos; the public Orbit upload.
 
 ---
 

@@ -26,7 +26,7 @@ Reads what the style guide marks on its parts:
   data-states="…"              the states a component page draws
   data-part="anatomy|reference|…"  the parts of a component page
   data-media                   on every picture of the hero object (and other visual objects), with
-  data-source="<page URL>|attached|drawn"   where it came from; at least 60 % real when the hero object has a picture
+  data-source="drawn"         pictures are HTML/CSS mockups; real photos are seeded by the build, not embedded here
   data-variant="<code>"        on every variant specimen (the floor is 25 distinct)
   id="views", data-view="<component>:<view>", data-nav   the views of each hero data set, the navigation options
   id="expressive", data-gradient   the expressive layer and its brand gradients
@@ -250,7 +250,7 @@ def main(argv):
         if set(heroes) - used: errs.append(f"hero components that appear in no flow panel (data-uses): {', '.join(sorted(set(heroes) - used))}")
         ho = mf.get("hero_object")
         if not ho and hero_pic: ho = {"name": hero_pic, "picture": True}
-        if not ho: skip("hero_object", "the hero object's pictures in every screen and the signature, real images and their sources "
+        if not ho: skip("hero_object", "the hero object's pictures in every screen and the signature, drawn as picture mockups "
                         "(take it from §21.1; run again with --hero-picture \"<name>\" when it has a picture)")
         ho = ho or {}
         if ho.get("picture"):
@@ -261,13 +261,9 @@ def main(argv):
                 seg = seg[: nxt.start() + 20] if nxt else seg
                 if "data-media" not in seg: errs.append(f"screen {s} shows no picture of the {ho.get('name')} (data-media)")
             if p.sig and "data-media" not in body.get(p.sig, ""): errs.append(f"the signature '{p.sig}' shows no picture of the {ho.get('name')}")
-            # real images, sourced and recorded (Phase D, "Real images, without being asked")
-            nosrc = sum(1 for x in p.media_src if not x)
-            if nosrc: errs.append(f"{nosrc} pictures marked data-media have no data-source (a page URL, attached, or drawn)")
-            real = sum(1 for x in p.media_src if x and x != "drawn")
-            if p.media and real / p.media < 0.6: errs.append(f"{real} of {p.media} pictures are real images; the hero object has a picture, so use the client's own images (at least 60 %), and say in the hand-over which sites refused")
-            size = sum(len(mm) for mm in re.findall(r"data:image/[a-z+]+;base64,[A-Za-z0-9+/=]+", raw)) * 3 // 4
-            if size > 8_000_000: errs.append(f"embedded images total {size / 1e6:.1f} MB; resize to 800 px WebP and keep them under 8 MB")
+            # pictures are HTML/CSS mockups ("Pictures are HTML/CSS mockups"): no embedded photos
+            photos = re.findall(r"data:image/(?:jpe?g|webp)", raw)
+            if photos: errs.append(f"{len(photos)} embedded photos (JPEG/WebP data URIs); draw the pictures as HTML/CSS mockups — the real images are seeded in the app build")
             if re.search(r'<img[^>]+src="https?://', raw): errs.append("an image is hotlinked (src=\"http…\"); embed it as a data URI so the file works on its own")
         print(f"{len(names)} manifest components · {len(added)} added by the design system · {len(p.comps)} component pages · "
               f"{p.media} pictures · {words:,} words · {p.tables} tables · {len(p.variants)} variants · {len(p.views)} views · {p.gradients} gradients")

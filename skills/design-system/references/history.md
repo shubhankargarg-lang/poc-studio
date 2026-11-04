@@ -104,7 +104,9 @@ Read only when a rule seems odd; each line names the run that caused it.
 - **v12.6** — From the v12.5 Pentland run: a missing picture is drawn as the item's silhouette (never a hatched
   box); flow components get their real width and each thing appears once per panel; `scan.py` flags text cut short
   in flow panels and `check_ds.py` flags text repeated inside a panel.
-- **v12.6 (POC Studio edition)** — adopted into the POC Studio plugin with these edits: the skill finds its own folder
+- **v12.6 (POC Studio edition)** — adopted into the POC Studio plugin with these edits: pictures of the hero object
+  are HTML/CSS mockups (no fetching or embedding of photos, which took much of a run; the build seeds the real images
+  from scoping §19), and the skill finds its own folder
   (`$D`) and keeps the register of apps outside the plugin cache (`$R`, `~/.local/poc-studio/design-register.json`,
   seeded from `register/register.json`) so an update never loses it; an older wireframe manifest without the v4.10
   fields falls back to the scoping document, and `check_ds.py` prints each check it cannot run as `skipped`; the

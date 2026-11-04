@@ -95,10 +95,10 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   list (`references/reference.md`, "The finished-piece rule") and for brand fit and scope against the scoping document:
   three showcase screens plus two or three close-ups (the limit, not a gap: other pages are covered by component pages,
   the flow panels, the journey-to-component table and `#build-plan`), one agent entry, the composition contract with
-  `#build-plan` and one active set in `#style-sets`, every specimen tagged `data-active`, the creative direction, real
-  images of the hero object where it has one, both themes measured, a clean render check and `check_ds.py`. Standing
+  `#build-plan` and one active set in `#style-sets`, every specimen tagged `data-active`, the creative direction, the
+  hero object drawn as picture mockups where it has a picture, both themes measured, a clean render check and `check_ds.py`. Standing
   human decisions, never a finding: the brand colour settled by the skill's source order without asking, a logo kit
-  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, real product images, and the file
+  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, pictures drawn as HTML/CSS mockups (no photos), and the file
   uploaded to Orbit as a public link.
   **v1.0:** the skill's own checks and `#review` scores are claims, not evidence. Render the file yourself, run
   `scripts/render_check.js` and the skill's `check_ds.py`, and score its seven dimensions from your own screenshots

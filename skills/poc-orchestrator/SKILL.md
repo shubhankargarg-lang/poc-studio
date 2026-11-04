@@ -554,8 +554,9 @@ the creative direction, a showcase of **three** screens (home with the signature
 drawer open) plus two or three close-ups, foundations, the flow panels per capability, component pages (the signature
 and the main ones at full depth), the journey-to-component table, and the composition contract with the `#build-plan`
 and `#style-sets` blocks for UnifyApps Headless. It may add the components the journey needs, marked Added with a
-reason. Do not ask it to draw more screens: the three-screen limit is deliberate. It runs about 40–45 minutes
-(a separate creative-director pass, real product images, a judgement pass). It needs Python Playwright for its
+reason. Do not ask it to draw more screens: the three-screen limit is deliberate. It includes a separate
+creative-director pass and a judgement pass; it draws pictures as HTML/CSS mockups and never fetches photos (the real
+images come in the build). It needs Python Playwright for its
 screenshots (the shared tools install it); its own register of earlier apps lives at
 `~/.local/poc-studio/design-register.json`.
 Only these session facts are supplied by you:
@@ -734,8 +735,9 @@ Only these session facts are supplied by you:
     navigation shell chosen in the wireframes. Open the agent only from the one entry the design system names
     (`app.agent_entry`): one way in, never a second launcher. The file draws three screens on purpose; UnifyApps Headless
     composes every other page from its wireframe frame, the kit and the patterns, matching the drawn screens' finish,
-    and never copies one screen's content onto another page. Product pictures in the design system may be used as the
-    app's seed images.
+    and never copies one screen's content onto another page. The design system's pictures are mockups: seed the app
+    with the real images the scoping document's §19 "Files and images" names (client-supplied files first, then the
+    client's own public product pages), shown where the mockups show them, never the mockups themselves.
   - **What to build:** a **text-to-code app** (UnifyApps Code Builder) with the agents, automations and objects listed
     in the build plan (L1 scope only). Put these exact words in the request: "Build the app and every page as a
     text-to-code app: task kinds `code-app` and `code-publish`, owned by `code-app-agent` with `code-builder` tools.
