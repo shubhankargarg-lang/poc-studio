@@ -21,10 +21,32 @@ The Pentland example is the quality bar: two flow decks and a one-line email bec
 
 ## 1. Inputs
 
-You receive **both** of these. Read both. The raw files are the source of truth when they disagree with the brief.
+You receive **both** of these, and in POC Studio a third. Read them all. The raw files are the source of truth when they disagree with the brief; for the client's own systems and the AI models, the Integration Spec is.
 
 1. **Requirement Gathering Document** (`Requirement Gathering - <Client> - <Use case>.docx`, sometimes just meeting notes or an email summary when run on its own): client, use case, industry, stated ask, any structured fields it produced. When a use case name is given, scope that use case only; client material about other use cases goes in the coverage map as out of the ask.
 2. **Raw client material** (in the POC Studio workspace: `01-requirement-gathering/files/`): emails, decks (pptx/pdf), process diagrams, SOPs, spreadsheets, sample documents (POs, invoices, forms), screenshots, URLs, existing-system exports.
+3. **Integration Spec** (POC Studio: `01c-integration/integration-spec.json` and its `.md`, from the connector-discovery
+   skill at stage 1c). It always holds `models[]` (the AI models, tested); it holds `systems[]` only when the use case
+   reads from or writes to a client system (`integration_status: not_needed` otherwise). It is the source of truth for
+   the client system and the models. **Copy, do not re-invent:**
+   - **§12 Data model:** the client fields the app stores (ids, values at draft, external keys) exactly as its field
+     mapping names them; configuration records exactly as listed.
+   - **§14 Workflows:** one WF per AU spec, keeping its trigger, steps, connector operations, idempotency, conflict rule,
+     errors and human gate; write "AU-xx" in each WF's spec. **Every client-system step names the connection with its
+     id** (the trigger and each connector read and write), not only the first step. A WF with a client step that does
+     not name it is incomplete.
+   - **§15 Integrations:** the systems table from its summary (connection name and id, direction, mechanism = the
+     operation names, frequency = trigger mode, auth = the connection); §15.2 field mapping = its field mapping.
+   - **§13 Agents and §17 AI trust:** each model slot's card id and its fallback, from `models[]`.
+   - **§5.4 Live vs simulated:** from each AU's status (Live; Live with assumption → Live plus an assumption; Planned →
+     simulated, with the client write shown as planned, recorded as a Decision).
+   - **§5.6 Assumptions:** every item in its Assumed section, with its reason and impact.
+   - **§18 Non-functional:** its limits (API budget per run, query limits, rate limits, file size).
+   - **Document Control:** a "Connector discovery" row with the date, the connection name and id (or "no client
+     system") and the status.
+   - **Evidence log:** each fact used, with the source "Integration Spec §<n>".
+   - A client fact or operation the spec does not have → run connector-discovery `scope: item`; only "not found"
+     becomes an assumption. Never name a client object, field or operation the spec has not seen.
 
 How to read them:
 - **Decks and PDFs**: extract the text. If a page has no text layer, or the flow lives in a diagram, render it to an image and read the image. Process flows often live only in pictures. Use whichever renderer exists (`pdftoppm -r 90 -png`, PyMuPDF, `qlmanage -t`, macOS PDFKit/`sips`, LibreOffice for pptx). Never skip a page because one tool is missing; if nothing can render it, log the page as unread in the evidence log and in Open questions.

@@ -121,7 +121,9 @@ actually does. Decisions of preference, scope or process are never questioned.
 ## 3 · Fallback (UnifyApps Headless cannot build an asset)
 
 Called when UnifyApps Headless reports that a task cannot be built — it failed after its own retries, or it says the
-platform capability is not available to it. The fallback builds **platform assets**: Data Objects (schema and seed
+platform capability is not available to it. **A failure because a model ran out of credits or quota is not a fallback
+case:** the asset is fine, the model is not. Send it to connector-discovery `mode: model-recovery` (the person chooses
+the replacement model) and do not rebuild the asset. The fallback builds **platform assets**: Data Objects (schema and seed
 records), Connections, workflows/automations, AI agents (with their tasks and tools), data sources, context graph
 items and governance controls. It does not build pages or app UI; a page UnifyApps Headless cannot build stays with
 UnifyApps Headless and is listed at the verify gate.

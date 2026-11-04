@@ -2,7 +2,7 @@
 
 A Claude Code plugin that runs a UnifyApps POC end to end for one client:
 
-**Requirement Gathering → Scoping → Wireframes → Design System → UnifyApps Headless build → Collaterals**
+**Requirement Gathering → Connector discovery → Scoping → Wireframes → Design System → UnifyApps Headless build → Collaterals**
 
 with a shared **Research** skill any stage can call, and an **AI PM** that checks every stage's output and
 answers every clarification question, so the person is only asked to approve (or redirect) at the end of each stage.
@@ -148,7 +148,7 @@ Every run (`/poc-studio:start` and each one-asset command) asks once, at the sta
 | Who approves each gate | you | the AI PM; the run moves on by itself |
 | Stage 4 build plan (Zen planning) | you answer its questions and approve it | the AI PM does, after platform-master's review and the builder check |
 | Slack gate messages | yes | none |
-| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build, clarification questions when a change you asked for is vague |
+| Still asked of you | — | sign-ins, `CONFIRM_REQUIRED` (deletes, releases), credentials or anything else the AI PM marks ASK_HUMAN, a BLOCK it cannot clear after three reviews, a Not ready requirements verdict, rebuilding pages already built, approving updated wireframes for a change after the build, clarification questions when a change you asked for is vague, client-system connection and access questions, the replacement model when one runs out of credits |
 
 In Orbit a Sonic gate shows as approved by the AI PM. A resumed run keeps its mode. "Zen" here is the POC run mode;
 Stage 4 always plans with UnifyApps Headless's own Zen planning, in both modes.
@@ -185,6 +185,7 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 |---|---|---|---|
 | 0 | Setup: connector check (Slack and Google Drive required), installs the tools later stages need, workspace | `poc-orchestrator` | `state.json`, `context-log.md` |
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
+| 1c | Connector discovery (every POC): the client's own system through its UnifyApps connection, read-only — objects, fields, connector operations, the automations to build — only when the requirements use a client system; the AI models the build will use, each proved by one real call, always. Also model recovery at any stage when a model runs out of credits or quota (you choose the replacement) | `connector-discovery` | `01c-integration/Integration Spec - <Client> - <Use case>.md`, `integration-spec.json` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
 | 2b | Wireframes (Plan phase, between the BRD and the design system): one low-fidelity frame per page, generic regions as named component slots, map pages per the map reference; the manifest is the design system's component list | `wireframes` | `02b-wireframes/<slug>-wireframes.pdf`, `png/`, `wireframe-manifest.json` |
 | 3 | Design System (only the wireframes' components, plus the baseline: sign-in, empty/error/loading states, toast, confirm) | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
@@ -231,6 +232,7 @@ agents/ai-pm.md                    the AI PM, run as an independent subagent
 hooks/                             route questions to the reviewer while a stage runs
 scripts/release.sh                 bump the version everywhere, commit, push
 skills/poc-orchestrator/           the pipeline
+skills/connector-discovery/        client system (connection, schema, operations, automations) and AI model health
 skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)

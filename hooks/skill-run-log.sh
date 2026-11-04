@@ -17,7 +17,7 @@ import json, os, subprocess, time
 try: h = json.loads(os.environ["HOOK_INPUT"])
 except Exception: raise SystemExit(0)
 ev, tool, ti = h.get("hook_event_name", ""), h.get("tool_name", ""), h.get("tool_input") or {}
-LOGGED = {"requirement-gathering", "scoping-l1-first", "wireframes", "design-system", "platform-master",
+LOGGED = {"requirement-gathering", "connector-discovery", "scoping-l1-first", "wireframes", "design-system", "platform-master",
           "poc-collateral-studio", "research"}
 if tool == "Skill":
     name = str(ti.get("skill", "")).split(":")[-1]

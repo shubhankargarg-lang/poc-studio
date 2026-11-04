@@ -55,6 +55,14 @@ is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 
 **Judge (Part B):** only completeness and consistency with Part A. Detail is expected, never a finding.
 
+**Integration Spec (re-run against `01c-integration/integration-spec.json`, when the upstream includes it):**
+- §12, §14 and §15 match the spec: the same client objects, fields, operations and field mapping; a client object,
+  field or operation the spec has not seen is blocking (it belongs in §5.6 as an assumption, or in a `scope: item` run).
+- Every client-system step in §14 (the trigger and each connector read and write) names the connection with its id.
+- Nothing Live rests on a `blocked` step or a `gap` (those are Planned, shown as planned writes, with a Decision).
+- Every access answer in the spec came from the person (a `SYSTEM_ACCESS:` answer in `context-log.md`), never the AI PM.
+- §13 and §17 name, for each model slot, the spec's tested card and its fallback (`models[]`).
+
 **Never:** Part B length or detail; a design choice that the design-system skill owns (colour, theme, typeface);
 a cut that a human decision approved.
 

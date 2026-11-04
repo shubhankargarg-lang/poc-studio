@@ -182,14 +182,19 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
 - **brd** — orchestrator § 2: `scoping-l1-first` with the use case; **input 1** = what was collected (the RG
   document, or the notes, emails and files in `_inputs/`); **input 2** = every client file collected (`_inputs/` and,
   if an RG run made them, `01-requirement-gathering/files/`); output `<workspace>/02-scoping/scoping-document.docx`
-  (`_working/` beside it).
+  (`_working/` beside it). **First, connector discovery** (orchestrator § 1c, also on "Approve and make BRD"): call
+  `connector-discovery` with the RG document (or what was collected); Part A runs only when its Systems table, or the
+  material, names a client system the app reads from or writes to (its `SYSTEM_ACCESS:` questions are the person's),
+  Part B's model inventory always; its `01c-integration/integration-spec.json` is the BRD's **input 3**. A BRD given as
+  input to another one-off asset is used as it is.
 - **wireframes** — orchestrator § 2b: `wireframes` with the BRD collected as "the approved scoping document"; output
   `<workspace>/02b-wireframes/` (the PDF is what goes to Orbit). The PDF is opened locally for the person in § 5.2.
 - **design** — orchestrator § 3, unchanged and unattended: the BRD collected is "the approved scoping document"; the
   wireframes (when collected), the website and any logo file or brand guidelines collected are passed with it; output
   `<workspace>/03-design-system/<slug>-design-system.html`. The file is opened locally for the person in § 5.2,
   once it has passed review.
-- **app** — orchestrator § 4 as written, writing its files in `04-build/one-off/` (`build-summary.md`,
+- **app** — orchestrator § 4 as written (including step 2b, connector-discovery `scope: verify`, and the rule for a
+  model that runs out of credits or quota: stop the step, model recovery, the person chooses), writing its files in `04-build/one-off/` (`build-summary.md`,
   `test-report.md`, `zen-decisions.md`, `platform-*.md`, `routes.json`, `glossary.json`): `/ua:setup`; `platform-master`
   pointers (tell platform-master its output folder is `04-build/one-off/`, for every file it writes); `/ua:plan` in Zen
   inside the Zen planning window (the person answers Zen's questions and approves the plan,

@@ -20,6 +20,10 @@ what to do with the answer, so Research stays within the question it was given.
 
 A request can arrive as plain text. Pull the parts out yourself and fill gaps from the context.
 
+A question about the client's **own system** (its objects, fields, picklists, configuration, connector operations) is
+not a web question: send it to the connector-discovery skill (`scope: item`), which reads it through the client's
+connection. Research answers it only when connector discovery reports it as not found, and then says so.
+
 If a question is too broad to search ("research the client"), ask the caller one short question. When
 nobody is available to answer, split it into the most likely specific questions, answer those, and
 say that you did.
