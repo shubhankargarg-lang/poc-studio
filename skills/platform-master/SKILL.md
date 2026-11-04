@@ -95,7 +95,9 @@ before its one question (start / change something / keep for later) is put to th
    - a pointer that applies is not reflected in the plan (the `Map:` pointer included: one shared map component, not
      one map per page, and not a map inside a card);
    - a page's layout differs from its approved wireframe frame (`02b-wireframes/png/`), or a region holds a component
-     the manifest does not give it;
+     the manifest does not give it (the design system's Added components excepted); the plan builds a navigation shell
+     the manifest did not choose (`NAV-options.png` holds two rejected ones), or builds a hero list's views
+     (`VIEWS.png`, `alt_view_of` frames) as separate pages instead of a switch on one page;
    - **a task that builds the app, a page or the app publish has kind `app`, `page-layout`, `page-bind` or `publish`, or
      owner `app-agent`** (that is the no-code config builder): the adjustment is "rebuild as text-to-code: kind
      `code-app` / `code-publish`, owner `code-app-agent`". This is checked first, on every round, and is never moved

@@ -1,592 +1,800 @@
 {
- "client": "Acme Retail",
- "use_case": "Inventory IQ",
- "slug": "acme-retail-inventory-iq",
- "app": {
-  "name": "Inventory IQ",
-  "nav": [
-   "Overview",
-   "Sites",
-   "Reorders",
-   "Count tasks"
-  ],
-  "phone_tabs": [
-   "Tasks",
-   "Scan",
-   "History"
-  ],
-  "logo": "ACME",
-  "search_label": "Search stores, SKUs, orders",
-  "agent": "Copilot"
- },
- "pages": [
-  {
-   "id": "PG-01",
-   "title": "Inventory overview",
-   "brd_ref": "§11.1",
-   "persona": "Regional ops manager",
-   "width": 1280,
-   "height": 800,
-   "layout": "map",
-   "topbar": {
-    "tabs": [
-     "Overview",
-     "Reorders"
+  "client": "Acme Retail",
+  "use_case": "Inventory IQ",
+  "slug": "acme-retail-inventory-iq",
+  "app": {
+    "name": "Inventory IQ",
+    "nav": [
+      "Overview",
+      "Sites",
+      "Reorders",
+      "Count tasks"
     ],
-    "active": 0,
-    "right": [
-     "Region: West",
-     "DAILY BRIEF"
-    ]
-   },
-   "map": {
-    "type": "map",
-    "id": "B-05",
-    "component": "network-map",
-    "cmp": "CMP-02",
-    "mode": "dots",
-    "n": 70,
-    "share0": 0.12,
-    "share1": 0.1,
-    "labels": [
-     "Bakersfield #087 · 5 low",
-     "Modesto #203 · 3 low"
+    "phone_tabs": [
+      "Tasks",
+      "Scan",
+      "History"
     ],
-    "card": {
-     "title": "Store 114 · Fresno",
-     "status": "Critical · 7 SKUs below safety",
-     "lines": [
-      "Last count  2 days ago",
-      "Open reorders  2",
-      "Days of cover  1.2",
-      "Open store  ›"
-     ]
-    },
-    "data": {
-     "object": "OB-02 Store",
-     "lat": "latitude",
-     "lng": "longitude",
-     "tone_by": "stock_status: critical, low, ok",
-     "card_fields": [
-      "store_name",
-      "stock_status",
-      "skus_below_safety",
-      "last_count_at",
-      "open_reorders"
-     ]
-    },
-    "legend": [
-     [
-      "dot0",
-      "Critical"
-     ],
-     [
-      "dot1",
-      "Low"
-     ],
-     [
-      "dot2",
-      "OK"
-     ]
-    ],
-    "states": [
-     "loading",
-     "no-sites-for-filter"
-    ]
-   },
-   "left": {
-    "width": 256,
-    "blocks": [
-     {
-      "type": "label",
-      "h": 18,
-      "text": "Insights",
-      "gap": 6
-     },
-     {
-      "type": "insight",
-      "id": "B-01",
-      "component": "insight-card",
-      "h": 128,
-      "label": "Stores below safety stock",
-      "value": "9",
-      "of": "/ 42",
-      "sub": "+3 vs last week",
-      "progress": 0.21,
-      "warn": true,
-      "active": true,
-      "states": [
-       "loading"
-      ]
-     },
-     {
-      "type": "slot",
-      "id": "B-02",
-      "component": "insight-card",
-      "count": 2,
-      "h": 150,
-      "note": "SKUs at risk of stock-out (128, next 7 days) · Open reorders (34, 12 need approval)",
-      "states": [
-       "loading"
-      ]
-     }
-    ]
-   },
-   "right": {
-    "id": "B-06",
-    "component": "detail-panel",
-    "type": "panel",
-    "title": "Stores below safety stock",
-    "width": 380,
-    "blocks": [
-     {
-      "type": "list",
-      "id": "B-07",
-      "component": "store-risk-list",
-      "cmp": "CMP-02",
-      "h": 420,
-      "items": [
-       {
-        "title": "Store 114 · Fresno",
-        "meta": "7 SKUs below safety stock",
-        "status": "Critical"
-       },
-       {
-        "title": "Store 087 · Bakersfield",
-        "meta": "5 SKUs below safety stock",
-        "status": "Critical"
-       },
-       {
-        "title": "Store 203 · Modesto",
-        "meta": "3 SKUs below safety stock",
-        "status": "Low"
-       },
-       {
-        "title": "Store 019 · Stockton",
-        "meta": "2 SKUs below safety stock",
-        "status": "Low"
-       },
-       {
-        "title": "Store 156 · Visalia",
-        "meta": "2 SKUs below safety stock",
-        "status": "Low"
-       }
-      ],
-      "states": [
-       "empty"
-      ]
-     },
-     {
-      "type": "slot",
-      "id": "B-08",
-      "component": "trend-chart",
-      "h": 150,
-      "title": "Stock-outs vs forecast",
-      "variants": [
-       "line"
-      ],
-      "states": [
-       "loading"
-      ]
-     }
-    ]
-   }
+    "logo": "ACME",
+    "search_label": "Search stores, SKUs, orders",
+    "agent": "Copilot",
+    "shell": "topbar"
   },
-  {
-   "id": "PG-02",
-   "title": "Store detail",
-   "brd_ref": "§11.2",
-   "persona": "Regional ops manager",
-   "width": 1280,
-   "nav_active": "Sites",
-   "rows": [
-    [
-     {
-      "type": "header",
-      "span": 12,
-      "h": 84,
-      "breadcrumb": [
-       "Sites",
-       "Store 114"
-      ],
-      "title": "Store 114 · Fresno",
-      "subtitle": "Critical · 7 SKUs below safety stock",
-      "actions": [
-       "Assign count",
-       "Ask Copilot"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "tabs",
-      "span": 12,
-      "h": 42,
-      "items": [
-       "Stock",
-       "Reorders",
-       "Count history"
-      ],
-      "active": 0
-     }
-    ],
-    [
-     {
-      "type": "slot",
-      "id": "B-11",
-      "component": "kpi-tile",
-      "count": 3,
-      "span": 12,
-      "h": 104,
-      "cmp": "CMP-03",
-      "note": "SKUs below safety stock (7) · Days of cover, median (3.4) · Open reorders (4)",
-      "states": [
-       "loading"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "table",
-      "id": "B-14",
-      "component": "sku-stock-table",
-      "span": 12,
-      "h": 360,
-      "title": "Stock by SKU",
-      "columns": [
-       "SKU",
-       "Product",
-       "On hand",
-       "Safety stock",
-       "Days of cover",
-       "Status",
-       ""
-      ],
-      "status_col": "Status",
-      "action_col": "",
-      "states": [
-       "loading",
-       "empty",
-       "no-results"
-      ]
-     }
-    ]
-   ]
-  },
-  {
-   "id": "PG-02b",
-   "title": "Store detail · Copilot open",
-   "brd_ref": "§11.2",
-   "persona": "Regional ops manager",
-   "width": 1280,
-   "nav_active": "Sites",
-   "rows": [
-    [
-     {
-      "type": "header",
-      "span": 12,
-      "h": 84,
-      "breadcrumb": [
-       "Sites",
-       "Store 114"
-      ],
-      "title": "Store 114 · Fresno",
-      "subtitle": "Critical · 7 SKUs below safety stock",
-      "actions": [
-       "Assign count",
-       "Ask Copilot"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "tabs",
-      "span": 12,
-      "h": 42,
-      "items": [
-       "Stock",
-       "Reorders",
-       "Count history"
-      ],
-      "active": 0
-     }
-    ],
-    [
-     {
-      "type": "slot",
-      "id": "B-11",
-      "component": "kpi-tile",
-      "count": 3,
-      "span": 12,
-      "h": 104,
-      "cmp": "CMP-03",
-      "note": "SKUs below safety stock (7) · Days of cover, median (3.4) · Open reorders (4)",
-      "states": [
-       "loading"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "table",
-      "id": "B-14",
-      "component": "sku-stock-table",
-      "span": 12,
-      "h": 360,
-      "title": "Stock by SKU",
-      "columns": [
-       "SKU",
-       "Product",
-       "On hand",
-       "Safety stock",
-       "Days of cover",
-       "Status",
-       ""
-      ],
-      "status_col": "Status",
-      "action_col": "",
-      "states": [
-       "loading",
-       "empty",
-       "no-results"
-      ]
-     }
-    ]
-   ],
-   "overlays": [
+  "pages": [
     {
-     "type": "drawer",
-     "id": "B-15",
-     "component": "agent-drawer",
-     "title": "Inventory Copilot",
-     "width": 400,
-     "messages": [
-      {
-       "from": "user",
-       "text": "Why is Store 114 short on bottled water?"
+      "id": "PG-01",
+      "title": "Inventory overview",
+      "brd_ref": "§11.1",
+      "persona": "Regional ops manager",
+      "width": 1280,
+      "height": 800,
+      "layout": "map",
+      "topbar": {
+        "tabs": [
+          "Overview",
+          "Reorders"
+        ],
+        "active": 0,
+        "right": [
+          "Region: West",
+          "DAILY BRIEF"
+        ]
       },
-      {
-       "from": "agent",
-       "text": "Sales ran 38% above forecast after the heat advisory, and the last two deliveries arrived a day late. Cover is now 1.2 days.",
-       "chips": [
-        "Source: POS · 7 days"
-       ]
+      "map": {
+        "type": "map",
+        "id": "B-05",
+        "component": "network-map",
+        "cmp": "CMP-02",
+        "mode": "dots",
+        "n": 70,
+        "share0": 0.12,
+        "share1": 0.1,
+        "labels": [
+          "Bakersfield #087 · 5 low",
+          "Modesto #203 · 3 low"
+        ],
+        "card": {
+          "title": "Store 114 · Fresno",
+          "status": "Critical · 7 SKUs below safety",
+          "lines": [
+            "Last count  2 days ago",
+            "Open reorders  2",
+            "Days of cover  1.2",
+            "Open store  ›"
+          ]
+        },
+        "data": {
+          "object": "OB-02 Store",
+          "lat": "latitude",
+          "lng": "longitude",
+          "tone_by": "stock_status: critical, low, ok",
+          "card_fields": [
+            "store_name",
+            "stock_status",
+            "skus_below_safety",
+            "last_count_at",
+            "open_reorders"
+          ]
+        },
+        "legend": [
+          [
+            "dot0",
+            "Critical"
+          ],
+          [
+            "dot1",
+            "Low"
+          ],
+          [
+            "dot2",
+            "OK"
+          ]
+        ],
+        "states": [
+          "loading",
+          "no-sites-for-filter"
+        ]
       },
-      {
-       "from": "agent",
-       "text": "I drafted a reorder for 240 cases from DC-West.",
-       "card": "Reorder · 240 cases · arrives Thu"
-      }
-     ],
-     "input": "Ask about this store…",
-     "states": [
-      "thinking",
-      "error"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "PG-03",
-   "title": "Reorder approvals",
-   "brd_ref": "§11.3",
-   "persona": "Regional ops manager",
-   "width": 1280,
-   "nav_active": "Reorders",
-   "rows": [
-    [
-     {
-      "type": "header",
-      "span": 12,
-      "h": 64,
-      "title": "Reorder approvals",
-      "subtitle": "12 reorders drafted by the agent, waiting for you"
-     }
-    ],
-    [
-     {
-      "type": "filters",
-      "span": 12,
-      "h": 42,
-      "chips": [
-       "Store: All",
-       "Supplier: All",
-       "Drafted by: Agent"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "table",
-      "id": "B-21",
-      "component": "approval-queue-table",
-      "span": 12,
-      "h": 470,
-      "title": "Waiting for approval",
-      "columns": [
-       "Store",
-       "SKU",
-       "Qty",
-       "Supplier",
-       "Arrives",
-       "Confidence",
-       "Status"
-      ],
-      "status_col": "Status",
-      "statuses": [
-       "Drafted",
-       "Needs review"
-      ],
-      "select": true,
-      "bulk": [
-       "Reject",
-       "Approve selected"
-      ],
-      "states": [
-       "empty",
-       "loading"
-      ]
-     }
-    ]
-   ]
-  },
-  {
-   "id": "PG-03b",
-   "title": "Reorder approvals · confirm approval",
-   "brd_ref": "§11.3",
-   "persona": "Regional ops manager",
-   "width": 1280,
-   "nav_active": "Reorders",
-   "rows": [
-    [
-     {
-      "type": "header",
-      "span": 12,
-      "h": 64,
-      "title": "Reorder approvals",
-      "subtitle": "12 reorders drafted by the agent, waiting for you"
-     }
-    ],
-    [
-     {
-      "type": "filters",
-      "span": 12,
-      "h": 42,
-      "chips": [
-       "Store: All",
-       "Supplier: All",
-       "Drafted by: Agent"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "table",
-      "id": "B-21",
-      "component": "approval-queue-table",
-      "span": 12,
-      "h": 470,
-      "title": "Waiting for approval",
-      "columns": [
-       "Store",
-       "SKU",
-       "Qty",
-       "Supplier",
-       "Arrives",
-       "Confidence",
-       "Status"
-      ],
-      "status_col": "Status",
-      "statuses": [
-       "Drafted",
-       "Needs review"
-      ],
-      "select": true,
-      "bulk": [
-       "Reject",
-       "Approve selected"
-      ],
-      "states": [
-       "empty",
-       "loading"
-      ]
-     }
-    ]
-   ],
-   "overlays": [
+      "left": {
+        "width": 256,
+        "blocks": [
+          {
+            "type": "label",
+            "h": 18,
+            "text": "Insights",
+            "gap": 6
+          },
+          {
+            "type": "insight",
+            "id": "B-01",
+            "component": "insight-card",
+            "h": 128,
+            "label": "Stores below safety stock",
+            "value": "9",
+            "of": "/ 42",
+            "sub": "+3 vs last week",
+            "progress": 0.21,
+            "warn": true,
+            "active": true,
+            "states": [
+              "loading"
+            ]
+          },
+          {
+            "type": "slot",
+            "id": "B-02",
+            "component": "insight-card",
+            "count": 2,
+            "h": 150,
+            "note": "SKUs at risk of stock-out (128, next 7 days) · Open reorders (34, 12 need approval)",
+            "states": [
+              "loading"
+            ]
+          }
+        ]
+      },
+      "right": {
+        "id": "B-06",
+        "component": "detail-panel",
+        "type": "panel",
+        "title": "Stores below safety stock",
+        "width": 380,
+        "blocks": [
+          {
+            "type": "list",
+            "id": "B-07",
+            "component": "store-risk-list",
+            "cmp": "CMP-02",
+            "h": 420,
+            "items": [
+              {
+                "title": "Store 114 · Fresno",
+                "meta": "7 SKUs below safety stock",
+                "status": "Critical"
+              },
+              {
+                "title": "Store 087 · Bakersfield",
+                "meta": "5 SKUs below safety stock",
+                "status": "Critical"
+              },
+              {
+                "title": "Store 203 · Modesto",
+                "meta": "3 SKUs below safety stock",
+                "status": "Low"
+              },
+              {
+                "title": "Store 019 · Stockton",
+                "meta": "2 SKUs below safety stock",
+                "status": "Low"
+              },
+              {
+                "title": "Store 156 · Visalia",
+                "meta": "2 SKUs below safety stock",
+                "status": "Low"
+              }
+            ],
+            "states": [
+              "empty"
+            ]
+          },
+          {
+            "type": "slot",
+            "id": "B-08",
+            "component": "trend-chart",
+            "h": 150,
+            "title": "Stock-outs vs forecast",
+            "variants": [
+              "line"
+            ],
+            "states": [
+              "loading"
+            ]
+          }
+        ]
+      },
+      "pattern": "map",
+      "brief": {
+        "arrives": "Start of the day, from sign-in",
+        "job": "See which stores are short and act on the worst first",
+        "decision": "Which store to open first",
+        "sees": "Stores coloured by stock health, the four counts that matter, the store card on click",
+        "needs_you": "Stores marked Critical",
+        "done": "Reorders the system already placed",
+        "next": "Open the most urgent store from its label or the first insight card"
+      },
+      "shape": "map with floating cards (dots)"
+    },
     {
-     "type": "modal",
-     "id": "B-22",
-     "component": "confirm-modal",
-     "title": "Approve 5 reorders?",
-     "body": "Purchase orders will be sent to 3 suppliers. You can cancel them for 30 minutes from the Reorders page.",
-     "actions": [
-      "Cancel",
-      "Approve 5"
-     ],
-     "height": 200
-    }
-   ]
-  },
-  {
-   "id": "PG-04",
-   "title": "Count task",
-   "brd_ref": "§11.4",
-   "persona": "Store associate",
-   "width": 375,
-   "nav_active": "Tasks",
-   "rows": [
-    [
-     {
-      "type": "card",
-      "id": "B-31",
-      "component": "task-card",
-      "span": 12,
-      "h": 120,
-      "title": "Cycle count · Aisle 7",
-      "lines": [
-       "Bottled water, 12 SKUs. Due today 4 pm.",
-       "Assigned by Priya, Regional ops"
-      ]
-     }
-    ],
-    [
-     {
-      "type": "form",
-      "id": "B-32",
-      "component": "count-form",
-      "span": 12,
-      "h": 420,
-      "title": "SKU 30418 · Spring water 24pk",
-      "fields": [
-       {
-        "label": "Shelf count",
-        "kind": "number",
-        "value": "18"
-       },
-       {
-        "label": "Back room count",
-        "kind": "number",
-        "value": "6"
-       },
-       {
-        "label": "Reason if different",
-        "kind": "select"
-       },
-       {
-        "label": "Shelf photo",
-        "kind": "photo"
-       }
+      "id": "PG-02",
+      "title": "Store detail",
+      "brd_ref": "§11.2",
+      "persona": "Regional ops manager",
+      "width": 1280,
+      "nav_active": "Sites",
+      "rows": [
+        [
+          {
+            "type": "header",
+            "span": 12,
+            "h": 84,
+            "breadcrumb": [
+              "Sites",
+              "Store 114"
+            ],
+            "title": "Store 114 · Fresno",
+            "subtitle": "Critical · 7 SKUs below safety stock",
+            "actions": [
+              "Assign count",
+              "Ask Copilot"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "tabs",
+            "span": 12,
+            "h": 42,
+            "items": [
+              "Stock",
+              "Reorders",
+              "Count history"
+            ],
+            "active": 0
+          }
+        ],
+        [
+          {
+            "type": "slot",
+            "id": "B-11",
+            "component": "kpi-tile",
+            "count": 3,
+            "span": 12,
+            "h": 104,
+            "cmp": "CMP-03",
+            "note": "SKUs below safety stock (7) · Days of cover, median (3.4) · Open reorders (4)",
+            "states": [
+              "loading"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "table",
+            "id": "B-14",
+            "component": "sku-stock-table",
+            "span": 12,
+            "h": 360,
+            "title": "Stock by SKU",
+            "columns": [
+              "SKU",
+              "Product",
+              "On hand",
+              "Safety stock",
+              "Days of cover",
+              "Status",
+              ""
+            ],
+            "status_col": "Status",
+            "action_col": "",
+            "states": [
+              "loading",
+              "empty",
+              "no-results"
+            ]
+          }
+        ]
       ],
-      "submit": "Save and next SKU",
-      "submit_full": true,
-      "states": [
-       "offline",
-       "error"
+      "pattern": "split",
+      "brief": {
+        "arrives": "From a store on the map",
+        "job": "Fix this store's shortages",
+        "decision": "Approve, change or skip each suggested reorder",
+        "sees": "The store's SKUs below safety stock with days of cover and the suggested quantity",
+        "needs_you": "Reorders waiting for approval",
+        "done": "Reorders already on their way",
+        "next": "Approve the suggested reorders"
+      },
+      "shape": "record with its table of SKUs"
+    },
+    {
+      "id": "PG-02b",
+      "title": "Store detail · Copilot open",
+      "brd_ref": "§11.2",
+      "persona": "Regional ops manager",
+      "width": 1280,
+      "nav_active": "Sites",
+      "rows": [
+        [
+          {
+            "type": "header",
+            "span": 12,
+            "h": 84,
+            "breadcrumb": [
+              "Sites",
+              "Store 114"
+            ],
+            "title": "Store 114 · Fresno",
+            "subtitle": "Critical · 7 SKUs below safety stock",
+            "actions": [
+              "Assign count",
+              "Ask Copilot"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "tabs",
+            "span": 12,
+            "h": 42,
+            "items": [
+              "Stock",
+              "Reorders",
+              "Count history"
+            ],
+            "active": 0
+          }
+        ],
+        [
+          {
+            "type": "slot",
+            "id": "B-11",
+            "component": "kpi-tile",
+            "count": 3,
+            "span": 12,
+            "h": 104,
+            "cmp": "CMP-03",
+            "note": "SKUs below safety stock (7) · Days of cover, median (3.4) · Open reorders (4)",
+            "states": [
+              "loading"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "table",
+            "id": "B-14",
+            "component": "sku-stock-table",
+            "span": 12,
+            "h": 360,
+            "title": "Stock by SKU",
+            "columns": [
+              "SKU",
+              "Product",
+              "On hand",
+              "Safety stock",
+              "Days of cover",
+              "Status",
+              ""
+            ],
+            "status_col": "Status",
+            "action_col": "",
+            "states": [
+              "loading",
+              "empty",
+              "no-results"
+            ]
+          }
+        ]
+      ],
+      "overlays": [
+        {
+          "type": "drawer",
+          "id": "B-15",
+          "component": "agent-drawer",
+          "title": "Inventory Copilot",
+          "width": 400,
+          "messages": [
+            {
+              "from": "user",
+              "text": "Why is Store 114 short on bottled water?"
+            },
+            {
+              "from": "agent",
+              "text": "Sales ran 38% above forecast after the heat advisory, and the last two deliveries arrived a day late. Cover is now 1.2 days.",
+              "chips": [
+                "Source: POS · 7 days"
+              ]
+            },
+            {
+              "from": "agent",
+              "text": "I drafted a reorder for 240 cases from DC-West.",
+              "card": "Reorder · 240 cases · arrives Thu"
+            }
+          ],
+          "input": "Ask about this store…",
+          "states": [
+            "thinking",
+            "error"
+          ]
+        }
       ]
-     }
+    },
+    {
+      "id": "PG-03",
+      "title": "Reorder approvals",
+      "brd_ref": "§11.3",
+      "persona": "Regional ops manager",
+      "width": 1280,
+      "nav_active": "Reorders",
+      "rows": [
+        [
+          {
+            "type": "header",
+            "span": 12,
+            "h": 64,
+            "title": "Reorder approvals",
+            "subtitle": "12 reorders drafted by the agent, waiting for you"
+          }
+        ],
+        [
+          {
+            "type": "filters",
+            "span": 12,
+            "h": 42,
+            "chips": [
+              "Store: All",
+              "Supplier: All",
+              "Drafted by: Agent"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "table",
+            "id": "B-21",
+            "component": "approval-queue-table",
+            "span": 12,
+            "h": 470,
+            "title": "Waiting for approval",
+            "columns": [
+              "Store",
+              "SKU",
+              "Qty",
+              "Supplier",
+              "Arrives",
+              "Confidence",
+              "Status"
+            ],
+            "status_col": "Status",
+            "statuses": [
+              "Drafted",
+              "Needs review"
+            ],
+            "select": true,
+            "bulk": [
+              "Reject",
+              "Approve selected"
+            ],
+            "states": [
+              "empty",
+              "loading"
+            ],
+            "rows": [
+              [
+                "Riverside",
+                "Oat milk 1L",
+                "96",
+                "Northfield Dairy",
+                "14 Aug",
+                "High",
+                "Drafted"
+              ],
+              [
+                "Riverside",
+                "Free-range eggs 12",
+                "60",
+                "Hill Farm",
+                "13 Aug",
+                "Medium",
+                "Needs review"
+              ],
+              [
+                "Market Street",
+                "Sourdough loaf",
+                "40",
+                "Crumb & Co",
+                "13 Aug",
+                "High",
+                "Drafted"
+              ],
+              [
+                "Market Street",
+                "Greek yoghurt 500g",
+                "48",
+                "Northfield Dairy",
+                "14 Aug",
+                "Low",
+                "Needs review"
+              ],
+              [
+                "Station Road",
+                "Bananas 1kg",
+                "120",
+                "Sunpath Fruit",
+                "13 Aug",
+                "High",
+                "Drafted"
+              ]
+            ],
+            "selected": 1
+          }
+        ]
+      ],
+      "pattern": "queue",
+      "brief": {
+        "arrives": "From the nav or a notification",
+        "job": "Clear the reorders waiting for approval across the region",
+        "decision": "Approve or reject each reorder",
+        "sees": "Each reorder's store, SKU, quantity and why it was suggested",
+        "needs_you": "Reorders in 'Waiting for you'",
+        "done": "Approved reorders, view only",
+        "next": "Approve the selected reorders"
+      },
+      "shape": "table with a bulk approve"
+    },
+    {
+      "id": "PG-03b",
+      "title": "Reorder approvals · confirm approval",
+      "brd_ref": "§11.3",
+      "persona": "Regional ops manager",
+      "width": 1280,
+      "nav_active": "Reorders",
+      "rows": [
+        [
+          {
+            "type": "header",
+            "span": 12,
+            "h": 64,
+            "title": "Reorder approvals",
+            "subtitle": "12 reorders drafted by the agent, waiting for you"
+          }
+        ],
+        [
+          {
+            "type": "filters",
+            "span": 12,
+            "h": 42,
+            "chips": [
+              "Store: All",
+              "Supplier: All",
+              "Drafted by: Agent"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "table",
+            "id": "B-21",
+            "component": "approval-queue-table",
+            "span": 12,
+            "h": 470,
+            "title": "Waiting for approval",
+            "columns": [
+              "Store",
+              "SKU",
+              "Qty",
+              "Supplier",
+              "Arrives",
+              "Confidence",
+              "Status"
+            ],
+            "status_col": "Status",
+            "statuses": [
+              "Drafted",
+              "Needs review"
+            ],
+            "select": true,
+            "bulk": [
+              "Reject",
+              "Approve selected"
+            ],
+            "states": [
+              "empty",
+              "loading"
+            ],
+            "rows": [
+              [
+                "Riverside",
+                "Oat milk 1L",
+                "96",
+                "Northfield Dairy",
+                "14 Aug",
+                "High",
+                "Drafted"
+              ],
+              [
+                "Riverside",
+                "Free-range eggs 12",
+                "60",
+                "Hill Farm",
+                "13 Aug",
+                "Medium",
+                "Needs review"
+              ],
+              [
+                "Market Street",
+                "Sourdough loaf",
+                "40",
+                "Crumb & Co",
+                "13 Aug",
+                "High",
+                "Drafted"
+              ],
+              [
+                "Market Street",
+                "Greek yoghurt 500g",
+                "48",
+                "Northfield Dairy",
+                "14 Aug",
+                "Low",
+                "Needs review"
+              ],
+              [
+                "Station Road",
+                "Bananas 1kg",
+                "120",
+                "Sunpath Fruit",
+                "13 Aug",
+                "High",
+                "Drafted"
+              ]
+            ],
+            "selected": 1
+          }
+        ]
+      ],
+      "overlays": [
+        {
+          "type": "modal",
+          "id": "B-22",
+          "component": "confirm-modal",
+          "title": "Approve 5 reorders?",
+          "body": "Purchase orders will be sent to 3 suppliers. You can cancel them for 30 minutes from the Reorders page.",
+          "actions": [
+            "Cancel",
+            "Approve 5"
+          ],
+          "height": 200
+        }
+      ]
+    },
+    {
+      "id": "PG-04",
+      "title": "Count task",
+      "brd_ref": "§11.4",
+      "persona": "Store associate",
+      "width": 375,
+      "nav_active": "Tasks",
+      "rows": [
+        [
+          {
+            "type": "card",
+            "id": "B-31",
+            "component": "task-card",
+            "span": 12,
+            "h": 120,
+            "title": "Cycle count · Aisle 7",
+            "lines": [
+              "Bottled water, 12 SKUs. Due today 4 pm.",
+              "Assigned by the regional ops manager"
+            ]
+          }
+        ],
+        [
+          {
+            "type": "form",
+            "id": "B-32",
+            "component": "count-form",
+            "span": 12,
+            "h": 420,
+            "title": "SKU 30418 · Spring water 24pk",
+            "fields": [
+              {
+                "label": "Shelf count",
+                "kind": "number",
+                "value": "18"
+              },
+              {
+                "label": "Back room count",
+                "kind": "number",
+                "value": "6"
+              },
+              {
+                "label": "Reason if different",
+                "kind": "select"
+              },
+              {
+                "label": "Shelf photo",
+                "kind": "photo"
+              }
+            ],
+            "submit": "Save and next SKU",
+            "submit_full": true,
+            "states": [
+              "offline",
+              "error"
+            ]
+          }
+        ]
+      ],
+      "pattern": "focus",
+      "brief": {
+        "arrives": "From the task list on the phone",
+        "job": "Count one SKU on the shelf",
+        "decision": "Enter the count or report the shelf empty",
+        "sees": "Where the SKU sits and what the system expects",
+        "needs_you": "This count",
+        "done": "Nothing yet",
+        "next": "Submit the count"
+      },
+      "shape": "form on one object (phone)"
+    }
+  ],
+  "journey": [
+    {
+      "step": "The ops manager spots Store 114 as critical on the map",
+      "frame": "PG-01"
+    },
+    {
+      "step": "She opens it and approves its reorders",
+      "frame": "PG-02"
+    },
+    {
+      "step": "She clears the rest of the region's reorders",
+      "frame": "PG-03"
+    },
+    {
+      "step": "An associate counts the SKU the system doubts",
+      "frame": "PG-04"
+    }
+  ],
+  "brd_overrides": [],
+  "today": "12 Aug",
+  "signature": {
+    "name": "The network map of stores coloured by stock health",
+    "frame": "PG-01",
+    "why": "Acme's ops managers think in sites: the question every morning is which store is short, so the map is the app"
+  },
+  "payoff_frame": "PG-03b",
+  "nav_options": [
+    {
+      "name": "Top bar over the map",
+      "shell": "topbar",
+      "why": "The map is the page; a bar keeps the whole network in view and matches the store-ops tools the managers already use",
+      "chosen": true
+    },
+    {
+      "name": "Icon rail",
+      "shell": "icons",
+      "why": "More width for the map, but the five areas lose their names"
+    },
+    {
+      "name": "Command bar",
+      "shell": "command",
+      "why": "Fast for power users who type store numbers, slower for managers who browse"
+    }
+  ],
+  "hero_object": {
+    "name": "store",
+    "picture": false,
+    "judged_by_eye": [
+      "where it sits on the network",
+      "its stock-health colour"
     ]
-   ]
-  }
- ]
+  },
+  "references": [
+    {
+      "source": "Mobbin: map screens in field-sales and store-operations apps",
+      "url": "https://mobbin.com",
+      "for": "network-map",
+      "take": [
+        "stores as dots coloured by their worst problem, with a count in the legend",
+        "a list panel beside the map that filters with it"
+      ],
+      "leave": [
+        "satellite imagery",
+        "their colours and icons"
+      ]
+    }
+  ]
 }

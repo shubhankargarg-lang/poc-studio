@@ -10,7 +10,7 @@ You are the Scoping stage of the UnifyApps solution plugin:
 **Requirement Gathering → Connector discovery → Scoping (this skill) → Wireframes → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a AI PM that checks outputs.
 
 Your job: take whatever Requirement Gathering hands over and produce a **golden scoping document as a Word file (`.docx`)**. That one Word file is what goes to Design and to the build. It must be complete and specific enough that:
-- the Design System skill can design every page and component from it, and
+- the Wireframes skill can decide how each page works from it (who arrives, what they decide, what they need to see, their next step), and the Design System skill can design every component the wireframes name, from it and the wireframes, and
 - UnifyApps Headless (or a person working by hand) can build the whole app on UnifyApps from it: objects, agents, workflows, pages, seed data.
 
 Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the AI PM (resolve mode), never to the user.
@@ -70,14 +70,14 @@ Build it with the `docx` skill: read that skill's SKILL.md **after** the content
 That single document holds everything. Nothing the DS skill or UnifyApps Headless needs may live anywhere else:
 - the full prose scope (sections 0–23), split into Part A and Part B;
 - the **complete feature catalogue** as tables (section 10, format in section 7). This is every sub-feature, not a summary, with its build and research columns in Appendix E and F;
-- the **component inventory** (section 23, format in section 8): the named, app-specific building blocks each app needs, so the wireframes can place them, Design knows what to design (the approved wireframe manifest is its final list) and UnifyApps Headless knows what to build;
+- the **capability inventory** (section 23, format in section 8): the named, app-specific jobs each app does, each with a CMP ID, so the wireframes can decide the UI components that deliver them, Design knows what to design (the approved wireframe manifest is its final list) and UnifyApps Headless knows what to build;
 - sources, the glossary, the evidence log and the feature mappings in the Appendix.
 
 **No JSON, YAML or code blocks in the deliverable.** Specs are written as tables and numbered lists that a person can read. (Formulas, routes and field keys appear as plain text in table cells.)
 
 Working notes are allowed while you run: research answers, drafts, the evidence log as you build it, and, if it helps, a structured working draft (e.g. a Python or JSON file) from which you generate the long tables so IDs and counts can't drift. Keep all of these in a `_working/` folder next to the document. They are not deliverables, and nothing downstream reads them. Everything that matters goes into the Word file.
 
-The prose, the feature tables, the page/object/agent/workflow specs and the component inventory must agree exactly, with the same IDs, names and counts. Generate the long tables (feature catalogue, objects, page blocks, workflows, seed plan) from one working draft by script rather than typing them twice. **Generate every count the document states** (in Document Control, the executive summary, 5.5, 9.2, 10.1 and 20.3, and every seed-plan figure that recurs, such as records per picklist value or the share of AI drafts) from that same draft, never by hand, so "N of M" figures can't disagree between sections.
+The prose, the feature tables, the page/object/agent/workflow specs and the capability inventory must agree exactly, with the same IDs, names and counts. Generate the long tables (feature catalogue, objects, page blocks, workflows, seed plan) from one working draft by script rather than typing them twice. **Generate every count the document states** (in Document Control, the executive summary, 5.5, 9.2, 10.1 and 20.3, and every seed-plan figure that recurs, such as records per picklist value or the share of AI drafts) from that same draft, never by hand, so "N of M" figures can't disagree between sections.
 
 ### Two parts, two readers
 The same file serves two different readers, so it is split into two parts with a Heading 1 divider before each:
@@ -139,6 +139,8 @@ For each section of the document template (section 6), write down what the input
 ### Step 4 — Research (always through the `research` skill)
 All research goes through the `research` skill (section 4). Invoke it with the Skill tool for each research brief. When you fan research out to sub-agents for parallelism, each sub-agent's instructions must say: "Invoke the `research` skill with the Skill tool and follow it. Use your own web search only if that skill is not available, and state at the top of your output which mode you used: research skill or fallback." Typical research per type is listed in section 5; skip what doesn't apply. Internal process automation may need only one or two calls. Save each brief and answer under `_working/research/`. Every finding you use goes into the document with its source ID.
 
+Keep research on the business, the market, the regulations and the features. How other products lay out and show the same work is researched by the wireframes skill and the design system, after this document.
+
 ### Step 5 — Feature catalogue
 Build the Module › Feature › Sub-feature tree (section 7):
 - Start from the client's own process: every stage of their flow should have features that serve it.
@@ -186,17 +188,17 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 - **Activity history**: an audit/activity-log object written by every workflow that changes a record (who, what, from, to, when, AI-assisted or not). History tabs, feeds and "recent activity" read it.
 - **Copilot data access**: an agent can only see what its tools return. Spec its read tool as a workflow (object, filters, fields, sort, limit, paging, derived fields such as days-in-stage) covering every object it must answer about, plus a deep link per record so its answers can link to the page.
 - **Generated files** (decks, reports, packs, exports): say what generates each one, from which records, and the fallback if the platform cannot produce that file type from an agent (e.g. generated in the app and uploaded, with the workflow only recording it).
-- **Pages**: every page a persona's workflow touches, each with layout regions, blocks, data bindings, actions, states and UI patterns (section 6.11).
+- **Pages**: every page a persona's workflow touches, each with its purpose, the information and actions the person needs, data bindings and states (section 6.11). How the page is laid out is decided by the wireframes.
 - **Objects**: everything pages, agents and workflows read or write (section 6.12).
 - **Agents**: every agent, using the agent spec (section 6.13). State whether each one is needed and why.
 - **Workflows/automations**: every automation, using the workflow spec (section 6.14), including the exact trigger and path.
 - **Integrations**: every external system, its direction and what moves (section 6.15).
-- **Component inventory**: name the app-specific building blocks each app needs, the way a product team would talk about them, e.g. for a product-enrichment app: *content builder*, *tech pack reviewer*, *content generator*, *asset shot-list checker*, *channel readiness board*; for a PLM app: *line plan matrix*, *PACE decision room*, *stage gate stepper*. Each component groups the pages, UI patterns, objects, agents and workflows that make it work (format in section 8). Different apps get different components. The wireframes place these components on each page, Design designs them (the approved wireframe manifest is the final list), and UnifyApps Headless builds against them.
+- **Capability inventory**: name the jobs each app does for its people, in the client's own words, the way they would describe the work (e.g. for a hospital: *bed availability*, *discharge planning*; for a law firm: *clause risk review*, *obligation tracking*). Each capability gets a CMP ID and its L1 features; the wireframes decide which UI components deliver it (section 8).
 - **Seed data**: enough records that no page, chart, filter or stage column is ever empty (section 6.19).
 - **Demo operations** (POV/demo framing): a **Reset demo** workflow and what it needs on every object (`origin` = seed/demo, an `archived` flag or delete rule, a snapshot of each seed row or a snapshot object), with dates stored relative to the demo day and shifted on reset so "overdue", "this week" and "stuck > N days" stay true. Put the Reset action in an admin/user menu.
 - **Build surface and platform check**: the app is always a **text-to-code app** (UnifyApps Code Builder), never a no-code config app; write those exact words, and never offer "no-code" as an option for the app or any page. Note which pages are dense custom UIs (matrices, drag boards, Gantt, stepped record pages) so the build gives them the most care. Then tag every UI pattern, field type, trigger and agent tool you used as *native*, *custom code*, or *not possible / workaround*, from platform knowledge or by asking `research`. Known UnifyApps realities to design around: object picklists and lookups may be simpler in practice than in the spec (say whether you use typed picklists/lookups or string codes joined by key, and use one convention everywhere); nested JSON fields drop null values; numbers read in code nodes may need coercion; some field names (e.g. `version`) collide with system columns; agents may not have every document-generation tool on every tenant; there are no formula or roll-up fields, so computed values must be written by workflows; object names should carry a short solution prefix (e.g. `pc_`, `plm_`) so they don't collide with older objects on a shared tenant.
 
-Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a component. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
+Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a capability. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
 
 ### Step 8 — Write, build the Word file, then self-review
 Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
@@ -229,6 +231,8 @@ instead of a fresh task. Then:
 
 **Rule: every piece of outside research goes through the `research` skill.** Invoke it with the Skill tool (`research`, or the plugin-qualified name the session lists). This applies to vendor scans, regulations, the client's public footprint, benchmarks, platform capabilities and URL reading. Sub-agents you spawn for research must invoke it too (step 4).
 
+**The research answer is an input, never the end of the run:** when `research` runs inside this conversation, take its answer and go straight on with the next step of this skill.
+
 **Fallback only when it is not available**: if the Skill tool or the `research` skill is not in the session, or the skill fails to load, do the research yourself with web search and page fetching, following the same discipline (cited sources, strength ratings, "Not yet verified" flags). Record in Document Control: *Research mode: research skill* or *Research mode: fallback (reason)*, per brief if it was mixed. Never write "research skill" unless you or the sub-agent actually invoked it and its output says so.
 
 The `research` skill takes four parts. Always send all four.
@@ -243,7 +247,8 @@ The `research` skill takes four parts. Always send all four.
 Rules:
 - Keep each call to one theme. Run independent calls in parallel (several sub-agents, each invoking the `research` skill).
 - Every vendor or regulatory claim in the document must carry a source ID that resolves to a URL in the Appendix sources table. Mark findings you couldn't verify as **Not yet verified**.
-- **Brand guidelines.** If the client's own material (deck, brand guide, message) does not give their brand, find it by web research through `research` — never guess and never ask the person. In this order: the client's **published brand guidelines** or brand portal; their **live product interface** (their own app, when public); their **live marketing site** (CSS custom properties, the computed header and button colours, the logo). For each cue record what it is, its source URL and its **source type** (client-supplied / brand guidelines / live product / website). Also record the brand's **light-to-dark balance** (light-led, **dark-led** — black or near-black grounds — or colour-led) and its **chromatic role** (one hero colour, a pair, or **achromatic**: black, white and grey with one accent). An achromatic, black-led brand's brand colour is its black: **never promote a link, button or accent blue from the site into "the brand colour"**. Pass all of this to section 21.
+- **Whose brand.** The brand is that of the organisation that uses the app (the client company, e.g. Pentland Brands), never that of a sub-brand, product line or retailer the app works on (e.g. Berghaus, the pilot range). Sub-brands appear only in content: product names, images, copy. When the client is a house of brands, research the parent's own site and guidelines for section 21.
+- **Brand guidelines.** If the client's own material (deck, brand guide, message) does not give their brand, find it by web research through `research` — never guess and never ask the person. In this order: the client's **published brand guidelines** or brand portal; their **live product interface** (their own app, when public); their **live marketing site** (CSS custom properties, the computed header and button colours, the logo). A third-party summary (a design-token gallery, a colour-code site) is only a lead: confirm its values on one of the three sources above before using them, or mark them **Not yet verified** and say which official page was tried. For each cue record what it is, its source URL and its **source type** (client-supplied / brand guidelines / live product / website). Also record the brand's **light-to-dark balance** (light-led, **dark-led** — black or near-black grounds — or colour-led) and its **chromatic role** (one hero colour, a pair, or **achromatic**: black, white and grey with one accent). An achromatic, black-led brand's brand colour is its black: **never promote a link, button or accent blue from the site into "the brand colour"**. Pass all of this to section 21.
 
 ---
 
@@ -378,38 +383,34 @@ The **complete** feature catalogue lives here, in the format of section 7, in a 
 - **"10.2 Must-have catalogue (L1 — build scope)"**: one lean table per module (grouped by app, then module, with the heading `App › Module`), every L1 sub-feature with the columns in section 7. This is the only feature list the build works from; its build and research details are in Appendix E and F.
 - **"10.3 Future scope (L2 — not in this build)"**: one table per module listing every L2 row with: ID · Sub-feature · Description · Why it can wait · Depends on (L1 IDs or assets) · Market coverage · Sources. Then a **future-scope assets** table: page, block, object, field, workflow, agent or integration that only L2 needs · the L2 IDs that need it · note. These are not specified anywhere else in the document.
 - **10.4 Agent catalogue**: a one-row-per-agent index for the agents in the build scope: agent · app · what it does · reads from · writes or proposes · human gate · L1 feature IDs. The full specs are in section 13. Agents that only L2 needs appear in the future-scope assets table instead.
-- **10.5 UI pattern coverage**: pattern · pages · L1 feature IDs, so the DS skill sees every pattern it must design for the build (L2-only patterns are excluded).
 
 ### 11. Page specifications
 One subsection per page in the build scope, in nav order (pages needed only by L2 are in 10.3, not here). Specify only the blocks, tabs, fields, actions and states that L1 features need; end with one "Future scope:" line naming any L2 additions planned for the page (L2 IDs only, no description of how to build them). "Features covered" lists L1 IDs only. Every page here is built, so a page spec has no "Phase" row or flag. For each:
 - **Purpose**: one sentence on what the persona gets from this page.
-- **Screen UX** (required on every page, before the blocks table):
+- **What the page must do** (required on every page, before the information table):
   - **The question the screen answers** for its persona, in their words.
-  - **One primary CTA**: its label and placement (one per screen).
-  - **Above the fold** at 1280×800: what the persona sees without scrolling.
-  - **Hero content**: the one thing the eye lands on first.
+  - **The decision** the persona makes here, and **what needs them** (the records or items waiting on this person, with the seed count).
+  - **One primary action**: its label (one per screen).
   - **Filters** with their exact values and the seed count behind each value.
-  - **Row or card anatomy**: what each list row or card shows, in order (at most four lines on a card, one line per table cell).
-  - **Exact copy**: headings, the empty state with its CTA, button labels.
+  - **Exact copy**: headings, the empty state with its action, button labels.
   - **Context actions** on a row or record.
-  - **States**: loading, slow AI (what shows while an agent works), success, empty, error, no-permission.
-- **Home pages by persona type.** A doer's home leads with their next task (a task list or work queue); an overseer's home leads with what needs action (a queue or insights), then numbers. Lead with a task list, not KPI tiles: a full-width chart or a KPI strip is never the whole home. A short summary strip above the queue is welcome. A few AI suggestion cards may sit beside it, each with one button that applies its filter to the queue (e.g. '6 styles missing care copy → Show them'); each card's count equals the rows the filter returns. Every persona's home page is named in section 7.
-- **Personas** and **entry points** (nav, links, notifications, agent answers).
-- **Components used** (CMP IDs from section 23).
-- **Layout**: regions top to bottom (header, KPI strip, main, side pane, drawer).
-- **Blocks table**: block · what it shows · data source (object.field, filter, formula) · UI pattern (generic name, list below) · actions.
+  - **States**: loading, slow AI (what shows while an agent works), success, empty, error, no-permission, each with its exact wording.
+  - **What the person must see to decide**: the evidence behind the decision, in order of importance, including what they judge by eye (the product picture, the colourway, the scan, the site photo, the listing as the channel will show it) and what they compare it with (the rule that fails, last season's value, the supplier's figure). Say how many items they handle at once on this page in the seed (e.g. "12 styles", "about 60 invoices"). The wireframes give these their form; the design system makes them easy to read.
+- **Home pages.** Name each persona's home page (section 7) and say what that persona must do first each day and what needs them there. The wireframes decide the home's form.
+- **Personas** and **entry points** (nav, links, notifications, agent answers). When a page is reached from another persona's work, say how it reaches this persona (a notification, an assignment, a shared link).
+- **Capabilities used** (CMP IDs from section 23).
+- **Information and actions table**: what the person needs · data source (object.field, filter, formula) · actions · capability (CMP ID). One row per thing the person needs to see or do; the wireframes decide where each sits and what form it takes.
 - **Formulas**: every computed number defined, e.g. "Stuck > 14 days = count Product where now − stage_entered_at > 14".
 - **Actions**: button/menu → what happens (the workflow ID it triggers, or the object update).
 - **Prerequisites shown before the click**: for every action that needs earlier steps (e.g. 2–3 fields filled, a sample approved, a document attached), list the conditions. The button stays **disabled** until they are met, with a tooltip or helper line naming exactly what is missing; it never fails only after the click. Each such action gets an acceptance check in 4.1.
-- **States**: empty (exact message and recovery action), loading, slow AI, success, error, no-permission (the same states as Screen UX; state each once there and reference it here).
+- **States**: empty (exact message and recovery action), loading, slow AI, success, error, no-permission (the same states as "What the page must do"; state each once there and reference it here).
 - **AI surfaces**: which values are AI-generated, how they're marked, and what the human approves.
 - **Features covered**: L1 feature IDs.
 - For record pages with tabs or stages, a table per tab or stage with: the fields shown (object.field), which are editable at which stage, the completeness rule for that tab, the AI-prefilled values, the actions, and the **gate** to leave the stage (exact condition, e.g. "every offered variant has a GTIN and country of origin"; who can advance; the message shown when blocked). Future stages are read-only unless you say otherwise.
 - **Create and edit paths**: every record type a persona can create needs a create surface (drawer, form or wizard) with its required fields and the ID format it gets; say which records are created only by workflows.
-- **Global elements on every page**: global filters, the copilot entry point, notifications, the user menu (theme, settings, reset demo), and the deep-link route an agent answer uses to open a record.
+- **Global elements on every page**: global filters, the copilot entry point, notifications, the user menu (theme, settings, and the reset action, labelled for what it resets, e.g. "Reset promotion data", never "Reset demo"), and the deep-link route an agent answer uses to open a record.
 
-Name UI elements as **generic patterns**, not design-system components. The DS skill maps patterns to components. Use these names, and add new ones when needed:
-KPI tile strip · chart (bar / stacked bar / line / donut / funnel) · data table with toolbar, search, facets and pagination · filter chips · kanban board · stage stepper · record header · tabbed record · form (fields, picklists, validation) · side detail pane · drawer · modal · multi-step wizard · calendar (month / agenda) · timeline / Gantt · activity feed · comment thread · file upload / drop zone · document viewer · side-by-side compare · asset grid · image viewer with annotations · matrix grid · progress / completeness indicator · checklist · approval queue · notification centre · chat / copilot panel · AI insight card · AI-draft field marker · empty state · toast.
+Do not name UI patterns or components for a page (a KPI strip, a kanban board, a side pane): describe what the person needs to see and do. The wireframes choose each page's pattern and components; the design system designs them.
 
 ### 12. Data model
 Specify the objects and fields the L1 features need, and nothing else; objects or fields only L2 needs are listed in the future-scope assets table (10.3).
@@ -434,7 +435,8 @@ Fields shared by every object (origin, archived, timestamps, AI marker fields) m
 Then a **Links** table: from object.field → to object.key · cardinality (1–1, 1–many, many–many) · meaning, and an **allowed transitions** table per status/stage field. For the app's main record (and any other record with more than four statuses), add a **lifecycle diagram** image: each status as a state, each allowed transition as an arrow labelled with its gate and workflow.
 
 - Mark the primary key and any external IDs (e.g. `salesforce_opportunity_id`) used for sync.
-- Give status/stage picklists in process order.
+- Give status/stage picklists in process order, and give each status value its tone: positive, attention, negative or neutral (the design system colours its tag from this).
+- Mark the fields that hold a picture, a document or a location (image, file, latitude/longitude): the wireframes draw pictures, documents and maps from them, so a picture-led or place-led app needs them seeded.
 - AI-written fields carry `ai_generated`, `ai_source` and `ai_confidence`, or one shared AI Suggestion object. Spec the marker's lifecycle: AI draft → (human accepts or edits) AI-assisted → (record approved) approved, which workflow flips it, and what the UI shows at each state. Use one rule for this everywhere in the document.
 - Give extraction-target objects (type C) every field from the sample documents.
 - For scoring apps (type G), add objects for the rule configuration (rules, weights per tenant, thresholds), the reference inputs (must-stock lists, price lists, campaigns) and the results (per-check and per-rule result with score, confidence and evidence image region), so weights and thresholds can change without a rebuild.
@@ -499,11 +501,13 @@ Then:
 - **Name thresholds for what they do**: an amount a role may approve alone is an approval limit, not a cap. Check `research` for guidance that discourages a construct (e.g. arbitrary daily caps), and name the rule ID and every label to match. Define every exception a seed record or demo step uses (e.g. 'delivery outside the 24 h window') here, with its exact condition and who approves it.
 - **Ownership**: say once which sub-scores the agent returns (e.g. skills and domain match, with rationale and confidence) and which are computed by rule in a workflow (e.g. experience, location). Never assign a sub-score to both. Model calls that score run at low or zero temperature. Hero-record scores are seeded, so the test tables in 13 are reproducible; live scoring on new records is not expected to match them.
 
+**Messages, word for word.** Every rule that refuses, blocks or warns gives the exact message the person sees (e.g. "Size grid is missing. Ask Product Development or upload it."). The wireframes put these on screen and the design system designs the component that shows them.
+
 ### 15. Integrations
 Only integrations the L1 features need (most are Mocked in a POV); later integrations are listed in 10.3. A table: system · direction (in / out / both) · mechanism (API, webhook, file drop, email, connector) · objects and fields moved · frequency · auth · live or mocked. For two-way sync, include the field mapping table and conflict rule.
 
 ### 16. Roles and permissions
-A matrix: persona/role × object or page → none / read / create / edit / approve / admin. Include record-level rules (e.g. "students see only their own enrolment records").
+A matrix: persona/role × object or page → none / read / create / edit / approve / admin. Include record-level rules (e.g. "students see only their own enrolment records"), and the exact wording a person sees on a page or action they cannot use (read-only and no-access).
 
 ### 17. AI trust and governance
 Only when the app has AI features. Cover: how AI output is marked, provenance, confidence display, human review before publishing, undo/revert, audit log of AI actions, agent permissions, and any relevant regulation.
@@ -515,16 +519,18 @@ Only what matters for this case: volumes, performance expectations, audit, data 
 Seed only the build-scope objects (section 12); every count, hero record and planted defect must exercise an L1 feature.
 - **Per object**: a count and its distribution across every picklist value (e.g. "20 products: design 3, sampling 5, costing 4…"), so every column, filter, chart bucket and queue is non-empty. Child objects scale with parents (variants per product, lines per invoice). Give the load order so links resolve. Make counts consistent across linked objects (e.g. filled slots ≤ styles, decisions = decided agenda items).
 - Named **hero records** that carry the demo story, each with the state it's in, its key dates (offsets) and what it demonstrates. One name per record, used identically everywhere.
+- **Every record a persona sees on their home, and every record behind a count on a page, is named** with its state and dates, in a short table per object (e.g. all 15 promotions on the merchant's home, not only the five in the story). The wireframes and design system draw from this list; a record they have to invent is a gap in this section.
 - **Story defects**: list the deliberate problems planted in seed records (missing field, failed rule, overdue, over budget, low-confidence AI value) and which record carries each, so every warning, gate block and exception path has something to show and the copilot's example questions have known answers.
-- **Dates**: store as offsets from the demo day and say how reset re-anchors them.
+- **Dates**: name the demo day (the "today" every date in the document agrees with, e.g. "Monday 12 Aug"), store dates as offsets from it and say how reset re-anchors them. The wireframes set their `today` from it.
 - **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
-- Realistic values that use the client's real brands, products, document formats and regions. Numbers can be dummy, labelled as such.
+- Realistic values that use the client's real brands, products, document formats and regions. Numbers may be invented, but never labelled "demo", "dummy", "synthetic", "simulated" or "fake" anywhere a person sees them: on a page, in a field value, a source line, a button or a menu. This holds even when an assumption or the client asks for modelled data to be called out: say so in this document (an assumption, 20.4 Known limits) and give the screen a neutral source line, e.g. "From the basket model" or "Modelled from sales history".
 - **Demo data rules** (UnifyApps Headless follows them when it seeds; the build test checks them by script):
   - one demo "today" that every date agrees with; no date after it; overdue items are overdue by whole days;
   - times in business hours (08:00–18:00) in the persona's stated time zone (the client's head-office time zone when none is stated, and say so);
   - statuses agree with the scores, values and dates on the same record;
   - every filter, badge and KPI count equals its row count, each with its formula;
+  - every total, sum, average and percentage in the document is computed by script from its parts in the working draft, never typed, so a total always equals the sum of its rows;
   - the default persona's first screen is non-empty, and the default period, filter or tab has data;
   - every AI output names the records that carry it and the count shown (never "0 AI suggestions");
   - evidence (images, documents, quotes) is unique to each hero record and shows what it claims;
@@ -546,16 +552,18 @@ Start with the build order: build steps in dependency order (objects and seed �
 ### 21. Hand-off to the design system
 - Brand cues (logo, colours, typeface, tone) as **evidence, not a palette**: a table of cue · value · source URL · source type (client-supplied / brand guidelines / live product / website), plus the brand's light-to-dark balance (light-led / dark-led / colour-led) and chromatic role (hero colour / pair / achromatic with one accent), each with its source. If the evidence says the brand is black-led or achromatic, say so plainly here.
 - One line, always: "Final palette, theme and expression are decided by the design-system skill (its brand source order and expression step), not by this document." Do not choose colours, a theme or a typeface in this document.
+- Brand cues also cover the **typeface** (its name, who licenses it, and a free font with the same character, each with its source), the **photo style** of the client's own imagery (e.g. studio packshots on white, people outdoors in bad weather, line drawings) and the **tone** of their copy, each with a source URL.
+- **Hero object** (a subheading "21.1 Hero object" at the same level as "20.1 Acceptance checklist", required): the one thing these users care about most, the thing they would point at on screen (a product, a store, an invoice, a script page, a permit, a site); whether it has a **picture** and what that picture is (field object.field, shape, e.g. "Style.hero_image, portrait 4:5 packshot"); what users **judge by eye** about it; and the other **visual objects** in the app as a table: object · picture or document field · shape · how many show at once · what is judged by eye. An app with no pictures says so and names what stands in for them (a map position, a document page, a chart shape). The wireframes and the design system build the app's signature around this object.
+- **Reference products** (a subheading "21.2 Reference products", required): 3 to 5 real products these users or this industry already use or admire for the same work (e.g. for a hospital: its bed board vendor; for a law firm: its contract review tool), each with a URL and one line on what it does well. They are research leads for the wireframes and the design system, never something to copy.
 - Vibe: 3–5 adjectives and the reason, e.g. "calm and dense; finance users scan many rows".
-- A UI pattern inventory for the build scope only: pattern · pages that use it · special needs (e.g. a side-by-side compare with variance highlighting).
-- The components from section 23 that need custom design (e.g. a match-score gauge or a variant matrix), with their key states.
+- One line: "Components, their variants and states come from the wireframe manifest; the design system designs them."
 - Interactions and transitions that matter (drag to stage, bulk edit preview, AI accept/reject).
 
 ### 22. Traceability matrix
 A table: problem (P) → objective (O) → components → feature IDs → pages → objects → agents/workflows → success criterion. Every P and every L1 feature appears.
 
-### 23. Component inventory
-The last section before the Appendix, so Design and UnifyApps Headless find it in a fixed place. One table per app, in the format of section 8, listing every app-specific component (CMP-…) in the build scope — each serves at least one L1 feature; a component only L2 needs goes to 10.3 — followed by a short list of shared components used by all apps (copilot panel, AI field marker, activity feed, notification centre, global filters, reset demo).
+### 23. Capability inventory
+The last section before the Appendix, so the wireframes, Design and UnifyApps Headless find it in a fixed place. One table per app, in the format of section 8, listing every app-specific capability (CMP-…) in the build scope — each serves at least one L1 feature; a capability only L2 needs goes to 10.3 — followed by a short list of shared capabilities used by all apps (the copilot, AI marking, activity history, notifications, global filters, reset demo).
 
 ### Appendix
 Use these Heading 2s:
@@ -581,8 +589,8 @@ Each feature's attributes are split across three tables keyed by ID, so no table
 
 **Appendix E — Feature build mapping** (one table, or one per app). What UnifyApps Headless needs to implement each row:
 
-| ID | Process stage | Build type | UI pattern | Objects | Agent / WF | Comments |
-|---|---|---|---|---|---|---|
+| ID | Process stage | Build type | Objects | Agent / WF | Comments |
+|---|---|---|---|---|---|
 
 **Appendix F — Feature research mapping** (one table, or one per app). Why each row is there:
 
@@ -597,7 +605,7 @@ Each feature's attributes are split across three tables keyed by ID, so no table
 L2 rows carry no Component, Page, Objects or Agent/WF values, because nothing is built for them now, and they do not appear in Appendix E or F.
 
 - **Module** is the table's heading, grouped by app (e.g. `PLM › Season & Range`); the app is not repeated as a column. Use "Cross-app ›" for rows that span apps.
-- **Component**: the CMP ID from section 23. **Comments**: implementation notes, kept out of Description. **Objects** and **Agent / WF**: the IDs from sections 12–14 that implement the row. **Live**: Live / Deterministic / Seeded / Mocked (step 2).
+- **Component**: the CMP ID of the capability in section 23. **Comments**: implementation notes, kept out of Description. **Objects** and **Agent / WF**: the IDs from sections 12–14 that implement the row. **Live**: Live / Deterministic / Seeded / Mocked (step 2).
 - Generate the section 10.1 summary counts with a script from the working draft, never by hand.
 - **ID**: an app prefix plus a number (e.g. `INV-001`, `AI-001`), stable across revisions.
 - **Feature**: the parent feature the sub-feature belongs to (Module › Feature › Sub-feature). Priority is not a column: every row in 10.2 is L1 and every row in 10.3 is L2, by the rule in step 5.
@@ -612,21 +620,23 @@ L2 rows carry no Component, Page, Objects or Agent/WF values, because nothing is
 
 ---
 
-## 8. Component inventory format (section 23 of the document)
+## 8. Capability inventory format (section 23 of the document)
 
-A component is a named, app-specific building block a product team would recognise, bigger than a UI pattern and smaller than an app: it bundles the screens, data and automation for one job. Name it in plain words for what it does, not after a UI pattern. Examples:
-- Product enrichment app: **Content builder** (the stepped product record where attributes, copy, assets and translations are assembled), **Tech pack reviewer** (reads the tech pack/BOM and proposes attributes with confidence for review), **Content generator** (writes on-brand copy and SEO fields from approved attributes), **Asset shot-list checker**, **Channel readiness board**, **Claims checker**.
-- PLM app: **Line plan matrix**, **Proposal studio**, **PACE decision room**, **Style stage-gate stepper**, **Critical-path calendar**, **Forecast & sign-off grid**.
+A capability is a named, app-specific job the app does for its people, the way the client would describe the work: bigger than a field or a screen element, smaller than an app. It bundles the data and automation for one job. Name it from this client's own work, in their words. The wireframes decide which UI components deliver each capability (one, several, or one shared with another capability) and record the mapping; name no UI pattern or component here. Examples from domains we are not scoping, to show the level, not to reuse:
+- Hospital ward app: **Bed availability**, **Discharge planning**, **Transfer requests**.
+- Law-firm contract app: **Clause risk review**, **Obligation tracking**, **Redline approval**.
+- Lab app: **Sample intake**, **Plate run tracking**, **Result sign-off**.
 
 One table per app, with these columns:
 
-| CMP ID | Component | What it does (one or two sentences) | Primary users | Pages / tabs | UI patterns | Objects read / written | Agents / workflows | L1 feature IDs | Design notes (key states, interactions, special visuals) |
-|---|---|---|---|---|---|---|---|---|---|
+| CMP ID | Capability | What it lets whom do (one or two sentences) | Primary users | Pages it is needed on | Objects read / written | Agents / workflows | L1 feature IDs |
+|---|---|---|---|---|---|---|---|
 
 Rules:
-- Every L1 feature belongs to exactly one component (the Component column in section 7), and every component serves at least one L1 feature. Every page lists the components it uses (section 11).
-- Components differ by app; a second app gets its own list. Shared, cross-app components are listed once after the app tables.
-- Usually 6–15 components per app. If an app needs more, it is probably two apps.
+- Every L1 feature belongs to exactly one capability (the Component column in section 7 holds its CMP ID), and every capability serves at least one L1 feature. Every page lists the capabilities it needs (section 11).
+- Capabilities differ by app; a second app gets its own list. Shared, cross-app capabilities are listed once after the app tables.
+- Usually 6–15 capabilities per app. If an app needs more, it is probably two apps.
+- Keep CMP IDs stable across revisions: the wireframes' coverage check matches them.
 
 ### `check_docx.py`
 
@@ -673,7 +683,8 @@ Save this as `_working/check_docx.py` and run it on the finished file (`pip inst
         errs.append("Part A must come before section 0, Part B between sections 9 and 10")
     for req in ["How to read this document", "5.5 Must-have vs future scope", "10.2 Must-have catalogue",
                 "10.3 Future scope", "20.1 Acceptance checklist", "20.3 Build scope vs future scope",
-                "20.4 Known limits of the build", "E. Feature build mapping", "F. Feature research mapping"]:
+                "20.4 Known limits of the build", "21.1 Hero object", "21.2 Reference products",
+                "E. Feature build mapping", "F. Feature research mapping"]:
         if not any(h.startswith(req) for h in allh): errs.append(f"missing heading: {req}")
     for bad in [r"Full catalogue", r"^5\.5 Phases\b", r"Build slice", r"Known limits of Phase 1", r"^C\. Assumptions log"]:
         for h in allh:
@@ -746,7 +757,7 @@ Save this as `_working/check_docx.py` and run it on the finished file (`pip inst
             else: errs.append(f"catalogue table (ID | Sub-feature …) with neither 'L1 reason' nor 'Why it can wait': {h[:5]}")
         if h[:2] == ["ID", "Process stage"]: mapE |= {r.cells[0].text.strip() for r in t.rows[1:]}
         if h[:2] == ["ID", "Market coverage"]: mapF |= {r.cells[0].text.strip() for r in t.rows[1:]}
-        if h[:2] == ["CMP ID", "Component"]: comp_ids |= {r.cells[0].text.strip() for r in t.rows[1:]}
+        if h[:2] in (["CMP ID", "Capability"], ["CMP ID", "Component"]): comp_ids |= {r.cells[0].text.strip() for r in t.rows[1:]}
     feat = l1 | l2
     if not l1: errs.append("no L1 (build scope) catalogue rows")
     if l1 & l2: errs.append(f"IDs in both L1 and L2: {sorted(l1 & l2)[:5]}")
@@ -774,7 +785,7 @@ Save this as `_working/check_docx.py` and run it on the finished file (`pip inst
                     if k.startswith(name) and m and int(m.group(1)) != n: errs.append(f"Document control says {k} = {m.group(1)} but the specs have {n}")
 
     # --- components and L2 leakage into build specs ---
-    if not comp_ids: errs.append("no component inventory table")
+    if not comp_ids: errs.append("no capability inventory table (CMP ID | Capability …)")
     for cid in set(re.findall(r"\bCMP-[A-Z]*-?\d+\b", alltext)) - comp_ids: errs.append(f"unknown component {cid}")
     def expand(txt):                                         # "FC-001–FC-004" -> each ID
         out = set(re.findall(r"\b[A-Z]{2,4}-\d{3}\b", txt))
@@ -833,8 +844,9 @@ Write a script or check by hand. Every check must pass.
 **Completeness**
 - [ ] All sections 0–23 and the Appendix are present and non-empty (or carry a one-line "not applicable because…").
 - [ ] Every persona has at least one workflow in 8.2, and every workflow names real build-scope page IDs.
-- [ ] Every page has purpose, components used, blocks with data sources, actions, empty state and features covered.
-- [ ] Every page has its Screen UX fields; every persona's home follows the home rule; exactly one persona is Primary; every action with prerequisites is specified disabled-with-reason; 4.1 ends with the Visual acceptance block; 20.2 follows the storyline order; section 19 carries the demo data rules.
+- [ ] Every page has purpose, capabilities used, an information and actions table with data sources, actions, empty state and features covered; no page names a UI pattern, layout region or component.
+- [ ] Every page has its "What the page must do" fields; every persona's home page is named with what they do first; exactly one persona is Primary; every action with prerequisites is specified disabled-with-reason; 4.1 ends with the Visual acceptance block; 20.2 follows the storyline order; section 19 carries the demo data rules.
+- [ ] Every page says what the person must see to decide, including what they judge by eye and how many items they handle at once; 21.1 names the hero object, its picture (or what stands in for one) and the visual objects; 21.2 lists 3 to 5 reference products with URLs; section 21's brand cues include the typeface, the photo style and the tone.
 - [ ] Every object field has a type, and every picklist lists its values.
 - [ ] Every agent and workflow uses the full spec table, and every workflow has exactly one trigger type and a numbered path.
 - [ ] Every scoring rule (if any) has checks, inputs with sources, a formula, all four result bands and a weight, and the weights total 100 per tenant.
@@ -844,7 +856,7 @@ Write a script or check by hand. Every check must pass.
 - [ ] Every agent has a read tool covering the objects it answers about, and test questions with expected answers from the seed.
 - [ ] Every agent, workflow, integration and AI surface is labelled Live / Deterministic / Seeded / Mocked.
 - [ ] Every input file and page is in the coverage map, and every out-of-ask block has a Decision.
-- [ ] The component inventory covers every app, and every L1 feature maps to a component.
+- [ ] The capability inventory covers every app, and every L1 feature maps to a capability.
 - [ ] Every L1 row has an L1 reason with evidence; every client-asked item is L1 or has a Decision; every agent the client will see is L1.
 - [ ] Every L2 row is in the future-scope tables with why it can wait and what it depends on.
 - [ ] POV/demo: a reset workflow exists and seed dates are relative to the demo day.
@@ -855,10 +867,10 @@ Write a script or check by hand. Every check must pass.
 - [ ] Every page appears in the nav or is reached from another page, and none is orphaned.
 - [ ] Every object is used by at least one page, agent or workflow.
 - [ ] Every object.field referenced in a page, formula, workflow or mapping exists in section 12.
-- [ ] IDs, names and counts match across the prose, the feature tables, the specs and the component inventory; hero records have one name everywhere, and agent test answers match the seed plan.
+- [ ] IDs, names and counts match across the prose, the feature tables, the specs and the capability inventory; hero records have one name everywhere, and agent test answers match the seed plan.
 - [ ] Thresholds (confidence bands, margins, deadlines) are stated once and used the same way everywhere.
 - [ ] Every promise in 17 and 4.1 (logged fields such as model and confirmed_by, which AI surfaces are logged) has a matching field in section 12 and a writing step in a workflow or agent spec.
-- [ ] Permissions in 16 match the page personas in 11, the nav items defined per role, the Primary users in the catalogue (10.2) and component inventory (23), and every workflow or agent read filter (one filter per restricted role). A persona redirected away from a page is never listed as its user, unless the page gets a filtered view for them.
+- [ ] Permissions in 16 match the page personas in 11, the nav items defined per role, the Primary users in the catalogue (10.2) and capability inventory (23), and every workflow or agent read filter (one filter per restricted role). A persona redirected away from a page is never listed as its user, unless the page gets a filtered view for them.
 - [ ] Field examples in section 12 use the hero-record values from 19, so seeding from the examples creates no conflicts.
 - [ ] Every report or chart counted in 9 or 20.3 has a page spec.
 
@@ -903,7 +915,7 @@ A scoping document from this skill should contain everything the Excel and both 
 
 **What the builds had to improvise** (both apps were built as code apps; the build plans missed these, and the rules above now require them): a generic read workflow as the copilot's tool, an activity-log object, a reset-demo workflow with seed snapshots and date shifting, an object prefix to avoid clashing with an older model on the tenant, one validated change-status workflow for all objects with per-object allowed values, gate conditions per stage, computed completeness/readiness/validation fields recalculated on every save, planted seed defects matching the copilot's expected answers, a deep-link route for agent answers, global brand/season filters, and a browser-side fallback when the agent could not generate a deck. Also note that the inputs spent much of their pages on demand and supply planning while the ask was PLM and Enrichment; the PLM build absorbed it as PACE meetings, forecasts and milestones rather than a third app.
 
-**Don't copy these numbers.** Pentland's counts (two apps, ~160 sub-features per app, 13 agents) fit Pentland. Size each new case from its own process and category.
+**Don't reuse Pentland's page or component names** (content builder, line plan matrix and the rest above): they are Pentland's answers. **Don't copy these numbers either.** Pentland's counts (two apps, ~160 sub-features per app, 13 agents) fit Pentland. Size each new case from its own process and category.
 
 ---
 
@@ -913,6 +925,17 @@ A scoping document from this skill should contain everything the Excel and both 
 - **Type**: G (AI scoring). **Framing**: POV/demo; the agreed next step was a 3–4 slide proposal deck with a working prototype.
 - **What was produced**: 6 KPIs (must-stock SKU presence, share of shelf, campaign and signage, eye-level visibility, brand placement and integrity, price and promo). The asked-for logo, font and tagline items were folded into brand integrity and campaign checks. Each KPI has an industry name, evidence with sources, a checks table, an inputs table with source type and source (manual input, web search or none), a formula, Pass / Needs attention / Fail / Not assessable bands, critical flags (missing hero SKU, counterfeit, price above MRP in India) and real-world example links. Weights per brand total 100, with reasons (price leads for Diageo because its strategy depends on prices reaching the shelf).
 - **Components**: e.g. shelf photo capture (offline), KPI scorer, store scorecard, brand-team exception queue, rule & weight configurator.
+- These names are this client's; name another client's capabilities from its own work.
 - **Lesson**: for scoring apps, the rules spec is the heart of the scope, and the pages, objects and workflows are built around it.
 - **Prioritisation lesson** (from the first run of this example): the first draft marked 126 of 175 rows L1 and specified 18 pages, which buried the core flow. Re-tested with the L1 rule (step 5), L1 is the capture → quality check → recognition → KPI scoring → review → follow-up loop, the agents (copilot, vision judge, action planner), the five asked items (shelf space, visibility, logo, font, tagline) plus the 7–10 KPI target, and the research must-haves (availability, price/MRP, critical flags); integrity checks, imports, coaching, model monitoring, digests, WhatsApp, native app and BI export are L2 future scope with no build spec.
 - **Readability lesson** (from the VTInfo shelf-compliance run): the content was strong, but the document was hard to use. It ran to about 130 pages with 240 tables and only 3 diagrams, and four build sections held about 60% of the words. The catalogue had 21 columns, so every cell wrapped to a few characters even in landscape. Priority and a separate "Phase 1" column disagreed on 23 rows, and the Phase 1 count was 134 in one section and 131 in two others. Out-of-phase pages, workflows and agents were fully specified anyway, "Phase 2" appeared 53 times across the specs, and the acceptance criteria were printed twice. The fixes now in this skill: Part A / Part B with a reading guide, a lean 9-column catalogue with build and research details in Appendix E and F, no phase flags in specs, every count generated by script, each list stated once, and at least five diagrams.
+
+---
+
+## Changes in v5 (what the design system needs to look like this client)
+
+Each page now says what the person must see to decide, including what they judge by eye and how many items they handle at once. Section 21 adds the hero object with its picture and the other visual objects (21.1), 3 to 5 reference products (21.2), and the typeface, photo style and tone as brand cues. A run that left these out gave the wireframes and the design system nothing visual to work with, and the app came out as rows of text for a business that judges its products by eye.
+
+## Changes in this version (wireframes and design system split)
+
+The wireframes skill now runs after this document and decides how each page works and looks: each page's layout and pattern, the home, the app's signature component and the UI components; the design system designs those components. So this document says what the app must do and leaves how it looks to them: pages keep their purpose, question, decision, data, actions, states and exact wording, with no layout regions, above-the-fold, hero, card anatomy or UI pattern names; section 10.5 and the §21 pattern and custom-component lists are gone; section 23 is the capability inventory, with stable CMP IDs; each status has its tone, picture, document and location fields are marked, every refusal and no-access message is given word for word, and section 19 names the demo day. Examples are from domains we are not scoping, and the Pentland and brand compliance names are marked as theirs.

@@ -84,24 +84,24 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   where "high-level, not configuration-level" applies. Review **Part B** (sections 10–23 and the Appendix) as a build
   spec: it is *meant* to be configuration-level, so detail there is never a finding; check only that it is complete,
   consistent with Part A, and traces to the L1 features.
-- **Wireframes:** low fidelity is the point: greys, one font, slots that only name a component are correct, never a
-  finding. Check them against the scoping document with `wireframes/scripts/coverage.py` and the `wireframes` lens.
-- **Design system:** with approved wireframes, its component pages are exactly the manifest's components plus the
-  baseline (design-system 0.0): a missing manifest component is a finding, and so is a component or proposal that is
-  in neither (style-set alternatives within the rule-1 families and a signature component's second layout are not). The design-system skill (v10) is tested and its output format is approved as is. Review the single
-  HTML file against the skill's own finished-piece list (10 items: full component pages with every state and coded
-  variant, a blueprint per chosen pattern, at most five full screens; every L1 feature and CMP ID in the page
-  inventory; every journey as a flow diagram with the document's exact wording; signature components in depth; agents
-  in drawers; the composition contract with `#build-plan` and one active set in `#style-sets`, every specimen tagged
-  `data-active`; research to depth and the expression card with its design concept; both themes measured; a clean
-  render check; layout and density rules; the design review with distinctiveness and finish scored 4 or more) and for
-  brand fit and scope against the scoping document. **Five full screens is the limit, not a gap:** pages, states and
-  persona shells that are not drawn as screens are covered by component pages, pattern blueprints, shell blueprints
-  and the build plan, and are never a finding. Standing human decisions, never a finding: the brand colour settled by
-  the skill's source order without asking, a logo kit built from the UnifyApps logo (labelled stand-in) when no client
-  logo file exists, and the file uploaded to Orbit as a public link.
-  **v1.0:** the skill's own render check and design-review scores are claims, not evidence. Render the file yourself,
-  run `scripts/render_check.js`, and score the five design dimensions from your own screenshots
+- **Wireframes (v4.11):** low fidelity is the point: greys, one font, slots that only name a component are correct, never
+  a finding. Each page has a brief and a pattern, the signature is drawn as itself, the journey ends on a payoff frame,
+  three navigation shells are drawn and one chosen, and a change from the scoping document is recorded in
+  `brd_overrides` with a reason (never a finding). Check them with `wireframes/scripts/coverage.py`, a re-render, and the
+  `wireframes` lens. A legacy spec (made before v4, no `signature`) renders with warnings, which are not findings.
+- **Design system (v12.6):** with approved wireframes, every manifest component has a component page; the skill may add
+  components the journey needs, each marked `data-added="true"` with a `data-reason` (never a finding when it has its
+  reason; one without a reason is). Review the single HTML file against the skill's finished-piece
+  list (`references/reference.md`, "The finished-piece rule") and for brand fit and scope against the scoping document:
+  three showcase screens plus two or three close-ups (the limit, not a gap: other pages are covered by component pages,
+  the flow panels, the journey-to-component table and `#build-plan`), one agent entry, the composition contract with
+  `#build-plan` and one active set in `#style-sets`, every specimen tagged `data-active`, the creative direction, the
+  hero object drawn as picture mockups where it has a picture, both themes measured, a clean render check and `check_ds.py`. Standing
+  human decisions, never a finding: the brand colour settled by the skill's source order without asking, a logo kit
+  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, pictures drawn as HTML/CSS mockups (no photos), and the file
+  uploaded to Orbit as a public link.
+  **v1.0:** the skill's own checks and `#review` scores are claims, not evidence. Render the file yourself, run
+  `scripts/render_check.js` and the skill's `check_ds.py`, and score its seven dimensions from your own screenshots
   (`references/stage-lenses.md` → design-system).
 - **Build (v1.0):** reviewed once UnifyApps Headless's own testing is done and before publish. Open `app.preview_url` with the
   saved Orbit session and run `scripts/build_walk.mjs`; then judge storyline, fidelity, copy and the reverse trace
@@ -454,7 +454,9 @@ run that stage's lens in `references/stage-lenses.md` on top: re-run first, then
   persona, storyline) after the stage's own `check_docx.py`;
 - wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` and a re-render of the spec with `"$W/render.py"`
   (`W` = the request's `scripts.wireframes`, or `find ~/.claude/plugins -path '*wireframes/scripts/render.py'`);
-- design-system: `scripts/render_check.js` in a browser, light and dark, at 1280×800, 1280×680 and 375×812;
+- design-system: `scripts/render_check.js` in a browser, light and dark, at 1280×800, 1280×680 and 375×812; the skill's
+  `"$D/scripts/check_ds.py"` (with the manifest and the shared register) and `"$D/scripts/register.py" compare`
+  (`D` = the request's `scripts.design_system`; commands in the design-system skill);
 - build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`;
 - every stage: the slop phrases in `scripts/slop-phrases.json`.
 - every review after a change request: the clarity `reading` (or the person's answers) is the upstream for the
@@ -479,7 +481,7 @@ finding or a decision** (scored under R3).
   audience's vocabulary; high-level, not configuration-level.
 - **wireframes:** the `wireframes` lens in `references/stage-lenses.md` is the whole checklist (none of the design list
   below applies: greys, one font and no brand are the point).
-- **design:** the design-system skill's finished-piece list (v10, 10 items) is the checklist; tokens only; every
+- **design:** the design-system skill's finished-piece list (v12.6, `references/reference.md`) is the checklist; tokens only; every
   state; AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
   used, and approval if it overrides a stated ask; reference research present.
 - **build (v1.0, Stage 4b):** the app itself, from `app.preview_url`, after UnifyApps Headless's `test-report.md`. Check: the walk

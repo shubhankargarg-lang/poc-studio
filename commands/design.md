@@ -55,7 +55,7 @@ Load the `asset-run` skill (Skill tool: `poc-studio:asset-run`) and follow its *
 (offer what you find in one line; in a chain from "Approve and make <next asset>", the asset just approved is used without an offer), then ask for everything still missing in **one** question. Never ask for a password.
 
 - **Required:** Client name · Use case · a BRD or scoping document (.docx or PDF) · the client website (ask once; "derive it" is accepted).
-- **Optional** (asked once, in the same question; the run goes on without it): Wireframes (approved ones from this folder: the design system then builds only their components) · Client logo file · brand guidelines.
+- **Optional** (asked once, in the same question; the run goes on without it): Wireframes (approved ones from this folder: the design system starts from their components and adds only what the journey needs, marked Added) · Client logo file · brand guidelines.
 - **If something required is missing:** No BRD: offer "Run `/poc-studio:brd` first" or "Attach a BRD".
 
 If a POC ID was given, verify it as `asset-run` § 1 describes (found → the Orbit row carries it; not found → ask once to

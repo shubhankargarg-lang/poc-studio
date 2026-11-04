@@ -8,6 +8,7 @@ chk "python3.12 venv"              "python3 -c 'import sys; assert sys.version_i
 chk "python packages"              "python3 -c 'import kokoro_onnx, soundfile, pptx, docx, openpyxl, numpy, PIL, resvg_py, imageio_ffmpeg, pypdf, pypdfium2'"
 chk "node >= 18"                   "node -e 'process.exit(+process.versions.node.split(\".\")[0] >= 18 ? 0 : 1)'"
 chk "playwright + chromium"        "cd '$H/node' && node -e \"require('playwright').chromium.launch().then(b=>b.close())\""
+chk "python playwright + chromium (design system)" "python3 -c 'from playwright.sync_api import sync_playwright as s; p=s().start(); p.chromium.launch().close(); p.stop()'"
 chk "lucide icons"                 "test -s '$H/node/node_modules/lucide-static/icons/camera.svg'"
 chk "ffmpeg (encode + subtitles)"  "ffmpeg -v error -f lavfi -i testsrc=d=1:s=320x240 -y $T/t.mp4 && ffmpeg -hide_banner -filters | grep -q ' subtitles '"
 chk "ffprobe (duration)"           "test \"\$(ffprobe -v error -show_entries format=duration -of csv=p=0 $T/t.mp4 | cut -c1)\" = 1"

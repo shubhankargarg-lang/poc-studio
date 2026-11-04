@@ -187,8 +187,8 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 1c | Connector discovery (every POC): the client's own system through its UnifyApps connection, read-only — objects, fields, connector operations, the automations to build — only when the requirements use a client system; the AI models the build will use, each proved by one real call, always. Also model recovery at any stage when a model runs out of credits or quota (you choose the replacement) | `connector-discovery` | `01c-integration/Integration Spec - <Client> - <Use case>.md`, `integration-spec.json` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
-| 2b | Wireframes (Plan phase, between the BRD and the design system): one low-fidelity frame per page, generic regions as named component slots, map pages per the map reference; the manifest is the design system's component list | `wireframes` | `02b-wireframes/<slug>-wireframes.pdf`, `png/`, `wireframe-manifest.json` |
-| 3 | Design System (only the wireframes' components, plus the baseline: sign-in, empty/error/loading states, toast, confirm) | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
+| 2b | Wireframes (Plan phase, between the BRD and the design system): how each page works — a brief and a pattern per page, the app's signature drawn as itself, the demo journey ending on a payoff frame, three navigation options with one chosen, 2–3 views per main list, any change from the BRD recorded with a reason; low fidelity, map pages per the map reference; the manifest is the design system's starting component list | `wireframes` | `02b-wireframes/<slug>-wireframes.pdf`, `png/`, `wireframe-manifest.json` |
+| 3 | Design System (v12.6): a creative direction, pictures drawn as HTML/CSS mockups (the build seeds the real images), three showcase screens, flow panels per capability, the wireframes' components plus any the journey needs (marked Added), the composition contract for the build, a judgement pass on seven scores | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
 | 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then walked in a browser by the AI PM (Stage 4b) before it is published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template; the deck opens with the UnifyApps cover, carries a technical blueprint — architecture plus every automation and agent built — and closes with the Thank You slide) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
@@ -238,8 +238,10 @@ skills/research/                   (+ references/calling-research.md, source-gui
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
 skills/wireframes/                 low-fidelity wireframes from the BRD: render.py (PNG + PDF + manifest, no browser),
-                                   coverage.py (against the BRD), references/: spec format, example, map component
-skills/design-system/              v10 (component kit + composition contract, max 5 screens; UnifyApps stand-in logo)
+                                   coverage.py (against the BRD), diff.py (before/after change sheet), references/: spec format,
+                                   example, map component, page patterns (v4.11; older specs render with warnings)
+skills/design-system/              v12.6 (creative direction, three showcase screens, component kit + composition contract,
+                                   scripts check_ds / scan / register / base_css; UnifyApps stand-in logo)
 skills/asset-run/                  one asset end to end: prerequisites, stage, AI PM, one-off Orbit row, approval
 skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen question review, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)

@@ -24,7 +24,7 @@ If yes, it is slop.
 
 | # | Slop | Detect | Fix line |
 |---|---|---|---|
-| U1 | The same four KPI tiles across the top of every home page | ≥ 3 pages open on a tile strip | "Lead <page> with the persona's next task (scoping §11 home rule)" |
+| U1 | The same four KPI tiles across the top of every home page | ≥ 3 pages open on a tile strip | "Lead <page> with the persona's next task (wireframes patterns.md part 2; scoping §11 "Home pages")" |
 | U2 | KPI strip as the whole home page, or a home with no task list | screenshot | same |
 | U3 | Vanity numbers: totals that drive no action ("1,248 records") | tile with no filter or action behind it | "Show only counts that open a filtered list" |
 | U4 | Sparkle / rainbow AI decoration on every AI element | screenshot; `✨` or gradient on > 2 elements per screen | "One AI marker style (scoping §9 AI signature), nothing else" |
@@ -45,7 +45,7 @@ If yes, it is slop.
 | C2 | Two names for one thing across pages ("Visit" / "Audit") | copy pull, term clusters | "Pick the glossary term and use it everywhere" |
 | C3 | Buttons that do not say what happens ("Submit", "OK", "Proceed", "Click here") | button text list | "Name the outcome: 'Send for approval'" |
 | C4 | Copy that promises what the page lacks ("approve below" with no button) | read with the controls list | "Add the control or change the copy" |
-| C5 | Refusal or error wording that differs from the scoping journey's exact wording | compare with scoping §8.2 / DS flow diagrams | "Use the exact wording: '<quote>'" |
+| C5 | Refusal or error wording that differs from the scoping journey's exact wording | compare with scoping §8.2 / the DS journey-to-component table and flow panels | "Use the exact wording: '<quote>'" |
 | C6 | Title Case Everywhere, ALL CAPS sentences, exclamation marks in system copy | regex | "Sentence case, no exclamation" |
 | C7 | Helper text that repeats the label ("Name: enter the name") | copy pull | "Delete the helper or say what makes a valid value" |
 

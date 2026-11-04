@@ -40,7 +40,7 @@ uv python install "$PY_VERSION" >/dev/null 2>&1 || fail "uv python install"
 PY="$(uv python find "$PY_VERSION" 2>/dev/null)"; [ -n "$PY" ] && ln -sf "$PY" "$BIN/python$PY_VERSION"
 [ -x "$VENV/bin/python" ] || uv venv -p "$PY_VERSION" "$VENV" >/dev/null || fail "venv"
 uv pip install -q -p "$VENV/bin/python" pip kokoro-onnx soundfile python-pptx python-docx openpyxl numpy pillow resvg-py imageio-ffmpeg pypdf pypdfium2 \
-  pypandoc_binary || fail "python packages"
+  pypandoc_binary "playwright==1.56.0" || fail "python packages"
 ln -sfn "$VENV" "$HOME/.local/pocvenv"   # space-free path some earlier projects used
 
 step "ffmpeg (imageio-ffmpeg) + ffprobe / pdftotext / pdftoppm stand-ins"

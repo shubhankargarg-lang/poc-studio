@@ -86,7 +86,8 @@ as "deck only"), ask it as a multi-select question — "Which collaterals should
 script (PDF)**, **Deck (PPT)** and **Demo video (with subtitles)** — in the same AskUserQuestion call as anything else
 missing; the person ticks one, two or all three. Record the choice in the run (`"collaterals": ["deck", …]`).
 
-**Tools, then sign-in, then the video route** (collaterals; tools and sign-in also for app), in this order:
+**Tools, then sign-in, then the video route** (collaterals; tools and sign-in also for app; tools also for design, whose
+screenshots need Python Playwright), in this order:
 - **Tools:** on a Mac, run the `poc-collateral-setup` doctor (load that skill). If it is not all `ok`, run its install
   and wait for it (about 1 GB the first time; no admin, no Homebrew). On Linux, check `ffmpeg`, `pdftotext`, `soffice`,
   `node`, `python3` and Playwright Chromium, and give the person the one line to paste for anything missing.

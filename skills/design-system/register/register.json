@@ -1,0 +1,229 @@
+[
+  {
+    "client": "Pentland Brands",
+    "app": "Product Design System (PLM and enrichment, human-iterated v1.2)",
+    "date": "2026-10",
+    "source": "Pentland_Product_Design_System.html",
+    "idea": "one visual language for PLM and enrichment: the brand's black carries the navigation, one petrol teal marks the action that matters, products sit on white wells",
+    "signature_form": "line plan board: drops as columns holding the garments' pictures",
+    "home_layout": "workspace overview: critical path list beside a style history feed, then the line plan board",
+    "nav": "left rail",
+    "surface": "glass",
+    "shape": "soft",
+    "fonts": {
+      "display": "Archivo",
+      "body": "Archivo"
+    },
+    "theme": "light",
+    "density": "default",
+    "imagery": "product photography",
+    "accent_hue": 184,
+    "verdict": "strong"
+  },
+  {
+    "client": "Pentland Brands",
+    "app": "Launch Readiness (design system v11.3)",
+    "date": "2026-11-04",
+    "source": "pentland-brands-design-system_new_version.html",
+    "idea": "launch readiness: every style of the drop on one runway from today to its Amazon lock",
+    "signature_form": "timeline: items as rows, days across, bars running to a lock line",
+    "home_layout": "the signature holding the items: styles as rows on the runway, most urgent first",
+    "nav": "left rail",
+    "surface": "solid",
+    "shape": "soft",
+    "fonts": {
+      "display": "Inter",
+      "body": "Inter"
+    },
+    "theme": "light",
+    "density": "default",
+    "imagery": "data-led",
+    "accent_hue": 187,
+    "verdict": "weak"
+  },
+  {
+    "client": "Pentland Brands",
+    "app": "PLM Design System v2",
+    "date": "2026-10",
+    "source": "Pentland_-_Design_System_v2.html",
+    "idea": "",
+    "signature_form": "",
+    "home_layout": "",
+    "nav": "left rail",
+    "surface": "solid",
+    "shape": "soft",
+    "fonts": {
+      "display": "Archivo"
+    },
+    "theme": "dark",
+    "density": "default",
+    "imagery": "product photography",
+    "accent_hue": 64,
+    "chrome": "ink"
+  },
+  {
+    "client": "The Kroger Co.",
+    "app": "Promo Planner (design system v11.1)",
+    "date": "2026-11",
+    "source": "kroger-design-system_new_using_11.1V.html",
+    "idea": "promotion planning compared on profit after funding",
+    "signature_form": "option board: promotion options side by side on their P&L",
+    "home_layout": "board of stage columns with a live rail",
+    "nav": "left rail",
+    "surface": "glass",
+    "shape": "soft",
+    "fonts": {
+      "display": "Plus Jakarta Sans"
+    },
+    "theme": "light",
+    "density": "default",
+    "imagery": "data-led",
+    "accent_hue": 213,
+    "chrome": "brand"
+  },
+  {
+    "client": "The Kroger Co.",
+    "app": "Promo Planner (wireframes v4.7)",
+    "date": "2026-11",
+    "source": "wireframe-manifest (new version)",
+    "idea": "promotions laid on Kroger's Wednesday-to-Tuesday ad weeks",
+    "signature_form": "timeline: promotions as bars on ad weeks, items down",
+    "home_layout": "calendar: ad weeks across, promotions down, needs-you lanes first"
+  },
+  {
+    "client": "Port of Fujairah",
+    "app": "HSE Portal",
+    "date": "2026-10",
+    "source": "fujairah-ports-authority-design-system.html",
+    "idea": "the port's day on one berth timeline",
+    "signature_form": "timeline: berths down, hours across, permits as work windows",
+    "home_layout": "the signature holding the items: my requests on today's berth timeline with a narrow rail",
+    "nav": "left rail",
+    "surface": "solid",
+    "shape": "soft",
+    "fonts": {
+      "display": "Roboto"
+    },
+    "theme": "light",
+    "density": "default",
+    "imagery": "data-led",
+    "accent_hue": 217,
+    "chrome": "brand"
+  },
+  {
+    "client": "Warner Bros.",
+    "app": "Script Storyboard Studio (wireframes)",
+    "date": "2026-10",
+    "source": "wireframe-manifest (warner v4)",
+    "idea": "each passage of the script tied to the shots it became",
+    "signature_form": "document beside its storyboard strip",
+    "home_layout": "each screenplay drawn as its storyboard strip, library in a side rail"
+  },
+  {
+    "client": "Bunnings Group",
+    "app": "Property Invoice Control (wireframes)",
+    "date": "2026-10",
+    "source": "wireframe-manifest (bunnings v4)",
+    "idea": "the invoice page as the reader saw it",
+    "signature_form": "document page with every read value boxed",
+    "home_layout": "queue of page-1 thumbnails that need her, with a narrow rail"
+  },
+  {
+    "client": "Asian Paints",
+    "app": "Design System",
+    "date": "2026-09",
+    "source": "asian-paints-design-system_new_1.html",
+    "idea": "the shade card and paint chip",
+    "signature_form": "",
+    "home_layout": "",
+    "nav": "left rail",
+    "surface": "solid",
+    "fonts": {
+      "display": "Manrope"
+    },
+    "theme": "light",
+    "imagery": "",
+    "accent_hue": 264,
+    "chrome": "light"
+  },
+  {
+    "client": "American Airlines",
+    "app": "BagPath (design system v3)",
+    "date": "2026-10",
+    "source": "American_Airlines_-_Design_System_v3.html",
+    "idea": "the departure board and the boarding pass",
+    "signature_form": "",
+    "home_layout": "",
+    "nav": "left rail",
+    "surface": "solid",
+    "fonts": {
+      "display": "Open Sans"
+    },
+    "theme": "light",
+    "imagery": "",
+    "accent_hue": 212,
+    "chrome": "light"
+  },
+  {
+    "client": "Agthia",
+    "app": "Invoice Matching (design system v1)",
+    "date": "2026-09",
+    "source": "Agthia_-_Design_System_v1.html",
+    "idea": "",
+    "signature_form": "",
+    "home_layout": "",
+    "nav": "left rail",
+    "surface": "solid",
+    "fonts": {
+      "display": "Nunito Sans"
+    },
+    "theme": "light",
+    "density": "compact",
+    "imagery": "documents",
+    "accent_hue": 270,
+    "chrome": "brand"
+  },
+  {
+    "client": "Vermont Information Processing",
+    "app": "VIP Brand Compliance (design system v1)",
+    "date": "2026-10",
+    "source": "Vermont_Information_Processing_-_Design_system_v1.html",
+    "idea": "",
+    "signature_form": "",
+    "home_layout": "",
+    "nav": "left rail",
+    "surface": "solid",
+    "fonts": {
+      "display": "Plus Jakarta Sans"
+    },
+    "theme": "light",
+    "imagery": "product photography",
+    "accent_hue": 27,
+    "chrome": "brand"
+  },
+  {
+    "client": "Pentland Brands",
+    "app": "Product Enrichment",
+    "idea": "Amazon listing proof with numbered claim marks in an editor's margin",
+    "wow": "the real Amazon UK product page with outlined claim marks and a black approval gate that opens when the last mark clears",
+    "signature_form": "marked-up storefront page with margin cards",
+    "home_layout": "wall of product packshots in white square wells, four across",
+    "nav": "top bar",
+    "surface": "paper",
+    "shape": "square",
+    "fonts": {
+      "display": "Schibsted Grotesk",
+      "body": "Geist",
+      "reason": "ABC Diatype is licensed; Geist is the closest open match"
+    },
+    "theme": "light",
+    "density": "compact",
+    "imagery": "product photography",
+    "colour_use": "black band and ink actions; cyan only as 2–4 px lines; peach for the governed record",
+    "motion": "marks draw in 120 ms apart; underline grows; strike-through on fix",
+    "accent_hue": 187,
+    "date": "2026-11-04",
+    "verdict": "mixed",
+    "source": "pentland-brands-design-system_new_new.html (v12)"
+  }
+]

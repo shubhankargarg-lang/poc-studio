@@ -1,4 +1,4 @@
-// Render check, copied verbatim from the design-system skill (v10, Step 6). Evaluates to a result object.
+// Render check, copied verbatim from the design-system skill (v12.6, Step 6; unchanged since v10). Evaluates to a result object.
 // Keep in sync with that skill: if it changes there, copy it here.
 (() => {
   const res = { hScroll: 0, spills: 0, clipped: 0, vclipped: 0, overlaps: 0, squeezed: 0, brokenImages: 0, fonts: {}, unstyledClasses: [], where: [] };

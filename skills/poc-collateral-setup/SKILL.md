@@ -17,7 +17,7 @@ skips what is already there. On Linux it does nothing (the kit installs into the
 | Python 3.12 venv (all Python packages) | `~/.local/poc-collateral/venv` |
 | Kokoro voice model (~350 MB) | `~/.local/poc-collateral/models` |
 | Spectral fonts | `~/.local/poc-collateral/fonts` + `~/Library/Fonts` |
-| Node tools (Playwright 1.56.1, lucide-static 0.468.0) + Chromium | `~/.local/poc-collateral/node`, `~/Library/Caches/ms-playwright` |
+| Node tools (Playwright 1.56.1, lucide-static 0.468.0) + Chromium; Python Playwright 1.56 (the design system's screenshots; same Chromium) | `~/.local/poc-collateral/node`, `~/Library/Caches/ms-playwright` |
 | Commands: `ffmpeg`, `ffprobe`, `pdftotext`, `pdftoppm`, `pandoc`, `soffice`, `python3.12` | `~/.local/bin` |
 | LibreOffice | `~/Applications/LibreOffice.app` (or the existing `/Applications` one) |
 | Environment for every shell | `~/.local/poc-collateral/env.sh` |
