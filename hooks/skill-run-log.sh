@@ -11,8 +11,9 @@
   DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
   [ -f "$DIR/.poc-studio/observability" ] || exit 0
   command -v python3 >/dev/null 2>&1 || exit 0
-  HOOK_INPUT="$INPUT" OBS_DIR="$DIR/.poc-studio" python3 - <<'PY'
-import json, os, time
+  ROW="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)/skills/orbit-writeback/scripts/skill_run_row.py"
+  HOOK_INPUT="$INPUT" OBS_DIR="$DIR/.poc-studio" ROW_PY="$ROW" python3 - <<'PY'
+import json, os, subprocess, time
 try: h = json.loads(os.environ["HOOK_INPUT"])
 except Exception: raise SystemExit(0)
 ev, tool, ti = h.get("hook_event_name", ""), h.get("tool_name", ""), h.get("tool_input") or {}
@@ -47,6 +48,20 @@ else:
            f"(not a resolve answer, not INVALID_REQUEST), write its one orbit_studio_skill_run row now (orbit-writeback "
            f"Moment 7): verdict from its verdict file, reviews_run_id from observability.runs, round, and tokens_in / "
            f"tokens_out from this result's usage if it reports them. Build it with skill_run_row.py, then apply_record_edits.")
+# The local ledger (skill_run_row.py): a re-run with no row, and rows that did not reach Orbit yet.
+def ledger(*cmd):
+    try:
+        r = subprocess.run(["python3", os.environ["ROW_PY"], *cmd, "--ledger", os.environ["OBS_DIR"]],
+                           capture_output=True, text=True, timeout=8)
+        return [l for l in r.stdout.splitlines() if l.strip()]
+    except Exception: return []
+due, pend = ledger("rework-check"), ledger("pending")
+if due:
+    msg += (" Before this review's row: " + "; ".join(due) + ". Write that re-run's row first (Moment 7: round +1, label "
+            "'<doc> v<N> · <k> fixes' or '· changes'); the builder refuses the review's row until it exists.")
+if pend:
+    msg += (f" {len(pend)} Observability row(s) are not saved in Orbit yet: send each file from `skill_run_row.py pending` "
+            f"with apply_record_edits, then `skill_run_row.py saved <run_id> <reply>`.")
 print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": msg}}))
 PY
 } 2>/dev/null

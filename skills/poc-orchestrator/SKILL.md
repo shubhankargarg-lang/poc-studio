@@ -271,7 +271,7 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 | Verdict / disposition | What you do |
 |---|---|
 | `PASS` | Go to the approval gate. |
-| `REVISE` | Re-run the stage skill on its own output with the fix lines: **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines. Then review again with `prior_verdict`. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
+| `REVISE` | Re-run the stage skill on its own output with the fix lines (this re-run gets its own Observability row as soon as it returns, before the next review: orbit-writeback Moment 7, "Re-runs always get their own row"): **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines. Then review again with `prior_verdict`. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
 | `BLOCK` | Fix the blocking findings the same way (with a response file), then review again. If it still blocks after the third review, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
 | `ASK_HUMAN` | Put its question to the person (autopilot file removed; the change-clarity check may carry 1–3, asked in one AskUserQuestion call), log the answer as a human decision, continue. |
 | `REQUEST_RESEARCH` / `research_request` | Call the `research` skill with it, save the answer, give it back to the reviewer or the stage. |
@@ -292,12 +292,14 @@ Remove the autopilot file, then:
 2. Ask with AskUserQuestion: **Approve and continue to <next stage>** / **Request changes** (they can type the
    changes in "Other").
 3. **Approve** → mark the stage `approved` in `state.json`, log it, run `python3 "$R/lessons.py" record <workspace>
-   <stage> approved`, run the Orbit approval write (M2 / M2a / M2w) and **confirm it landed** (orbit-writeback: "Confirm
+   <stage> approved`, send any pending Observability rows and run the Observability check against Orbit
+   (orbit-writeback Moment 7: "Nothing is lost", "Check against Orbit"), run the Orbit approval write (M2 / M2a / M2w) and **confirm it landed** (orbit-writeback: "Confirm
    every approval"); only then move on to the next stage.
    **Changes** → log the feedback verbatim (it is now a human decision for every later review), and also
    `python3 "$R/lessons.py" capture <workspace> <stage> "<their words, verbatim>"` and `… record <workspace> <stage>
    changes`, so the AI PM turns it into a lesson for every later POC. If the feedback names something the AI PM's
-   last verdict passed, also `… miss <workspace> <stage> "<what>"`. Then **check it is clear** before anything is
+   last verdict passed, also `… miss <workspace> <stage> "<what>"`, and `skill_run_row.py note-change <stage skill>
+   --gate <gN> --ledger <observability.ledger>` (so the re-run's Observability row cannot be skipped). Then **check it is clear** before anything is
    reworked: the AI PM in resolve mode (`stage: <this stage>`, question "Is this change request clear?", artifacts =
    their words verbatim, everything they attached (files, links, a new design system, screenshots), the current
    approved artifact and its upstream; lens `change-clarity`).
@@ -305,7 +307,8 @@ Remove the autopilot file, then:
    - **ASK_HUMAN** → the autopilot file is still removed: ask its 1–3 questions in one AskUserQuestion call
      (recommended option first), log each answer as a human decision, and use the chosen options as the reading.
    Nothing is reworked until the reading is settled. Then re-run the stage skill to apply it, limited to the reading
-   ("change only this; leave everything else as it is"), review again (round counter restarts for the new feedback;
+   ("change only this; leave everything else as it is"), write the re-run's Observability row ("<doc> v<N+1> ·
+   changes", `triggered_by` `iteration`), review again (round counter restarts for the new feedback;
    the reading is the upstream for the change), and gate again. Once the app is built, 4c runs this check instead.
 
 In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
@@ -318,7 +321,8 @@ poc-collateral-studio), every REVISE or changes re-run of one, every AI PM **rev
 included), every platform-master job (the question review as one row for the whole planning window, written when the plan is
 approved, with `started_at` = the time `/ua:plan` started, saved in `state.json` → `zen_planning_started_at`), the Stage 4 build by UnifyApps Headless (one row, from the plan's start to
 publish), and every `research` call. Note each run's start time before it begins. The row is written before the next
-step (the review, the gate), but a failed write never holds anything: one retry, one line, carry on. Not logged:
+step (the review, the gate); a re-run's row comes before the review of it. A failed write never holds anything:
+it stays pending in the ledger and is sent again at the next step (orbit-writeback Moment 7, "Nothing is lost"). Not logged:
 orbit-writeback's own moments and the AI PM's resolve-mode answers.
 
 ## Orbit write-back at each gate
@@ -428,8 +432,10 @@ except at the start (the POC ID must be verified).
      so the rest of the run needs no sign-in unless it expires.
 6. **Observability log (orbit-writeback Moment 7).** Make `observability.run_group` (`"GRP-" + Date.now()`, new for
    this session, also on resume) and write it into the run flag `.poc-studio/observability` (the hook needs it; delete
-   the flag when the run finishes or stops). Read the highest `sequence` already logged for this POC, then write the
-   `poc-orchestrator` row ("POC started", or "POC resumed" on resume). From here on, see "Observability log" below.
+   the flag when the run finishes or stops; the ledger beside it, `.poc-studio/skill-runs/`, stays). Record the flag's
+   folder as `state.json` → `observability.ledger` (absolute path; every `skill_run_row.py` call takes `--ledger` with
+   it). Read the highest `sequence` already logged for this POC, then write the `poc-orchestrator` row ("POC started",
+   or "POC resumed" on resume). On resume, also send any pending rows and run the check against Orbit. From here on, see "Observability log" below.
 7. Tell the person in one or two lines what will happen, then start Stage 1.
 
 ## 1 · Requirement Gathering
@@ -761,6 +767,9 @@ and a built page does not.
 1. **Log it.** Their words verbatim in `context-log.md`; Orbit **M3** (Iteration, phase build, reason = their words);
    `lessons.py capture <workspace> build "<their words>"` and `… record <workspace> build changes`. More text about
    the same change is added to the same iteration.
+1a. **Ledger.** `skill_run_row.py note-change <the skill that will re-run> --gate g3 --ledger <observability.ledger>`
+   for wireframes when the triage is big or very big (its Update-mode run gets its own row); `change-dropped` if the
+   person drops the change.
 1b. **Check it is clear.** The AI PM in resolve mode (`stage: build`, question "Is this change request clear?",
    artifacts: their words verbatim, everything they attached (files, links, a new design system, screenshots), the
    approved `02b-wireframes/`, the design system, `04-build/build-summary.md` and the scoping document; lens
@@ -845,8 +854,9 @@ and a built page does not.
 - **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, first the **Reconcile check**
   (G1–G3 must show approved in Orbit), then **M1 · G4** (upload script PDF, deck,
   video; demo_ready) — do it before marking the run done.
-- Gate. On approval (after M1 · G4), mark the run done, delete the autopilot file, and give the person the list of files with
-  their paths in the client folder.
+- Gate. On approval (after M1 · G4), send any pending Observability rows and run the check against Orbit, mark the run
+  done, delete the autopilot file, and give the person the list of files with their paths in the client folder, ending
+  with the Observability report line (`skill_run_row.py report`).
 
 ## Rules for the whole run
 
