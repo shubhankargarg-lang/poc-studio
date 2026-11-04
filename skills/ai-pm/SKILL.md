@@ -60,7 +60,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 |---|---|---|---|
 | `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx` |
 | `research` | research | the question the calling stage sent | the research answer |
-| `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document | `02-scoping/scoping-document.docx` |
+| `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document + `01c-integration/integration-spec.json` | `02-scoping/scoping-document.docx` |
 | `wireframes` | wireframes | the approved scoping document | `02b-wireframes/*.pdf`, `png/`, `wireframe-manifest.json` |
 | `design-system` | design | the approved scoping document + the approved wireframes (manifest and `png/` frames) | `03-design-system/*.html` (style guide, tokens, logo kit) |
 | `build` | build (v1.0: review at Stage 4b, after UnifyApps Headless's own parallel testing, before publish) + resolve for UnifyApps Headless's questions (only `/ua:setup`'s and those asked after the person approves the Zen plan; Zen planning and `CONFIRM_REQUIRED` are the person's) | the approved scoping document + design system + the approved wireframe frames | the app at `app.preview_url`, walked with `scripts/build_walk.mjs`; `04-build/test-report.md` |
@@ -129,7 +129,8 @@ The stage skills are configured not to ask the user anything, so questions reach
 **answer it** from the context log, the approved documents, general knowledge of the use case and sensible
 assumptions. Record each assumption in the answer (`source: DEFAULT` or `UPSTREAM`, with `check_this: true` when
 confidence is L) so the person sees it at the next gate. Use `ASK_HUMAN` only for decision row 1 (credentials, real
-customer data, real transactions, spend, deleting, publishing, sending), a choice that cannot be undone and could
+customer data, real transactions, spend, deleting, publishing, sending, client-system connection or access, a
+replacement model after a credits or quota failure), a choice that cannot be undone and could
 reasonably go either way, or a change request that fails the clarity check below. Standing answers for this pipeline:
 
 - **Brand colour ambiguous** (design-system stop 1): the skill's own brand source order decides, unattended; DECIDE

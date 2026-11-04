@@ -1,5 +1,5 @@
 ---
-description: Start (or resume) a UnifyApps POC for a client use case — requirement gathering → scoping → wireframes → design system → UnifyApps Headless build → collaterals
+description: Start (or resume) a UnifyApps POC for a client use case — requirement gathering → connector discovery → scoping → wireframes → design system → UnifyApps Headless build → collaterals
 argument-hint: <client name> | <use case name> | <POC ID>
 ---
 
@@ -71,7 +71,8 @@ Ask with AskUserQuestion, one question, before anything runs: **"Which mode for 
 - **Zen** — the AI PM reviews every stage, and you approve each gate (and Zen planning's build plan in Stage 4).
 - **Sonic** — the AI PM reviews every stage and approves it; the run moves on by itself. You are asked only for what
   the run cannot pass without you (sign-ins, deletes and other `CONFIRM_REQUIRED` steps, credentials, a block the AI
-  PM cannot clear, a Not ready requirement-gathering verdict).
+  PM cannot clear, a Not ready requirement-gathering verdict, client-system connection and access questions, the
+  replacement model when one runs out of credits).
 
 Pass the answer to the orchestrator; it keeps it in `state.json` → `mode` (its "Run mode" section). **Resuming** a run
 that already has a mode: do not ask again; say the mode in the resume line, and switch only if the person asks.

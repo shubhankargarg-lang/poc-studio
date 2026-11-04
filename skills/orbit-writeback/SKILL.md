@@ -596,7 +596,8 @@ observability:
 
 - **`phase` / `gate`:** requirement-gathering `understand`/`g1` · scoping-l1-first, wireframes, design-system
   `plan`/`g2` · platform-master, unifyapps-headless `build`/`g3` · poc-collateral-studio `deliver`/`g4` · an ai-pm
-  review or a research call takes the phase and gate of the stage it serves · the orchestrator's row `understand`/
+  review or a research call takes the phase and gate of the stage it serves · connector-discovery takes the phase and
+  gate of the stage it serves (1c: `plan`/`g2`; a model recovery during the build: `build`/`g3`) · the orchestrator's row `understand`/
   `none`. In a one-off run, `phase` by the asset and `gate` `none`.
 - **`origin` / `poc`:** `poc` for a full run (send `poc`); `one_off` for a one-off run (**never send `poc`**, even when
   the one-off was given a POC ID: a blank or foreign lookup is rejected).

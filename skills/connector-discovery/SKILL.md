@@ -42,7 +42,7 @@ Any time a model runs out of credits or quota → Part B, model recovery
 | No such row (systems are reference only, or simulated in UnifyApps) | Part A does not run: record `integration_status: not_needed`. Part B's model inventory still runs |
 | Scoping needs one fact or one operation the spec does not have | Yes, `scope: item` for that object, field or operation (no question to the person: the connection is already given) |
 | The person fixed access, added objects, or the requirements changed | Yes, `scope: check` (re-tests from the saved spec) or `scope: item` |
-| Build stage: before `/ua:plan`, to confirm the spec still holds | Yes, `scope: verify` (re-runs step 2 and the read tests of step 6; resolves operation versions) |
+| Build stage: before `/ua:plan`, to confirm the spec still holds | Yes, `scope: verify` (re-runs step 2, the read tests of step 6 and Part B's model test; resolves operation versions). No spec in the workspace → `scope: models`, and Part A `scope: full` only if the BRD names a client system the app reads from or writes to |
 | Before the build, or whenever asked: which AI models can the build rely on | Yes, `scope: models` (Part B, Model inventory) |
 | **Any time** UnifyApps Headless reports that a step failed because a model's credits, quota or billing ran out — an automation's LLM node, an agent's answer, a knowledge index (embedding), a reranker, a vision or speech step, a test run — in the build, a test, a fix or a demo | Yes, `mode: model-recovery` (Part B, Model recovery). It does not matter whether the POC has an external system |
 | Run on its own ("test this Salesforce connection for this use case") | Yes, standalone: needs a connection, the system and a few sentences of what the app must do |
@@ -55,7 +55,7 @@ Any time a model runs out of credits or quota → Part B, model recovery
 | **Requirements** | The approved Requirement Gathering document: its **Systems** table (system · what the app does: read / write / none · objects or data named · environment · requirement · source), the current process steps and the asks |
 | **Connection answers** | From the connection message (step 1) |
 | **Tenant** | The run's UnifyApps tenant (POC Studio: Orbit UAT, `orbit.uat.unifyapps.com`). UnifyApps Headless must be set up and signed in there (`/ua:setup`) |
-| **Mode** | `zen` or `sonic` (POC Studio run mode). Access questions are the person's in both |
+| **Run mode** | `zen` or `sonic` (POC Studio run mode). Access questions are the person's in both |
 | **Scope** | `full` (default) · `item` · `check` · `verify` · `models` — or **`mode: model-recovery`** with the failed run, trace or index error |
 
 ## Rules (always)
@@ -123,7 +123,7 @@ Then one AskUserQuestion round (up to four questions per call; more → a second
 |---|---|---|
 | 1 | `SYSTEM_ACCESS: Is there an existing <System> connection for this client in UnifyApps (<tenant>)? Type its name or ID in "Other".` | Yes, I'll give the name · Yes, name unknown (I'll search) · No connection yet |
 | 2 (only when the app writes) | `SYSTEM_ACCESS: The app needs to <write action> in <System> (<environment>). Can the POC write there through the connection?` | Yes, it can write (I'll still check the rights, read-only) · Read only (the POC saves in UnifyApps; the write is planned) · Not sure, please check |
-| 3 | `SYSTEM_ACCESS: How should changes in <System> reach the app?` (only when the requirements need the app to react to a change, e.g. "plan ready at Stage 20") | Real time if available (recommended) · Every few minutes is fine · Only when the user acts in the app |
+| 3 | `SYSTEM_ACCESS: How should changes in <System> reach the app?` (only when the requirements need the app to react to a change, e.g. "plan ready when the proposal is accepted") | Real time if available (recommended) · Every few minutes is fine · Only when the user acts in the app |
 | 4 | `SYSTEM_ACCESS: Besides what the requirements name (<objects>), are there <System> objects or fields you want me to check?` | No, use the requirements · Yes, I'll list them (type in "Other") |
 
 Answers: a name or ID → step 2 with it. "Name unknown" → one filtered search; several matches → ask which (name,
@@ -131,8 +131,9 @@ owner, created date; up to four). "No connection yet" → offer: add it now in <
 in to the client system themselves), or carry on with that system marked [Assumed]. Record every answer in
 `state.json` → `integrations[]` and `context-log.md` as a human decision. A resumed run never asks again.
 
-In POC Studio, the `route-questions` hook lets `SYSTEM_ACCESS:` questions through to the person while autopilot is on;
-if a hook blocks one, remove the autopilot file, ask, and recreate it after the answer.
+In POC Studio, remove the autopilot file before asking any `SYSTEM_ACCESS:` question (so the owner also gets the Slack
+nudge) and recreate it after the answer; the `route-questions` hook letting these questions through is only a safety
+net. The same holds for the model choice in Part B (model recovery step 4).
 
 ## Step 2 — Validate the connection
 
@@ -158,9 +159,9 @@ One row per thing the app must do in the client system. This list drives everyth
 | `need_id` | `N-01` … | N-03 |
 | `kind` | **event** (the app reacts to a change), **read**, **find** (search by a field), **add**, **update**, **file** (attach or download), **delete** (rare; flag it) | event |
 | `object` / `fields` | In the client's words first; resolved to API names in step 4 | Opportunity, StageName |
-| `condition` | For events and finds: what must be true | StageName becomes "20-Accepted Opportunity" |
+| `condition` | For events and finds: what must be true | StageName becomes "Proposal Accepted" |
 | `purpose` | Why the app needs it | start drafting the plan |
-| `requirement` | The ask it serves, with its source (Requirement Gathering line, email, doc) | "plan ready at Stage 20" (email 30 Sep) |
+| `requirement` | The ask it serves, with its source (Requirement Gathering line, email, doc) | "plan ready when the proposal is accepted" (client email) |
 | `timing` | real time · polling every N min · on user action · scheduled | real time (answer to question 3) |
 | `volume` | Expected records per run or per day, if known | a few per seller per month |
 
@@ -233,7 +234,7 @@ them to its `WF-` ids and keeps the `AU` id as a reference).
 
 | Part | What to write |
 |---|---|
-| Name and purpose | e.g. AU-01 "Stage 20 → prepare plan": what it does and which requirement it serves |
+| Name and purpose | e.g. AU-01 "Proposal accepted → prepare plan": what it does and which requirement it serves |
 | Trigger | The trigger operation (or app event / schedule), mode, object, condition, the fields it delivers, its prerequisite and the fallback if the prerequisite is missing |
 | Steps | Numbered. Each step: the connector operation **and the connection (name and id) on that step**, or an app step (app object write, agent call, rule), its inputs **mapped field by field** (client field ← app field or constant), and what it outputs to the next step. The trigger names the connection too |
 | Field mapping | Table: client object.field · type · direction (in / out / both) · app object.field · transform (as is, picklist map, date format, HTML → text, id lookup) · allowed values |
@@ -281,7 +282,7 @@ Date · tenant · generated by connector-discovery
 2. Connection — name, id, connector, environment, user and profile, how it was validated
 3. Needs list — N-xx rows with the result of each
 4. Objects and fields — per object: fields, types, picklists, references, counts, per-parent counts, rights
-5. Configuration records — in full (e.g. the 33 questions with their answer types and options)
+5. Configuration records — in full (e.g. every plan question with its answer type and options)
 6. Connector operations — per need: trigger or action name, inputs used, outputs used, prerequisite, test result
 7. Automations — AU-xx specs in full (step 7)
 8. Field mapping — one table per object, both directions
@@ -313,10 +314,12 @@ Pass the Integration Spec to the scoping skill as an input, with this instructio
 >   <connection name> (<connection id>)" — not only the first step. A WF with a client step that
 >   does not name it is incomplete.
 > - **§15 Integrations:** the systems table from its summary (connection name and id, direction, mechanism = the
->   operation names, frequency = trigger mode, auth = the connection); §15.2 field mapping = its field mapping.
-> - **Document Control:** a "Connector discovery" row with the date, the connection name and id, and the status.
+>   operation names, frequency = trigger mode, auth = the connection); §15's field-mapping table = its field mapping.
+> - **§13 Agents and §17 AI trust:** each model slot's card id and its fallback, from `models[]`.
+> - **Document Control:** a "Connector discovery" row with the date, the connection name and id (or "no client
+>   system"), and the status.
 > - **§5.4 Live vs simulated:** from each AU's status (Live, Live with assumption → Live plus an assumption, Planned →
->   simulated with the client write shown as planned, recorded as a Decision).
+>   **Mocked**, with the client write shown as planned, recorded as a Decision).
 > - **§5.6 Assumptions:** every item in its Assumed section, with its reason and impact.
 > - **§18 Non-functional:** its limits (API budget per run, query limits, rate limits, file size).
 > - **Evidence log:** each fact used, with the source "Integration Spec §<n>".
@@ -442,7 +445,10 @@ its cost is too small to need the person's yes, but write each test in `context-
 
 ### Model inventory (`scope: models`; also part of `scope: verify` before the build)
 
-1. **Slots the build needs**, from the BRD and the build plan: each agent's slots, each automation LLM or AI node, each
+1. **Slots the build needs**, from the BRD and the build plan when they exist; at stage 1c (before Scoping), from the
+   approved requirements: each AI capability the use case needs (an agent or an LLM step → `TEXT_GENERATION`;
+   documents to search → `EMBEDDING`/`embeddingModel` and `Answer Generation`; images or scans → `IMAGE_PROCESSING`
+   or `TEXT_EXTRACTION`; …), each row marked `from requirements`. Then: each agent's slots, each automation LLM or AI node, each
    knowledge set (embedding, chunking, answer, reranker if used), any image, document, audio or web step. One row per
    slot: `slot_id`, the tenant slot name (table above), where it is used, the card the BRD names.
 2. **Candidate cards:** `list_models` with `forSlot` (for embedding, both `EMBEDDING` and `embeddingModel`). Keep
@@ -459,8 +465,9 @@ its cost is too small to need the person's yes, but write each test in `context-
    - the spec (`models[]`, the "AI models" line of the build block);
    - **the BRD**: if Scoping has not run yet, the spec's model rows are its input (§13 agents' model, §17 AI trust, the
      assumption list). If the BRD already exists and names a different card id, a missing card, or a card that fails
-     step 2, list each difference (slot · BRD card · proposed card · reason) for the person and update the BRD
-     before the build as described in "A model change in the BRD" below. A BRD never goes to the build with a card id
+     step 2, list each difference (slot · BRD card · proposed card · reason) and ask the person to choose (the model
+     recovery question, step 4 of "Model recovery"); then update the BRD before the build as described in "A model
+     change in the BRD" below. A BRD never goes to the build with a card id
      that the inventory rejected.
    - Run the model test again in `scope: verify` just before the build (credits can run out between Scoping and the
      build). After the first real run of an untested slot, set its `health`; if the run failed, go to model recovery.
@@ -506,7 +513,8 @@ tell the person to fix the provider connection; they are not a model switch.
 6. **Re-run only what failed** (the node, the agent test, the unindexed documents) and check it worked (run status,
    trace, `check_knowledge_status` = indexed for every source).
 7. **Record it:** the spec's `models[]` (old → new, reason, time, who chose), `context-log.md` as a human decision,
-   and a lesson line for the team ("<provider> credits ran out during <step>; switched to <card>"). **Update the BRD**
+   and, in POC Studio, `lessons.py capture <workspace> build "<provider> credits ran out during <step>; switched to
+   <card>"`. **Update the BRD**
    wherever it names the old card id (§13, §17, assumptions), as described in "A model change in the BRD" below, so a
    rebuild does not bring the exhausted card back.
 
@@ -514,7 +522,7 @@ tell the person to fix the provider connection; they are not a model switch.
 
 The person already chose the model, so this is not a change request: no clarity check, no review round and no gate.
 Write the new card id wherever the BRD names the old one (§13, §17, assumptions), add one Document Control row
-("Model switch: <slot> <old card> → <new card>, <reason>, chosen by <person>, <date>"), and save it as a new BRD
+("Model switch: <slot> <old card> → <new card>, <reason>, chosen by the person, <date>"), and save it as a new BRD
 version (POC Studio: orbit-writeback "A BRD version after a model switch"). Nothing else in the BRD changes.
 
 **Never** in model recovery: buy credits or change a plan or limit; switch without the person's choice; switch an
@@ -531,39 +539,39 @@ not touch.
   "systems": [ {
     "system": "Salesforce", "app_name": "salesforce", "environment": "sandbox",
     "status": "done",
-    "connection": { "id": "6abe…", "name": "Salesforce Connection - Acme sandbox", "source": "user_given",
+    "connection": { "id": "<connection id>", "name": "Salesforce Connection - Acme sandbox", "source": "user_given",
                     "active": true, "validated": true, "user": "integration.user@…", "user_profile": "System Administrator" },
     "schema_strategy": "metadata_query",
     "needs": [
       { "need_id": "N-01", "kind": "event", "object": "Opportunity", "fields": ["StageName"],
-        "condition": "StageName = '20-Accepted Opportunity'", "purpose": "start the plan",
-        "requirement": "plan ready at Stage 20 (email 30 Sep)", "timing": "real time",
+        "condition": "StageName = 'Proposal Accepted'", "purpose": "start the plan",
+        "requirement": "plan ready when the proposal is accepted (client email)", "timing": "real time",
         "operation": "N-01-op", "result": "ready", "detail": "7 records already at this stage" }
     ],
     "objects": [ { "api_name": "Opportunity", "label": "Opportunity", "record_count": 22,
                    "fields": [ { "api_name": "StageName", "type": "picklist", "values": ["…"] } ],
                    "rights": { "create": "yes (permission)", "update": "yes (permission)" } } ],
-    "configuration": [ { "item": "plan questions", "object": "TSPC__TemplateQuestion__c", "count": 33,
-                         "per_parent": { "parents_total": 11, "parents_with_records": 11 }, "records": [ ] } ],
+    "configuration": [ { "item": "plan questions", "object": "Plan_Question__c", "count": 30,
+                         "per_parent": { "parents_total": 10, "parents_with_records": 10 }, "records": [ ] } ],
     "operations": [
       { "op_id": "N-01-op", "need_id": "N-01", "type": "trigger", "name": "<trigger operation name>",
         "mode": "real time", "inputs": { "object": "Opportunity", "fields": ["StageName"] },
         "prerequisite": "Opportunity enabled for Change Data Capture", "prerequisite_status": "unknown",
         "fallback": "<polling trigger name>, every 5 minutes", "test": "ready",
-        "connection_id": "6abe…" },
+        "connection_id": "<connection id>" },
       { "op_id": "N-14-op", "need_id": "N-14", "type": "action", "name": "salesforce_create_record_batch",
-        "inputs": { "objectId": "TSPC__DealQuestionAnswer__c", "allOrNone": false }, "test": "ready (permission) — not run",
-        "connection_id": "6abe…" }
+        "inputs": { "objectId": "Plan_Answer__c", "allOrNone": false }, "test": "ready (permission) — not run",
+        "connection_id": "<connection id>" }
     ],
     "automations": [
-      { "id": "AU-01", "name": "Stage 20 → prepare plan", "requirement": "plan ready at Stage 20",
+      { "id": "AU-01", "name": "Proposal accepted → prepare plan", "requirement": "plan ready when the proposal is accepted",
         "trigger": "N-01-op", "steps": [ { "n": 1, "kind": "connector", "op_id": "N-03-op", "op": "<query operation>",
-          "connection_id": "6abe…",
+          "connection_id": "<connection id>",
           "inputs": { "query": "SELECT … FROM Opportunity WHERE Id = :trigger.Id" }, "outputs": ["Opportunity row"] } ],
         "idempotency": "one plan per Opportunity.Id", "conflict_rule": null,
         "errors": "UNABLE_TO_LOCK_ROW retried twice after 5 s; others stop and notify the owner",
         "human_gate": "none (draft only)", "status": "Live with assumption",
-        "test_plan": "move a sandbox opportunity to Stage 20; expect one plan within 3 minutes" }
+        "test_plan": "move a sandbox opportunity to Proposal Accepted; expect one plan within 3 minutes" }
     ],
     "field_mapping": [ { "client": "Opportunity.StageName", "type": "picklist", "direction": "in",
                          "app": "op_opportunity.stage", "transform": "as is" } ],
@@ -579,7 +587,7 @@ not touch.
                    "test": { "at": "2026-11-03T16:40:00Z", "operation": "conv_ai_by_unifyapps_fetch_embeddings", "usedModelId": "e_6a9ec98b0dfd8d53e7f58394", "vector_length": 3072 } },
       "fallback": { "card": "e_6918e83442f9146811ffef43", "name": "text-embedding-3-large - azure openai", "model": "text-embedding-3-large",
                     "provider": "azure_openai", "connectionFound": true, "connectionActive": true, "health": "unknown" },
-      "brd_updated": "BRD v3 §13, §17 (change request CR-2)",
+      "brd_updated": "BRD v3 §13, §17 (model switch, no re-approval)",
       "switches": [ { "at": "2026-11-03T13:20:00Z", "from": "<card>", "to": "<card>", "reason": "insufficient_quota while indexing 7 documents",
                       "chosen_by": "person", "rerun": "re-indexed 7 documents; all indexed" } ] }
   ]

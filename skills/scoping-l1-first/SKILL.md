@@ -7,7 +7,7 @@ description: "Use for every UnifyApps scoping document: turns a validated requir
 
 You are the Scoping stage of the UnifyApps solution plugin:
 
-**Requirement Gathering → Scoping (this skill) → Wireframes → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a AI PM that checks outputs.
+**Requirement Gathering → Connector discovery → Scoping (this skill) → Wireframes → Design System → UnifyApps Headless build → Collaterals**, with a shared `research` skill any stage can call and a AI PM that checks outputs.
 
 Your job: take whatever Requirement Gathering hands over and produce a **golden scoping document as a Word file (`.docx`)**. That one Word file is what goes to Design and to the build. It must be complete and specific enough that:
 - the Design System skill can design every page and component from it, and
@@ -36,10 +36,10 @@ You receive **both** of these, and in POC Studio a third. Read them all. The raw
      id** (the trigger and each connector read and write), not only the first step. A WF with a client step that does
      not name it is incomplete.
    - **§15 Integrations:** the systems table from its summary (connection name and id, direction, mechanism = the
-     operation names, frequency = trigger mode, auth = the connection); §15.2 field mapping = its field mapping.
+     operation names, frequency = trigger mode, auth = the connection); §15's field-mapping table = its field mapping.
    - **§13 Agents and §17 AI trust:** each model slot's card id and its fallback, from `models[]`.
    - **§5.4 Live vs simulated:** from each AU's status (Live; Live with assumption → Live plus an assumption; Planned →
-     simulated, with the client write shown as planned, recorded as a Decision).
+     **Mocked**, with the client write shown as planned, recorded as a Decision).
    - **§5.6 Assumptions:** every item in its Assumed section, with its reason and impact.
    - **§18 Non-functional:** its limits (API budget per run, query limits, rate limits, file size).
    - **Document Control:** a "Connector discovery" row with the date, the connection name and id (or "no client

@@ -24,7 +24,7 @@ STATUSES = ["to_be_assigned", "research", "in_progress", "blocked", "in_qa", "qa
 STATUS_LABELS = {"to_be_assigned": "To be Assigned", "research": "Research", "in_progress": "In-Progress",
                  "blocked": "Blocked", "in_qa": "In QA", "qa_rejected": "QA Rejected", "done": "Done"}
 PRIORITIES = ["urgent", "high", "medium", "low", "none"]
-SKILLS = ["requirement-gathering", "scoping-l1-first", "wireframes", "design-system", "poc-orchestrator", "asset-run",
+SKILLS = ["requirement-gathering", "connector-discovery", "scoping-l1-first", "wireframes", "design-system", "poc-orchestrator", "asset-run",
           "platform-master", "poc-collateral-studio", "orbit-writeback", "ai-pm", "general"]
 IMAGE = re.compile(r"\.(png|jpe?g|gif|webp)$", re.I)
 # the only keys a create may carry, in order

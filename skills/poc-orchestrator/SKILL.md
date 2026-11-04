@@ -1,6 +1,6 @@
 ---
 name: poc-orchestrator
-description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Scoping → Wireframes → Design System → UnifyApps Headless build → Collaterals — with the AI PM checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
+description: Runs the UnifyApps POC Studio pipeline end to end for one client use case — Requirement Gathering → Connector discovery → Scoping → Wireframes → Design System → UnifyApps Headless build → Collaterals — with the AI PM checking every stage and answering every clarification question, an approval gate after each stage, and every file saved in the local client folder. Use when someone runs /poc-studio:start, says "start a POC for a client", or asks to resume a POC Studio run.
 ---
 
 # POC Studio orchestrator
@@ -11,8 +11,9 @@ person for approval, and hand the approved files to the next stage.
 
 ```
 Start → 0 Setup → 1 Requirement Gathering → 1c Connector discovery → 2 Scoping → 2b Wireframes → 3 Design System → 4 Build → 5 Collaterals → Done
-                         │                        │              │                 │             │              │
-                     AI PM + gate           AI PM + gate    AI PM + gate      AI PM + gate   Zen plan       AI PM + gate
+                         │                        │                         │              │                 │             │              │
+                     AI PM + gate             (no gate; you answer   AI PM + gate    AI PM + gate      AI PM + gate   Zen plan       AI PM + gate
+                                               access questions)
                                                                             (platform-master review,
                                                                              you approve) → parallel
                                                                             build + test → AI PM walk
@@ -132,7 +133,7 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
                    "drive_id": "0AOY3pnWOezbhUk9PVA", "company_share": true, "folder_id": "0AOY3pnWOezbhUk9PVA" },
   "stages": {
     "requirement-gathering": { "status": "approved", "output": "01-requirement-gathering/Requirement Gathering - Acme Beverages - Shelf Compliance.docx", "review_rounds": 1 },
-    "connector-discovery": { "status": "done", "output": "01c-integration/integration-spec.json" },
+    "connector-discovery": { "status": "approved", "output": "01c-integration/integration-spec.json" },
     "scoping":       { "status": "in_review" },
     "wireframes":    { "status": "pending" },
     "design-system": { "status": "pending" },
@@ -156,7 +157,10 @@ If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC 
 run stands, and continue from the first stage that is not `approved` (or `skipped`). Never redo an approved stage unless the
 person asks. A run started before Wireframes existed has no `wireframes` entry: if its design system is already past
 `pending`, add `"wireframes": { "status": "skipped" }` and carry on (the design system then reads the scoping document
-alone, as before); otherwise add it as `pending`, and Wireframes runs next after Scoping. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
+alone, as before); otherwise add it as `pending`, and Wireframes runs next after Scoping. A run started before
+connector discovery existed has no `connector-discovery` entry: if Scoping is already past `pending`, add
+`"connector-discovery": { "status": "skipped" }` (Stage 4 step 2b then runs `scope: models` before the build);
+otherwise add it as `pending`, and it runs next. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
 reached Orbit is written before the run goes on.
 
 ## Run mode: Sonic or Zen (asked at the start of every run)
@@ -378,6 +382,9 @@ except at the start (the POC ID must be verified).
    - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
      connect it (in Claude Code: `/mcp`, or connect it as a claude.ai connector), then check again. Do not start
      Stage 1 without both. (Drive is needed for discovery and to host the demo video, which always goes to Drive.)
+   - **UnifyApps Headless (`ua`) is required from stage 1c** (connector discovery works through it). Check its skills
+     are in the session (`ua:setup`, `ua:plan`); if not, stop and tell the person to install UnifyApps Headless, then
+     check again. It is set up for this folder at stage 1c (`/ua:setup`), not here.
    - Gmail and Google Calendar are optional: list which are connected and carry on; the Requirement Gathering
      document records the missing ones as "Not connected".
    - **Video route check.** Run the `orbit-writeback` skill's **Video route check** now: Google Drive for desktop is
@@ -391,7 +398,8 @@ except at the start (the POC ID must be verified).
    human decisions** (the owner set them for every run; the reviewer applies them):
    - Run mode: `<Sonic | Zen>`, chosen by the person at the start ("Run mode" above).
    - Questions during stages are answered by the reviewer from context and assumptions, not the person (except, in
-     Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED`, which is
+     Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED` and every
+     connector-discovery `SYSTEM_ACCESS:` question — the client connection and access, a replacement model — which are
      the person's).
    - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); a map
      page follows the wireframes skill's map-component reference; the approved manifest is the design system's
@@ -403,7 +411,9 @@ except at the start (the POC ID must be verified).
    - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person (Zen run mode) or the AI PM (Sonic run mode)
      answers Zen's planning questions and approves its plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
      UnifyApps Headless cannot build is built by platform-master's browser fallback (the person signs in); deploying/testing the POC app there is pre-approved; model IDs:
-     the builder's recommendation, else UnifyApps Headless chooses, else any available model; every
+     the card the Integration Spec's `models[]` names for each slot, else the builder's recommendation, else UnifyApps
+     Headless chooses, else any available model; after a credits or quota failure the person chooses through
+     connector-discovery model recovery; every
      `CONFIRM_REQUIRED` is the person's; the AI PM reviews the build at Stage 4b, after UnifyApps Headless's own
      parallel testing and before publish; every fix to the app goes through UnifyApps Headless (a platform asset it
      cannot build goes to platform-master's browser fallback).
@@ -467,7 +477,12 @@ except at the start (the POC ID must be verified).
 ## 1c · Connector discovery (every POC, before Scoping)
 
 After G1 is approved, call `connector-discovery` (Skill tool: `poc-studio:connector-discovery`) with the workspace, the
-approved Requirement Gathering document, the run mode and the tenant. It writes `01c-integration/` and runs on every POC:
+approved Requirement Gathering document, the run mode and the tenant. Both of its parts work through UnifyApps
+Headless (the client connection and the model tests), so call it first: if the UnifyApps Headless plugin (`ua`) is not
+installed, stop and ask the person to install it, then continue; run Stage 4 step 1 (`/ua:setup`) now, under the
+autopilot file, creating the solution `<Client> — <Use case>` and recording its id in `state.json` (Stage 4 step 1 then
+reuses this setup and solution; it never creates a second one). It writes
+`01c-integration/` and runs on every POC:
 
 - **Part A — the client system, only when it is used.** When the document's **Systems** table has a row whose "What
   the app does there" is **read** or **write**, it asks the person for the connection, validates it, reads the objects
@@ -497,7 +512,7 @@ spec at the Scoping gate. A resumed run never asks the connection questions agai
     answer to `<workspace>/research/scoping-<topic>.md`.
 - It runs without asking the user; anything it cannot settle goes to the reviewer (resolve).
 - Review: `stage: scoping`, upstream = the approved Requirement Gathering document and the Integration Spec
-  (`01c-integration/integration-spec.json`; the scoping lens checks §12–§15, §13 and §17 against it). The reviewer reviews Part A
+  (`01c-integration/integration-spec.json`; the scoping lens checks §12–§15 and §17 against it). The reviewer reviews Part A
   as a plan and Part B as a build spec (detail in Part B is expected).
 - **Orbit:** M1a · G2 (the scoping document, with notification) before the gate; M2a on approve (BRD approved only);
   M3 on changes; M5 before re-gating.
@@ -569,7 +584,8 @@ Only these session facts are supplied by you:
 - Run Stage 4 in these steps (Skill tool names `ua:setup`, `poc-studio:platform-master`, `poc-studio:connector-discovery` and `ua:plan`, or whatever
   names the session lists for them). UnifyApps Headless updates itself when called; no update step is needed. If the UnifyApps Headless plugin
   (`ua`) is not installed, stop and tell the person to install UnifyApps Headless, then continue.
-  1. **`/ua:setup`** — create the autopilot file first; this step runs under it, and the reviewer answers its
+  1. **`/ua:setup`** — already done at stage 1c for this folder (reuse its solution id from `state.json`); run it here
+     only if 1c did not (a run from before 1.37). Create the autopilot file first; this step runs under it, and the reviewer answers its
      questions. It sets up this folder only: tenant `orbit.uat.unifyapps.com`, the person's sign-in, and a **new**
      solution named `<Client> — <Use case>` (see **Solution** below).
   2. **Platform pointers** — still under the autopilot file, load the `platform-master` skill (Skill tool:
@@ -579,7 +595,9 @@ Only these session facts are supplied by you:
      still active, the read tests still pass and each operation resolves to its current version (when a client system
      is used), and the model test runs again on every chat and embedding card the build uses (credits can run out
      between Scoping and the build). Anything that changed is listed for the person; a card that fails goes to model
-     recovery before the plan starts.
+     recovery before the plan starts. **No `01c-integration/integration-spec.json`** (a run from before 1.37, or 1c
+     skipped) → run `scope: models` instead (the model inventory from the BRD), and Part A `scope: full` only if the BRD
+     names a client system the app reads from or writes to.
   3. **`/ua:plan`** with the build request below (save its start time in `state.json` → `zen_planning_started_at`). The request itself says **Zen**, so `/ua:plan` skips its mode
      question. Planning runs in the **Zen planning window** (next bullet).
 - **Zen planning in Sonic run mode.** Do not create the Zen planning flag and keep the autopilot file on: Zen's
@@ -680,9 +698,10 @@ Only these session facts are supplied by you:
     `01c-integration/Integration Spec - <Client> - <Use case>.md` ("For the build"), word for word: the connection
     (never create another), the automations AU-01…, the client objects and fields allowed, the Planned writes, the
     first test runs.
-  - **AI models:** the spec's `models[]` line (slot → card, fallback card), and: "Before indexing knowledge, index one
-    document and check its status, then the rest. If any step fails on credits or quota, stop that step and report it;
-    never switch the model yourself." (The switch goes through connector-discovery model recovery.)
+  - **AI models:** the "AI models" line of that block, or — when no client system is used — this line, from the spec's
+    `models[]`: "AI models (checked <date>): <slot> → <card> (fallback <card>) for each slot. Before indexing knowledge,
+    index one document and check its status, then the rest. If any step fails on credits or quota, stop that step and
+    report it; never switch the model yourself." (The switch goes through connector-discovery model recovery.)
   - **Wireframes:** `<workspace>/02b-wireframes/` — the approved low-fidelity frames (`png/<page-id>.png`, one per
     page) and `wireframe-manifest.json`. Each page's regions, their order and what each region holds follow its frame;
     the components in each region are the manifest's, styled by the design system. A map page (`layout: map` in the

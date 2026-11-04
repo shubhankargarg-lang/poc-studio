@@ -14,7 +14,7 @@ at four moments. Everything you write goes in `<workspace>/04-build/` — or in 
 |---|---|---|---|
 | Before `/ua:plan` starts | **1 · Pointers** | the approved scoping document; `references/use-case-pointers.md` | `04-build/platform-pointers.md` |
 | Zen asks a planning question, before the person sees it | **1b · Question review** | the question and Zen's options; `platform-pointers.md`; the references | one option added to the question, or none |
-| Zen has written its plan, before the person sees it | **2 · Plan review** | Zen's spec, task graph and preview; `platform-pointers.md`; `references/plan-review-checklist.md` | `04-build/platform-review.md` |
+| Zen has written its plan, before the person sees it | **2 · Plan review** | Zen's spec, task graph and preview; `platform-pointers.md`; `01c-integration/integration-spec.json` (`models[]`; `systems[]` when a client system is used); `references/plan-review-checklist.md` | `04-build/platform-review.md` |
 | UnifyApps Headless cannot build an asset | **3 · Fallback** | the failed task; `references/fallback-by-api.md`, `api-spec.md` | `04-build/fallback-<n>.md` |
 
 Reference files (read the one a job names; read the others only when the plan needs them):
@@ -84,7 +84,9 @@ options and can choose it.
 When Zen has written its spec (with `## Assumptions` and "Check this" lines), its task graph and its preview page, and
 before its one question (start / change something / keep for later) is put to the person:
 
-1. Read the spec, the task graph and the preview; `platform-pointers.md`; and the scoping document's Part B.
+1. Read the spec, the task graph and the preview; `platform-pointers.md`; the scoping document's Part B; and
+   `01c-integration/integration-spec.json` (its `models[]`, and `systems[]` when a client system is used: the
+   connection id, operations and field mapping every client-system task must use).
 2. Check the plan against `references/plan-review-checklist.md` and the pointers. Use `connectors.md`,
    `context-graph.md` or `governance.md` when the plan relies on a connector, a context graph or an agent control.
    An item is an **adjustment** only when it is one of these:
