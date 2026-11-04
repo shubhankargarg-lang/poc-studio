@@ -57,7 +57,7 @@ ALIASES = {  # words a session may write instead of the code
     "triggered_by": {"command": "command", "re-run": "iteration", "rerun": "iteration", "changes": "iteration"},
 }
 STAGE_PHASE = {  # used only when phase / gate are missing
-    "requirement-gathering": ("understand", "g1"), "scoping-l1-first": ("plan", "g2"), "wireframes": ("plan", "g2"),
+    "requirement-gathering": ("understand", "g1"), "connector-discovery": ("plan", "g2"), "scoping-l1-first": ("plan", "g2"), "wireframes": ("plan", "g2"),
     "design-system": ("plan", "g2"), "platform-master": ("build", "g3"), "unifyapps-headless": ("build", "g3"),
     "poc-collateral-studio": ("deliver", "g4"), "poc-orchestrator": ("understand", "none"),
 }
@@ -66,6 +66,7 @@ SKILL_ALIASES = {  # command or short names a session may write instead of the s
     "scoping": "scoping-l1-first", "design": "design-system", "collaterals": "poc-collateral-studio",
     "app": "unifyapps-headless", "build": "unifyapps-headless", "ua:plan": "unifyapps-headless",
     "orchestrator": "poc-orchestrator", "ai pm": "ai-pm", "aipm": "ai-pm",
+    "model-recovery": "connector-discovery", "model recovery": "connector-discovery", "connectors": "connector-discovery",
 }
 DOC_KEYS = {"name": "string", "version": "integer", "document_id": "string", "link": "string"}
 

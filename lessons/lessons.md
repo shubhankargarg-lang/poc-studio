@@ -113,3 +113,10 @@ with the team's history instead of from zero.
 - why: Reviewers sent side-striped cards back as decoration; the tag already carries the status.
 - origin: owner gate feedback
 - added: 2026-10-30
+
+### L-019 · build · model credits
+- check: Every chat and embedding model the build uses passed a real test call before the build (connector-discovery model inventory), with a fallback on another provider. A step that fails on credits or quota stops, and the person chooses the replacement through model recovery; only the failed step is re-run.
+- why: All seven knowledge documents of a build failed to index because the embedding model's provider had run out of credits, and the run guessed at a fix instead of switching to a working model.
+- origin: build run feedback
+- added: 2026-11-04
+

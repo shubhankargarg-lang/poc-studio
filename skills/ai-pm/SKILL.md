@@ -60,7 +60,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 |---|---|---|---|
 | `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx` |
 | `research` | research | the question the calling stage sent | the research answer |
-| `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document | `02-scoping/scoping-document.docx` |
+| `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document + `01c-integration/integration-spec.json` | `02-scoping/scoping-document.docx` |
 | `wireframes` | wireframes | the approved scoping document | `02b-wireframes/*.pdf`, `png/`, `wireframe-manifest.json` |
 | `design-system` | design | the approved scoping document + the approved wireframes (manifest and `png/` frames) | `03-design-system/*.html` (style guide, tokens, logo kit) |
 | `build` | build (v1.0: review at Stage 4b, after UnifyApps Headless's own parallel testing, before publish) + resolve for UnifyApps Headless's questions (only `/ua:setup`'s and those asked after the person approves the Zen plan; Zen planning and `CONFIRM_REQUIRED` are the person's) | the approved scoping document + design system + the approved wireframe frames | the app at `app.preview_url`, walked with `scripts/build_walk.mjs`; `04-build/test-report.md` |
@@ -129,7 +129,8 @@ The stage skills are configured not to ask the user anything, so questions reach
 **answer it** from the context log, the approved documents, general knowledge of the use case and sensible
 assumptions. Record each assumption in the answer (`source: DEFAULT` or `UPSTREAM`, with `check_this: true` when
 confidence is L) so the person sees it at the next gate. Use `ASK_HUMAN` only for decision row 1 (credentials, real
-customer data, real transactions, spend, deleting, publishing, sending), a choice that cannot be undone and could
+customer data, real transactions, spend, deleting, publishing, sending, client-system connection or access, a
+replacement model after a credits or quota failure), a choice that cannot be undone and could
 reasonably go either way, or a change request that fails the clarity check below. Standing answers for this pipeline:
 
 - **Brand colour ambiguous** (design-system stop 1): the skill's own brand source order decides, unattended; DECIDE
@@ -138,8 +139,16 @@ reasonably go either way, or a change request that fails the clarity check below
   `[DERIVED]` in the type note; DECIDE.
 - **No client logo file** (design-system stop 2): use the UnifyApps logo bundled with the plugin
   (`assets/unifyapps-logo.png`) to build the logo kit, labelled as a stand-in; DECIDE.
-- **UnifyApps Headless asks which model to use** for agents or LLM tasks: choose the option the builder recommends; if it recommends
-  none, tell it to select the most appropriate model for the task itself; if it cannot, choose any available model.
+- **UnifyApps Headless asks which model to use** for agents or LLM tasks: the card the Integration Spec's `models[]`
+  names for that slot (tested by connector-discovery); for a slot it does not cover, choose the option the builder
+  recommends; if it recommends none, tell it to select the most appropriate model for the task itself; if it cannot,
+  choose any available model. **Except after a credits or quota failure or a failed model test:** the replacement is
+  the person's choice through connector-discovery model recovery → **ASK_HUMAN**, never DECIDE.
+- **Connector discovery's model test** (one real call per model card, a fraction of a cent, nothing created on the
+  tenant) is pre-approved: DECIDE, never ASK_HUMAN for its cost. Buying credits, changing a plan or raising a limit
+  stays row 1.
+- **Client-system connection and access questions** (`SYSTEM_ACCESS:`: which connection, write access, the write test,
+  missing rights) are the person's, in Zen and Sonic: return ASK_HUMAN if one reaches you; never answer one.
 - **UnifyApps Headless offers an existing or cached solution** (e.g. one called "Nebula" or "UnifyApps Headless", or one whose entity names belong to
   another client): DECIDE "create a new solution named `<Client> — <Use case>`", even when the existing one is
   UnifyApps Headless's recommended option. Reuse a solution only when its id is already recorded in this workspace's
@@ -346,7 +355,7 @@ go to the owner with both positions.
 
 | # | Situation | Outcome |
 |---|---|---|
-| 1 | Credentials, real customer data, real transactions, spend or limit increases, deleting, publishing, sending | **ASK_HUMAN, always** — except the pre-approved actions listed under "Standing answers" (deploying or publishing the POC app on Orbit UAT, publishing a private design-system artifact, choosing a model), which are DECIDE |
+| 1 | Credentials, real customer data, real transactions, spend or limit increases, deleting, publishing, sending, client-system connection or access, choosing a replacement model after a credits or quota failure | **ASK_HUMAN, always** — except the pre-approved actions listed under "Standing answers" (deploying or publishing the POC app on Orbit UAT, publishing a private design-system artifact, choosing a model from the Integration Spec, connector discovery's model test), which are DECIDE |
 | 2 | A human decision in scope already answers it | **Apply it** (DECIDE, `HUMAN_DECISION`) |
 | 3 | A stated ask conflicts with a default or budget (a scope cut, a design choice, a count) | **resolve:** ASK_HUMAN. **review:** cut approved by a human decision, no finding; cut listed but not approved, REVISE with a blocking R2 finding and a question; cut silent (not listed anywhere), **BLOCK** |
 | 4 | A number the audience will see (ROI, savings, price, terms) has no derivation or looks implausible | **BLOCK** until sourced; also ASK_HUMAN if it needs a business assumption |

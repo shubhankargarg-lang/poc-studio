@@ -505,6 +505,12 @@ deliver) **without** `related_document` and **without** `g4_status` (Orbit has n
 + POC `status running` and `last_activity` only. When they are approved, M1 · G4 sends the documents with
 `from_iteration` and closes the iteration then.
 
+**A BRD version after a model switch** (connector-discovery "A model change in the BRD"). The person already chose
+the model, so there is no gate and no iteration: upload the new BRD, create its document v(N+1) with status
+`approved` and a summary "Model switch: <slot> <old card> → <new card>", set the previous version `superseded`, log
+`document_saved` (gate g2, message naming the switch, `actor_type: person`), and update the POC's `last_activity`. No
+notification, no gate change. A one-off run writes it as a one-off document version instead.
+
 ### Moment 6 — the run stops or is blocked
 POC (update): status `blocked` with `blocked_on` (one line: what is needed — a sign-in, a tool install, a missing
 file), or status `stopped`. When it resumes: status running and a new last_activity. No slack_notification.
@@ -522,6 +528,7 @@ out every key that has no value, never `""` or `null`). **Create only:** never u
 |---|---|---|
 | The orchestrator's Setup, once per session (full runs only) | `poc-orchestrator` | "POC started" (or "POC resumed") |
 | Requirement Gathering | `requirement-gathering` | "RG doc v<N>" |
+| Connector discovery (stage 1c, `scope: verify`, `scope: item`, model recovery) | `connector-discovery` | "Integration spec · <system>" or "Models only" (1c), "Verify before build", "Item: <object or operation>", "Model recovery: <slot>" (phase and gate of the stage it serves: a recovery during the build is `build`/`g3`) |
 | Scoping | `scoping-l1-first` | "BRD v<N>" (a REVISE re-run: "BRD v<N> · <k> fixes") |
 | Wireframes | `wireframes` | "<n> frames" |
 | Design system | `design-system` | "Design system v<N>" |
@@ -589,7 +596,8 @@ observability:
 
 - **`phase` / `gate`:** requirement-gathering `understand`/`g1` · scoping-l1-first, wireframes, design-system
   `plan`/`g2` · platform-master, unifyapps-headless `build`/`g3` · poc-collateral-studio `deliver`/`g4` · an ai-pm
-  review or a research call takes the phase and gate of the stage it serves · the orchestrator's row `understand`/
+  review or a research call takes the phase and gate of the stage it serves · connector-discovery takes the phase and
+  gate of the stage it serves (1c: `plan`/`g2`; a model recovery during the build: `build`/`g3`) · the orchestrator's row `understand`/
   `none`. In a one-off run, `phase` by the asset and `gate` `none`.
 - **`origin` / `poc`:** `poc` for a full run (send `poc`); `one_off` for a one-off run (**never send `poc`**, even when
   the one-off was given a POC ID: a blank or foreign lookup is rejected).
@@ -882,6 +890,7 @@ deletes a ticket.
         | `design-system` | palette, brand, components, the design system |
         | `poc-orchestrator` | how the run is driven, gates, the UnifyApps Headless build, app quality |
         | `asset-run` | the one-asset commands (`/poc-studio:requirements`, `brd`, `wireframes`, `design`, `app`, `collaterals`) |
+        | `connector-discovery` | the client connection, the Integration Spec, the model tests and model recovery |
         | `platform-master` | Stage 4 pointers, the Zen question review, the Zen plan review, the browser fallback |
         | `poc-collateral-studio` | demo script, deck, video |
         | `orbit-writeback` | what shows in Orbit, statuses, links, Slack gate messages |

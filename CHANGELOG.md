@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.37.0
+- **New skill: connector-discovery (stage 1c, every POC, between Requirement Gathering and Scoping).**
+  - **Part A — the client's own system, only when the use case reads from or writes to one** (Salesforce, ServiceNow, SAP, a database…): asks the person for the client's connection in UnifyApps, validates it, reads the real objects, fields, picklists and rights read-only, finds and tests the connector triggers and actions, designs the automations, and writes the Integration Spec (`01c-integration/`). Scoping copies it into the BRD (§12–§15, §5.4, §5.6, §18, Document Control) with the connection id on every client step; the build uses the same connection, operations and fields (`scope: verify` before `/ua:plan`).
+  - **Part B — the AI models, always:** one real test call per chat and embedding model the build uses, with a fallback on another provider, so the BRD names tested models; tested again before the build; and **model recovery** whenever a model runs out of credits or quota: the step stops, models that pass a test are offered, the person chooses, UnifyApps Headless switches, only the failed step re-runs, and the BRD gets a new version with a note (no re-approval).
+- Requirement Gathering adds a **Systems** table (read / write / none per client system), which decides whether Part A runs.
+- Connection, access and replacement-model questions (`SYSTEM_ACCESS:`) are always the person's, in Zen and Sonic; the hooks let them through. The model test is pre-approved (a fraction of a cent, nothing created).
+- The AI PM checks the BRD against the spec at the Scoping gate; platform-master's plan review checks client steps and model cards against it; a credits failure is never a browser-fallback case; research sends client-system questions to connector discovery first.
+- Observability logs every connector-discovery run; new lesson L-019 (test models before the build).
+
 ## 1.36.1
 - **Fix: the "Thank You" slide showed as the second slide.** `kit/deck.py` put the slides in the right order in the deck's list, but left the slide files inside the .pptx with their template names (opening = slide4.xml, Thank You = slide5.xml, content from slide6.xml). Viewers that order slides by file name showed Thank You second, while python-pptx and the AI PM saw it last. The slide files are now renamed in deck order, and `deck.py` re-reads the saved file and stops unless the file names follow the deck order, the opening slide is first and Thank You is last. The AI PM's deck check now looks at the file the same way.
 

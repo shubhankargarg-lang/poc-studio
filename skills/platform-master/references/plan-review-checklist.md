@@ -25,7 +25,7 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
 
 4. One finding per line, one change per finding. Name the entity exactly as the plan names it. Say why in platform
    terms (what breaks), not in terms of preference. If the plan is already right on an item, say nothing about it.
-5. End with the "Top 15 checks" (section 7) as a final pass; any miss there is always worth a line.
+5. End with the "Top checks" (section 7) as a final pass; any miss there is always worth a line.
 
 ---
 
@@ -256,6 +256,9 @@ kept where known: ✅ verified on the platform · 👁 observed, not re-run · �
 
 ### LLM and OCR steps inside workflows
 
+- 🔴 **Check:** the model card of every LLM, OCR or AI node. **Fix:** it is the card the Integration Spec's `models[]`
+  names for that slot (it passed connector-discovery's model test), with its fallback on a different provider recorded;
+  a card the spec does not name, or one marked `failing` or `exhausted`, is replaced by the spec's card.
 - **Check:** node type. **Fix:** an LLM or OCR node is `CALL_INTERFACE_WORKFLOW` (e.g.
   `conv_ai_by_unifyapps_call_llm_model_with_options` with `callableInterfaceId: "__ua__call_ai_agent_llm_model"`);
   as `ACTION` it fails with "No config found" ✅. A call-automation node is `CALL_WORKFLOW`.
@@ -338,6 +341,10 @@ test).
 ---
 
 ## 3. AI agents
+
+- 🔴 **Check:** the model card in every slot of every agent. **Fix:** the Integration Spec's tested card for that slot
+  (`models[]`); an agent with tools needs a card with `canCallTools: true` (`canCallMultipleTools: true` when a turn
+  calls several tools).
 
 ### Entity and setup
 
@@ -473,6 +480,9 @@ test).
 
 ### Knowledge sets
 
+- 🔴 **Check:** the embedding model of every knowledge set. **Fix:** the spec's tested `EMBEDDING` card; the plan
+  indexes **one document first**, checks `check_knowledge_status`, then the rest; a credits or quota failure stops the
+  indexing and goes to connector-discovery `mode: model-recovery` (never a model switch in the plan or by the builder).
 - 🔴 **Check:** the plan assumes no workflow can add a source to a knowledge set, and routes documents or web pages
   added from the app some other way. **Fix:** the workflow creates the source with
   `storage_by_unifyapps_create_record` on the system object `knowledge` (`sourceType` `FILE` or `WEBSITE`; shape in
@@ -613,7 +623,7 @@ test).
 
 ---
 
-## 7. Top 15 checks
+## 7. Top checks
 
 1. Every partial record write is read-merge-write; no partial `useRawPayload` payload; bulk upserts use `updateFields`.
 2. Every object has a key, a tight `required` list, `oneOf` statuses used exactly by all writers, and custom indexes
@@ -635,6 +645,10 @@ test).
     a worked example and a stopping rule in the instructions.
 14. Charts in chat need `generateChartTool` + `renderArtifact` + `executeCodeTool`, a text answer regardless, and are
     proven before relied on.
-15. Pages read only through data sources; search before you create (reuse, clone or create); everything tagged; the
+15. Every model slot (agents, LLM nodes, knowledge sets) uses the card connector-discovery tested, with a fallback on
+    another provider; knowledge indexes one document first; a credits or quota failure goes to model recovery.
+16. Every client-system step uses the Integration Spec's connection id, operations and mapped fields only; Planned
+    client writes are not wired live.
+17. Pages read only through data sources; search before you create (reuse, clone or create); everything tagged; the
     task graph orders objects → workflows (deployed) → tools/agents → data sources → pages → app publish, with
     independent work in parallel.

@@ -39,7 +39,8 @@ prerequisite is in hand does the autopilot flag go on and the stage run unattend
 **Run mode.** Every one-off run also asks, once, **"Which mode for this run?"**: **Zen** (the AI PM reviews, then you
 approve the asset; for an app, you also answer Zen planning's questions and approve its plan) or **Sonic** (the AI PM
 reviews and approves; you are asked only for what the run cannot pass without you: sign-ins, `CONFIRM_REQUIRED`
-steps, credentials, a BLOCK after the third review, a Not ready requirements verdict). Put it in the same
+steps, credentials, a BLOCK after the third review, a Not ready requirements verdict, client-system connection and
+access questions, the replacement model when one runs out of credits). Put it in the same
 AskUserQuestion call as the missing prerequisites (step 3 below), or ask it on its own when nothing else is missing.
 A chain from "Approve and make <next asset>" keeps the mode it started with and does not ask again. Record it in this
 run's entry (`mode`); in Sonic, create the **`sonic`** flag next to `one-off` and remove it when the run ends. The
@@ -74,7 +75,7 @@ on without it):
 | Asset | Required | Optional | When something required is missing |
 |---|---|---|---|
 | requirements | Client name · Use case · Slack and Google Drive connectors (their tools are in the session) | Client website · Gmail and Calendar connectors | Connectors: stop and ask the person to connect them (in Claude Code: `/mcp`, or as a claude.ai connector), then check again, as Setup does |
-| brd | Client name · Use case · **At least one input**: an RG document, meeting notes, an email, client files, or a Slack or Drive link | Client website | Offer two options: "Run `/poc-studio:requirements` first" or "Paste or attach what you have" |
+| brd | Client name · Use case · **At least one input**: an RG document, meeting notes, an email, client files, or a Slack or Drive link · For connector discovery: the UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) — required when the input names a client system the app reads from or writes to; otherwise optional (without it, the model inventory is skipped and the models are marked `unknown` until the build's verify step) | Client website | Offer two options: "Run `/poc-studio:requirements` first" or "Paste or attach what you have" |
 | wireframes | Client name · Use case · **BRD or scoping document** (.docx or PDF) | — | Offer "Run `/poc-studio:brd` first" or "Attach a BRD" |
 | design | Client name · Use case · **BRD or scoping document** (.docx or PDF) · Client website (ask once; accept "derive it", then the skill derives it) | Wireframes (an approved `wireframe-manifest.json` from this workspace; without it, the design system works from the BRD alone, and offer `/poc-studio:wireframes` first) · Client logo file · Brand guidelines | Offer "Run `/poc-studio:brd` first" or "Attach a BRD" |
 | app | Client name · Use case · **BRD or scoping document** · The UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) · The collateral tools (Playwright, for the Stage 4b walk) and a valid Orbit sign-in, as for collaterals below · Not a folder whose UnifyApps Headless setup belongs to a pipeline run (below) | Approved wireframes (manifest and frames; else the build follows the BRD's page specs alone) · Design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first) | Plugin or setup missing: tell the person what to install or run, then check again |
@@ -160,7 +161,7 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
 a chain from "Approve and make <next asset>" keeps the same group and goes on counting `sequence`) and write it into
 the run flag `.poc-studio/observability` (removed with the `one-off` flag when the run ends). Then, right
 after each skill run returns (the stage skill and each re-run of it, each AI PM review round, each platform-master
-job, the build, each `research` call), write its one row: orbit-writeback **Moment 7**, with `origin: one_off`,
+job, the build, each `research` call, each `connector-discovery` run), write its one row: orbit-writeback **Moment 7**, with `origin: one_off`,
 **no `poc` key** (even when a POC ID was given), `gate: none`, `triggered_by: command` (or `iteration` for a re-run
 after the person asked for changes). A re-run always gets its own row before the review of it (orbit-writeback
 Moment 7: "Re-runs always get their own row"; on a change request run `skill_run_row.py note-change <skill>` first).
@@ -182,14 +183,19 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
 - **brd** — orchestrator § 2: `scoping-l1-first` with the use case; **input 1** = what was collected (the RG
   document, or the notes, emails and files in `_inputs/`); **input 2** = every client file collected (`_inputs/` and,
   if an RG run made them, `01-requirement-gathering/files/`); output `<workspace>/02-scoping/scoping-document.docx`
-  (`_working/` beside it).
+  (`_working/` beside it). **First, connector discovery** (orchestrator § 1c, also on "Approve and make BRD"): call
+  `connector-discovery` with the RG document (or what was collected); Part A runs only when its Systems table, or the
+  material, names a client system the app reads from or writes to (its `SYSTEM_ACCESS:` questions are the person's),
+  Part B's model inventory always; its `01c-integration/integration-spec.json` is the BRD's **input 3**. A BRD given as
+  input to another one-off asset is used as it is.
 - **wireframes** — orchestrator § 2b: `wireframes` with the BRD collected as "the approved scoping document"; output
   `<workspace>/02b-wireframes/` (the PDF is what goes to Orbit). The PDF is opened locally for the person in § 5.2.
 - **design** — orchestrator § 3, unchanged and unattended: the BRD collected is "the approved scoping document"; the
   wireframes (when collected), the website and any logo file or brand guidelines collected are passed with it; output
   `<workspace>/03-design-system/<slug>-design-system.html`. The file is opened locally for the person in § 5.2,
   once it has passed review.
-- **app** — orchestrator § 4 as written, writing its files in `04-build/one-off/` (`build-summary.md`,
+- **app** — orchestrator § 4 as written (including step 2b, connector-discovery `scope: verify`, and the rule for a
+  model that runs out of credits or quota: stop the step, model recovery, the person chooses), writing its files in `04-build/one-off/` (`build-summary.md`,
   `test-report.md`, `zen-decisions.md`, `platform-*.md`, `routes.json`, `glossary.json`): `/ua:setup`; `platform-master`
   pointers (tell platform-master its output folder is `04-build/one-off/`, for every file it writes); `/ua:plan` in Zen
   inside the Zen planning window (the person answers Zen's questions and approves the plan,

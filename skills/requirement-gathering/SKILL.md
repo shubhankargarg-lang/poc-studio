@@ -132,6 +132,12 @@ Plain prose and short tables, readable by someone who has never heard of the cli
   When the client states how the app must look or feel (e.g. "a finished, premium product our leadership would be proud to show") or names visual features, add a **Visual requirements** row. List each named feature exactly as the client gave it, as a client requirement, and tag the row "Must-have — design system" so the design system stage carries it. Once the PM or the client answers a default, replace "Default — confirm" with the decision and its source, in this table and the personas table.
 - **What this POC adds** — when earlier work exists (an app or POC our team or the client already built), a short table: Area · Earlier work · What this POC adds. Flag every requirement taken from the earlier work unchanged as "Copied from <earlier work>". Describe the earlier work only here and in the reuse decision; it does not frame the brief.
 - **Other important information** found across Slack, Drive and meeting transcripts: the client's current process as numbered steps (each with who does it, the tool used and the problem that happens at that step), systems and tools, brands or units in scope, people and roles, dates and meetings, what our team has already built or decided, and a glossary of client terms (e.g. acronyms used in their files). Each point names its source. Cite every figure (counts, rates, market statistics) to its primary source with page and period. Mark a figure seen only in a secondary source "Secondary". Once a figure is checked against the primary source, mark it "Confirmed (primary source)" and drop any check-by-hand note. A law or regulation whose current status is not verified keeps "status to be checked": it may drive demo logic, but it stays out of client-facing material as a stated fact until checked.
+- **Systems** — one row per client system the use case touches (CRM, ERP, ITSM, HR, a database, a file store…):
+  System · What the app does there (**read** · **write** · **none**: reference only or simulated in UnifyApps) ·
+  Objects or data named · Environment (production, sandbox, dev, unknown) · Requirement it serves · Source. Only what
+  a source says: a system no source names is not added, and an unknown environment stays "unknown". When no client
+  system is involved, write one line: "No client system: the app keeps its own data." This table decides whether
+  connector discovery reads a client system before scoping (stage 1c).
 
 ### 2. Requirement checklist score
 One table, twelve items, total out of 100 (the weight is in the Max column):
@@ -147,7 +153,7 @@ One table, twelve items, total out of 100 (the weight is in the Max column):
 | 7 | Top 3 end-to-end journeys | 10 | | | | |
 | 8 | Scope: core use case and must-haves | 10 | | | | |
 | 9 | Data: hypothetical or real; if real, where it lives and a sample | 5 | | | | |
-| 10 | Systems and integrations | 5 | | | | |
+| 10 | Systems and integrations (scored from the Systems table: each system with what the app does there) | 5 | | | | |
 | 11 | Success criteria and demo audience | 10 | | | | |
 | 12 | Delivery date, and our PM and manager | 10 | | | | |
 

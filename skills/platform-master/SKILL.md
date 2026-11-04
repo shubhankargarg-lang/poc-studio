@@ -14,7 +14,7 @@ at four moments. Everything you write goes in `<workspace>/04-build/` — or in 
 |---|---|---|---|
 | Before `/ua:plan` starts | **1 · Pointers** | the approved scoping document; `references/use-case-pointers.md` | `04-build/platform-pointers.md` |
 | Zen asks a planning question, before the person sees it | **1b · Question review** | the question and Zen's options; `platform-pointers.md`; the references | one option added to the question, or none |
-| Zen has written its plan, before the person sees it | **2 · Plan review** | Zen's spec, task graph and preview; `platform-pointers.md`; `references/plan-review-checklist.md` | `04-build/platform-review.md` |
+| Zen has written its plan, before the person sees it | **2 · Plan review** | Zen's spec, task graph and preview; `platform-pointers.md`; `01c-integration/integration-spec.json` (`models[]`; `systems[]` when a client system is used); `references/plan-review-checklist.md` | `04-build/platform-review.md` |
 | UnifyApps Headless cannot build an asset | **3 · Fallback** | the failed task; `references/fallback-by-api.md`, `api-spec.md` | `04-build/fallback-<n>.md` |
 
 Reference files (read the one a job names; read the others only when the plan needs them):
@@ -84,7 +84,9 @@ options and can choose it.
 When Zen has written its spec (with `## Assumptions` and "Check this" lines), its task graph and its preview page, and
 before its one question (start / change something / keep for later) is put to the person:
 
-1. Read the spec, the task graph and the preview; `platform-pointers.md`; and the scoping document's Part B.
+1. Read the spec, the task graph and the preview; `platform-pointers.md`; the scoping document's Part B; and
+   `01c-integration/integration-spec.json` (its `models[]`, and `systems[]` when a client system is used: the
+   connection id, operations and field mapping every client-system task must use).
 2. Check the plan against `references/plan-review-checklist.md` and the pointers. Use `connectors.md`,
    `context-graph.md` or `governance.md` when the plan relies on a connector, a context graph or an agent control.
    An item is an **adjustment** only when it is one of these:
@@ -121,7 +123,9 @@ actually does. Decisions of preference, scope or process are never questioned.
 ## 3 · Fallback (UnifyApps Headless cannot build an asset)
 
 Called when UnifyApps Headless reports that a task cannot be built — it failed after its own retries, or it says the
-platform capability is not available to it. The fallback builds **platform assets**: Data Objects (schema and seed
+platform capability is not available to it. **A failure because a model ran out of credits or quota is not a fallback
+case:** the asset is fine, the model is not. Send it to connector-discovery `mode: model-recovery` (the person chooses
+the replacement model) and do not rebuild the asset. The fallback builds **platform assets**: Data Objects (schema and seed
 records), Connections, workflows/automations, AI agents (with their tasks and tools), data sources, context graph
 items and governance controls. It does not build pages or app UI; a page UnifyApps Headless cannot build stays with
 UnifyApps Headless and is listed at the verify gate.
