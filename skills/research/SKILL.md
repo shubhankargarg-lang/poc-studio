@@ -120,8 +120,13 @@ Each rule comes with its reason, because the caller builds on what comes back.
 - The answer makes sense when read without the findings table.
 - No confidential detail from the request went into a query or a source.
 
-Then return the result to the caller in the reply and stop. Carrying on with the caller's own task is
-the caller's job.
+Then hand the result back.
+- **Called by another skill in the same conversation** (the wireframes, design-system or scoping skill
+  loaded this one in the middle of its own run): write the answer where that skill can use it, then go
+  straight back to the step of that skill that asked for it and carry on with its task. The person is
+  waiting for that skill's output, so never end the turn on the research answer.
+- **Run as a separate agent, or asked directly by the person:** return the result in the reply and stop.
+  Carrying on with the caller's own task is the caller's job.
 
 ## Limits
 

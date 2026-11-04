@@ -93,7 +93,9 @@ and any later session — can read them:
     <slug>.wireframe.json               the layout spec (the wireframes skill writes it; render.py draws it)
     png/<page-id>.png                   one low-fidelity frame per page
     <slug>-wireframes.pdf               all frames in nav order (what the person approves; what goes to Orbit)
-    wireframe-manifest.json             the closed component list the design system designs and the build uses
+    wireframe-manifest.json             the component list (with briefs, signature, journey, chosen navigation) the
+                                        design system starts from and the build uses; png/ also holds NAV-options.png
+                                        and VIEWS.png (sheets, not pages)
   03-design-system/
     <slug>-design-system.html           the design system HTML UnifyApps Headless reads (one self-contained file)
   04-build/
@@ -401,9 +403,11 @@ except at the start (the POC ID must be verified).
      Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED` and every
      connector-discovery `SYSTEM_ACCESS:` question — the client connection and access, a replacement model — which are
      the person's).
-   - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); a map
-     page follows the wireframes skill's map-component reference; the approved manifest is the design system's
-     component list.
+   - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); each page
+     has a brief and a pattern, three navigation shells are drawn and one is chosen, a change from the BRD is recorded
+     in `brd_overrides` with a reason; a map page follows the wireframes skill's map-component reference; the approved
+     manifest is the design system's starting component list (it may add what the journey needs, marked Added with a
+     reason).
    - Design system: the stage runs unattended (the person is treated as absent for the skill's stops);
      brand-colour conflicts are settled by the design-system skill's own brand source order, without
      asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
@@ -522,28 +526,36 @@ spec at the Scoping gate. A resumed run never asks the connection questions agai
 
 ## 2b · Wireframes
 
-Part of the Plan phase (G2), between the BRD and the design system: the BRD says what is built, the wireframes fix what
-is on each page and where, and the design system then designs only those components.
+Part of the Plan phase (G2), between the BRD and the design system: the BRD says what is built and what each page must
+do, the wireframes decide how each page works (its brief, pattern, layout, the signature, the navigation, the views),
+and the design system then designs those components, adding only what the journey needs (marked Added with a reason).
 
 - Create the autopilot file. Call `wireframes` (Skill tool: `poc-studio:wireframes`) with the client name, the use
   case, the approved `02-scoping/scoping-document.docx` and the output folder `<workspace>/02b-wireframes/`. It runs
-  unattended: anything it cannot settle goes to the reviewer (resolve).
+  unattended: anything it cannot settle goes to the reviewer (resolve). Its research goes through `research`; copy
+  each answer to `<workspace>/research/wireframes-<topic>.md`.
 - Review: `stage: wireframes`, artifacts = the spec `<slug>.wireframe.json`, the PDF, the `png/` folder and
   `wireframe-manifest.json`; upstream = the approved scoping document.
 - **Orbit:** M1w · G2 (the wireframes PDF, with notification) before the gate; M2w on approve (wireframes approved only);
   M3 on changes; M5 before re-gating.
-- Gate. Show the page count (frames / scoping pages), the component count from the manifest, which components are
-  drawn in detail and which are slots, and any map page with its mode. Approving here fixes the component list the
-  design system designs.
+- Gate. Show the page count (frames / scoping pages), the signature and hero object, the chosen navigation (and the
+  two rejected), each page's pattern, the `brd_overrides` with their reasons, the component count from the manifest,
+  the `check:` lines kept with their reason, the fresh-eyes findings, and any map page with its mode. Approving here
+  fixes the layouts and the starting component list the design system designs from.
 
 ## 3 · Design System
 
-The `design-system` skill (v10) is tested and its output is approved as is. **Call it exactly as it is; do not change,
-extend or second-guess its steps** — its own section 0.0 says how the approved wireframes narrow it. It reads
-the whole scoping document and the approved wireframe manifest and produces a design system the builder
-composes from: full component pages (every state and variant), foundations, pattern blueprints, every journey as a
-flow diagram, at most five full screens, and the composition contract with the `#build-plan` and `#style-sets` blocks
-for UnifyApps Headless. Do not ask it to draw more screens, one per page or per persona: the five-screen limit is deliberate.
+The `design-system` skill (v12.6) is tested and its output is approved as is. **Call it exactly as it is; do not
+change, extend or second-guess its steps** — its section 0.0 says how the approved wireframes guide it. It reads the
+approved wireframe manifest and the scoping document and produces one HTML design system the builder composes from:
+the creative direction, a showcase of **three** screens (home with the signature, the main working page, the agent
+drawer open) plus two or three close-ups, foundations, the flow panels per capability, component pages (the signature
+and the main ones at full depth), the journey-to-component table, and the composition contract with the `#build-plan`
+and `#style-sets` blocks for UnifyApps Headless. It may add the components the journey needs, marked Added with a
+reason. Do not ask it to draw more screens: the three-screen limit is deliberate. It runs about 40–45 minutes
+(a separate creative-director pass, real product images, a judgement pass). It needs Python Playwright for its
+screenshots (the shared tools install it); its own register of earlier apps lives at
+`~/.local/poc-studio/design-register.json`.
 Only these session facts are supplied by you:
 
 - Create the autopilot file. Call `design-system` with:
@@ -706,16 +718,22 @@ Only these session facts are supplied by you:
     page) and `wireframe-manifest.json`. Each page's regions, their order and what each region holds follow its frame;
     the components in each region are the manifest's, styled by the design system. A map page (`layout: map` in the
     spec) is built as the map component in `wireframes/references/map-component.md` (platform-master adds it to the
-    pointers), with the manifest's data contract. Skip this item when `stages.wireframes` is `skipped`.
+    pointers), with the manifest's data contract. Build only the navigation shell the manifest marks chosen (the other
+    two on `png/NAV-options.png` are rejected), each page's `pattern`, and each hero list's views (`png/VIEWS.png`,
+    `alt_view_of` frames) as a switch on the same page, never as separate pages. Skip this item when
+    `stages.wireframes` is `skipped`.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell UnifyApps Headless to quote and follow the
     **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
     the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
     the active style set from the `#style-sets` block, and only specimens marked `data-active="true"` (never one
     labelled "Reference — not in this app"). Also from the contract: the shell, agents in drawers on the platform's
     live agent component, data/table rules, overlays and spacing, colours only from the token block, every state and
-    micro-interaction from the component pages, and each role's shell (drawn screen or shell blueprint). The file
-    draws at most five screens on purpose; UnifyApps Headless composes every other page from the kit and patterns, matching the
-    drawn screens' finish, and never copies one screen's content onto another page.
+    micro-interaction from the component pages, the flow panels (`#flows`) and the journey-to-component table, and the
+    navigation shell chosen in the wireframes. Open the agent only from the one entry the design system names
+    (`app.agent_entry`): one way in, never a second launcher. The file draws three screens on purpose; UnifyApps Headless
+    composes every other page from its wireframe frame, the kit and the patterns, matching the drawn screens' finish,
+    and never copies one screen's content onto another page. Product pictures in the design system may be used as the
+    app's seed images.
   - **What to build:** a **text-to-code app** (UnifyApps Code Builder) with the agents, automations and objects listed
     in the build plan (L1 scope only). Put these exact words in the request: "Build the app and every page as a
     text-to-code app: task kinds `code-app` and `code-publish`, owned by `code-app-agent` with `code-builder` tools.
@@ -760,7 +778,7 @@ Only these session facts are supplied by you:
      a schedule run now, a manual trigger with test input) and check its result: the records it should write, the
      status it should change, the notification it should send. Failures, errors and empty results count as failed.
   3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
-     records from the seed data, and that the agent opens in its drawer on the live agent component as the design
+     records from the seed data, that it has one way in (the design system's `app.agent_entry`), and that the agent opens in its drawer on the live agent component as the design
      system's composition contract requires (not a card on a page).
      If an agent asks a follow-up question, the drawer shows it and takes the answer (no dead-end or error screen),
      and the conversation continues to its result.

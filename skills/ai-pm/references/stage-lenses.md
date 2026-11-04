@@ -47,11 +47,17 @@ is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 | The wow | Does §1 open with the pain? Is there one moment in §20.2 the client's sponsor would retell to their boss? Is it live on screen, not a seeded replay? | Storyline is a feature tour; the core action re-shows a seeded result |
 | Prioritisation (adversarial) | Re-test every L1 row as a sceptic: drop it — does the client lose an ask, does the core flow or an agent break, or does research say the demo looks incomplete? If none, it is L2. | L1 share > 50%; sizing over budget (pages > 6 per app, objects > 12, agents > 1 without a Decision) |
 | Relevance | Does every L1 feature trace to a P-ID, a stated ask or research must-have? Is anything impressive but unrequested? | Untraced module; a supporting check grown into the app's centre |
-| Journey integrity | Does L1 touch every stage of 8.1 at least thinly? Is exactly one persona Primary, with a task-led home? | One module is the whole app; a KPI-tile home |
+| Journey integrity | Does L1 touch every stage of 8.1 at least thinly? Is exactly one persona Primary, and does each persona's home say what they do first and what needs them? | One module is the whole app; a home with no first task |
 | Assumption risk | Rank 5.6 by impact-if-wrong. Any assumption that would change the data model or the storyline must be researched, not assumed. | High-impact volume or process assumption, never challenged |
 | Language | Client vocabulary everywhere (Appendix B)? Any slop from D1–D7? | Executive summary that could be about any client |
 | Seed realism | Hero records use real brands and products; every warning, gate block and copilot answer has a planted defect | A gate block with nothing seeded to trigger it |
 | Buildability | Computed values written by a workflow (no formula fields); one picklist/lookup convention; object prefixes; code app where the UI needs it | A badge with no workflow writing it |
+
+**Page specs (scoping v5):** each §11 page says what the page must do (the question, the decision, what needs the
+person, one primary action, the exact copy, every state) and what the person must see to decide. A page that names a
+UI pattern, a layout region or a component (a KPI strip, a kanban board, a side pane) is a finding: the wireframes
+decide those. §21.1 Hero object and §21.2 Reference products exist (check_docx requires them); §23 is a capability
+inventory with stable CMP IDs.
 
 **Judge (Part B):** only completeness and consistency with Part A. Detail is expected, never a finding.
 
@@ -68,33 +74,41 @@ a cut that a human decision approved.
 
 ---
 
-## wireframes (kind: design, low fidelity)
+## wireframes (kind: design, low fidelity — wireframes skill v4.11)
 
 **Re-run:**
-- Render the spec yourself: `python3 "$W/render.py" <spec> <tmp>` (`W` = the request's `scripts.wireframes`) (a spec error is a finding with its
-  line), then `python3 "$W/coverage.py" <scoping docx> <manifest>`: every §11 page has a frame and
-  every §23 CMP ID is on a block. Each gap is a finding.
-- Count: frames per page (extra frames only for an open panel, drawer, modal, map mode or phone layout), components in
-  the manifest, components with more than three `variants` (a finding). `features` and `page_parts` are not variants.
+- Render the spec yourself: `python3 "$W/render.py" <spec> <tmp>` (`W` = the request's `scripts.wireframes`). A spec
+  error is a finding with its line. A legacy spec (no `signature`, made before v4) renders with `warning:` lines: those
+  are not findings on a run that did not touch it. Every `check:` line the render prints must be fixed or defended in
+  the hand-over; an unexplained one is a finding.
+- `python3 "$W/coverage.py" <scoping docx> <manifest>`: every §11 page has a frame and every §23 CMP ID is on a block or
+  named in `brd_overrides` with a reason. Each gap is a finding.
+- Count: frames per page (extra frames only for an open panel, drawer, modal, map mode, phone layout, a later guided
+  step, the payoff frame or an `alt_view_of` frame), components with more than three `variants` (a finding).
+  `png/NAV-options.png` and `png/VIEWS.png` are sheets, not frames.
 
-**Judge (from the PNGs):**
-- **Each frame answers its page's question.** The §11 Screen UX question, the one primary CTA, the hero content above
-  the fold at 1280×800, the filters with their values, the exact copy. A frame whose hero is a KPI strip on a doer's
-  home is a finding (scoping's home rule).
-- **Slots vs detail.** The page's defining region is drawn in detail with real wording; generic regions are slots
-  naming a component, a count, variants and states. A slot for the hero, or detail spent on a generic chart, is a
-  finding.
-- **One name per component.** The same thing has the same component name on every page; two names for one thing, or
-  one name for two different things, is a finding.
-- **Maps.** A page whose main question is *where* uses `layout: map` and follows `map-component.md` (map is the page,
-  floating panels, legend in the screen's own words, mode fits the question, data contract with lat/lng fields that
-  exist in §12). A map in a card, or a map without coordinates in the data model, is blocking.
-- **Agent and irreversible action.** The agent appears as a drawer frame; the one irreversible action has its confirm
-  modal frame.
-- **Nothing L2.** A region or component that only an L2 feature needs is a finding: remove it.
+**Judge (from the PNGs and the spec):**
+- **Each frame does its brief.** The page's `brief` (job, decision, what needs the person, next step) and the §11 "What
+  the page must do" (the question, one primary action, filters with values, exact copy, states) are visible on the
+  frame. A frame that needs a scroll or a click to show what the person decides on is a finding.
+- **Pattern, not a house layout.** Each page has a `pattern` from `patterns.md` that fits its brief; most pages sharing
+  the same top half (a KPI strip over a table on every page, a doer's home led by KPI tiles) is a finding.
+- **The signature is drawn as itself** (the cover test): the app's signature object, as the real thing where it is a
+  known artefact, and the `hero_object` with its picture or what stands in for one. Grey boxes for the signature are
+  a finding.
+- **Journey and payoff.** The `journey` follows the demo storyline (§20.2) in order and ends on the `payoff_frame`.
+- **Navigation chosen.** Three shells from three families on `NAV-options.png`, one chosen with a reason.
+- **Views.** Each hero list has 2–3 views (`VIEWS.png`, `alt_view_of` frames).
+- **Overrides.** A change from §11 or §23 is in `brd_overrides` with a reason; a justified override is never a finding,
+  an unrecorded one is.
+- **Truth.** One `today` on every frame; counts on a frame match the seed plan; blocked actions are drawn disabled with
+  their reason; no "demo", "dummy", "synthetic" or placeholder words on screen.
+- **One name per component** across all pages. **Maps** follow `map-component.md` (a map page with lat/lng fields that
+  exist in §12; a map in a card is blocking). **Agent** in a drawer frame; the one irreversible action has its confirm
+  modal. **Nothing L2.**
 
-**Never:** greys, one font, no brand or icons; empty slots; the design system's job (colour, type, variants beyond the
-manifest's list); the render's own look.
+**Never:** greys, one font, no brand or icons; empty slots; the design system's job (colour, type, form); the render's
+own look; a justified `brd_overrides` entry; the two rejected navigation shells.
 
 ---
 
@@ -173,7 +187,9 @@ manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go 
 
 ## wireframes-update (review of the change sheet, after the build)
 
-**Re-run:** `diff.py` on `_previous/v<N>` and the current folder; `render.py`; `coverage.py`.
+**Re-run:** `diff.py` on `_previous/v<N>` and the current folder; `render.py`; `coverage.py`. A legacy spec stays a
+legacy spec in an update (it renders with `warning:` lines); a page `diff.py` reports as "metadata only" did not change
+on screen.
 
 **Judge:**
 - Every page in the triage's `affected_pages` and `new_pages` appears in the change sheet, and **no other page does**:
@@ -182,44 +198,54 @@ manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go 
   `wireframes` lens applies to each changed frame).
 - New components in the manifest delta are slots with a `note` saying they are new in this change.
 - The change matches the `change-clarity` reading (or the person's answers); anything beyond it is blocking.
+- An app-level change in the sheet (navigation, `today`, journey, signature, the NAV or VIEWS sheet) affects every page:
+  it is allowed only when the reading asked for it.
 
 **Never:** that the design system was not updated (standing decision: the build styles new components from its kit
-and tokens); that unchanged frames were not re-reviewed.
+and tokens); that unchanged frames were not re-reviewed; `check:` or `warning:` lines about pages outside the change.
 
 ---
 
-## design-system (kind: design)
+## design-system (kind: design — design-system skill v12.6)
 
-**Re-run:**
-- Render the HTML with Playwright in light and dark, at 1280×800, 1280×680 and 375×812.
-- Run `scripts/render_check.js` (the design-system skill's own render check) in each. Any non-zero count is a finding
-  with its `where` list.
-- Count by script: component pages, `<template class="device">` screens (≤ 5), `#style-sets` with one active set,
-  `data-active` on every specimen, every L1 feature ID and CMP ID from the scoping doc present in the page inventory.
-  With approved wireframes: the `data-component` values equal the manifest's components plus the baseline (an extra
-  or a missing one is a finding), every frame's page ID without its letter suffix is in `#build-plan`, and each drawn screen keeps its frame's
-  regions in the same order.
-- Exact wording: every quoted refusal/message in scoping §8.2 appears verbatim in the flow diagrams.
+**Re-run** (`D` = the design-system skill folder, `R` = `~/.local/poc-studio/design-register.json`; the commands are in
+the skill):
+- Render the HTML with Playwright in light and dark, at 1280×800, 1280×680 and 375×812, and run
+  `scripts/render_check.js` in each. Any non-zero count is a finding with its `where` list.
+- `python3 -I "$D/scripts/check_ds.py" <html> <wireframe-manifest.json> --register "$R"`: every failed check is a
+  finding; a "skipped (manifest has no …)" line on an older POC is not.
+- `python3 -I "$D/scripts/scan.py" …` for your own screenshots (the skill's command), and `register.py compare` against
+  `$R`: the same look as an earlier app in the register is a finding.
+- Count: exactly three `data-screen` showcase screens and two or three `data-moment` close-ups; `#style-sets` with one
+  active set; `data-active` on every specimen; every L1 feature ID and CMP ID in the inventory. With approved
+  wireframes: every manifest component has a `data-component` page; a component that is not in the manifest is allowed
+  only with `data-added="true"` and a `data-reason` (more than 10 added, or one without a reason, is a finding); every
+  frame's page ID (without its letter suffix; not the `NAV-options` and `VIEWS` sheets) is in `#build-plan`; the chosen
+  navigation shell is the frames' shell; each page keeps its frame's regions in order (`data-form-change` may change a
+  component's form, never the layout).
+- One agent entry (`app.agent_entry`, `data-agent-entry` on `<html>`): two ways in to the agent is a finding.
+- Exact wording: every quoted refusal or message in the scoping document appears verbatim in the component pages or the
+  journey-to-component table.
 
 **Judge (from your own screenshots, not the skill's):**
-- **Independent design score**, 1–5 on the skill's five dimensions (distinctiveness, hierarchy, rhythm, finish,
-  concept). If yours is more than 1 point below the skill's self-score on any dimension, that is a finding with the
-  screenshot as evidence. Distinctiveness or finish under 4 by your score is blocking.
-- **Logo-off test, done by you.** Cover the logo on the main screen. Compare against the last design systems
-  recorded in `lessons/recent-looks.md`. Same chrome + surface + layout as a recent client = finding.
-- **Brand check.** Fetch the client's live site once; compare hue family, light-to-dark balance and chrome choice
-  with the expression card. A black-led brand shipped on a colour rail is blocking.
-- **Concept visible.** The design concept on the expression card shows in the signature components, not only the card.
-- **Profile rules.** Owner's profile items (e.g. no coloured side stripes: reject a `TB` status-stripe variant in the
-  active set).
-- **Weakest part.** Read the skill's own "weakest part" answer. Fixable inside the run → finding. Not fixable → carry
-  it to the gate summary.
+- **Independent score, 1–5 on the skill's seven dimensions** (`#review`: `data-distinctiveness`, `data-wow`,
+  `data-richness`, `data-accuracy`, `data-ux`, `data-craft`, `data-journey`). A skill score more than one point above
+  yours is a finding with the screenshot as evidence. Distinctiveness or craft under 4 by your score is blocking.
+- **Logo-off test.** Cover the logo on the home screen; compare with `register.py compare` and
+  `lessons/recent-looks.md`. Same navigation + surface + shape + idea as a recent client is a finding.
+- **Brand check.** Fetch the client's live site once; compare hue family, light-to-dark balance and chrome with the
+  expression card. A black-led brand shipped on a colour rail is blocking.
+- **Hero shown as itself.** The hero object appears as a picture (real images tagged `data-source`) where it has one;
+  shown as text only is a finding.
+- **The direction is visible** (`#direction`) in the signature component and the showcase, not only on the card.
+- **Profile rules** (e.g. no coloured side stripes: reject a `TB` status-stripe variant in the active set).
+- **Weakest part.** The skill names its lowest score. Fixable inside the run → finding; not fixable → the gate summary.
 
 **Fix lines** name the section and specimen, and the request says: "fix only what is listed; leave everything else
 byte-for-byte". A full re-run of the design system for a few findings is a wasted hour.
 
-**Never:** the five-screen limit; the skill's steps; a brand settled by its source order; the labelled UnifyApps
-stand-in logo; the public Orbit upload.
+**Never:** the three-screen showcase; components marked Added with a reason; the skill's steps; a brand settled by its
+source order; the labelled UnifyApps stand-in logo; real product images and the public Orbit upload.
 
 ---
 
@@ -240,8 +266,10 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 - **Storyline.** Walk scoping §20.2 step by step on the screenshots. Each step: right page, right record in the right
   state, the proof visible without extra clicks.
 - **Fidelity (R8).** Each page's pattern matches its `#build-plan` entry; only active variants; tokens only; agent in the
-  drawer. Compare side by side with the drawn screens and the approved wireframe frames (`02b-wireframes/png/`): same
-  regions in the same order. On a map page, check the map-component behaviour: rings split on zoom, labels never
+  drawer with **one** way in (the design system's `app.agent_entry`). Compare side by side with the three showcase
+  screens and the approved wireframe frames (`02b-wireframes/png/`): same regions in the same order, the chosen
+  navigation shell only (the other two on `NAV-options.png` are rejected), and each hero list's views as a switch on
+  the same page (an `alt_view_of` frame is a view, not a page). On a map page, check the map-component behaviour: rings split on zoom, labels never
   overlap, the card opens on hover and stays on click, sites stay clear of open panels, the legend's words match.
 - **Copy lens.** Read `copy.json` against the glossary (scoping Appendix B) and slop C1–C7: one name per thing,
   outcome-named buttons, exact refusal wording, no jargon, sentence case.
