@@ -120,11 +120,13 @@ including the hard cases: <e.g. scans, multi-page, other currencies, different s
 Options:
 - "I'll attach them now" — the person attaches the files to their next message or gives file paths.
 - "Here's a link" — the person types a Drive or Slack link in "Other"; read it with that connector.
-- "Generate realistic samples" — realistic, uncaptioned files marked "demo sample"; the AI feature is marked
+- "Generate realistic samples" — make them in this step: realistic files with nothing on them that says demo or
+  sample. Save them in `samples/generated/`, with file names ending in `-generated`. The AI feature is marked
   "not proven on real documents".
 - "No samples for now" — the request goes into Section 3 as a Blocking question.
 
-When files arrive: save them in `01-requirement-gathering/files/samples/`, read them as in Step 3, never send them
+When files arrive: save them in a `samples/` folder inside this run's `files/` folder
+(`01-requirement-gathering/files/samples/` in a POC Studio run), read them as in Step 3, never send them
 anywhere else, and record each one in the AI inputs table. Record the person's choice and its date as a human
 decision. Ask this once per run; a resumed run never asks again. In a POC Studio run this question belongs to the
 person in Zen and Sonic; the AI PM never answers it.
@@ -165,8 +167,8 @@ Plain prose and short tables, readable by someone who has never heard of the cli
   system is involved, write one line: "No client system: the app keeps its own data." This table decides whether
   connector discovery reads a client system before scoping (stage 1c).
 - **AI inputs and samples** — required: AI feature · Input it reads · Samples (file names) · Kind (real / anonymised
-  real / public specimen / generated / none) · Count · Variety covered (e.g. suppliers, scanned or digital,
-  multi-page, languages) · Decision (client samples / generate realistic demo samples / none — not proven) · Source
+  real / public specimen / generated / illustration / none) · Count · Variety covered (e.g. suppliers, scanned or digital,
+  multi-page, languages) · Decision (client samples / generate realistic samples / none — not proven) · Source
   (the person's answer and date). Leave the table out only when no AI feature reads documents or images.
 
 ### 2. Requirement checklist score
@@ -187,7 +189,7 @@ One table, twelve items, total out of 100 (the weight is in the Max column):
 | 11 | Success criteria and demo audience | 10 | | | | |
 | 12 | Delivery date, and our PM and manager | 10 | | | | |
 
-Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us. Item 9: ✅ Confirmed only when every AI input has at least one real or anonymised-real sample; 🟡 Inferred when only public specimens or generated samples exist, or samples were promised; ❌ Missing when there are none.
+Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us. Item 9: ✅ Confirmed only when every AI input has at least one real or anonymised-real sample; 🟡 Inferred when only public specimens or generated samples exist, or samples were promised but not received; ❌ Missing when there are none. When no AI feature reads documents or images, score item 9 on the data question alone.
 
 A PM's written record of a client call (a brief, call notes, or a Slack message summarising the meeting) counts as a client source when the PM says it is that record. Name it as "client call, <date>, recorded by <PM>", let it confirm item 2, and do not label it "not verbatim" or "our summary". An item cannot be ✅ Confirmed while a **Blocking** question about it is still open in Section 3. Score each source the same way on every item: a source counted as a client source for one item counts as one for all. When the PM or the client answers questions, move each answer into Section 1 as a confirmed decision with its source and remove the answered question from Section 3. Then re-score, and under the table show the new total and which items moved (old → new status).
 
@@ -210,8 +212,9 @@ When no source states them, also ask about:
 
 Never write any of these into the brief as requirements without a source.
 
-When no samples were given for an AI input, add a Blocking client question asking for 5–10 real samples of it, with the
-default "generated realistic samples marked 'demo sample'; the AI feature is marked 'not proven on real documents'".
+When any AI input has no samples, add one Blocking client question covering all such inputs, asking for 5–10 real
+samples of each, with the default "generated realistic samples (file names end in `-generated`); the AI feature is
+marked 'not proven on real documents'".
 When samples were given, ask nothing about them.
 
 ### 4. Source files
@@ -223,5 +226,5 @@ Internal working notes (Orbit or ticket IDs, Slack errors and retry times, searc
 ## Step 5 — Deliver
 
 1. Save the .docx in the stage folder (when run by the POC Studio orchestrator: `<workspace>/01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`), and send it with `SendUserFile` when that tool exists (the client files were already delivered in Step 2).
-2. Reply in a few lines: the score and verdict, the two or three items that most need the PM or the client, and the files delivered. If any client file was not reached, say so first. Add one line on the sample status: the samples received, or that demo samples will be generated, or that real samples are still needed.
+2. Reply in a few lines: the score and verdict, the two or three items that most need the PM or the client, and the files delivered. If any client file was not reached, say so first. Add one line on the sample status: the samples received, or that realistic samples will be generated, or that real samples are still needed.
 3. End by asking the person whether to proceed with these documents. Proceeding, revising or stopping is their call. (When the POC Studio orchestrator runs this skill, it owns this question: it runs the reviewer first and then puts the approval gate to the person. Do not ask it yourself in that case; return to the orchestrator.)
