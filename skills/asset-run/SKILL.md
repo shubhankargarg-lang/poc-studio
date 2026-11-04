@@ -39,7 +39,8 @@ prerequisite is in hand does the autopilot flag go on and the stage run unattend
 **Run mode.** Every one-off run also asks, once, **"Which mode for this run?"**: **Zen** (the AI PM reviews, then you
 approve the asset; for an app, you also answer Zen planning's questions and approve its plan) or **Sonic** (the AI PM
 reviews and approves; you are asked only for what the run cannot pass without you: sign-ins, `CONFIRM_REQUIRED`
-steps, credentials, a BLOCK after the third review, a Not ready requirements verdict, client-system connection and
+steps, credentials, a BLOCK after the third review, a Not ready requirements verdict, the `SAMPLE_UPLOAD:` question
+(real samples of the documents an AI feature reads, in `requirements`), client-system connection and
 access questions, the replacement model when one runs out of credits). Put it in the same
 AskUserQuestion call as the missing prerequisites (step 3 below), or ask it on its own when nothing else is missing.
 A chain from "Approve and make <next asset>" keeps the mode it started with and does not ask again. Record it in this
@@ -147,11 +148,13 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
    Collaterals add one entry per collateral delivered (asset `demo_script`, `deck`, `video`).
 4. **Standing decisions** — append to `context-log.md` once per workspace (the AI PM reads them like a pipeline's):
    questions during the stage are answered by the AI PM from context and assumptions, not the person (except, in
-   `app`, Zen's planning questions, its plan approval and every `CONFIRM_REQUIRED`, which are the person's); the design
+   `app`, Zen's planning questions, its plan approval and every `CONFIRM_REQUIRED`, and in `requirements` the
+   `SAMPLE_UPLOAD:` question, which are the person's); the design
    system runs unattended, settles brand colour by its own source order and uses the UnifyApps logo as a labelled
    stand-in when no client logo exists; builds use UnifyApps Headless in Zen mode on Orbit UAT with a new solution
    `<Client> — <Use case>`, and model IDs follow its recommendation; collaterals use the bundled UnifyApps template;
-   POC data policy — made-up seed and document values, so public Orbit links are approved; the person's Slack, Gmail,
+   POC data policy — made-up seed and document values, so public Orbit links are approved (real samples in
+   `files/samples/` are never uploaded); the person's Slack, Gmail,
    Drive and Calendar are read-only, and the only writes outside the folder are this one-off's Orbit row(s) and, for a
    video, the file copied into the `POC Studio Video Library` shared drive.
 5. **AI PM setup** (once per machine; seconds after that): `python3 "$R/lessons.py" init`, and `pip install pyyaml`

@@ -8,6 +8,8 @@ description: "POC intake for a client: finds and pulls every client file from Sl
 Collect everything that exists about a client and its use case, hand the client's files back in the chat, and write one short Requirement Gathering Document. Nothing else.
 
 **Never ask a question before the deliverables exist.** Work from the client name and the use case name you were given. Take the most reasonable reading of anything unclear, say which reading you took in the document, and put whatever only a person can answer into Section 3. After the files are delivered, the person decides whether to proceed.
+One exception: when an AI feature reads documents or images and the sources have no real samples of them, ask once for
+samples (Step 3b), because the samples change the document.
 
 **The client's own files come first.** A Requirement Gathering Document written without the client files is not finished. Never write Step 4 while a client file is still unreached and the retry and fallback steps in Step 2 have not all been tried.
 
@@ -102,6 +104,30 @@ Copy each original under its original name into the `files/` folder of the stage
 - **.pdf**: check each page with `pdftotext -f N -l N` (under about 20 words means image-only); render those pages with `pdftoppm -r 80 -png` and read the image.
 - **.docx**: `pandoc`. **Spreadsheets**: every sheet, headers, row count, sample rows.
 - For diagrams and process flows, write out what each shows: stages in order, lanes, roles, decision points, timings.
+- List every AI feature that reads a document or image (invoices, POs, receipts, contracts, forms, IDs, photos, scans,
+  drawings) and the samples found for each. Classify each sample as: real (from the client), anonymised real, public
+  specimen, generated / illustration, or none. Files made by our team or the POC pipeline never count as real.
+
+## Step 3b — Ask for samples (once, only when needed)
+
+For each AI input with no real or anonymised-real sample, ask the person one question (AskUserQuestion), covering all
+such inputs together. Start the question with "SAMPLE_UPLOAD:":
+
+"SAMPLE_UPLOAD: The AI in this use case reads <input, e.g. supplier invoices (PDF)>, but none of the client's files
+are real examples. Testing on made-up files proves little. Can you upload 5–10 real ones (anonymised is fine),
+including the hard cases: <e.g. scans, multi-page, other currencies, different suppliers>?"
+
+Options:
+- "I'll attach them now" — the person attaches the files to their next message or gives file paths.
+- "Here's a link" — the person types a Drive or Slack link in "Other"; read it with that connector.
+- "Generate realistic samples" — realistic, uncaptioned files marked "demo sample"; the AI feature is marked
+  "not proven on real documents".
+- "No samples for now" — the request goes into Section 3 as a Blocking question.
+
+When files arrive: save them in `01-requirement-gathering/files/samples/`, read them as in Step 3, never send them
+anywhere else, and record each one in the AI inputs table. Record the person's choice and its date as a human
+decision. Ask this once per run; a resumed run never asks again. In a POC Studio run this question belongs to the
+person in Zen and Sonic; the AI PM never answers it.
 
 ## Step 4 — Write the Requirement Gathering Document
 
@@ -138,6 +164,10 @@ Plain prose and short tables, readable by someone who has never heard of the cli
   a source says: a system no source names is not added, and an unknown environment stays "unknown". When no client
   system is involved, write one line: "No client system: the app keeps its own data." This table decides whether
   connector discovery reads a client system before scoping (stage 1c).
+- **AI inputs and samples** — required: AI feature · Input it reads · Samples (file names) · Kind (real / anonymised
+  real / public specimen / generated / none) · Count · Variety covered (e.g. suppliers, scanned or digital,
+  multi-page, languages) · Decision (client samples / generate realistic demo samples / none — not proven) · Source
+  (the person's answer and date). Leave the table out only when no AI feature reads documents or images.
 
 ### 2. Requirement checklist score
 One table, twelve items, total out of 100 (the weight is in the Max column):
@@ -152,12 +182,12 @@ One table, twelve items, total out of 100 (the weight is in the Max column):
 | 6 | Other personas, with device and working conditions per persona | 5 | | | | |
 | 7 | Top 3 end-to-end journeys | 10 | | | | |
 | 8 | Scope: core use case and must-haves | 10 | | | | |
-| 9 | Data: hypothetical or real; if real, where it lives and a sample | 5 | | | | |
+| 9 | Data: hypothetical or real; if real, where it lives; and real samples of every input an AI feature reads | 5 | | | | |
 | 10 | Systems and integrations (scored from the Systems table: each system with what the app does there) | 5 | | | | |
 | 11 | Success criteria and demo audience | 10 | | | | |
 | 12 | Delivery date, and our PM and manager | 10 | | | | |
 
-Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us.
+Items 5–7 (personas and journeys) carry 25 points. Statuses and points: **✅ Confirmed** (a client source states it) = the full Max · **🟡 Inferred** (only our team's material, a stated default, or implied) = half the Max · **❌ Missing** = 0. All twelve items are always scored, out of 100. For a "show us your view" (POV) ask, items 8 and 10 are ours to define: when only our team has defined them, they count as **🟡 Inferred** (half), never Confirmed; they are Confirmed only when a client source states them. Our own design never raises the score above what the client has given us. Item 9: ✅ Confirmed only when every AI input has at least one real or anonymised-real sample; 🟡 Inferred when only public specimens or generated samples exist, or samples were promised; ❌ Missing when there are none.
 
 A PM's written record of a client call (a brief, call notes, or a Slack message summarising the meeting) counts as a client source when the PM says it is that record. Name it as "client call, <date>, recorded by <PM>", let it confirm item 2, and do not label it "not verbatim" or "our summary". An item cannot be ✅ Confirmed while a **Blocking** question about it is still open in Section 3. Score each source the same way on every item: a source counted as a client source for one item counts as one for all. When the PM or the client answers questions, move each answer into Section 1 as a confirmed decision with its source and remove the answered question from Section 3. Then re-score, and under the table show the new total and which items moved (old → new status).
 
@@ -180,14 +210,18 @@ When no source states them, also ask about:
 
 Never write any of these into the brief as requirements without a source.
 
+When no samples were given for an AI input, add a Blocking client question asking for 5–10 real samples of it, with the
+default "generated realistic samples marked 'demo sample'; the AI feature is marked 'not proven on real documents'".
+When samples were given, ask nothing about them.
+
 ### 4. Source files
 Two tables.
-- **Files**: File · From (channel or folder, who shared it, date) · Client or internal · Read (Full / Partial / Not reached, with why / **Referenced, not found**, with where it was mentioned) · What it gives. Mark client files "sent in chat". For a file taken from Drive or Gmail because Slack refused it, say so. For a file Not reached, list the times of the Slack attempts and where else it was looked for.
+- **Files**: File · From (channel or folder, who shared it, date) · Client or internal · Read (Full / Partial / Not reached, with why / **Referenced, not found**, with where it was mentioned) · What it gives. Mark client files "sent in chat". For a file taken from Drive or Gmail because Slack refused it, say so. Tag each sample file as "Sample for <AI feature> · <kind>". For a file Not reached, list the times of the Slack attempts and where else it was looked for.
 - **Sources searched**: Source · What was searched · What was found. Include connectors that were not connected.
 Internal working notes (Orbit or ticket IDs, Slack errors and retry times, search logs, connector problems) go only in Section 4. Sections 1–3 carry none of them, so they read cleanly as client-facing content.
 
 ## Step 5 — Deliver
 
 1. Save the .docx in the stage folder (when run by the POC Studio orchestrator: `<workspace>/01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`), and send it with `SendUserFile` when that tool exists (the client files were already delivered in Step 2).
-2. Reply in a few lines: the score and verdict, the two or three items that most need the PM or the client, and the files delivered. If any client file was not reached, say so first.
+2. Reply in a few lines: the score and verdict, the two or three items that most need the PM or the client, and the files delivered. If any client file was not reached, say so first. Add one line on the sample status: the samples received, or that demo samples will be generated, or that real samples are still needed.
 3. End by asking the person whether to proceed with these documents. Proceeding, revising or stopping is their call. (When the POC Studio orchestrator runs this skill, it owns this question: it runs the reviewer first and then puts the approval gate to the person. Do not ask it yourself in that case; return to the orchestrator.)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.39.0
+- **Requirement Gathering asks for real samples when an AI feature reads documents or images.** The RG document has a new "AI inputs and samples" table (every AI feature that reads documents, its samples and their kind: real, anonymised real, public specimen, generated, illustration or none; files our team made never count as real). Item 9 ("Data") is Confirmed only with a real or anonymised-real sample for every input. When the client files hold none, a new Step 3b asks once (`SAMPLE_UPLOAD:`): upload samples, generate them, or go ahead without; the answer and date are recorded, and a Blocking client question stays open until samples arrive.
+- `SAMPLE_UPLOAD:` is always the person's, in Zen and Sonic: the hooks let it through, and the AI PM never answers it. The AI PM's RG lens checks the table and the scoring.
+- **Real samples stay private.** They live in `01-requirement-gathering/files/samples/` and are never uploaded to Orbit (M1 · G1 skips them) or anywhere public; the POC data policy says so.
+- **Where they are used:** scoping uses them for the extraction fields and in the §19 seed plan where a seed record holds that kind of document; the build seeds them into the app where they fit and tests every document-reading AI feature on each sample (one row per sample in `test-report.md`); the demo video uses them whenever the flow uploads or reads a document. No "sample" or "demo" label appears on screen.
+
 ## 1.38.0
 Four stage skills updated together; they are one chain (the BRD feeds the wireframes, the wireframes feed the design system).
 - **Scoping v5.** The BRD says what each page must do and what the person must see to decide; it no longer prescribes layout, UI patterns or components (the wireframes decide them). §23 is now a **capability inventory** (same CMP IDs). New required **21.1 Hero object** and **21.2 Reference products**. Tighter seed and copy rules: a tone per status, picture/file/location fields marked, every warning message word for word, every record a persona sees named, one demo day, totals computed by script, no "demo"/"dummy" labels, the brand is the client company. The Integration Spec input (v1.37) is kept.

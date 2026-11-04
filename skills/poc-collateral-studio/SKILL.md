@@ -139,9 +139,14 @@ Everything below comes from what was built, not from looking at screens.
    Change only demo data and prompts this build created; for records you did not create, leave them
    untouched and steer the story away from the contradiction instead (another record, another screen),
    noting it in `internal.md`. Never delete. No question is needed either way.
-4. **Domain sense-check.** Would the customer's own experts accept each suggestion? (A 2-layer fabric
+4. **Real samples for document-reading flows.** When `01-requirement-gathering/files/samples/` has real samples (POC
+   Studio), every scene where the flow uploads or reads a document or image uses one of them, so the customer sees the
+   AI read real documents. Pick the sample the AI reads correctly (Stage 4's `test-report.md` says which). The
+   "sample" label lives only in file names and the RG document; nothing on screen or in the narration says "demo",
+   "sample" or "synthetic". Never upload a real sample anywhere outside the app (no Orbit link, no public storage).
+5. **Domain sense-check.** Would the customer's own experts accept each suggestion? (A 2-layer fabric
    "meeting the same brief" as a 3-layer GORE-TEX Pro shell would not.) Fix the data or drop the claim.
-5. **Harvest what makes the story concrete:** the real navigation (routes, sidebar labels, tab
+6. **Harvest what makes the story concrete:** the real navigation (routes, sidebar labels, tab
    names), stable selectors (add `data-testid` to the elements the story clicks if they lack one), the
    customer's own vocabulary from the requirements, the discovery pain points for the "today" swimlane,
    and the real architecture (apps, workflows, agents, objects, connections) for the technical blueprint

@@ -15,7 +15,8 @@ authoritative where the two differ** (the differences are the owner's decisions,
 **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
 the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
 approved for every document, including the client files found during discovery. Do not warn about or ask again
-about public uploads.
+about public uploads. **Exception:** real samples in `01-requirement-gathering/files/samples/` are never uploaded,
+to Orbit or anywhere else.
 
 ## Setup (once per run, before Stage 1)
 
@@ -383,8 +384,8 @@ status waiting, g2_summary (BRD approved + wireframes), gate_summary, `slack_not
 
 | | G1 Understand | G2 Plan — (a) BRD | G2 Plan — (b) Design system | G3 Build | G4 Deliver |
 |---|---|---|---|---|---|
-| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive via "Video to Google Drive" (never `upload_public_file`) |
-| Documents (create) | each discovered file: `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the app's **preview link** (Preview link rule), `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
+| Upload | RG .docx; **every client file found in discovery** (`01-requirement-gathering/files/`), **never the real samples in `files/samples/`** (they stay local) | `scoping-document.docx` | design system .html | — | demo script .pdf; deck .pptx; demo video .mp4 → always Google Drive via "Video to Google Drive" (never `upload_public_file`) |
+| Documents (create) | each discovered file (not the real samples): `doc_role input`, `type slack`, stage `1_signal_capture`, status `final`, `file_link` = uploaded URL (or the source's own link — Slack, Drive, Gmail, Calendar — with `file_kind link`), `summary` names its source (Slack / Drive / Gmail / Calendar) · RG: `type requirements`, stage `2_research_assess`, `file_kind docx` | BRD: `type brd`, stage `3_scope`, `file_kind docx` | Design system: `type design_system`, stage `4_design_system`, the `.html` uploaded with `upload_public_file` (`text/html`), `file_kind html` | App: `type app`, stage `6_finalize`, `file_link` = the app's **preview link** (Preview link rule), `file_kind link`, `name` = app name | Script `type demo_script` (`file_kind pdf`) · Deck `type deck` · Video `type video`; all stage `7_collaterals`, status `final` |
 | gate_pack | g1 | g2 | g2 | g3 | g4 |
 | status | in_review (inputs final) | in_review | in_review | in_review | final |
 | Activity | `input_added` per input; `document_saved` for RG; `gate_posted` g1 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g2 | `document_saved`; `gate_posted` g3 | `document_saved` ×3; `stage_completed` g4, message "Deliver complete: demo-ready" (plus `gate_decided` g4 approve, actor_type person). If a deliver iteration is open: Iteration (update) status done, `resolved_document` = the deck's document_id, `resolved_at`; documents carry `from_iteration` |
@@ -694,11 +695,12 @@ observability:
    the session, and files are uploaded with `upload_public_file` (public links, owner-approved) instead of `upload_file`.
    One exception: files attached to a feedback ticket are uploaded with `orbit agent-builder upload_file` from the
    Orbit folder (signed-in links), as the `/feedback` section says.
-6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1.
+6. Every client file found in discovery (Slack, Drive, Gmail, Calendar) is pushed as an input document at G1, except
+   the real samples in `files/samples/`, which stay local.
 7. Every name/email field uses the POC owner's name and email from the POC record.
 8. The design system is uploaded as a public `.html` file like every other document; no `content` or `format` is sent
    on any document row.
-9. POC data policy: every file, client discovery files included, is uploaded as a public link without warning or asking
+9. POC data policy: every file, client discovery files included (real samples in `files/samples/` excepted), is uploaded as a public link without warning or asking
    (POCs use dummy data).
 
 ## Preview link rule (every app link POC Studio writes or records from)

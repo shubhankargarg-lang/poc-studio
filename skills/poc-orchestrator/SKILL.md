@@ -84,6 +84,7 @@ and any later session — can read them:
   01-requirement-gathering/
     Requirement Gathering - <Client> - <Use case>.docx
     files/                              the client's own files, as pulled from Slack/Drive/Gmail
+      samples/                          real samples of what an AI feature reads (never uploaded)
   01c-integration/                      connector-discovery: Integration Spec - <Client> - <Use case>.md,
                                         integration-spec.json (systems, when used; models, always), _working/
   02-scoping/
@@ -199,6 +200,8 @@ items below, and recreated right after.
 6c. Connector discovery's `SYSTEM_ACCESS:` questions: the client connection, write access, the write test, missing
    rights, its checkpoint when a core need is blocked, and the choice of a replacement model after a credits or quota
    failure. Access and model choices are always the person's.
+6d. Requirement Gathering's `SAMPLE_UPLOAD:` question (real samples of the documents or images an AI feature reads),
+   asked once per run when the client's files have none.
 7. A run blocked by a missing tool, connector or input that only the person can provide (Setup's connector check).
 Each one is asked as today (autopilot removed, one question — up to three for the change-clarity check, item 6b — logged as a human decision); then the run carries on in
 Sonic.
@@ -245,7 +248,8 @@ Record the absolute flag path in `state.json` (`"autopilot_flag"`) at setup and 
 
 Sign-ins are the exception: the person always signs in themselves (Orbit, Slack, etc.); never type a password.
 Connector discovery's `SYSTEM_ACCESS:` questions (the client connection and access, and the choice of a replacement
-model) are the other: they go to the person in Zen and Sonic, and the hook lets them through.
+model) are the other: they go to the person in Zen and Sonic, and the hook lets them through. So is Requirement
+Gathering's `SAMPLE_UPLOAD:` question (real samples of the documents an AI feature reads; asked once per run).
 
 **Two more exceptions, both in Stage 4 (and in any later fix to the app):**
 
@@ -351,7 +355,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 
 | In the run | Orbit moment (orbit-writeback) |
 |---|---|
-| Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file) · G2a (scoping doc) · G2w (wireframes PDF) · G2b (design system) · G3 (published app) |
+| Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file except real samples) · G2a (scoping doc) · G2w (wireframes PDF) · G2b (design system) · G3 (published app) |
 | Person approves (Zen) or the AI PM approves (Sonic) | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
@@ -401,8 +405,8 @@ except at the start (the POC ID must be verified).
    - Run mode: `<Sonic | Zen>`, chosen by the person at the start ("Run mode" above).
    - Questions during stages are answered by the reviewer from context and assumptions, not the person (except, in
      Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED` and every
-     connector-discovery `SYSTEM_ACCESS:` question — the client connection and access, a replacement model — which are
-     the person's).
+     connector-discovery `SYSTEM_ACCESS:` question — the client connection and access, a replacement model — and
+     Requirement Gathering's `SAMPLE_UPLOAD:` question, which are the person's).
    - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); each page
      has a brief and a pattern, three navigation shells are drawn and one is chosen, a change from the BRD is recorded
      in `brd_overrides` with a reason; a map page follows the wireframes skill's map-component reference; the approved
@@ -425,7 +429,10 @@ except at the start (the POC ID must be verified).
    - **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
      the documents and the collaterals use made-up values, never real customer records, so public Orbit links are
      approved for every document, including the client files found during discovery. Do not warn about or ask again
-     about public uploads.
+     about public uploads. **The exception is real samples** (`01-requirement-gathering/files/samples/`, from
+     Requirement Gathering's Step 3b): they stay in the local workspace and are never uploaded to Orbit or anywhere
+     else. They are used to define the extraction fields (scoping), in the app's seed data where they fit, to test
+     every AI feature that reads documents (Stage 4), and in the demo video when the flow reads a document.
    - The person's own Slack, Gmail, Drive and Calendar accounts are read-only: nothing is posted or sent from them.
      The exceptions are owner-approved: Orbit (the `orbit-writeback` uploads and its `slack_notification`, which makes
      Orbit post the gate to the POC's Slack thread), and the demo video plus the small sync-check file copied through
@@ -469,10 +476,13 @@ except at the start (the POC ID must be verified).
 ## 1 · Requirement Gathering
 
 - Create the autopilot file. Call `requirement-gathering` with the client name, **the use case name** and the stage folder
-  `<workspace>/01-requirement-gathering/` (client files into `files/`, the document into the folder).
+  `<workspace>/01-requirement-gathering/` (client files into `files/`, the document into the folder). Its Step 3b
+  `SAMPLE_UPLOAD:` question goes to the person (remove the autopilot file to ask, recreate it after); real samples land
+  in `files/samples/`. After the skill returns, move every file its "AI inputs and samples" table marks real or
+  anonymised real into `files/samples/` too (discovered files included), so none of them is uploaded at G1.
 - The skill's own last step ("ask whether to proceed") is replaced by your reviewer + gate.
 - Review: `stage: requirement-gathering`, artifacts = the .docx (and `files/` listing).
-- **Orbit:** M1 · G1 before the gate (RG + every discovered client file); M2 on approve; M3 on changes; M5 before
+- **Orbit:** M1 · G1 before the gate (RG + every discovered client file, never `files/samples/`); M2 on approve; M3 on changes; M5 before
   re-gating.
 - Gate. The document's verdict (Ready / Ready with assumptions / Not ready) and its open questions are shown at
   the gate; proceeding on "Not ready" is the person's call (in Sonic too: a Not ready verdict stops for the person;
@@ -701,6 +711,10 @@ Only these session facts are supplied by you:
   - **Environment:** Orbit — `https://orbit.uat.unifyapps.com/`.
   - **Build plan:** `<workspace>/02-scoping/scoping-document.docx` (Part B is the build spec: objects §12, agents
     §13, workflows/automations §14, pages §11, seed data §19, build order §20).
+  - **Real samples** (when `01-requirement-gathering/files/samples/` has any; the RG document's "AI inputs and samples"
+    table names them): upload them to the app as the seed records' files where a seed record holds that kind of
+    document or image, test every AI feature that reads documents on all of them, and keep them inside the app on
+    Orbit UAT: attach them through the app's own file fields, never with `upload_public_file` or any public link.
   - **Use case / app name:** `<Client> — <Use case>` (so the app on Orbit is identifiable per use case).
   - **POC ID:** `<POC ID>` — give it to UnifyApps Headless with the build so the build and the app can be traced to this POC.
   - **Solution:** create a **new** solution named `<Client> — <Use case>` for this POC. Never reuse a cached or
@@ -784,6 +798,8 @@ Only these session facts are supplied by you:
   3. **Every AI agent** (scoping §13): ask each of the spec's example prompts and check the answer matches the expected
      records from the seed data, that it has one way in (the design system's `app.agent_entry`), and that the agent opens in its drawer on the live agent component as the design
      system's composition contract requires (not a card on a page).
+     Every AI feature that reads documents or images runs on each real sample in `files/samples/` (and on the generated
+     ones when there are no real ones); `test-report.md` has one row per sample with what it read and whether it was right.
      If an agent asks a follow-up question, the drawer shows it and takes the answer (no dead-end or error screen),
      and the conversation continues to its result.
   4. **The demo storyline** (scoping §20.2): walk it end to end once, as the demo will run.
@@ -928,6 +944,8 @@ and a built page does not.
     recorded, ask UnifyApps Headless for it (same session) before recording;
   - the approved scoping document (problem statements, personas, journeys, demo storyline §20.2) and the
     Requirement Gathering document (the "today" pain points) as the build session's truth;
+  - the real samples in `01-requirement-gathering/files/samples/` (when there are any): the recording uses them
+    whenever the flow uploads or reads a document, so the customer sees the AI work on real documents;
   - the template: the one bundled with the collateral skill (`assets/UnifyApps_template.pptx`) — always this one.
     The deck (problem statement → solution) is built from it, with the UnifyApps opening slide first and the
     closing slide last (added by the skill's `deck.py`);
