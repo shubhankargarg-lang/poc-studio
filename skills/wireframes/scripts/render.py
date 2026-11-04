@@ -3,7 +3,7 @@
 
 usage: render.py <spec.json> <out_dir>
 writes: <out_dir>/png/<page-id>.png (one per page), <out_dir>/<slug>-wireframes.pdf (all pages),
-        <out_dir>/wireframe-manifest.json (the closed component list the design system builds from)
+        <out_dir>/wireframe-manifest.json (the starting component list the design system builds from)
 """
 import json, os, random, re, sys
 from collections import OrderedDict

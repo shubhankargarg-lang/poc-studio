@@ -60,7 +60,7 @@ This skill's scripts, references and assets sit in its own folder inside the plu
 written from `$D`. Each shell starts fresh, so **start every command block with these two lines**, as they are:
 
 ```bash
-D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' | head -1)")/.."
+source ~/.local/poc-collateral/env.sh 2>/dev/null; D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)")/.."; [ -f "$D/scripts/check_ds.py" ] || echo "check: design-system skill folder not found"
 R="$HOME/.local/poc-studio/design-register.json"; [ -f "$R" ] || { mkdir -p "$(dirname "$R")" && cp "$D/register/register.json" "$R"; }
 ```
 
@@ -221,7 +221,7 @@ every page and where. Read all three before 0.1, then:
    token-driven filter.
 6. **Check by script before hand-over:**
    ```bash
-   D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' | head -1)")/.."
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)")/.."; [ -f "$D/scripts/check_ds.py" ] || echo "check: design-system skill folder not found"
    R="$HOME/.local/poc-studio/design-register.json"; [ -f "$R" ] || { mkdir -p "$(dirname "$R")" && cp "$D/register/register.json" "$R"; }
    python3 -I "$D/scripts/check_ds.py" <client>-design-system.html wireframe-manifest.json --register "$R"
    ```
@@ -266,14 +266,14 @@ every page and where. Read all three before 0.1, then:
    - `hero_object` (top level) and each component's `media` → the scoping document's §21.1 hero object, or the §11
      page's "Hero content" / "What the person must see to decide". When it has a picture, pass its name to the check
      with `--hero-picture "<name>"` so the picture rules still run.
-   - each component's `hero` and `signature` → §21.1 and the signature candidates of 0.8 (§21 custom components, §23,
-     the WOW factor); the components that show the hero object or carry the main journey are the hero components.
+   - each component's `hero` and `signature` → §21.1 and the signature candidates of 0.8 (§21.1 hero object, the §23
+     capability inventory, the WOW factor); the components that show the hero object or carry the main journey are the hero components.
    - `purpose`, `shows`, `does`, `volume`, `primary` → the §11 page specification where the component appears, the
      §12 volumes and the component's §23 CMP entry.
    - `cmp` → the §23 CMP list: every CMP ID gets its flow panel (0.6 part 6).
    - `journey` → the demo storyline §20.2 (then the §8 journeys), its steps numbered in order.
    - `payoff_frame` → the §20.2 storyline's turning point; the showcase shows it.
-   - `views`, `alt_views`, `png/VIEWS.png` → two or more views per hero data set, chosen from §10.5 and the view
+   - `views`, `alt_views`, `png/VIEWS.png` → two or more views per hero data set, chosen from the §11 "What the person must see to decide" lines, the §12 volumes and the view
      library in `$D/references/reference.md`.
    - `nav_options` → the chosen navigation in full and two alternatives of your own.
    - `references` → nothing to reuse; research question 6 finds them.
@@ -355,8 +355,8 @@ the usual template; find the equivalent if they differ):
 | Personas (§7) | PERSONAS, DEVICES, density and shell per role (0.4) — every persona, not the first three |
 | Journeys and workflows (§8) | JOBS and the flows in 0.7 — every journey, every step, every exception |
 | Solution overview, global conventions (§9) | SURFACES, the app map, navigation, global elements |
-| Feature catalogue and UI pattern coverage (§10, §10.5) | VIEWS; every must-have (L1) feature ID |
-| Page specifications (§11) | SCREENS/ROUTES, layout order, key states per page |
+| Feature catalogue (§10) | VIEWS; every must-have (L1) feature ID |
+| Page specifications (§11) | SCREENS/ROUTES, what each page must do and show, key states |
 | Data model, allowed transitions (§12) | STATUSES in their own words, state machines, UNSET fields |
 | Agents (§13) | AGENT OUTPUTS, the agent drawers in 0.9 |
 | Workflows, rules and scoring (§14) | refusal messages, gates, thresholds, what turns a status red |
@@ -364,8 +364,8 @@ the usual template; find the equivalent if they differ):
 | AI trust and governance (§17) | the AI marker states, confidence display, human-in-the-loop moments |
 | Non-functional notes, seed data (§18–§19) | DATA VOLUMES, sample content, hero records the specimens use |
 | Demo storyline (§20) | which flows and screens carry the demo; the order the style guide follows |
-| Hand-off to the design system (§21) | BRAND INPUTS, vibe, custom components, key states, interactions, layouts |
-| Component inventory (§23) | signature-component candidates (0.8); every CMP ID gets a specimen (with wireframes: every manifest component; 0.0) |
+| Hand-off to the design system (§21) | BRAND INPUTS, vibe, hero object and visual objects (§21.1), reference products (§21.2), key states, interactions |
+| Capability inventory (§23) | signature-component candidates (0.8); every CMP ID gets a specimen (with wireframes: every manifest component; 0.0) |
 
 **Every must-have (L1) feature ID and every CMP ID maps to at least one inventory row (0.6)** (with wireframes, the
 manifest is the inventory and its coverage was checked at the wireframe stage: 0.0). Nothing
@@ -606,7 +606,7 @@ Recruitment has the ranked shortlist with explained scores. Delivery has the ris
 approval chain. Generic parts — tiles, tables, tabs — are carried by the kit; signature components are
 where the client sees that we understood their work.
 
-**Choose them** from the scoping document's custom-component list (§21), the component inventory
+**Choose them** from the manifest's `signature`, the hero object (§21.1), the capability inventory
 (§23), the WOW factor in the executive summary and the demo storyline. Name each in the build brief
 with the reason.
 
@@ -1576,11 +1576,13 @@ is good, whether it is this client's, and whether it is unlike every app we made
 
 1. **Scan and shoot.**
    ```bash
-   D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' | head -1)")/.."
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)")/.."; [ -f "$D/scripts/check_ds.py" ] || echo "check: design-system skill folder not found"
    R="$HOME/.local/poc-studio/design-register.json"; [ -f "$R" ] || { mkdir -p "$(dirname "$R")" && cp "$D/register/register.json" "$R"; }
    python3 -I "$D/scripts/scan.py" <client>-design-system.html <work>/scan
    ```
-   If `python3 -I -c "import playwright"` fails, install it first (`pip install playwright --break-system-packages`)
+   If `python3 -I -c "import playwright"` fails, install it first (on a Mac: run the `poc-collateral-setup` install,
+   which puts it in the shared tools that the `source …/env.sh` line above loads; elsewhere `python3 -m pip install
+   playwright`)
    and reuse the Chromium already present: never download a second browser when `PLAYWRIGHT_BROWSERS_PATH` or a
    Playwright Chromium exists (`scan.py` finds an installed Chromium by itself). The scan measures the page height
    (budget 70,000 px), finds overlapping and clipped text, contrast failures, small targets and repeated rows in light and dark,
@@ -1694,7 +1696,7 @@ the rules for the rest (0.6).
    chosen direction as built. Once `check_ds.py … --register "$R"` is clean (it also compares the fingerprint with
    every app in the register), add it to the shared register:
    ```bash
-   D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' | head -1)")/.."
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; D="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/design-system 2>/dev/null | sort -V | tail -1)"; [ -n "$D" ] || D="$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)")/.."; [ -f "$D/scripts/check_ds.py" ] || echo "check: design-system skill folder not found"
    R="$HOME/.local/poc-studio/design-register.json"; [ -f "$R" ] || { mkdir -p "$(dirname "$R")" && cp "$D/register/register.json" "$R"; }
    python3 -I "$D/scripts/register.py" add <client>-design-system.html "$R"
    ```

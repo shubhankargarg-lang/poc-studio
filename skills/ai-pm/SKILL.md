@@ -91,7 +91,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   `wireframes` lens. A legacy spec (made before v4, no `signature`) renders with warnings, which are not findings.
 - **Design system (v12.6):** with approved wireframes, every manifest component has a component page; the skill may add
   components the journey needs, each marked `data-added="true"` with a `data-reason` (never a finding when it has its
-  reason; more than 10, or one without a reason, is). Review the single HTML file against the skill's finished-piece
+  reason; one without a reason is). Review the single HTML file against the skill's finished-piece
   list (`references/reference.md`, "The finished-piece rule") and for brand fit and scope against the scoping document:
   three showcase screens plus two or three close-ups (the limit, not a gap: other pages are covered by component pages,
   the flow panels, the journey-to-component table and `#build-plan`), one agent entry, the composition contract with
@@ -455,7 +455,8 @@ run that stage's lens in `references/stage-lenses.md` on top: re-run first, then
 - wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` and a re-render of the spec with `"$W/render.py"`
   (`W` = the request's `scripts.wireframes`, or `find ~/.claude/plugins -path '*wireframes/scripts/render.py'`);
 - design-system: `scripts/render_check.js` in a browser, light and dark, at 1280×800, 1280×680 and 375×812; the skill's
-  `check_ds.py` (with the manifest and the shared register) and `register.py compare` (commands in the design-system skill);
+  `"$D/scripts/check_ds.py"` (with the manifest and the shared register) and `"$D/scripts/register.py" compare`
+  (`D` = the request's `scripts.design_system`; commands in the design-system skill);
 - build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`;
 - every stage: the slop phrases in `scripts/slop-phrases.json`.
 - every review after a change request: the clarity `reading` (or the person's answers) is the upstream for the

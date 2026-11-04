@@ -219,7 +219,7 @@ def main(argv):
         have_views = {v.lower() for v in p.views}
         miss_v = sorted(want_views - have_views)
         if miss_v: errs.append(f"views the wireframes list but the #views section does not draw (data-view): {', '.join(miss_v[:6])}")
-        if "nav_options" not in mf: skip("nav_options", "the navigation options drawn (data-nav): draw the chosen one in full and two alternatives")
+        if not mf.get("nav_options"): skip("nav_options", "the navigation options drawn (data-nav): draw the chosen one in full and two alternatives")
         nav = mf.get("nav_options") or []
         if nav and p.navs < min(3, len(nav)): errs.append(f"{p.navs} navigation options drawn (data-nav); draw the wireframes' {len(nav)} options, the chosen one in full")
         # hover and focus drawn on every interactive component
@@ -242,7 +242,7 @@ def main(argv):
         caps = {x for c in comps for x in (c.get("cmp") or [])}
         have_caps = {x.strip() for _, a in fl for x in a.get("data-flow", "").split(",")}
         if caps - have_caps: errs.append(f"capabilities with no flow panel (data-flow): {', '.join(sorted(caps - have_caps))}")
-        if "journey" not in mf: skip("journey", "every journey step has a flow panel (check against the demo storyline §20.2)")
+        if not mf.get("journey"): skip("journey", "every journey step has a flow panel (check against the demo storyline §20.2)")
         steps = set(range(1, len(mf.get("journey") or []) + 1))
         have_steps = {int(x) for _, a in fl for x in re.findall(r"\d+", a.get("data-journey", ""))}
         if steps - have_steps: errs.append(f"journey steps no flow panel covers (data-journey): {', '.join(map(str, sorted(steps - have_steps)))}")

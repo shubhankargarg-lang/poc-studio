@@ -112,12 +112,15 @@ def launch(pw):
     try:
         return pw.chromium.launch()
     except Exception as first:
-        roots = [os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or "", os.path.expanduser("~/.cache/ms-playwright"), "/ms-playwright"]
+        roots = [os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or "", os.path.expanduser("~/.cache/ms-playwright"),
+                 os.path.expanduser("~/Library/Caches/ms-playwright"), "/ms-playwright"]
         cands = [os.environ.get("SCAN_CHROMIUM") or ""]
         for r in roots:
             if r and os.path.isdir(r):
                 cands += sorted(glob.glob(os.path.join(r, "chromium*", "chrome-linux*", "chrome")) +
-                                glob.glob(os.path.join(r, "chromium_headless_shell*", "chrome-linux*", "headless_shell")), reverse=True)
+                                glob.glob(os.path.join(r, "chromium_headless_shell*", "chrome-linux*", "headless_shell")) +
+                                glob.glob(os.path.join(r, "chromium*", "chrome-mac*", "Chromium.app", "Contents", "MacOS", "Chromium")) +
+                                glob.glob(os.path.join(r, "chromium_headless_shell*", "chrome-mac*", "headless_shell")), reverse=True)
         cands += [shutil.which(n) or "" for n in ("chromium", "chromium-browser", "google-chrome", "google-chrome-stable")]
         for exe in [c for c in cands if c and os.path.exists(c)]:
             try:

@@ -439,14 +439,16 @@ except at the start (the POC ID must be verified).
      is missing and what it blocks. Never ask the person to install Homebrew or type their Mac password.
    - **Linux:** check `ffmpeg`, `pdftotext`, `soffice`, `pandoc`, `node`, `python3` (3.10+); if any are missing give
      the person one line to paste (`sudo apt-get install -y ffmpeg poppler-utils pandoc nodejs libreoffice`) and
-     carry on; `pip3 install python-docx python-pptx openpyxl` yourself.
+     carry on; `pip3 install python-docx python-pptx openpyxl playwright` yourself (Python Playwright: the design
+     system's screenshots; it reuses an installed Chromium).
    - From then on, on a Mac, every Bash command that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts
      with `source ~/.local/poc-collateral/env.sh && ` once that file exists (each shell starts fresh).
    Log what was installed in `context-log.md`.
 5. **AI PM (v1.0).** Let `R` be the ai-pm skill's `scripts/` folder
    (`find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' -exec dirname {} \;`), and `W` the wireframes skill's
-   (`find ~/.claude/plugins -path '*wireframes/scripts/render.py' -exec dirname {} \; | head -1`); give both paths to
-   the AI PM in every request (`scripts: {ai_pm: <R>, wireframes: <W>}`).
+   (`find ~/.claude/plugins -path '*wireframes/scripts/render.py' -exec dirname {} \; | head -1`), and `D` the
+   design-system skill's folder (`dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)"`,
+   then its parent); give all three to the AI PM in every request (`scripts: {ai_pm: <R>, wireframes: <W>, design_system: <D>}`).
    - `python3 "$R/lessons.py" init` (seeds the lesson bank once per machine; never overwrites) and
      `pip install pyyaml` into the shared venv if `python3 -c "import yaml"` fails.
    - Set `state.json` → `"owner_profile"`: the POC owner's email in lower case, from Orbit setup (`orbit.owner.email`).
@@ -538,7 +540,7 @@ and the design system then designs those components, adding only what the journe
   `wireframe-manifest.json`; upstream = the approved scoping document.
 - **Orbit:** M1w · G2 (the wireframes PDF, with notification) before the gate; M2w on approve (wireframes approved only);
   M3 on changes; M5 before re-gating.
-- Gate. Show the page count (frames / scoping pages), the signature and hero object, the chosen navigation (and the
+- Gate. Show the frame count (not counting the `NAV-options` and `VIEWS` sheets) against the scoping pages, the signature and hero object, the chosen navigation (and the
   two rejected), each page's pattern, the `brd_overrides` with their reasons, the component count from the manifest,
   the `check:` lines kept with their reason, the fresh-eyes findings, and any map page with its mode. Approving here
   fixes the layouts and the starting component list the design system designs from.

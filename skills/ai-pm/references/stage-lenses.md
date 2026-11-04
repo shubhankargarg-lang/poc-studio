@@ -208,8 +208,8 @@ and tokens); that unchanged frames were not re-reviewed; `check:` or `warning:` 
 
 ## design-system (kind: design — design-system skill v12.6)
 
-**Re-run** (`D` = the design-system skill folder, `R` = `~/.local/poc-studio/design-register.json`; the commands are in
-the skill):
+**Re-run** (`D` = the request's `scripts.design_system`, `R` = `~/.local/poc-studio/design-register.json`; start each
+command with `source ~/.local/poc-collateral/env.sh 2>/dev/null;`, as the skill does):
 - Render the HTML with Playwright in light and dark, at 1280×800, 1280×680 and 375×812, and run
   `scripts/render_check.js` in each. Any non-zero count is a finding with its `where` list.
 - `python3 -I "$D/scripts/check_ds.py" <html> <wireframe-manifest.json> --register "$R"`: every failed check is a
@@ -219,7 +219,7 @@ the skill):
 - Count: exactly three `data-screen` showcase screens and two or three `data-moment` close-ups; `#style-sets` with one
   active set; `data-active` on every specimen; every L1 feature ID and CMP ID in the inventory. With approved
   wireframes: every manifest component has a `data-component` page; a component that is not in the manifest is allowed
-  only with `data-added="true"` and a `data-reason` (more than 10 added, or one without a reason, is a finding); every
+  only with `data-added="true"` and a `data-reason` (one without a reason is a finding; more than 10: check whether baseline atoms were counted); every
   frame's page ID (without its letter suffix; not the `NAV-options` and `VIEWS` sheets) is in `#build-plan`; the chosen
   navigation shell is the frames' shell; each page keeps its frame's regions in order (`data-form-change` may change a
   component's form, never the layout).

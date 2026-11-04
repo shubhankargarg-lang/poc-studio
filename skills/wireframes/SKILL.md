@@ -17,8 +17,9 @@ description: Turns the approved scoping document (BRD) into low-fidelity wirefra
 
 **Why this stage exists.** The BRD says what the app must do: its pages, personas, data, agents and demo story.
 The wireframes decide *how each page works*: what the person sees first, what needs them, how they decide and what
-they do next, and so what is on each page and where. The design system then designs only the components in the
-manifest (plus its baseline: sign-in, empty/error/loading/no-access, toast, confirm), and the build composes pages to
+they do next, and so what is on each page and where. The design system then designs the components in the
+manifest (plus its baseline: sign-in, empty/error/loading/no-access, toast, confirm, and any the journey needs, marked
+Added with a reason), and the build composes pages to
 these layouts. A page that is hard to use at this stage stays hard to use after styling and building, and the fix
 then costs rounds of human review; getting the flow right here, at low fidelity, is the cheapest place to do it.
 
@@ -111,8 +112,7 @@ defining parts in detail too: each page's
 11. **References and research.** Before you settle the signature and one other component that carries the app, find
     out how others do the same job: real products, case studies and pattern libraries, through the `research` skill
     (patterns.md part 7). In POC Studio, save each answer to `<workspace>/research/wireframes-<topic>.md`. Fall back to
-    the built-in web search and fetch tools only when the `research` skill is unavailable (not installed, or it
-    errors), not when it ran and found no usable example (say that in the hand-over). Then carry on: the research answer is an input to the spec, never the run's last message. Add any reference the person or the BRD gives. List each in the spec's `references` with
+    the built-in web search and fetch tools if it fails or comes back with no usable example. Then carry on: the research answer is an input to the spec, never the run's last message. Add any reference the person or the BRD gives. List each in the spec's `references` with
     the component it changed, what you take and what you leave, and take only that.
 12. **UX rules every page keeps.** One main action per page (the rest secondary). Bulk selection where a list holds
     more than about 20 items at once (`volume`). A confirm frame for the irreversible action. Seven or fewer table

@@ -164,10 +164,10 @@ two; a queue, a form or a confirm dialog needs none.
   ("ideas for the wireframe of the signature component; internal"), the context (client, industry, persona, job) and
   the budget: **Quick, 3 to 5 searches, stop once two or three good examples are found.** In POC Studio, save each
   answer to `<workspace>/research/wireframes-<topic>.md` (e.g. `wireframes-signature.md`), so the design system, the
-  AI PM and a later change request can read what it found. Only when the `research` skill is unavailable (not
-  installed, or it returns an error) run the search yourself with the built-in web search tool and open the best
+  AI PM and a later change request can read what it found. If `research` is not installed, returns an error, or
+  comes back with no usable example, run the search yourself with the built-in web search tool and open the best
   results with the web fetch tool, to the same budget and the same order of sources, and save that answer the same
-  way. When `research` runs but finds no usable example, do not search again on your own: say so in the hand-over.
+  way.
   A page that will not load that way (Dribbble and Behance often need a browser) is skipped. Research never stops
   the run, and its answer is never the end of it: when `research` hands back, continue at step 2 (settle the
   signature) and go on through every step to the hand-over. If the session can start a separate agent, give it
