@@ -262,7 +262,8 @@ render the deck and script PDF to images and look at every page.
 - **One subject, one story** across video, script and deck: same record, same numbers, same names.
 - **Ending.** Next steps are the client's path, not our fixes (K6). Length 4–5 min unless the brief records why.
 - **Preview link** frames only: no Matrix login or user-creation screen anywhere (blocking R9).
-- **Deck frame.** The first slide is the UnifyApps opening slide and the last is the "Thank You" slide, both
+- **Deck frame.** Check the order the way a viewer opens the file: unzip the `.pptx` and confirm the slide files
+  run `slide1.xml` … `slideN.xml` in the deck's order (`deck.py` prints "order checked"), then render it. The first slide is the UnifyApps opening slide and the last is the "Thank You" slide, both
   unchanged from the template (a missing or edited one is a finding, unless the person asked to leave it out:
   `"open"` / `"close": false`, recorded in `brief.json` decisions).
 - **Technical blueprint.** Re-run `node kit/blueprint.mjs` (exit 0). Its slides follow the story and come before

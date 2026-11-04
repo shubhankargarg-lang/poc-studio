@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- **Fix: the "Thank You" slide showed as the second slide.** `kit/deck.py` put the slides in the right order in the deck's list, but left the slide files inside the .pptx with their template names (opening = slide4.xml, Thank You = slide5.xml, content from slide6.xml). Viewers that order slides by file name showed Thank You second, while python-pptx and the AI PM saw it last. The slide files are now renamed in deck order, and `deck.py` re-reads the saved file and stops unless the file names follow the deck order, the opening slide is first and Thank You is last. The AI PM's deck check now looks at the file the same way.
+
 ## 1.36.0
 - **Observability: every skill run is logged, including every re-run.** Re-runs after an AI PM REVISE or a change request were never logged (the hook only fires when a skill is first loaded), so the view jumped from "changes asked" to "approved". Now:
   - each re-run gets its own row before the review of it (label "<doc> v<N> · <k> fixes" or "· changes", round +1, `triggered_by` iteration for changes); the REVISE step, the gate's change step, 4c and asset-run say so where the re-run happens;

@@ -493,6 +493,11 @@ carries the message, so `blueprint.json` needs no `headline`:
 
 A continued list page keeps the same title with "(continued)" in the eyebrow. Keep each title to one line.
 
+`kit/deck.py` checks the saved file before it finishes: the slides' file names inside the package follow the deck order,
+the opening slide is first and "Thank You" is last. A failed check stops the build; never hand over a deck that failed it.
+When you look at the deck, look at it as a viewer opens it: render the saved `.pptx` (`soffice --convert-to pdf`) and check
+the first and last pages, not the deck.json order.
+
 - **Big stats are outcomes**, not backlog: "seconds from photo to scored visit", "every finding
   linked to its clause", "3 brands on one record". Every figure is real (POC data or `facts.json`).
   A gap or a queue size ("£14.52 over target", "49 waiting") belongs in a proof slide's caption.
@@ -2188,5 +2193,18 @@ for i, sl in enumerate(originals, 1):
             else: prs.part.drop_rel(sid.rId); lst.remove(sid)
 if OPEN in ends: lst.remove(ends[OPEN]); lst.insert(0, ends[OPEN])
 if CLOSE in ends: lst.remove(ends[CLOSE]); lst.append(ends[CLOSE])
-os.makedirs("out", exist_ok=True); out = f"out/{brief['slug']}_Deck.pptx"; prs.save(out); print(out, len(made) + len(ends), "slides" + (" (with the opening and closing slides)" if len(ends) == 2 else ""))
+# The slide files inside the package must be named in the same order (slide1.xml, slide2.xml, ...): some viewers and
+# converters order slides by file name, not by the list above, and would show the closing slide second.
+prs.part.rename_slide_parts([sid.rId for sid in lst])
+os.makedirs("out", exist_ok=True); out = f"out/{brief['slug']}_Deck.pptx"; prs.save(out)
+# Check the saved file the way every reader sees it: list order and file names agree, opening first, closing last.
+chk = list(Presentation(out).slides)
+names = [str(sl.part.partname) for sl in chk]
+bad = [f"slide {i} is stored as {n}" for i, n in enumerate(names, 1) if n != f"/ppt/slides/slide{i}.xml"]
+text = lambda sl: " ".join(sh.text_frame.text for sh in sl.shapes if sh.has_text_frame).lower()
+if OPEN in ends and "agentic automation for the enterprise" not in text(chk[0]): bad.append("the first slide is not the opening slide")
+if CLOSE in ends and "thank you" not in text(chk[-1]): bad.append("the last slide is not the closing slide")
+if any("thank you" in text(sl) for sl in chk[:-1]): bad.append("a Thank You slide appears before the end")
+if bad: raise SystemExit("deck order check FAILED: " + "; ".join(bad))
+print(out, len(made) + len(ends), "slides" + (" (with the opening and closing slides)" if len(ends) == 2 else ""), "· order checked")
 ```
