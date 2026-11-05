@@ -298,6 +298,9 @@ page of the storyline (a routes file with only those pages), never the whole app
 
 ## collaterals (kind: deliverable)
 
+Review only the collaterals made. One the person asked to skip (`stages.collaterals.skip`) is never a finding, and
+its checks below do not apply.
+
 **Re-run:** `python3 kit/check.py` (must report 0 must-fix); read `review/v<n>/report.md` and the contact sheet;
 render the deck and script PDF to images and look at every page.
 

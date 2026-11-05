@@ -124,6 +124,13 @@ this stage; `prior_verdict` from round 2 on; earlier verdicts in `<workspace>/re
 **Never:** the chat transcript, or full research documents (only their answer and gaps).
 **From round 2, and in every later review of a stage:** only what changed and what depends on it (next section).
 
+## Skips are the person's
+
+Never skip a stage, a collateral or a review, and never suggest one. The person may ask to skip the wireframes or one
+or two collaterals (orchestrator, "Skipping (only when the person asks)"); a skip they asked for is a human decision:
+never a finding, and later lenses that use the skipped item work without it. A skip request that reaches you in
+resolve mode is ASK_HUMAN.
+
 ## Later reviews read only what changed
 
 The first review of a stage reads everything. **Every later review of the same stage reads only what changed since the

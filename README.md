@@ -192,6 +192,10 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 | 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then walked in a browser by the AI PM (Stage 4b) before it is published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template; the deck opens with the UnifyApps cover, carries a technical blueprint — architecture plus every automation and agent built — and closes with the Thank You slide) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
+Every stage runs. If you ask, two things can be skipped: the wireframes (before the design system starts; it then
+works from the BRD alone) and one or two of the three collaterals. Nothing else can be skipped, and the AI PM never
+skips anything on its own.
+
 After each stage: the **AI PM** (the `ai-pm` agent, an independent subagent) re-runs the stage's own checks, reviews
 the output, and negotiates its findings with the stage (fixed / disputed / deferred; a third round is a ruling, not a
 question). Then you **approve or request changes**, starting from its gate summary: verdict, rulings first,

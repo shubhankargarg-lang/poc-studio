@@ -301,6 +301,30 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 | `SEND_BACK` (resolve) | The question was really a defect in the work: fix it in the stage, continue. |
 | `INVALID_REQUEST` | Fix the request field it names and call again. |
 
+## Skipping (only when the person asks)
+
+Every stage runs by default, and the pipeline never offers a skip. Only two things can be skipped, and only when the
+person asks for it in their own words (at the start, in any message, or in "Other" at a gate), in Zen and Sonic. The
+AI PM never skips anything and never suggests a skip; a skip is always a human decision.
+
+- **Wireframes (2b).** Can be skipped until the design system starts. Set `stages.wireframes` to
+  `{ "status": "skipped", "by": "person", "reason": "<their words>", "at": "<time>" }`, log it in `context-log.md` as a
+  human decision, and go from the scoping gate straight to the design system, which then reads the scoping document
+  alone (its "Without wireframes" path). The build request leaves out the frames (as it already does when
+  `stages.wireframes` is `skipped`). Orbit: no M1w or M2w; M2a's `last_activity` reads "BRD approved; design system
+  in progress". If the wireframes are already running, stop them and keep their files; if they are already
+  approved, there is nothing to skip: say so.
+- **Collaterals (5), per item.** The person can skip one or two of the three: demo script, demo video, deck. At least
+  one is always made (skipping all three would skip the stage). Record `stages.collaterals.skip` (for example
+  `["video"]`) with their words and the time, as a human decision, and make only the others, the way a one-off run
+  does ("Build only the collaterals chosen" in the asset-run skill): steps another collateral still needs still run
+  (the video needs the narration script even when the script PDF is skipped). If a skipped item is already made,
+  keep it and do not deliver it.
+
+Asked to skip anything else (Requirement Gathering, connector discovery, Scoping, the design system, the build, the
+AI PM review, a gate): say in one line that it cannot be skipped and why (the next stage needs it), and carry on.
+Every skip is shown in the next gate summary and in the end-of-run summary ("Skipped at your request: …").
+
 ## The approval gate (after every stage)
 
 This is the gate in **Zen** run mode. In **Sonic**, use "The Sonic gate" under "Run mode" instead.
@@ -935,7 +959,9 @@ and a built page does not.
 ## 5 · Collaterals
 
 - **Only three collaterals:** the demo script (PDF), the demo video (with subtitles) and the PPT deck. No
-  walkthrough PDF and no swimlanes document (the swimlane is only a slide inside the deck).
+  walkthrough PDF and no swimlanes document (the swimlane is only a slide inside the deck). All three are made unless
+  the person asked to skip one or two (`stages.collaterals.skip`, "Skipping (only when the person asks)"); then make
+  only the others, and the review, the Orbit write and the gate cover only those.
 - Create the autopilot file. Call `poc-collateral-studio`. Work in `<workspace>/05-collaterals/` so every output
   lands there. Supply:
   - the app's **preview link** from `04-build/build-summary.md` / `state.json` → `app.preview_url` as every persona's

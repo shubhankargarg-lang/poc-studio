@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.41.0
+- **Skip on request, two places only.** Every stage still runs by default and nothing offers a skip. When the person asks in their own words (Zen or Sonic): the **wireframes** can be skipped until the design system starts (the design system then works from the BRD alone, no wireframes in Orbit), and **one or two collaterals** can be skipped (at least one is always made; only the ones made are reviewed, uploaded and shown). Each skip is logged as a human decision and shown at the next gate and in the end-of-run summary. Asking to skip anything else gets a one-line "cannot be skipped" and the run carries on. The AI PM never skips or suggests a skip, and a skip is never a finding.
+
 ## 1.40.0
 - **Later AI PM reviews read only what changed.** The first review of a stage still reads everything. Every later review of the same stage (rounds 2 and 3 after a REVISE, the review after the person asks for changes at a gate, the review after a change after the build) reads only what changed since the last review and what depends on it, instead of the whole file again.
   - New `ai-pm/scripts/review_delta.py`: `snapshot` after every review records each artifact by section (docx headings, HTML sections and CSS custom properties, slides, PDF pages, JSON pages by id, folder files); `diff` at the start of the next review writes `reviews/<stage>-delta-<round>.md` (a before/after of each changed section) and says `SCOPE delta` or `SCOPE full`.
