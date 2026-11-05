@@ -293,7 +293,7 @@ The reviewer returns a verdict (and writes it to `<workspace>/reviews/`). Then:
 | Verdict / disposition | What you do |
 |---|---|
 | `PASS` | Go to the approval gate. |
-| `REVISE` | Re-run the stage skill on its own output with the fix lines (this re-run gets its own Observability row as soon as it returns, before the next review: orbit-writeback Moment 7, "Re-runs always get their own row"): **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines. Then review again with `prior_verdict`. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
+| `REVISE` | Re-run the stage skill on its own output with the fix lines (this re-run gets its own Observability row as soon as it returns, before the next review: orbit-writeback Moment 7, "Re-runs always get their own row"): **fix only what is listed, leave everything else as it is** (for the design system: byte-for-byte outside the named sections and specimens). The stage must also answer every finding in `<workspace>/reviews/<stage>-response-<n>.yaml` as `fixed`, `disputed` (with the evidence ID or stated ask behind it) or `deferred` (non-blocking only), as the ai-pm skill's "Negotiation" section defines, with `where` on every `fixed` (the section, page or specimen it changed). Then review again with `prior_verdict`; this review reads only what changed (the ai-pm skill's "Later reviews read only what changed"), so the re-run must leave everything outside the fix lines untouched. **At most 2 REVISE rounds**; the third review (v1.0) rules on every finding still open, and you go to the gate with its rulings, whatever the verdict. |
 | `BLOCK` | Fix the blocking findings the same way (with a response file), then review again. If it still blocks after the third review, go to the gate and show the blocking findings, so the person can override (quote the finding id and a reason; log it). |
 | `ASK_HUMAN` | Put its question to the person (autopilot file removed; the change-clarity check may carry 1–3, asked in one AskUserQuestion call), log the answer as a human decision, continue. |
 | `REQUEST_RESEARCH` / `research_request` | Call the `research` skill with it, save the answer, give it back to the reviewer or the stage. |
@@ -331,7 +331,7 @@ Remove the autopilot file, then:
    Nothing is reworked until the reading is settled. Then re-run the stage skill to apply it, limited to the reading
    ("change only this; leave everything else as it is"), write the re-run's Observability row ("<doc> v<N+1> ·
    changes", `triggered_by` `iteration`), review again (round counter restarts for the new feedback;
-   the reading is the upstream for the change), and gate again. Once the app is built, 4c runs this check instead.
+   the reading is the upstream for the change; the review reads only what changed since the last review), and gate again. Once the app is built, 4c runs this check instead.
 
 In Zen, never advance without the person's explicit approval; in Sonic, never advance without the AI PM's approval ("The Sonic gate").
 
