@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.40.0
+- **Later AI PM reviews read only what changed.** The first review of a stage still reads everything. Every later review of the same stage (rounds 2 and 3 after a REVISE, the review after the person asks for changes at a gate, the review after a change after the build) reads only what changed since the last review and what depends on it, instead of the whole file again.
+  - New `ai-pm/scripts/review_delta.py`: `snapshot` after every review records each artifact by section (docx headings, HTML sections and CSS custom properties, slides, PDF pages, JSON pages by id, folder files); `diff` at the start of the next review writes `reviews/<stage>-delta-<round>.md` (a before/after of each changed section) and says `SCOPE delta` or `SCOPE full`.
+  - A delta review reads the changed sections, the places earlier findings point at, the dispute evidence, and what depends on the changes (a renamed thing everywhere it appears, a changed colour token in every section that uses it, a changed total wherever it is shown). Every script still runs on the whole artifact.
+  - No new non-blocking findings on unchanged parts (they were passed earlier); blocking problems and changes made outside the fix lines are still raised.
+  - Full review again only when there is no earlier snapshot, over 40% of the text changed, or the artifact was rebuilt.
+  - The build walk from round 2 walks only the pages the fixes touched plus the first storyline page; collaterals re-check only changed scenes, slides and pages.
+  - The verdict records `scope`, `scope_reason` and the sections read. Every `fixed` in a response file names where it changed.
+
 ## 1.39.0
 - **Requirement Gathering asks for real samples when an AI feature reads documents or images.** The RG document has a new "AI inputs and samples" table (every AI feature that reads documents, its samples and their kind: real, anonymised real, public specimen, generated, illustration or none; files our team made never count as real). Item 9 ("Data") is Confirmed only with a real or anonymised-real sample for every input. When the client files hold none, a new Step 3b asks once (`SAMPLE_UPLOAD:`): upload samples, generate them, or go ahead without; the answer and date are recorded, and a Blocking client question stays open until samples arrive. Generated samples go in `files/samples/generated/` with names ending in `-generated`; nothing on them says demo or sample.
 - `SAMPLE_UPLOAD:` is always the person's, in Zen and Sonic: the hooks let it through, and the AI PM never answers it. The AI PM's RG lens checks the table and the scoring.

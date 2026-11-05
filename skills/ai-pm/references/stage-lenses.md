@@ -12,6 +12,11 @@ Every finding carries a **fix line** a producer can apply without asking a quest
 Bad: "Improve the executive summary." Good: "§1 para 1 — opens with the as-is process ('Today, merchandisers…') —
 open with P1's cost: 'Range reviews slip two weeks every season because…' (E4)".
 
+**Later reviews read only what changed.** Each lens below describes the first, full review. In every later review of
+the same stage (rounds 2 and 3, and the review after any change), apply it only to what `review_delta.py diff`
+reports as changed and what depends on it, re-run every script on the whole artifact, and raise no new non-blocking
+findings on unchanged parts (ai-pm skill, "Later reviews read only what changed").
+
 Before judging, read the lessons for this stage (`lessons.md`, filter `stage:`) and the owner's profile. Every lesson
 is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 
@@ -284,7 +289,8 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 
 **Fix route:** findings go to UnifyApps Headless in the same session as numbered fix lines, as direct changes through
 `ua-change` (no new plan), independent fixes in parallel; a platform asset it cannot build goes to platform-master's
-browser fallback. At most 3 rounds per item; then the walk re-runs on the pages the fixes touched.
+browser fallback. At most 3 rounds per item; then the walk re-runs on the pages the fixes touched, plus the first
+page of the storyline (a routes file with only those pages), never the whole app again.
 
 **Never:** design decisions already approved in the design system; seed records the person created while verifying.
 

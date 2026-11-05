@@ -122,6 +122,43 @@ this stage; `prior_verdict` from round 2 on; earlier verdicts in `<workspace>/re
 (`python3 scripts/lessons.py for <stage> --owner <owner>`), `references/stage-lenses.md` for this stage,
 `references/slop.md`, and from round 2 the producer's response file (`<workspace>/reviews/<stage>-response-<n>.yaml`).
 **Never:** the chat transcript, or full research documents (only their answer and gaps).
+**From round 2, and in every later review of a stage:** only what changed and what depends on it (next section).
+
+## Later reviews read only what changed
+
+The first review of a stage reads everything. **Every later review of the same stage reads only what changed since the
+last review, and what depends on it.** That covers round 2 and round 3 after a REVISE, the review after the person asks
+for changes at a gate, and the review after a change after the build (4c). Reading the whole artifact again costs as
+much as the first review and turns up findings on parts that were already passed, which only adds rounds.
+
+1. **At the end of every review**, record what you reviewed:
+   `python3 scripts/review_delta.py snapshot <workspace> <stage> <round> <artifact paths>`.
+2. **At the start of every later review**, work out what changed:
+   `python3 scripts/review_delta.py diff <workspace> <stage> <round> <artifact paths>`. It writes
+   `reviews/<stage>-delta-<round>.md` (a short before/after of each changed section) and prints `SCOPE delta` or
+   `SCOPE full (<reason>)`.
+3. **SCOPE delta.** Read, in this order:
+   - the delta report and the producer's response file;
+   - each changed or added section in the artifact itself (the report shows only the start of long changes);
+   - the place each earlier finding points at, to confirm it is fixed, and the evidence behind each dispute;
+   - what depends on the changes: a renamed thing everywhere its name appears (search for it), a changed CSS
+     custom property in every section that uses it (the report lists them), a changed total wherever that total is
+     shown, a changed page or object wherever another page or step uses it, and the matching parts of the approved
+     upstream.
+   Do not read the unchanged sections. **Re-run every script on the whole artifact** (they are cheap and catch what a
+   fix broke elsewhere).
+4. **New findings in a later review** come only from: the changed sections and what depends on them, a fix that was
+   not done, a script result, or a change made outside the fix lines (that one is an R9 finding: the producer changed
+   what it was not asked to). Do not raise new non-blocking findings on unchanged sections; they were passed in an
+   earlier round. A blocking problem you see anyway (a first-glance failure, an unmet stated ask) is still raised.
+5. **SCOPE full** (no earlier snapshot, more than 40% of the text changed, or the artifact was rebuilt rather than
+   fixed): review the whole artifact as in round 1, and say why in `scope_reason`.
+6. **Score** a later review from the earlier score: change only the dimensions the changes touch, and say which.
+
+For the build (4b), the walk does the same: from round 2, walk only the pages the fixes touched, plus the first page of
+the storyline (scoping §20.2) as a quick check that the app still opens and reads right
+(`--routes` with just those pages). For collaterals, re-check only the scenes, slides and pages that changed; `kit/check.py`
+still runs on everything.
 
 ## Answering questions (resolve mode) — assume, don't escalate
 
@@ -281,6 +318,9 @@ lessons_applied: [ L-001, P-001, ... ]           # every lesson and profile item
 reran: [ { check: <script or test>, result: <one line>, matches_author: true | false } ]
 responses: [ { finding, status: fixed | disputed | deferred, reason } ]   # copied from the producer's response file (round 2+)
 rulings: [ { finding, ruling: <what stands>, why, source } ]             # disputes settled by the reviewer (round 3)
+scope: full | delta                              # delta in every later review unless review_delta.py says full
+scope_reason: <one line>                         # why full, or "changes are local"
+read: [ <sections read in a delta review> ]      # the changed sections, the findings' places and what depends on them
 weakest_part: <one line: the author's own weakest part, or yours if they gave none>
 ```
 
@@ -505,6 +545,8 @@ finding or a decision** (scored under R3).
 1. Check independence. Not a fresh context: set `advisory: true`.
 2. Validate the request; fill optional fields from the workspace context. Return `INVALID_REQUEST` only if a hard-required field is missing.
 3. Read only what "What it reads" allows, including `prior_verdict` and the producer's response file from round 2 on.
+   In every later review of a stage, run `review_delta.py diff` first and read only what it and "Later reviews read
+   only what changed" allow (unless it says `SCOPE full`).
 4. **(v1.0) Load the lessons and the owner's profile** for this stage (`lessons.py for <stage> --owner <owner>`).
 5. **(v1.0) Re-run** the stage's own checks and this skill's scripts (stage lens). Record each in `reran`, with
    `matches_author: false` where the author's reported result differs; that difference is an R9 finding.
@@ -515,7 +557,8 @@ finding or a decision** (scored under R3).
 9. Score with the anchors; compute `score_pct`.
 10. Apply the decision rows to every open point, in order.
 11. Decide the verdict in the order above.
-12. Write the verdict to `<workspace>/reviews/` and append the log row. Never log a credential.
+12. Write the verdict to `<workspace>/reviews/` and append the log row. Never log a credential. Then run
+    `review_delta.py snapshot` on the artifacts you reviewed, so the next review can read only what changes.
 
 ## The reviewer never
 
