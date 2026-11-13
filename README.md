@@ -22,22 +22,24 @@ On Claude Code 2.1.275 or later, one line also works:
 /plugin install poc-studio --marketplace shubhankargarg-lang/poc-studio
 ```
 
-**Staying on the latest version:** every `/poc-studio:start` first checks GitHub for a newer release. If one exists it
-updates the plugin and asks you to type `/reload-plugins` and run the same command again, so every POC runs on the
-latest version. To also get updates in the background, turn on auto-update once: `/plugin` → **Marketplaces** →
-`unifyapps-poc` → **Enable auto-update**. Manual update at any time:
-`/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, then `/reload-plugins`.
+**Staying on the latest version (automatic):** POC Studio checks GitHub when a session starts and again before every
+stage. When `main` has a newer version it downloads and installs it on its own (no git, no GitHub sign-in, no `claude`
+command; the download uses curl or Node, never Python's own HTTPS) and asks you to restart Claude Code (`/exit`, then
+open it again). A stage that is already running always finishes; the next stage does not start until you are on the
+latest version, and the run resumes from that stage after the restart. If GitHub cannot be reached, the next stage waits
+until it can. To update by hand at any time: `/poc-studio:update`. Copies older than 1.42.0 cannot update themselves:
+reinstall once with the two commands above.
 
-## Releasing a change (maintainers)
-
-The update check compares versions, so **every change pushed to `main` needs a new version number**. Use:
+**Releasing:** every change that reaches `main` needs a new version number, because that is what users' copies compare.
+Skill changes approved in Orbit get a patch bump automatically (the `Orbit · Commit skill with version bump`
+automation commits the skill, `plugin.json`, `marketplace.json` and a CHANGELOG line together). For a PR, run
 
 ```
 scripts/release.sh 1.4.0 "what changed"
 ```
 
-It bumps the version in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `commands/start.md`,
-then commits and pushes to `main`.
+It bumps the version in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, then commits and pushes to
+`main`. A PR merged on GitHub must carry its own version bump.
 
 Requires the **UnifyApps Headless** plugin for stage 4 (`/ua:setup`) and the **Slack** and **Google Drive** connectors
 (Gmail and Google Calendar are optional but improve requirement gathering). Drive also hosts the demo video (always,
@@ -234,7 +236,8 @@ commands/requirements.md, brd.md, wireframes.md, design.md, app.md, collaterals.
                                    /poc-studio:<asset> — make one asset on its own
 agents/ai-pm.md                    the AI PM, run as an independent subagent
 hooks/                             route questions to the reviewer while a stage runs
-scripts/release.sh                 bump the version everywhere, commit, push
+scripts/release.sh                 bump the version, commit, push
+scripts/poc_update.py              version check, self-update and the stage gate (hooks and /poc-studio:update)
 skills/poc-orchestrator/           the pipeline
 skills/connector-discovery/        client system (connection, schema, operations, automations) and AI model health
 skills/requirement-gathering/
