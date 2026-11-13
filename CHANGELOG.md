@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.42.3
+- **A failed update check no longer lets the run continue on an old copy.** When the update could not run or GitHub could not be reached (for example an SSL error), every command now stops and shows the person how to reinstall once (remove the marketplace, add it again, install, reload), then run the same command again. Only if they say they already did this and the check still fails does the run continue, saying which version it is on.
+
 ## 1.42.2
 - Version bump only, to test updating. No other changes.
 

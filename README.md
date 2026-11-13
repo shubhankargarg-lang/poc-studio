@@ -25,7 +25,7 @@ On Claude Code 2.1.275 or later, one line also works:
 **Staying on the latest version:** every `/poc-studio:start` first checks GitHub for a newer release. If one exists it
 updates the plugin and asks you to type `/reload-plugins` and run the same command again, so every POC runs on the
 latest version. To also get updates in the background, turn on auto-update once: `/plugin` → **Marketplaces** →
-`unifyapps-poc` → **Enable auto-update**. Manual update at any time:
+`unifyapps-poc` → **Enable auto-update**. If the update check cannot run (for example an SSL error), the command stops and shows the reinstall steps: `/plugin marketplace remove unifyapps-poc`, `/plugin marketplace add shubhankargarg-lang/poc-studio`, `/plugin install poc-studio@unifyapps-poc`, `/reload-plugins`. Manual update at any time:
 `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, then `/reload-plugins`.
 
 ## Releasing a change (maintainers)
