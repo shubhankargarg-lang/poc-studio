@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.42.3
-- **A failed update check no longer lets the run continue on an old copy.** When the update could not run or GitHub could not be reached (for example an SSL error), every command now stops and shows the person how to reinstall, step by step (remove the marketplace in the `/plugin` screen, add it again, install, reload), then run the same command again. Only if they say they already did this and the check still fails does the run continue, saying which version it is on.
+- **A failed update check no longer lets the run continue on an old copy.** When the update could not run or GitHub could not be reached (for example an SSL error), every command now stops and shows the person how to reinstall, step by step (in the app: + → Manage marketplaces → remove and add the marketplace → add POC Studio to the computer → new chat), then run the same command again. Only if they say they already did this and the check still fails does the run continue, saying which version it is on.
 
 ## 1.42.2
 - Version bump only, to test updating. No other changes.

@@ -45,11 +45,12 @@ Then act on the last line it printed:
 - **`UPDATE_FAILED` or `UPDATE_CHECK_FAILED`** (the update could not run, or GitHub could not be reached, for example
   an SSL error) → **stop here; do not continue on this version.** Tell the person, in these words, then wait:
   "POC Studio could not update itself. Please reinstall it (2 minutes):
-  1. Type `/plugin` and press Enter. Go to **Marketplaces**, pick **unifyapps-poc**, choose **Remove**, and confirm.
-  2. Type `/plugin marketplace add shubhankargarg-lang/poc-studio` and press Enter.
-  3. Type `/plugin install poc-studio@unifyapps-poc` and press Enter.
-  4. Type `/reload-plugins` and press Enter.
-  5. Run this again: `/poc-studio:collaterals $ARGUMENTS`"
+  1. Click the **+** (Add) button at the top right.
+  2. Choose **Manage marketplaces**.
+  3. Next to **unifyapps-poc**, click **Remove marketplace**.
+  4. Click **Add marketplace** and enter `shubhankargarg-lang/poc-studio`.
+  5. Find **POC Studio** and click **Add to computer**.
+  6. Start a new chat and run: `/poc-studio:collaterals $ARGUMENTS`"
   Only if the person says they have already done these steps and the check still fails, carry on, and say in one
   line which version you are continuing on.
 
