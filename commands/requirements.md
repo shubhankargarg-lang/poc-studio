@@ -9,27 +9,44 @@ The arguments are `<Client> | <Use case> [| <POC ID>]`. The POC ID is optional; 
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-POC Studio keeps itself current: a hook checks GitHub when the session starts and again before every stage, installs a
-newer version on its own, and blocks a new stage until the person restarts on the latest version. Run this check once
-now with the Bash tool (it uses curl or Node, never Python's own HTTPS):
+This command was loaded from **POC Studio v1.41.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-R="$(cat ~/.local/poc-studio/update/plugin_root 2>/dev/null)"
-[ -f "$R/scripts/poc_update.py" ] || R="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/ 2>/dev/null | sort -V | tail -1)"
-python3 "${R%/}/scripts/poc_update.py" check
+LOADED="1.41.0"
+python3 - "$LOADED" <<'PY'
+import json, subprocess, sys, urllib.request
+loaded = sys.argv[1]
+url = "https://raw.githubusercontent.com/shubhankargarg-lang/poc-studio/main/.claude-plugin/plugin.json"
+try:
+    latest = json.load(urllib.request.urlopen(url, timeout=10))["version"]
+except Exception as e:
+    print(f"UPDATE_CHECK_FAILED {e}"); sys.exit(0)
+v = lambda s: tuple(int(x) for x in s.split("."))
+if v(latest) <= v(loaded):
+    print(f"UP_TO_DATE {loaded}"); sys.exit(0)
+def run(*cmd):
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    print("$", " ".join(cmd)); print((r.stdout + r.stderr).strip()); return r.returncode
+ok = run("claude", "plugin", "marketplace", "update", "unifyapps-poc") == 0
+for scope in ("user", "project", "local"):
+    if ok and run("claude", "plugin", "update", "poc-studio@unifyapps-poc", "-s", scope) == 0:
+        print(f"UPDATED {loaded} -> {latest}"); sys.exit(0)
+print(f"UPDATE_FAILED {loaded} -> {latest}")
+PY
 ```
 
-Act on `status` in the JSON it prints:
+Then act on the last line it printed:
 
-- **`current`** → carry on.
-- **`outdated`** → run `python3 "${R%/}/scripts/poc_update.py" install`. On `"status": "installed"`, **stop here** and
-  tell the person in two lines: "POC Studio <to> is installed. Restart Claude Code (type `/exit`, then open it again)
-  and run the same command again: `/poc-studio:requirements $ARGUMENTS`". On `"status": "error"`, stop and show them its `error` in one line.
-- **`unreachable`** → stop. Tell the person in one line that POC Studio could not check for updates because GitHub
-  could not be reached (show `error`), to check the internet connection or VPN, and to run the same command again.
-
-If a tool call is ever refused with a reason that starts `POC_STUDIO_UPDATE:`, tell the person what it says and stop.
-Never work around the version check.
+- **`UP_TO_DATE`** → carry on with the run below.
+- **`UPDATED <old> -> <new>`** → the new version is on disk, but this session is still running the old one, and only
+  the person can switch it. **Stop here and do not start the run.** Tell the person, in two lines:
+  "POC Studio was updated from <old> to <new>. Type `/reload-plugins`, then run the same command again:
+  `/poc-studio:requirements $ARGUMENTS`".
+- **`UPDATE_FAILED`** (e.g. the `claude` command is not on the shell's PATH) → stop and ask the person to run these
+  three commands, then the same `/poc-studio:requirements` command again:
+  `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
+- **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
+  are continuing on v1.41.0, then carry on.
 
 ## Step 1 — prerequisites (asked in the chat, before anything runs)
 

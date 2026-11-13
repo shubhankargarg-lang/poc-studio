@@ -1,17 +1,7 @@
 {
-  "description": "POC Studio: keep every user on the latest version (check at session start and before each stage, install from GitHub without git or the claude command), route clarification questions to the reviewer while a stage runs, and remind the session to log each skill run to Orbit (Observability)",
+  "description": "POC Studio: route clarification questions to the reviewer while a stage runs, and remind the session to log each skill run to Orbit (Observability)",
   "hooks": {
     "PreToolUse": [
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/poc_update.py\" gate",
-            "timeout": 90
-          }
-        ]
-      },
       {
         "matcher": "AskUserQuestion",
         "hooks": [
@@ -55,17 +45,6 @@
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/skill-run-log.sh\"",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/poc_update.py\" session-start",
-            "timeout": 120
           }
         ]
       }

@@ -1,16 +1,5 @@
 # Changelog
 
-## 1.42.0
-- **Updates no longer fail silently.** The old check ran a Python download inside each command; on some Macs Python's own certificate store failed ("SSL: CERTIFICATE_VERIFY_FAILED"), the check printed a warning and the run carried on with an old copy. It also needed the `claude` command on the shell's path and a working git sign-in.
-- **New `scripts/poc_update.py`, run by hooks:**
-  - **Session start:** checks `plugin.json` on GitHub `main`; when it is newer, downloads the zip of `main`, checks it, and installs it beside the current copy (Claude Code's own record is pointed at the new folder; sessions still running keep their files). Then asks for a restart.
-  - **Before every stage** (requirements, connector discovery, scoping, wireframes, design system, the build's `/ua:plan`, collaterals, one-off assets): refuses to start the stage unless this session runs the latest version, or when GitHub cannot be reached. A stage that is already running is never interrupted.
-  - Downloads use curl, then curl with the system certificate store, then Node (including UnifyApps Headless's runtime). No git, no GitHub sign-in, no `claude` command, no Python HTTPS.
-- **New `/poc-studio:update`** to update by hand.
-- Step 0 of every command uses the same script; version numbers are no longer written into the command files. `release.sh` bumps `plugin.json` and `marketplace.json` only.
-- Skill changes approved in Orbit now get a patch bump in the same commit (Orbit automation), so every change on `main` reaches every user.
-- **Copies older than 1.42.0 cannot update themselves.** Reinstall once: `/plugin marketplace add shubhankargarg-lang/poc-studio`, then `/plugin install poc-studio@unifyapps-poc`.
-
 ## 1.41.0
 - **Skip on request, two places only.** Every stage still runs by default and nothing offers a skip. When the person asks in their own words (Zen or Sonic): the **wireframes** can be skipped until the design system starts (the design system then works from the BRD alone, no wireframes in Orbit), and **one or two collaterals** can be skipped (at least one is always made; only the ones made are reviewed, uploaded and shown). Each skip is logged as a human decision and shown at the next gate and in the end-of-run summary. Asking to skip anything else gets a one-line "cannot be skipped" and the run carries on. The AI PM never skips or suggests a skip, and a skip is never a finding.
 
