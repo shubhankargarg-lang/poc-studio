@@ -13,10 +13,10 @@ general, is filed too.
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.42.2**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.42.3**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.42.2"
+LOADED="1.42.3"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -46,11 +46,18 @@ Then act on the last line it printed:
   the person can switch it. **Stop here and do not file the ticket.** Tell the person, in two lines:
   "POC Studio was updated from <old> to <new>. Type `/reload-plugins`, then run the same command again:
   `/poc-studio:feedback $ARGUMENTS`".
-- **`UPDATE_FAILED`** (e.g. the `claude` command is not on the shell's PATH) → stop and ask the person to run these
-  three commands, then the same `/poc-studio:feedback` command again:
-  `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
-- **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.42.2, then carry on.
+- **`UPDATE_FAILED` or `UPDATE_CHECK_FAILED`** (the update could not run, or GitHub could not be reached, for example
+  an SSL error) → **stop here; do not continue on this version.** Tell the person, in these words, then wait:
+  "POC Studio could not update itself. Please reinstall it (2 minutes):
+  1. Type `/plugin` and press Enter.
+  2. Click the **+** (Add) button at the top right.
+  3. Choose **Manage marketplaces**.
+  4. Next to **unifyapps-poc**, click **Remove marketplace**.
+  5. Click **Add marketplace** and enter `shubhankargarg-lang/poc-studio`.
+  6. Find **POC Studio** and click **Add to computer**.
+  7. Open a **new chat** and run: `/poc-studio:feedback $ARGUMENTS`"
+  Only if the person says they have already done these steps and the check still fails, carry on, and say in one
+  line which version you are continuing on.
 
 An old version files tickets in a shape POC Build Loop cannot move or assign, so never file with an older
 version than the latest published one. A status check (`status FB-<n>`) is a read and may go ahead.
