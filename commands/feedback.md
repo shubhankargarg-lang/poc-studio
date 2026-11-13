@@ -13,10 +13,10 @@ general, is filed too.
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.41.0**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.42.1**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.41.0"
+LOADED="1.42.1"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
@@ -50,7 +50,7 @@ Then act on the last line it printed:
   three commands, then the same `/poc-studio:feedback` command again:
   `/plugin marketplace update unifyapps-poc`, `/plugin update poc-studio@unifyapps-poc`, `/reload-plugins`.
 - **`UPDATE_CHECK_FAILED`** (no network to GitHub) → say in one line that the update check could not run and that you
-  are continuing on v1.41.0, then carry on.
+  are continuing on v1.42.1, then carry on.
 
 An old version files tickets in a shape POC Build Loop cannot move or assign, so never file with an older
 version than the latest published one. A status check (`status FB-<n>`) is a read and may go ahead.

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.42.1
+- **Reverted 1.42.0.** The new version check blocked stages when GitHub could not be reached, which stopped runs on networks where curl and Node cannot reach GitHub. POC Studio is back to the 1.41.0 behaviour (the update check in each command; if it cannot run, the run continues). The version is 1.42.1 so every copy, including 1.42.0, moves back.
+
 ## 1.41.0
 - **Skip on request, two places only.** Every stage still runs by default and nothing offers a skip. When the person asks in their own words (Zen or Sonic): the **wireframes** can be skipped until the design system starts (the design system then works from the BRD alone, no wireframes in Orbit), and **one or two collaterals** can be skipped (at least one is always made; only the ones made are reviewed, uploaded and shown). Each skip is logged as a human decision and shown at the next gate and in the end-of-run summary. Asking to skip anything else gets a one-line "cannot be skipped" and the run carries on. The AI PM never skips or suggests a skip, and a skip is never a finding.
 
