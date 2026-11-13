@@ -154,6 +154,15 @@ Append a dated line at every event: what the stage decided or assumed, every que
 who answered: reviewer or person), every reviewer verdict, every gate result, and the person's feedback verbatim.
 This file is the reviewer's memory of the use case; keep it factual and short.
 
+## Plugin version (checked before every stage)
+
+A hook checks POC Studio's version on GitHub before every stage skill starts. If this session is not on the latest
+version, or GitHub cannot be reached, the Skill call is refused with a reason that starts `POC_STUDIO_UPDATE:`. Then:
+make sure `state.json` and `context-log.md` are saved, tell the person exactly what the reason says, and stop. Do not
+start the stage any other way. After they update and restart, the same command resumes from that stage (see
+**Resuming**). A stage that is already running is never interrupted: reviews, research, write-backs and platform-master
+calls inside a stage are not checked.
+
 ## Resuming
 
 If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and `context-log.md`, tell the person in one line where the
