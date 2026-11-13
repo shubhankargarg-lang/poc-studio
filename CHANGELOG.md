@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.42.2
+- Version bump only, to test updating. No other changes.
+
 ## 1.42.1
 - **Reverted 1.42.0.** The new version check blocked stages when GitHub could not be reached, which stopped runs on networks where curl and Node cannot reach GitHub. POC Studio is back to the 1.41.0 behaviour (the update check in each command; if it cannot run, the run continues). The version is 1.42.1 so every copy, including 1.42.0, moves back.
 
