@@ -41,6 +41,7 @@ SCHEMA = {
     "duration_ms": "integer", "tokens_in": "integer", "tokens_out": "integer", "input_ask": "string",
     "input_documents": "docs", "reasoning": "strings", "output_summary": "string", "output_decisions": "strings",
     "output_documents": "docs", "created_at": "integer",
+    "session_log_link": "string", "session_log_lines": "string",   # the run's session log (session_log.py), uploaded
 }
 REQUIRED = ["run_id", "skill", "started_at"]
 CODES = {

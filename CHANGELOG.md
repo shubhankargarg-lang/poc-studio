@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.43.0
+- **Every skill run now saves its full session log on its Observability row**, for debugging later. The hook notes where each logged skill (and each AI PM review) starts in the session's log; when the run returns, new `orbit-writeback/scripts/session_log.py slice` cuts out exactly that run (its part of the session plus the helper-agent logs started during it, a one-line marker for a nested run that has its own row), removes sign-in secrets (cookies, tokens, keys, passwords) and trims very long tool outputs. The file is uploaded with `upload_public_file` and saved on the `orbit_studio_skill_run` row as `session_log_link` and `session_log_lines`. A log that fails to cut or upload never holds up the row or the run.
+
 ## 1.42.3
 - **A failed update check no longer lets the run continue on an old copy.** When the update could not run or GitHub could not be reached (for example an SSL error), every command now stops and shows the person how to reinstall, step by step (in the app: /plugin → + → Manage marketplaces → remove and add the marketplace → add POC Studio to the computer → new chat), then run the same command again. Only if they say they already did this and the check still fails does the run continue, saying which version it is on.
 

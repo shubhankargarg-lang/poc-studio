@@ -593,6 +593,8 @@ observability:
     "output_summary": "<one line, e.g. Sent 3 fixes back to scoping-l1-first>",
     "output_decisions": ["<the changes or decisions it made, one per line>"],
     "output_documents": [{ "name": "BRD", "version": 2, "document_id": "<…>", "link": "<…>" }],
+    "session_log_link": "<public URL of this run's session log, from upload_public_file>",
+    "session_log_lines": "<the session-log line range it covers, e.g. 1840-2315, from session_log.py>",
     "created_at": <ms> } }] }
 ```
 
@@ -625,6 +627,21 @@ observability:
   returns (for an AI PM review, right when its subagent returns). Use that start time as `started_at`. When an AI PM
   review returns, the hook also names any re-run that has no row yet and any rows still pending. The ledger
   (`.poc-studio/skill-runs/`) stays when the flag is deleted: it is the record the report and the checks read.
+- **The session log (every row).** Each row carries the full log of its own run, for debugging later. When the hook
+  sees a logged skill (or an AI PM review) start, it also notes where the run starts in the session's log file. Before
+  building the row:
+  1. `python3 "$O/session_log.py" slice <skill> --ledger "$LG"` → prints `{"file", "mime", "lines", "bytes"}` (or
+     `{"error": …}`). The file holds exactly that run: the session's lines from its start to now, the logs of helper
+     agents started during it, a one-line marker in place of a nested run that has its own row (a research call or an
+     AI PM review inside a stage), sign-in secrets removed (cookies, tokens, keys, passwords), very long tool outputs
+     trimmed. Real client samples never go in: a run reads them from `files/samples/` but the log is cut from the
+     session, so if a sample's contents were printed in full, leave `session_log_link` out for that row.
+  2. Upload `file` with `upload_public_file` (`fileName` `<client> - <skill> - <label> - log.jsonl`, `mimeType` the
+     printed `mime`). Put the URL in `session_log_link` and `lines` in `session_log_lines` in `skill-run-in.json`.
+  3. **It never blocks:** an `error`, a failed upload or anything else → write the row without the two keys and carry on.
+     No retry loop and no message to the person: the row matters more than its log.
+  An AI PM review's log is cut right when its subagent returns; the UnifyApps Headless build's when the app is
+  published (one log for the whole build).
 - **How to write it (always through the builder, never by hand).** The object validates every write against its
   schema, so one wrong type fails the row. Let `O` be this skill's `scripts/` folder
   (`find ~/.claude/plugins -path '*orbit-writeback/scripts/skill_run_row.py' -exec dirname {} \; | head -1`) and
