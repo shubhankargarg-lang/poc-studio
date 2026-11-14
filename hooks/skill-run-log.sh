@@ -17,6 +17,11 @@ import json, os, subprocess, time
 try: h = json.loads(os.environ["HOOK_INPUT"])
 except Exception: raise SystemExit(0)
 ev, tool, ti = h.get("hook_event_name", ""), h.get("tool_name", ""), h.get("tool_input") or {}
+try:  # this chat's log file, for the orchestrator's own rows (session_log.py slice poc-orchestrator)
+    if h.get("transcript_path"):
+        os.makedirs(os.path.join(os.environ["OBS_DIR"], "session-logs"), exist_ok=True)
+        open(os.path.join(os.environ["OBS_DIR"], "session-logs", "transcript"), "w").write(h["transcript_path"])
+except Exception: pass
 LOGGED = {"requirement-gathering", "connector-discovery", "scoping-l1-first", "wireframes", "design-system", "platform-master",
           "poc-collateral-studio", "research"}
 if tool == "Skill":
@@ -45,7 +50,7 @@ if tool == "Skill":
     msg = (f"POC Studio observability: `{skill}` is starting (started_at {start}, saved in .poc-studio/skill-starts/{skill}). "
            f"When this skill run returns, before the next step, write its one orbit_studio_skill_run row "
            f"(orbit-writeback Moment 7): cut its session log with `session_log.py slice {skill}`, upload it with "
-           f"upload_public_file, build the row with skill_run_row.py (session_log_link, session_log_lines), then "
+           f"upload_public_file (session_log_link), build the row with skill_run_row.py --slice (real tokens), then "
            f"apply_record_edits. A log that fails to cut or upload never holds up the row or the run.")
     if skill == "platform-master":
         msg += (" Exception: if this is job 1b · Question review (a Zen planning question), do not write a row now: write one "
@@ -57,9 +62,9 @@ if tool == "Skill":
 else:
     msg = (f"POC Studio observability: an ai-pm review just returned (started_at {start}). If it was a review "
            f"(not a resolve answer, not INVALID_REQUEST), write its one orbit_studio_skill_run row now (orbit-writeback "
-           f"Moment 7): verdict from its verdict file, reviews_run_id from observability.runs, round, and tokens_in / "
-           f"tokens_out from this result's usage if it reports them. Cut its session log with `session_log.py slice ai-pm` "
-           f"and upload it (session_log_link, session_log_lines), build the row with skill_run_row.py, then apply_record_edits.")
+           f"Moment 7): verdict from its verdict file, reviews_run_id from observability.runs, round. Cut its session log "
+           f"with `session_log.py slice ai-pm` (it also gives the real tokens), upload it (session_log_link), build the row "
+           f"with skill_run_row.py --slice, then apply_record_edits.")
 # The local ledger (skill_run_row.py): a re-run with no row, and rows that did not reach Orbit yet.
 def ledger(*cmd):
     try:

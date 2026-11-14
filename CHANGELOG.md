@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.44.0
+- **Real token usage on every Observability row, from the Claude Code session log.** `session_log.py slice` now adds up every AI call in the run's part of the log and in its helper agents' logs, each call once (Claude Code writes one call over several lines with the same usage; a call already counted for another row is skipped; a nested run's calls stay on its own row). Four figures per row: `tokens_new_in` (new text read), `tokens_cache_read` (history re-read), `tokens_out` (written) and `tokens_total`; `tokens_in` = new + re-read. The builder fills them with `--slice`; no more estimates unless the slice failed.
+- **The orchestrator's own work gets rows**: one `poc-orchestrator` row at each gate approval, at a stop or block, and at the end ("Orchestrator · G1" … "· end"; one-off runs: "Run overhead"), covering every line no skill run claimed (gate talk, write-backs, moving between stages). The rows of a chat now add up to the whole chat.
+
 ## 1.43.0
 - **Every skill run now saves its full session log on its Observability row**, for debugging later. The hook notes where each logged skill (and each AI PM review) starts in the session's log; when the run returns, new `orbit-writeback/scripts/session_log.py slice` cuts out exactly that run (its part of the session plus the helper-agent logs started during it, a one-line marker for a nested run that has its own row), removes sign-in secrets (cookies, tokens, keys, passwords) and trims very long tool outputs. The file is uploaded with `upload_public_file` and saved on the `orbit_studio_skill_run` row as `session_log_link` and `session_log_lines`. A log that fails to cut or upload never holds up the row or the run.
 

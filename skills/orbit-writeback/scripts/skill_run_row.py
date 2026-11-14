@@ -42,7 +42,10 @@ SCHEMA = {
     "input_documents": "docs", "reasoning": "strings", "output_summary": "string", "output_decisions": "strings",
     "output_documents": "docs", "created_at": "integer",
     "session_log_link": "string", "session_log_lines": "string",   # the run's session log (session_log.py), uploaded
+    # real usage from the session log (session_log.py): new text read, history re-read, total (tokens_out = written)
+    "tokens_new_in": "integer", "tokens_cache_read": "integer", "tokens_total": "integer",
 }
+USAGE_KEYS = ("tokens_new_in", "tokens_cache_read", "tokens_out", "tokens_total")
 REQUIRED = ["run_id", "skill", "started_at"]
 CODES = {
     "origin": ["poc", "one_off"],
@@ -119,6 +122,16 @@ STAGE_SKILLS = {"requirement-gathering", "scoping-l1-first", "wireframes", "desi
 def build(row):
     fixed, errors = [], []
     files_read, files_written = row.pop("files_read", None), row.pop("files_written", None)
+    # The output of `session_log.py slice` (passed as "session_log", or with --slice): real usage and the line range.
+    sl = row.pop("session_log", None)
+    if isinstance(sl, dict) and not sl.get("error"):
+        if sl.get("lines"): row["session_log_lines"] = sl["lines"]
+        if sl.get("link"): row["session_log_link"] = sl["link"]
+        u = sl.get("usage") or {}
+        if all(isinstance(u.get(k), int) for k in USAGE_KEYS):
+            for k in USAGE_KEYS: row[k] = u[k]
+            row["tokens_in"] = u["tokens_new_in"] + u["tokens_cache_read"]   # everything read, so in + out = total
+            fixed.append("tokens: real usage from the session log")
     unknown = [k for k in row if k not in SCHEMA]
     for k in unknown: fixed.append(f"{k} dropped (not a field of orbit_studio_skill_run)")
     r = {k: v for k, v in row.items() if k in SCHEMA and not empty(v)}
@@ -345,6 +358,9 @@ if __name__ == "__main__":
     if not isinstance(row, dict):
         print("error: the input must be one JSON object (the row's fields)", file=sys.stderr); sys.exit(2)
     row = row.get("edits", [{}])[0].get("properties", row) if "edits" in row else row
+    if "--slice" in a:   # the JSON printed by `session_log.py slice` (with "link" added after the upload, if it went up)
+        try: row["session_log"] = json.load(open(a[a.index("--slice") + 1]))
+        except Exception as e: print(f"fixed: --slice not read ({e}): tokens estimated instead", file=sys.stderr)
     payload, fixed, errors = build(row)
     for f in fixed: print(f"fixed: {f}", file=sys.stderr)
     if errors:
