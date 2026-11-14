@@ -64,7 +64,8 @@ else:
            f"(not a resolve answer, not INVALID_REQUEST), write its one orbit_studio_skill_run row now (orbit-writeback "
            f"Moment 7): verdict from its verdict file, reviews_run_id from observability.runs, round. Cut its session log "
            f"with `session_log.py slice ai-pm` (it also gives the real tokens), upload it (session_log_link), build the row "
-           f"with skill_run_row.py --slice, then apply_record_edits.")
+           f"with skill_run_row.py --slice, then apply_record_edits. If it says REVISE (or the person asks for changes), run "
+           f"`session_log.py mark-start <stage skill>` before applying the fixes inline, so the re-run gets its own log and tokens.")
 # The local ledger (skill_run_row.py): a re-run with no row, and rows that did not reach Orbit yet.
 def ledger(*cmd):
     try:

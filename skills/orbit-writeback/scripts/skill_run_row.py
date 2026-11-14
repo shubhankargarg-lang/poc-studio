@@ -127,6 +127,10 @@ def build(row):
     if isinstance(sl, dict) and not sl.get("error"):
         if sl.get("lines"): row["session_log_lines"] = sl["lines"]
         if sl.get("link"): row["session_log_link"] = sl["link"]
+        if sl.get("sample_text_left") is not False and row.get("session_log_link"):
+            row.pop("session_log_link"); fixed.append("session_log_link dropped: the slice did not confirm sample_text_left false")
+        if empty(row.get("started_at")) and sl.get("started_ms"): row["started_at"] = sl["started_ms"]
+        if empty(row.get("ended_at")) and sl.get("cut_ms"): row["ended_at"] = sl["cut_ms"]
         u = sl.get("usage") or {}
         if all(isinstance(u.get(k), int) for k in USAGE_KEYS):
             for k in USAGE_KEYS: row[k] = u[k]
@@ -195,6 +199,8 @@ def build(row):
         txt = [r.get("output_summary", "")] + list(r.get("output_decisions") or []) + list(r.get("reasoning") or [])
         n = estimate(files(files_written) + ["\n".join(map(str, txt))])
         r["tokens_out"] = max(n, 100); fixed.append(f"tokens_out estimated: {r['tokens_out']}")
+    if "started_at" in r and "ended_at" not in r:   # the row is written right after the run returns
+        r["ended_at"] = now(); fixed.append("ended_at = now")
     if "round" in r and r["round"] < 1: r["round"] = 1
     if "sequence" in r and r["sequence"] < 1: fixed.append("sequence dropped (must be 1 or more)"); r.pop("sequence")
     if "started_at" in r and "ended_at" in r:
@@ -290,6 +296,31 @@ def reply_ok(reply):
     if isinstance(res, list) and res: return all(isinstance(x, dict) and x.get("ok") is True for x in res)
     return isinstance(reply, dict) and reply.get("ok") is True
 
+def log_of(row):
+    sl = row.get("session_log") if isinstance(row.get("session_log"), dict) else {}
+    lines = sl.get("lines") or row.get("session_log_lines")
+    if not lines or sl.get("repair"): return None
+    return {"t": sl.get("transcript"), "lines": lines}
+
+def overlap(d, lg):
+    """run_id of a row whose log range clashes with lg (same start, or a partial overlap); a nested run sits fully
+    inside its parent's range with a later start, which is fine."""
+    if not lg or not lg.get("t"): return None
+    try: a, b = [int(x) for x in lg["lines"].split("-")]
+    except Exception: return None
+    for e in read_ledger(d):
+        o = e.get("log") or {}
+        if e.get("kind") != "row" or o.get("t") != lg["t"] or not o.get("lines"): continue
+        try: c, dd = [int(x) for x in o["lines"].split("-")]
+        except Exception: continue
+        if b < c or dd < a: continue
+        inside = (c > a and dd <= b) or (a > c and b <= dd)
+        if not inside: return e.get("run_id")
+    return None
+
+ATTACH_KEYS = ("session_log_link", "session_log_lines", "ended_at", "duration_ms",
+               "tokens_in", "tokens_out", "tokens_new_in", "tokens_cache_read", "tokens_total")
+
 def estimate(args):
     total = 0
     for a in args:
@@ -301,6 +332,43 @@ if __name__ == "__main__":
     if not a: sys.exit(__doc__)
     if a[0] == "--start": print(now()); sys.exit(0)
     if a[0] == "--estimate": print(estimate(a[1:])); sys.exit(0)
+    if a[0] == "attach-log":
+        # Repair a saved row: an update of ONLY its log link/lines, end time/duration and real tokens. Never other fields.
+        # usage: attach-log <run_id> --record <record id> [--slice slice.json] [--link URL] [--started <ms>] [--ledger DIR]
+        if len(a) < 2 or "--record" not in a: sys.exit("usage: attach-log <run_id> --record <record id> [--slice F] [--link URL] [--started MS]")
+        rid, rec = a[1], a[a.index("--record") + 1]
+        sl = json.load(open(a[a.index("--slice") + 1])) if "--slice" in a else {}
+        p = {}
+        if "--link" in a and sl.get("sample_text_left") is False: p["session_log_link"] = a[a.index("--link") + 1]
+        elif "--link" in a: print("fixed: link left out: the slice did not confirm sample_text_left false", file=sys.stderr)
+        if sl.get("lines"): p["session_log_lines"] = sl["lines"]
+        u = sl.get("usage") or {}
+        if all(isinstance(u.get(k), int) for k in USAGE_KEYS):
+            for k in USAGE_KEYS: p[k] = u[k]
+            p["tokens_in"] = u["tokens_new_in"] + u["tokens_cache_read"]
+        st = None
+        if "--started" in a: st = to_int(a[a.index("--started") + 1])
+        d = ledger_dir(a)
+        if st is None and d and os.path.exists(L(d, "rows", f"{rid}.json")):
+            st = json.load(open(L(d, "rows", f"{rid}.json")))["edits"][0]["properties"].get("started_at")
+        if st:
+            end = sl.get("cut_ms") or now()
+            p["ended_at"] = end; p["duration_ms"] = max(0, end - st)
+        p = {k: v for k, v in p.items() if k in ATTACH_KEYS}
+        if not p: sys.exit("error: nothing to attach")
+        if d: append(d, {"kind": "attach", "run_id": rid, "keys": sorted(p), "has_link": "session_log_link" in p})
+        print(json.dumps({"host": "https://orbit.uat.unifyapps.com", "objectId": "orbit_studio_skill_run",
+                          "edits": [{"op": "update", "recordId": rec, "properties": p}]}, ensure_ascii=False, indent=1))
+        sys.exit(0)
+    if a[0] == "no-log":
+        # rows saved without a session log link (upload failed, or written before the log was cut): retry each one
+        d = ledger_dir(a)
+        if not d: sys.exit(0)
+        linked = {e["run_id"] for e in read_ledger(d) if e.get("kind") == "attach" and e.get("has_link")}
+        for e in read_ledger(d):
+            if e.get("kind") == "row" and not e.get("has_link") and e["run_id"] not in linked:
+                print(f"{e['run_id']}\t{e.get('skill')}\t{(e.get('log') or {}).get('lines') or '-'}\t{e.get('log_file') or '-'}")
+        sys.exit(0)
     if a[0] in ("note-change", "change-dropped", "saved", "pending", "rework-check", "reconcile", "report"):
         d = ledger_dir(a)
         if not d: print("error: no .poc-studio folder found (pass --ledger <dir>)", file=sys.stderr); sys.exit(2)
@@ -352,6 +420,10 @@ if __name__ == "__main__":
                       + (f", {len(due)} re-run(s) with no row" if due else "") + ".")
                 for e in sorted(left, key=lambda e: e["t"]): print(f"  not saved: {e.get('skill')} · {e.get('label')} ({e['run_id']})")
                 for sk in due: print(f"  no row: the latest re-run of {sk}")
+            linked = {e["run_id"] for e in read_ledger(d) if e.get("kind") == "attach" and e.get("has_link")}
+            nolog = [e for e in sel if not e.get("has_link") and e["run_id"] not in linked]
+            if nolog: print(f"  {len(nolog)} row(s) still without a session log (skill_run_row.py no-log): " +
+                            ", ".join(f"{e.get('skill')} · {e.get('label')}" for e in nolog))
             sys.exit(0)
     try: row = json.load(open(a[0]))
     except Exception as e: print(f"error: cannot read {a[0]} as JSON: {e}", file=sys.stderr); sys.exit(2)
@@ -361,6 +433,7 @@ if __name__ == "__main__":
     if "--slice" in a:   # the JSON printed by `session_log.py slice` (with "link" added after the upload, if it went up)
         try: row["session_log"] = json.load(open(a[a.index("--slice") + 1]))
         except Exception as e: print(f"fixed: --slice not read ({e}): tokens estimated instead", file=sys.stderr)
+    row_in = dict(row)
     payload, fixed, errors = build(row)
     for f in fixed: print(f"fixed: {f}", file=sys.stderr)
     if errors:
@@ -373,7 +446,13 @@ if __name__ == "__main__":
         if first: print(f"first: {first}", file=sys.stderr); sys.exit(3)
         rows = rows_state(d)
         if props["run_id"] in rows: print(f"error: run_id {props['run_id']} is already in the ledger (build without run_id)", file=sys.stderr); sys.exit(2)
-        append(d, {"kind": "row", "run_id": props["run_id"], "skill": props.get("skill"), "label": props.get("label"),
+        lg = log_of(row_in)
+        clash = overlap(d, lg)
+        if clash: print(f"error: this row's session-log lines {lg['lines']} overlap row {clash}: cut the log again with "
+                        "session_log.py slice (it starts after every claimed line), then build again", file=sys.stderr); sys.exit(2)
+        append(d, {"kind": "row", "run_id": props["run_id"], "skill": props.get("skill"), "label": props.get("label"), "log": lg,
+                   "log_file": ((row_in.get("session_log") or {}) if isinstance(row_in.get("session_log"), dict) else {}).get("file"),
+                   "has_link": bool(props.get("session_log_link")), "started_at": props.get("started_at"),
                    "gate": props.get("gate"), "round": props.get("round"), "verdict": props.get("verdict"),
                    "reviews_run_id": props.get("reviews_run_id"), "run_group": props.get("run_group"), "poc": props.get("poc")})
         json.dump(payload, open(L(d, "rows", f"{props['run_id']}.json"), "w"), ensure_ascii=False, indent=1)

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.45.0
+- **Every skill run is logged, even when it read a real sample.** `session_log.py slice` now removes sample text itself (new `sample_redact.py`): each file in `files/samples/` is read (txt/csv/json/eml/html, docx/pptx/xlsx, pdf via pdftotext/pypdf), and any run of 6 matching words anywhere in the log becomes `[REDACTED: real sample <file>]`; a tool call that read a sample has its result replaced (this also catches samples that could not be extracted); base64 payloads are replaced. A final check sets `sample_text_left: false`; only such a slice may be uploaded. The old rule that left the log out when a sample was printed is gone.
+- **No overlapping rows or double-counted tokens.** A re-run done inline starts after the lines already claimed (and `session_log.py mark-start <skill>` is called before every inline re-run); a retried slice replaces its own earlier cut; the orchestrator's slice stops before a skill run still in progress; the builder refuses a log range that clashes with a saved row.
+- **Every row has a duration:** start and end come from the slice; the builder always sets `ended_at` and `duration_ms`.
+- **Repairs:** `skill_run_row.py no-log` lists rows without a log; `attach-log` updates only a row's log link/lines, end time/duration and real tokens; `session_log.py slice <skill> --lines A-B` cuts a past range. Retried at every moment, gate and the end of the run.
+- **No write-back is ever lost:** failed writes keep their payload in `.poc-studio/outbox/` and are retried at every moment, gate, end of run, resume and the next command until saved; POC updates pass `expectedVersion` (fixes `VERSION_REQUIRED`); failed feedback tickets are retried too.
+- Requirement Gathering: a Slack `invalid_union` (-32602) error on a file is treated as refused at once; an identical copy from an earlier POC of the same client is a valid source.
+
 ## 1.44.1
 - **Session logs are kept in full.** Nothing is cut any more (only sign-in secrets are removed). A log over the 20 MB upload limit is compressed (`.jsonl.gz`); only if it is still over 20 MB compressed are the longest texts cut, at the largest length that fits (200k, 50k, 20k, then 5k characters).
 

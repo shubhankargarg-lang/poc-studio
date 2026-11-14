@@ -86,6 +86,10 @@ Call the tool with:
 
 - One call per object; all rows of that object in one `edits` list.
 - `update` merges into the stored row: send only the keys you change. Never send a row back whole.
+- **Updates that need a version (the POC row, `orbit_studio_poc`):** an update without it fails with
+  `VERSION_REQUIRED`. Read the row first (`get_records`, with its `version`), pass that version as `expectedVersion`
+  on the update edit, and keep the version the reply returns in `state.json` → `orbit.poc_version` for the next
+  update. A version conflict (someone else changed the row) → read it again, re-apply only your keys, send again.
 - Never send `""` or `null`: leave the key out.
 - Dates are epoch milliseconds (`Date.now()` / `int(time.time()*1000)`); get them with a one-line script, not by guessing.
 - Build long values (summaries) with a script when they come from a file; never retype a file's contents by hand.
@@ -522,7 +526,8 @@ file), or status `stopped`. When it resumes: status running and a new last_activ
 POC Build Loop's **Observability** view reads one row per skill run from `orbit_studio_skill_run`. Write **exactly one
 row right after each logged skill run returns**, in a full run (poc-orchestrator) and in every one-off run
 (asset-run), with the same `apply_record_edits` tool and the same write rules as every other moment (one call, leave
-out every key that has no value, never `""` or `null`). **Create only:** never update or delete a skill-run row.
+out every key that has no value, never `""` or `null`). **Create only:** never delete a skill-run row, and never update one except with
+`skill_run_row.py attach-log` (below), which repairs only its log link and lines, end time and duration, and real tokens.
 
 **Which runs get a row:**
 
@@ -557,14 +562,15 @@ observability:
 - **`sequence`:** from 1, +1 per row. A full run continues from the highest `sequence` already logged for this `poc`:
   at Setup or resume, `get_records` on `orbit_studio_skill_run` with filter `poc` EQUAL the POC ID, sort
   `{field: "sequence", order: "DESC"}`, `limit` 1 (none → 0). A one-off run counts within its `run_group`, from 1.
-- **Times:** note `started_at` (`node -e 'console.log(Date.now())'`) when the skill starts and `ended_at` when it
-  returns.
+- **Times:** `started_at` and `ended_at` come from the slice (`started_ms`, `cut_ms`) through `--slice`; the builder
+  always sets `ended_at` (now, if nothing else) and `duration_ms`, so every row has a duration.
 - **Re-runs always get their own row.** A stage skill that runs again — to apply an AI PM REVISE, or the person's
   change request — is a new run: its own row, written as soon as it returns and **before** the review of it. Label
   "<doc> v<N> · <k> fixes" (a REVISE) or "<doc> v<N+1> · changes" (a change request), `round` +1, `triggered_by`
   `orchestrator` (REVISE) or `iteration` (changes, with the person's words in `input_ask`), `input_ask` = the fix lines
   for a REVISE. When the person asks for changes, first run `skill_run_row.py note-change <skill> --gate <gN>`; if they
-  drop the change instead, `skill_run_row.py change-dropped <skill>`.
+  drop the change instead, `skill_run_row.py change-dropped <skill>`. Every re-run done inline starts with
+  `session_log.py mark-start <skill>` (see "The session log"), so its log and tokens never overlap the first run's.
 
 **The row** (field names exactly as stored; single-selects take the code):
 
@@ -634,23 +640,37 @@ observability:
   returns (for an AI PM review, right when its subagent returns). Use that start time as `started_at`. When an AI PM
   review returns, the hook also names any re-run that has no row yet and any rows still pending. The ledger
   (`.poc-studio/skill-runs/`) stays when the flag is deleted: it is the record the report and the checks read.
-- **The session log (every row).** Each row carries the full log of its own run, for debugging later. When the hook
-  sees a logged skill (or an AI PM review) start, it also notes where the run starts in the session's log file. Before
-  building the row:
-  1. `python3 "$O/session_log.py" slice <skill> --ledger "$LG" > $TMPDIR/slice.json` → `{"file", "mime", "lines",
-     "bytes", "usage"}` (or `{"error": …}`). For an orchestrator row: `slice poc-orchestrator` (it finds this chat's
-     log itself and takes every line since its last row that no skill run claimed). The file holds exactly that run: the session's lines from its start to now, the logs of helper
-     agents started during it, a one-line marker in place of a nested run that has its own row (a research call or an
-     AI PM review inside a stage), sign-in secrets removed (cookies, tokens, keys, passwords), and everything else
-     in full. Only a log over the 20 MB upload limit is compressed (`.jsonl.gz`); only if it is still over 20 MB are
-     the longest texts cut, as little as fits. Real client samples never go in: a run reads them from `files/samples/` but the log is cut from the
-     session, so if a sample's contents were printed in full, leave `session_log_link` out for that row.
-  2. Upload `file` with `upload_public_file` (`fileName` `<client> - <skill> - <label> - log.jsonl`, `mimeType` the
-     printed `mime`; skip when it says `"upload": false`). Put the URL in `session_log_link` in `skill-run-in.json`.
-     Pass the slice to the builder with `--slice $TMPDIR/slice.json`: it fills `session_log_lines` and the tokens.
-  3. **It never blocks:** an `error`, a failed upload or anything else → write the row without the two keys and carry on.
-     No retry loop and no message to the person: the row matters more than its log. A failed upload still keeps the
-     real tokens (the slice has them).
+- **The session log (every row, never skipped).** Every row carries the full log of its own run: it is how runs on
+  people's own computers are debugged, so a row without its log is a failure to fix, not an option. When the hook sees
+  a logged skill (or an AI PM review) start, it notes where the run starts in the session's log file. **Before every
+  re-run done inline** (a REVISE fix pass or a change request, applied without a new Skill call, so the hook cannot see
+  it), run `python3 "$O/session_log.py" mark-start <skill> --ledger "$LG"` first. Before building the row:
+  1. `python3 "$O/session_log.py" slice <skill> --ledger "$LG" > $TMPDIR/slice.json`. For an orchestrator row:
+     `slice poc-orchestrator` (every line of this chat since its last row that no skill run claimed; it stops before a
+     skill run that has started and not returned). The file holds exactly that run: its lines (never overlapping
+     another row: a re-run starts after the lines already claimed), the logs of helper agents started during it, a
+     one-line marker for a nested run that has its own row, and everything else in full, with:
+     - sign-in secrets removed (cookies, tokens, keys, passwords);
+     - **real client samples removed by the slice itself:** every piece of text from `files/samples/` (wherever it
+       shows: tool results, file reads, messages, helper-agent logs) becomes `[REDACTED: real sample <file>]`, a tool
+       call that read a sample has its result replaced, and base64 payloads are replaced. A final check sets
+       `"sample_text_left": false` only when no sample text is left;
+     - compressed (`.jsonl.gz`) only when over the 20 MB upload limit; the longest texts cut only if still over.
+     The JSON also gives `lines`, `usage` (real tokens), `started_ms` and `cut_ms` (the run's start and end),
+     `redacted` (pieces removed per sample) and `samples_not_extracted`.
+  2. **Upload only a slice whose JSON says `"sample_text_left": false`** — never any other file, never before the
+     slice: the slice is redacted, upload it. `upload_public_file` with `fileName`
+     `<client> - <skill> - <label> - log.jsonl` and `mimeType` the printed `mime`. Put the URL in `"link"` in
+     `$TMPDIR/slice.json` (or `session_log_link` in `skill-run-in.json`) and pass `--slice $TMPDIR/slice.json` to the
+     builder: it fills `session_log_lines`, the real tokens, `started_at` / `ended_at` and `duration_ms`.
+  3. **Retry, never drop.** The slice errored → run it again (a retry replaces its own earlier cut). The upload failed
+     → try it once more, then build the row without the link (the row is never held back) and fix it later: the ledger
+     lists every row with no log (`skill_run_row.py no-log --ledger "$LG"`: run_id, skill, lines, local log file).
+     At every write-back moment, every gate and the end of the run, for each listed row: upload its log file (when
+     its slice said `sample_text_left: false`; otherwise cut the range again with `session_log.py slice <skill>
+     --lines <lines> --ledger "$LG"`), read the row's record id (`get_records` on `orbit_studio_skill_run`, filter
+     `run_id` EQUAL), and send `skill_run_row.py attach-log <run_id> --record <id> --slice <slice.json> --link <URL>
+     --ledger "$LG"` with `apply_record_edits`. A row written with no duration is repaired the same way.
   An AI PM review's log is cut right when its subagent returns; the UnifyApps Headless build's when the app is
   published (one log for the whole build).
 - **How to write it (always through the builder, never by hand).** The object validates every write against its
@@ -690,15 +710,22 @@ observability:
 - It replaces nothing: the `gate_decided` Activity rows are still written at every gate (the view's approval lines
   come from them).
 
-## When a write fails
+## When a write fails — nothing is ever lost
+Every write-back must reach Orbit in the end. A failure is retried until it saves; it is never dropped or forgotten.
 - A reply with `"ok": false` or an error: read the message, fix the payload, and send **only the rows that failed**
   again (a create that succeeded must not be sent twice).
+- `VERSION_REQUIRED` or a version conflict: read the row, send again with `expectedVersion` (see "How to write").
 - `AUTH_EXPIRED` / signed out: ask the person to sign in again with `/ua:setup` in this folder, then resend.
 - `CONFIRM_REQUIRED`: you sent something that deletes; you never should. Stop and tell the person.
-- After three failures on one step, stop the write-back for this moment, tell the person in one line what did not
-  reach Orbit, add it to `failed_writes` (with the gate and whether a notification was held back), and carry on with
-  the run. They are retried at the start of the next moment (see "Before every moment"). **Never send slack_notification for a gate whose
-  documents did not all save.**
+- After three failures on one step: save the exact payload to `<workspace>/.poc-studio/outbox/<moment>-<Date.now()>.json`
+  (or the run's `.poc-studio` folder), add it to `failed_writes` (moment, gate, payload file, whether a notification
+  was held back), tell the person in one line what has not reached Orbit yet, and carry on with the run.
+- **Retried everywhere until saved:** at the start of every moment ("Before every moment"), at every gate, at the
+  end of the run, on resume, and at the start of the next POC Studio command in this folder. A write leaves
+  `failed_writes` only when its reply says `"ok": true` (read it back for creates). The closing message lists anything
+  still unsaved, by name. **Never send slack_notification for a gate whose documents did not all save.**
+- Observability rows have their own outbox (Moment 7: "Nothing is lost") and their logs their own retry
+  (Moment 7: "Retry, never drop").
 
 ## Never
 - Create or delete POC rows, or delete any row.
@@ -706,7 +733,9 @@ observability:
 - Send `slack_notification: true` outside moments 1 and 5, or at all in a Sonic run.
 - Put a file's bytes or text in a row: upload it and save the link (no exceptions, the design system included).
 - Write to any other object or tenant.
-- Update or delete an `orbit_studio_skill_run` row (Moment 7 only creates them).
+- Delete an `orbit_studio_skill_run` row, or update one other than by `skill_run_row.py attach-log` (log link and
+  lines, end time and duration, real tokens only).
+- Upload a session log whose slice JSON does not say `"sample_text_left": false`.
 - Write assignee, due date, tags or analysis fields on a feedback ticket, or update or delete a ticket.
 
 ## Decisions (where this differs from `orbit-spec.md`)
@@ -935,7 +964,9 @@ deletes a ticket.
      (now+1 for `ticket_no`, `ticket_key`, both times and the event) and send again, **at most 3 times**.
    - **Any other error, or still failing:** show the platform's error message in one line and what to do (e.g. run
      `/ua:setup` here on orbit.uat.unifyapps.com and sign in, then `/poc-studio:feedback` again). **Never say
-     "Logged" for a write that failed.** A failed ticket is not retried later and not added to `failed_writes`.
+     "Logged" for a write that failed.** A ticket still failing is not lost: keep `$TMPDIR/fb` copied to
+     `.poc-studio/outbox/feedback-<Date.now()>/` and add it to `standalone.failed_writes`; the start of the next POC
+     Studio command in this folder sends it again (with `feedback_ticket.py retry` first, so its number is fresh).
 5. **Create the activity row** right after, only once the ticket saved: send `event.json` as it is
    (`orbit_studio_feedback_event`, type `created`, the ticket's ms; its `ticket` field links to the ticket, so the
    ticket must exist first) and check the reply the same way. If only this row fails, keep the ticket and say so in
