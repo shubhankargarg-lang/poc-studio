@@ -171,7 +171,9 @@ after the person asked for changes). A re-run always gets its own row before the
 Moment 7: "Re-runs always get their own row"; on a change request run `skill_run_row.py note-change <skill>` first).
 Every builder call takes `--ledger` with the run flag's folder (recorded in the run entry as `observability.ledger`).
 A failed write never holds the run: it stays pending and is sent again at the next step ("Nothing is lost"); at the
-approval, run the check against Orbit and end the closing message with the `skill_run_row.py report` line.
+approval, write one `poc-orchestrator` row "Run overhead" (`session_log.py slice poc-orchestrator`: the command's own
+work outside the skill runs), run the check against Orbit and end the closing message with the `skill_run_row.py
+report` line. Every row's tokens are the real usage from the session log (Moment 7, "Tokens").
 
 ## 3 · Run the stage (unattended)
 

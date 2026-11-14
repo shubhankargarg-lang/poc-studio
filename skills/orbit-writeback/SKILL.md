@@ -529,6 +529,7 @@ out every key that has no value, never `""` or `null`). **Create only:** never u
 | Run | `skill` | `label` (short, plain) |
 |---|---|---|
 | The orchestrator's Setup, once per session (full runs only) | `poc-orchestrator` | "POC started" (or "POC resumed") |
+| The orchestrator's own work since its last row: gate talk, waiting, write-backs, moving between stages. One row at each gate approval, when the run stops or is blocked, and at the end of the run (full runs); one row at the end of a one-off run | `poc-orchestrator` | "Orchestrator · G1" … "Orchestrator · G4", "Orchestrator · stopped", "Orchestrator · end" (one-off: "Run overhead") |
 | Requirement Gathering | `requirement-gathering` | "RG doc v<N>" |
 | Connector discovery (stage 1c, `scope: verify`, `scope: item`, model recovery) | `connector-discovery` | "Integration spec · <system>" or "Models only" (1c), "Verify before build", "Item: <object or operation>", "Model recovery: <slot>" (phase and gate of the stage it serves: a recovery during the build is `build`/`g3`) |
 | Scoping | `scoping-l1-first` | "BRD v<N>" (a REVISE re-run: "BRD v<N> · <k> fixes") |
@@ -540,7 +541,9 @@ out every key that has no value, never `""` or `null`). **Create only:** never u
 | Each `research` call | `research` | the question, cut to 60 characters |
 | Each AI PM **review** (review mode, every round, the 4b build walk included) | `ai-pm` | "<what it reviewed> review, round <r>", e.g. "BRD review, round 1" |
 
-Not logged: orbit-writeback's own moments, and the AI PM's resolve-mode answers (they are in `context-log.md`).
+Not logged on a row of their own: orbit-writeback's moments and the AI PM's resolve-mode answers (they are in
+`context-log.md`). Their tokens are not lost: they land on the next orchestrator row, so **the rows of a chat add up to
+the whole chat**, every AI call counted once.
 
 **Run state** (full run: `state.json` → `observability`; one-off: this run's entry → `observability`):
 
@@ -586,7 +589,7 @@ observability:
     "plugin_version": "<version in the plugin's .claude-plugin/plugin.json>",
     "model": "<the model id the skill ran on>",
     "started_at": <ms>, "ended_at": <ms>, "duration_ms": <ended_at - started_at>,
-    "tokens_in": <n>, "tokens_out": <n>,
+    "tokens_in": <n>, "tokens_out": <n>, "tokens_new_in": <n>, "tokens_cache_read": <n>, "tokens_total": <n>,
     "input_ask": "<the instruction the skill was given; on a re-run after changes, with the person's gate comment>",
     "input_documents": [{ "name": "BRD", "version": 1, "document_id": "<…>", "link": "<…>" }],
     "reasoning": ["<3–6 short plain sentences: what it checked, what it noticed, what it decided and why>"],
@@ -617,9 +620,13 @@ observability:
   `ASK_HUMAN` → `ask_human`; an `INVALID_REQUEST` gets no row, only the corrected review does); `reasoning` from its findings and decision; `output_decisions` = its fix lines (or
   "No changes" on a pass); `reviews_run_id` = the `run_id` of the stage run it reviewed.
 - **`model`:** the session's model id; for an AI PM review, the model its subagent ran on when the Agent result says.
-- **Tokens:** use the measured counts when the run reports them (an AI PM subagent's usage). Otherwise **estimate**:
-  `tokens_in` ≈ characters of the instruction plus every file the skill read, ÷ 4; `tokens_out` ≈ characters of
-  everything it wrote (files and messages), ÷ 4. Round to the nearest 100.
+- **Tokens: real, from the session log, never guessed.** `session_log.py slice` adds up every AI call in the run's
+  part of the log and in its helper agents' logs (each call once; a nested run's calls stay on its own row) and the
+  builder (`--slice`) fills four figures: `tokens_new_in` (new text read), `tokens_cache_read` (history re-read),
+  `tokens_out` (text written) and `tokens_total` (the sum, the real usage); `tokens_in` = new + re-read, so
+  `tokens_in + tokens_out = tokens_total`. Never type token numbers by hand. Only when the slice gave an `error` (no
+  usage) does the builder fall back to its estimate from `files_read` / `files_written`; such a row has no
+  `tokens_total`.
 - **The run flag and the hook.** At the start of a run (orchestrator Setup, or a one-off run's start) write
   `${CLAUDE_PROJECT_DIR:-<cwd>}/.poc-studio/observability` (holding the `run_group`); delete it when the run ends or
   stops. While it exists, the plugin's `skill-run-log.sh` hook saves each logged skill's start time in
@@ -630,16 +637,19 @@ observability:
 - **The session log (every row).** Each row carries the full log of its own run, for debugging later. When the hook
   sees a logged skill (or an AI PM review) start, it also notes where the run starts in the session's log file. Before
   building the row:
-  1. `python3 "$O/session_log.py" slice <skill> --ledger "$LG"` → prints `{"file", "mime", "lines", "bytes"}` (or
-     `{"error": …}`). The file holds exactly that run: the session's lines from its start to now, the logs of helper
+  1. `python3 "$O/session_log.py" slice <skill> --ledger "$LG" > $TMPDIR/slice.json` → `{"file", "mime", "lines",
+     "bytes", "usage"}` (or `{"error": …}`). For an orchestrator row: `slice poc-orchestrator` (it finds this chat's
+     log itself and takes every line since its last row that no skill run claimed). The file holds exactly that run: the session's lines from its start to now, the logs of helper
      agents started during it, a one-line marker in place of a nested run that has its own row (a research call or an
      AI PM review inside a stage), sign-in secrets removed (cookies, tokens, keys, passwords), very long tool outputs
      trimmed. Real client samples never go in: a run reads them from `files/samples/` but the log is cut from the
      session, so if a sample's contents were printed in full, leave `session_log_link` out for that row.
   2. Upload `file` with `upload_public_file` (`fileName` `<client> - <skill> - <label> - log.jsonl`, `mimeType` the
-     printed `mime`). Put the URL in `session_log_link` and `lines` in `session_log_lines` in `skill-run-in.json`.
+     printed `mime`; skip when it says `"upload": false`). Put the URL in `session_log_link` in `skill-run-in.json`.
+     Pass the slice to the builder with `--slice $TMPDIR/slice.json`: it fills `session_log_lines` and the tokens.
   3. **It never blocks:** an `error`, a failed upload or anything else → write the row without the two keys and carry on.
-     No retry loop and no message to the person: the row matters more than its log.
+     No retry loop and no message to the person: the row matters more than its log. A failed upload still keeps the
+     real tokens (the slice has them).
   An AI PM review's log is cut right when its subagent returns; the UnifyApps Headless build's when the app is
   published (one log for the whole build).
 - **How to write it (always through the builder, never by hand).** The object validates every write against its
@@ -652,9 +662,9 @@ observability:
      long text by hand). Loose values are fine: the builder turns "104k" into 104000, "v1" into 1, "REVISE" into
      `revise`, seconds into milliseconds, a command name (`brd`) into its skill, drops empty values and unknown keys,
      leaves `poc` off one-off rows, fills `phase`/`gate` from the skill, makes `run_id`, `duration_ms` and `created_at`.
-     Tokens are never left empty: give measured counts when you have them; otherwise add `files_read` and
-     `files_written` (paths) and the builder estimates both.
-  2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --out $TMPDIR/orbit-skill-run.json --ledger "$LG"`.
+     Tokens come from `--slice` (real usage). Only if the slice failed, add `files_read` and `files_written` (paths)
+     and the builder estimates `tokens_in` / `tokens_out`.
+  2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --slice $TMPDIR/slice.json --out $TMPDIR/orbit-skill-run.json --ledger "$LG"`.
      - Exit 0 → send that file's JSON with `apply_record_edits` exactly as it is.
      - Exit 2 → the row lacks `skill` or `started_at`: add it (the hook's start file, or now) and build again.
      - Exit 3 → another row must come first: a review is never logged before the run it checked (`reviews_run_id`
