@@ -641,8 +641,9 @@ observability:
      "bytes", "usage"}` (or `{"error": …}`). For an orchestrator row: `slice poc-orchestrator` (it finds this chat's
      log itself and takes every line since its last row that no skill run claimed). The file holds exactly that run: the session's lines from its start to now, the logs of helper
      agents started during it, a one-line marker in place of a nested run that has its own row (a research call or an
-     AI PM review inside a stage), sign-in secrets removed (cookies, tokens, keys, passwords), very long tool outputs
-     trimmed. Real client samples never go in: a run reads them from `files/samples/` but the log is cut from the
+     AI PM review inside a stage), sign-in secrets removed (cookies, tokens, keys, passwords), and everything else
+     in full. Only a log over the 20 MB upload limit is compressed (`.jsonl.gz`); only if it is still over 20 MB are
+     the longest texts cut, as little as fits. Real client samples never go in: a run reads them from `files/samples/` but the log is cut from the
      session, so if a sample's contents were printed in full, leave `session_log_link` out for that row.
   2. Upload `file` with `upload_public_file` (`fileName` `<client> - <skill> - <label> - log.jsonl`, `mimeType` the
      printed `mime`; skip when it says `"upload": false`). Put the URL in `session_log_link` in `skill-run-in.json`.

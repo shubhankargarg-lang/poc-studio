@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.44.1
+- **Session logs are kept in full.** Nothing is cut any more (only sign-in secrets are removed). A log over the 20 MB upload limit is compressed (`.jsonl.gz`); only if it is still over 20 MB compressed are the longest texts cut, at the largest length that fits (200k, 50k, 20k, then 5k characters).
+
 ## 1.44.0
 - **Real token usage on every Observability row, from the Claude Code session log.** `session_log.py slice` now adds up every AI call in the run's part of the log and in its helper agents' logs, each call once (Claude Code writes one call over several lines with the same usage; a call already counted for another row is skipped; a nested run's calls stay on its own row). Four figures per row: `tokens_new_in` (new text read), `tokens_cache_read` (history re-read), `tokens_out` (written) and `tokens_total`; `tokens_in` = new + re-read. The builder fills them with `--slice`; no more estimates unless the slice failed.
 - **The orchestrator's own work gets rows**: one `poc-orchestrator` row at each gate approval, at a stop or block, and at the end ("Orchestrator · G1" … "· end"; one-off runs: "Run overhead"), covering every line no skill run claimed (gate talk, write-backs, moving between stages). The rows of a chat now add up to the whole chat.
