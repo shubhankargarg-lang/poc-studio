@@ -377,6 +377,13 @@ approval write), when the run stops or is blocked, and at the end of the run, wr
 everything since your last row that no skill run claimed (gate talk, waiting, write-backs, moving between stages).
 Every row's tokens are the real usage from the session log (Moment 7, "Tokens"); never type them by hand.
 
+**Every row gets its session log** (Moment 7, "The session log"): the slice removes secrets and real sample text
+itself, so a run that read a sample is still logged; never leave a log out on purpose. **Before every re-run you do
+inline** (applying REVISE fix lines, or the person's changes, without loading the skill again) run
+`session_log.py mark-start <skill> --ledger <observability.ledger>`, so the re-run's log and tokens start where it
+starts. At every gate and at the end, also run `skill_run_row.py no-log` and repair each listed row (Moment 7,
+"Retry, never drop"), and retry `failed_writes` (orbit-writeback "When a write fails").
+
 ## Orbit write-back at each gate
 
 Every gate is mirrored to Orbit by the `orbit-writeback` skill (its table "The plugin's gates → Orbit moments" is the

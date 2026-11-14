@@ -63,6 +63,10 @@ Make a list of every client file found (name, Slack file ID or Drive ID, who sha
 
 Call the Slack connector's file read (`slack_read_file`) with the file ID. Binary files (.pptx, .pdf, .docx, .xlsx, images) come back saved to disk at a path given in the tool result.
 
+**An `MCP error -32602` / `invalid_union` reply** (seen on PDFs) is a schema error in the connector, not a temporary
+refusal: retrying cannot help. Treat the file as refused at once (no spaced retry) and go straight to 2b and 2c (Drive,
+Gmail, an earlier POC's copy, Orbit).
+
 The answer "Resources of type ... are not currently supported" is usually **temporary**: the same file can fail several times in a row and then succeed minutes later. Back-to-back retries tend to land in the same bad window, so retries must be **spaced in time**:
 
 **At most 2 attempts per file:**
@@ -88,7 +92,12 @@ If the Drive copy is found, use it, and say in Section 4 that the file came from
 ### 2c. Other copies
 
 - **Gmail and Calendar attachments**: when connected, look for the email or event the file first arrived with and take the attachment from there.
-- Only when Slack, Drive and Gmail have all failed: tell the person **in the chat, before writing the document**, which file is missing and that they can attach it here or save it to the client's Drive folder. If they are not there to answer, write the document, but put a line at the very top saying which client files were not read and that the score is lower because of it. **When run by the POC Studio orchestrator, do not ask or wait:** write that top-of-document line, list the file in Section 3 (For the PM) and Section 4, and continue; the orchestrator shows it at the approval gate.
+- **An earlier POC of the same client**: an identical copy (same file name and same byte size) saved in an earlier
+  POC's workspace on this computer (`<client folder>/<earlier workspace>/01-requirement-gathering/files/`, samples in
+  `files/samples/`), or uploaded to Orbit as an input document of an earlier POC of the same client. Copy it into this
+  run's `files/` (samples into `files/samples/`) and cite it in Section 4 as "copy from earlier POC <poc id or folder>,
+  identical to the Slack file (same name and size)", with the Slack link it stands in for.
+- Only when Slack, Drive, Gmail and an earlier POC's copy have all failed: tell the person **in the chat, before writing the document**, which file is missing and that they can attach it here or save it to the client's Drive folder. If they are not there to answer, write the document, but put a line at the very top saying which client files were not read and that the score is lower because of it. **When run by the POC Studio orchestrator, do not ask or wait:** write that top-of-document line, list the file in Section 3 (For the PM) and Section 4, and continue; the orchestrator shows it at the approval gate.
 
 ### 2d. Deliver the files
 

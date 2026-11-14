@@ -173,7 +173,10 @@ Every builder call takes `--ledger` with the run flag's folder (recorded in the 
 A failed write never holds the run: it stays pending and is sent again at the next step ("Nothing is lost"); at the
 approval, write one `poc-orchestrator` row "Run overhead" (`session_log.py slice poc-orchestrator`: the command's own
 work outside the skill runs), run the check against Orbit and end the closing message with the `skill_run_row.py
-report` line. Every row's tokens are the real usage from the session log (Moment 7, "Tokens").
+report` line. Every row's tokens are the real usage from the session log (Moment 7, "Tokens"), and every row gets its
+session log (the slice removes secrets and real sample text itself; never leave a log out on purpose). Before every
+re-run done inline (REVISE fixes, or changes) run `session_log.py mark-start <skill>`; at the approval also run
+`skill_run_row.py no-log` and repair each listed row (Moment 7, "Retry, never drop").
 
 ## 3 · Run the stage (unattended)
 

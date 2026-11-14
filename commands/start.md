@@ -10,10 +10,10 @@ The arguments are `<client name> | <use case name> | <POC ID>` (e.g. `Acme | Inv
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.44.1**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.45.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.44.1"
+LOADED="1.45.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]
