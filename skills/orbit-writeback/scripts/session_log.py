@@ -9,7 +9,9 @@ one JSONL file with exactly that run's part of the session:
   - a marker line in place of each nested logged run that already has its own log (research or an AI PM review
     inside a stage), so nothing is stored twice;
   - sign-in secrets removed (cookies such as Orbit's `_at`, bearer tokens, JWTs, API keys, passwords);
-  - very long strings (big tool outputs, whole files) trimmed to 20,000 characters with a note.
+  - everything else kept in full. Only when the file is over the 20 MB upload limit is it compressed (gzip); only if
+    it is still over 20 MB compressed are very long strings (big tool outputs, whole files) cut, with a note, at the
+    largest length that fits.
 The session uploads the file (Moment 7) and puts its link and line range on the row. Nothing here uploads or blocks.
 
 usage:
@@ -32,7 +34,8 @@ DIR is the run's .poc-studio folder (default $CLAUDE_PROJECT_DIR/.poc-studio).
 import glob, json, os, re, sys, time
 from datetime import datetime
 
-MAX_STR = 20000
+MAX_STR = None            # no cut by default: the whole log is kept
+TRIM_STEPS = (200000, 50000, 20000, 5000)   # only for a log still over 20 MB after compressing
 MAX_UPLOAD = 19 * 1024 * 1024
 
 SECRET_PATTERNS = [
@@ -57,7 +60,7 @@ SECRET_PATTERNS = [
 def clean_str(s):
     for rx, rep in SECRET_PATTERNS:
         s = rx.sub(rep, s)
-    if len(s) > MAX_STR:
+    if MAX_STR and len(s) > MAX_STR:
         s = s[:MAX_STR] + "\n[… trimmed by POC Studio: %d more characters]" % (len(s) - MAX_STR)
     return s
 
@@ -190,6 +193,8 @@ def subagent_files(transcript, started_ms):
 
 
 def slice_run(skill, d, out, transcript=None):
+    global MAX_STR
+    MAX_STR = None
     index_path = os.path.join(d, "session-logs", "index.json")
     os.makedirs(os.path.join(d, "session-logs"), exist_ok=True)
     index = json.load(open(index_path)) if os.path.isfile(index_path) else []
@@ -220,42 +225,46 @@ def slice_run(skill, d, out, transcript=None):
     if not out:
         out = os.path.join(d, "session-logs", "%s-%d.jsonl" % (skill, int(time.time() * 1000)))
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
-    use = Usage(read_counted(d))
-    with open(out, "w", encoding="utf-8") as fo:
-        def put(obj):
-            fo.write(json.dumps(obj, ensure_ascii=False) + "\n")
-        put({"type": "poc_studio_session_log", "skill": skill, "session_lines": "%d-%d" % (start, end),
-             "subagent_logs": len(agents), "nested_runs": len(nested), "secrets_removed": True,
-             "written_at": int(time.time() * 1000)})
-        with open(tr, encoding="utf-8", errors="replace") as f:
-            for i, line in enumerate(f, 1):
-                if i < start or i > end:
-                    continue
-                inner = next((r for r in nested if int(r["start"]) <= i <= int(r["end"])), None)
-                if inner:
-                    if i == int(inner["start"]):
-                        put({"type": "poc_studio_nested_run", "skill": inner["skill"],
-                             "session_lines": "%s-%s" % (inner["start"], inner["end"]),
-                             "note": "this part has its own log on that run's Observability row"})
-                    continue
-                try:
-                    e = json.loads(line)
-                except Exception:
-                    put({"type": "unparsed", "text": clean_str(line.rstrip("\n"))})
-                    continue
-                use.add(e)
-                put(clean(e))
-        for p in agents:
-            put({"type": "poc_studio_subagent_log", "file": os.path.basename(p)})
-            with open(p, encoding="utf-8", errors="replace") as f:
-                for line in f:
+    def write(path, use):
+        with open(path, "w", encoding="utf-8") as fo:
+            def put(obj):
+                fo.write(json.dumps(obj, ensure_ascii=False) + "\n")
+            put({"type": "poc_studio_session_log", "skill": skill, "session_lines": "%d-%d" % (start, end),
+                 "subagent_logs": len(agents), "nested_runs": len(nested), "secrets_removed": True,
+                 "long_text_cut_at": MAX_STR, "written_at": int(time.time() * 1000)})
+            with open(tr, encoding="utf-8", errors="replace") as f:
+                for i, line in enumerate(f, 1):
+                    if i < start or i > end:
+                        continue
+                    inner = next((r for r in nested if int(r["start"]) <= i <= int(r["end"])), None)
+                    if inner:
+                        if i == int(inner["start"]):
+                            put({"type": "poc_studio_nested_run", "skill": inner["skill"],
+                                 "session_lines": "%s-%s" % (inner["start"], inner["end"]),
+                                 "note": "this part has its own log on that run's Observability row"})
+                        continue
                     try:
                         e = json.loads(line)
                     except Exception:
                         put({"type": "unparsed", "text": clean_str(line.rstrip("\n"))})
                         continue
-                    use.add(e)
+                    if use is not None:
+                        use.add(e)
                     put(clean(e))
+            for p in agents:
+                put({"type": "poc_studio_subagent_log", "file": os.path.basename(p)})
+                with open(p, encoding="utf-8", errors="replace") as f:
+                    for line in f:
+                        try:
+                            e = json.loads(line)
+                        except Exception:
+                            put({"type": "unparsed", "text": clean_str(line.rstrip("\n"))})
+                            continue
+                        if use is not None:
+                            use.add(e)
+                        put(clean(e))
+    use = Usage(read_counted(d))
+    write(out, use)
     usage = use.totals()
     save_counted(d, list(use.calls))
     index.append({"skill": skill, "transcript": tr, "start": start, "end": end, "file": out, "agents": agents,
@@ -264,15 +273,26 @@ def slice_run(skill, d, out, transcript=None):
         json.dump(index, f)
     res = {"file": out, "mime": "text/plain", "lines": "%d-%d" % (start, end), "usage": usage,
            "subagent_logs": len(agents), "nested_runs": len(nested)}
-    if os.path.getsize(out) > MAX_UPLOAD:   # upload_public_file takes at most 20 MB: compress the rare big one
+    if os.path.getsize(out) > MAX_UPLOAD:   # upload_public_file takes at most 20 MB: compress only then
         import gzip, shutil
-        with open(out, "rb") as fi, gzip.open(out + ".gz", "wb", compresslevel=9) as fz:
-            shutil.copyfileobj(fi, fz)
+
+        def gz():
+            with open(out, "rb") as fi, gzip.open(out + ".gz", "wb", compresslevel=9) as fz:
+                shutil.copyfileobj(fi, fz)
+            return os.path.getsize(out + ".gz")
+        size = gz()
+        for cut in TRIM_STEPS:      # still too big compressed: cut only the longest texts, as little as fits
+            if size <= MAX_UPLOAD:
+                break
+            MAX_STR = cut
+            write(out, None)
+            size = gz()
+            res["long_text_cut_at"] = cut
         os.remove(out)
         res["file"], res["mime"] = out + ".gz", "application/gzip"
-        if os.path.getsize(res["file"]) > MAX_UPLOAD:
-            res["upload"] = False   # too big even compressed: no link, but the usage still goes on the row
-            res["upload_note"] = "log too big to upload even compressed (%d bytes)" % os.path.getsize(res["file"])
+        if size > MAX_UPLOAD:
+            res["upload"] = False   # too big even cut and compressed: no link, but the usage still goes on the row
+            res["upload_note"] = "log too big to upload even compressed (%d bytes)" % size
     res["bytes"] = os.path.getsize(res["file"])
     return res
 
