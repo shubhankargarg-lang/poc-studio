@@ -297,6 +297,13 @@ act; `build.py` re-stitches in seconds (always run `kit/trim.py` again after it)
    ```
    `*text*` renders as the template's italic olive emphasis, `**text**` as bold. An act's `start`
    must be the screen its first scene talks about.
+   **Say what the customer's experts check for, and show what the agent says first.** (a) Where the flow applies a
+   business control, the narration names it with the build's real values (from `facts.json`), for example tax/VAT in
+   invoice matching, tolerance or threshold limits, approval limits: a finance or AP viewer notices when matching is
+   explained without them. (b) Never read version numbers, model names or codes aloud as digits ("5 point zero"):
+   leave them out of the narration, or set `brief.pronounce` so they sound natural. (c) An agent or chat scene opens
+   on the agent's own starting or greeting message: add a `waitFor` on it before the first `type`, and keep it on
+   screen while the line starts. Never type over an empty chat.
 5. `node kit/lint.mjs`, then `python3 kit/narrate.py` (real timings) and
    `node kit/docs.mjs script`. Check the script's total length is 4–5 minutes. **Send the script
    and carry on recording; do not wait for approval.** If the user replies with changes, apply them,

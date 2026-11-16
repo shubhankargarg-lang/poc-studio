@@ -103,6 +103,9 @@ scope and wording, then working behaviour, then restraint (rule 12), then everyt
    `support` after or beside, never above, and never louder. Fix weak hierarchy by moving, grouping and spacing what
    is there; never by adding cards, badges, numbers, labels or decoration. `review` checks the order on the rendered
    screen and draws it on `_working/qa/reading-order-<id>.png`.
+   A record's page opens on what the record is: its summary and key facts first (an AI summary where the BRD has an
+   agent), then the checks, history or analysis done on it as support. A list opens on what needs the person soonest
+   (the next meeting, the oldest overdue item), and a record with several past events shows their overview first.
 
 4. **Pick the screen's pattern and shape from its work.** Use `references/patterns.md` part 1 for the pattern (`queue`,
    `split`, `focus`, `decision`, `guided`, `board`, `dashboard`, `map`, `feed`) and its shapes, part 3 for carrying
@@ -110,6 +113,9 @@ scope and wording, then working behaviour, then restraint (rule 12), then everyt
    same shape only when they show the same kind of data. That reference was written for the earlier JSON spec. Its
    mentions of `slot` and spec fields are replaced by this skill's HTML; its `check:` lines come from `wf_tool.py check`. Its pattern, signature,
    usability and reference guidance all still apply.
+   Controls that act on the same object sit together in one region beside or above it, never split between a side and
+   the bottom. When settings exist both for all items and for one item, draw them as two separate controls: the
+   all-items one applies to every item, the one-item one opens from that item, and its values override the defaults.
 
 5. **The signature first, drawn as itself.** Every app has one object or interaction no other app has (patterns.md
    part 2). Name it in `wf-meta.signature` (`name`, `component`, `frame`, `why`), give it the most space on its
@@ -189,6 +195,7 @@ scope and wording, then working behaviour, then restraint (rule 12), then everyt
     - no card inside a card; no section that repeats what another already shows; no chart where a sorted table or
       one sentence answers the question;
     - helper text only where it changes what the person does;
+    - search and filters only on the screen whose list they narrow, never repeated on a record's own page;
     - extra screens only for what changes the layout (rule 13). States are not screens.
     Set the size budget before you write markup: screens (= §11 pages), frames (rule 13), components (one per
     distinct job). Say in the hand-over where the BRD forced you over a limit.
@@ -353,6 +360,9 @@ state, the annotation toggle and the notes) from the metadata, so you write none
   overlay's content changes by state (`data-when` blocks), each block keeps that order. `check` fails a drawer or
   modal with no header and flags a close control or primary action outside its region. On a map screen the drawer
   opens below the top bar, so the bar stays visible (`map-component.md`).
+  Draw each drawer's content for its own job: a create or edit drawer is a form (labelled inputs, toggles, tabs only
+  where the BRD splits the fields, Save and Cancel in the footer); only the agent drawer is a chat. Never reuse one
+  overlay's markup for another job.
   Use a modal only for an irreversible or legally significant act; use a drawer for work attached to the current
   record.
 - **Disabled with a reason:** `<button … disabled aria-describedby="why-release">Release room</button>

@@ -110,6 +110,10 @@ before its one question (start / change something / keep for later) is put to th
      to "Check this": a plan that still has one after round 2 goes back to the orchestrator as not ready;
    - the task graph orders tasks wrongly (an entity built before what it depends on), or chains tasks that could run in
      parallel.
+   - a chat or copilot page with a streaming agent calls Stop Response Generation from anything but its Stop button (a
+     stop fired on send cancels the reply just started, so later questions get no answer), or scopes the stop to the
+     whole case instead of the one run: the plan should show the copilot's Stop button only while a reply streams, and
+     pass that run's id to the stop.
 3. Write `04-build/platform-review.md`: round number, then one line per adjustment —
    `<entity or task> · <change> · <why, citing the checklist item or pointer>`. If there are none, write "No adjustments".
 4. **Adjustments found** → give them to Zen as its "change something" input, all in one message, and let Zen revise the
