@@ -94,10 +94,16 @@ W="<scripts.wireframes>"; [ -f "$W/wf_tool.py" ] || W="$(dirname "$(find ~/.clau
 **Re-run:**
 - `python3 -I "$W/wf_tool.py" check <workspace>/02b-wireframes/<slug>-wireframes.html`: every `error:` is a finding;
   every `check:` line must be fixed or defended in the hand-over (an unexplained one is a finding).
-- `python3 -I "$W/wf_tool.py" review <html> "$T/qa"` (needs a browser; the HTML is the only output, so these
-  screenshots are yours): look at the `"$T/qa/"` contact sheets and the reading-order overlays yourself. Script errors, reading-order checks and overlapping text it prints are findings.
+- `python3 -I "$W/wf_tool.py" review <html> "<workspace>/reviews/shots/wireframes-<n>"` (needs a browser; the HTML is
+  the only output, so these screenshots are yours; they are kept, see "Keep this review's screenshots" below): look at
+  its contact sheets and the reading-order overlays yourself. Script errors, reading-order checks and overlapping text it prints are findings.
 - `python3 -I "$W/wf_tool.py" manifest <html> "$T"`, then `python3 "$W/coverage.py" <scoping docx> "$T/wireframe-manifest.json"`: every §11 page has a screen and every CMP ID is on an instance
   or named in `brd_overrides` with a reason. Each gap is a finding.
+
+**Keep this review's screenshots** (the before-and-after check at the gate uses them; nothing is uploaded): save them
+in `<workspace>/reviews/shots/wireframes-<n>/` (`<n>` = this review's number) instead of a temporary folder, with a
+`shots.json` beside them: `{"stage", "review": <n>, "version": "<the version reviewed: v3, App v5>", "at": <ms>,
+"screens": {"<screen or section id>": "<file name>"}}`. Never delete an earlier review's folder.
 - Open the HTML in a browser and click through the journey (`wf-meta.journey`) from start to payoff.
 
 **Judge (from your own renders and the clicks):**
@@ -227,12 +233,17 @@ workspace: `D="<scripts.design_system>"; [ -f "$D/scripts/ds_tool.py" ] || D="$(
 - `python3 -I "$D/scripts/ds_tool.py" fidelity <wireframes.html> <design-system.html>`: every `error:` is a finding (content,
   structure, traceability, anatomy corrections listed in `#corrections`, data-bound visuals, the logo section, the
   twelve sections, the JSON blocks).
-- `python3 -I "$D/scripts/ds_tool.py" audit <design-system.html> "$T/qa"`: every `error:` is a finding (contrast in both
+- `python3 -I "$D/scripts/ds_tool.py" audit <design-system.html> "<workspace>/reviews/shots/design-system-<n>"`
+  (kept, see "Keep this review's screenshots" below): every `error:` is a finding (contrast in both
   themes, blank, clipped and cut specimens, component anatomy, surfaces that blend in, field and button edges,
   touching controls, select arrows, the surface ladder, rendered consistency). `check:` lines the QA report does not
   explain are findings.
 
-**Judge (from your own screenshots in `"$T/qa"`, every entry and screen, light and dark):**
+**Keep this review's screenshots:** the audit's screenshots stay in `<workspace>/reviews/shots/design-system-<n>/`
+with a `shots.json` beside them: `{"stage": "design-system", "review": <n>, "version": "<v3>", "at": <ms>,
+"screens": {"<section id> (light|dark)": "<file name>"}}`. Never delete an earlier review's folder.
+
+**Judge (from your own screenshots in `reviews/shots/design-system-<n>/`, every entry and screen, light and dark):**
 - **Finished, not coloured.** Each component looks like a finished product element for its kind (the skill's
   "Finish each component" table): drawers and modals with a clear header, body and footer; metrics with a clear number;
   tables with aligned numbers and status words; secondary buttons and fields with visible edges. A component that
@@ -263,6 +274,9 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 
 **Re-run:**
 - `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session json> --routes 04-build/routes.json --out reviews/build-walk-<n>`
+  (its screenshots are kept: write `reviews/build-walk-<n>/shots.json` with `{"stage": "build", "review": <n>,
+  "version": "App v<N>", "at": <ms>}` beside the report; the report already names each page's screenshot. Never
+  delete an earlier walk's folder)
   (plus `--personas 04-build/personas.json` when it exists) walks every page in scoping §11 nav order at 1280×800,
   once per persona in `routes.json` (switching persona in the app's profile menu, or with the session or steps in
   `personas.json`), opens every tab, nested tabs up to 3 deep, and the drawer or record a route's `open` names, and

@@ -69,8 +69,9 @@ noticed. One of the 12 keys.
 
 ## 5. Outcome and confidence
 
-- **outcome**: look at the version approved at this gate (the document, the wireframe HTML, the design system, the
+- **outcome**: for an ask about something you can see, compare the before and after screenshots the AI PM kept
+  (Moment 2c, "Before-and-after check"); otherwise look at the version approved at this gate (the document, the wireframe HTML, the design system, the
   app version). `done` with `outcome_version` (`v3`, `App v5`) when it shows the change; `not_done` when it does not;
   `regressed` when an earlier version had it and this one lost it; `unclear` when you cannot tell.
 - **confidence** (0–100): high (80+) when the ask is clear, you know which element it means and you checked the
-  outcome; medium (50–79) when one of those is uncertain; low (under 50) when you are guessing what "this" means.
+  outcome (for a visible ask: on the before-and-after screenshots); medium (50–79) when one of those is uncertain; low (under 50) when you are guessing what "this" means.

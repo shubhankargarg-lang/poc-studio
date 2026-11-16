@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.50.0
+- **Before-and-after check for feedback, from kept screenshots.** The AI PM now keeps the screenshots it takes at every review instead of throwing them away: wireframes in `reviews/shots/wireframes-<n>/`, the design system in `reviews/shots/design-system-<n>/` (light and dark), each with a `shots.json` naming the version and screens; the build walk's `reviews/build-walk-<n>/` and the collateral kit's `review/v<n>/` were already kept and now carry the version too. At every gate approval (orbit-writeback Moment 2c), each ask about something visible is checked on the screen it is about, before (the last review before the ask) and after (the approved version): done, not done or regressed comes from the two pictures, and confidence is 80+ only when the pair was checked. The pairs used are listed in `reviews/shots/feedback-checks.md`. Everything stays in the POC folder; nothing extra is uploaded to Orbit (only the outcome and confidence, as before).
+
 ## 1.49.3
 - **Skills and tools load fresh again at every use** (1.49.0's "load once per session" removed as high risk). On a long run Claude Code compacts the conversation and a skill loaded earlier is only summarised, so a later stage could follow a shortened version and skip steps; the session-log hook also marks a skill's start only on a Skill call. Back to 1.48.0: the orchestrator and asset-run call the Skill tool every time, orbit-writeback is loaded at each moment and loads its tenant tools with one ToolSearch at the start of every write moment, and requirement gathering loads connectors and reads the docx skill as before. Kept from 1.49.0: state and logs written once per event, tool checks reused for 24 hours (sign-in, connector and model checks always run).
 
