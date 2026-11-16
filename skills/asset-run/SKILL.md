@@ -55,7 +55,7 @@ sensibly; anything still unclear is asked for in the one question below.
 **Collect each prerequisite in this order, and stop at the first source that has it:**
 1. The command arguments.
 2. An existing workspace for this client and use case (`<cwd>/<client-slug>/<usecase-slug>/`): an approved
-   Requirement Gathering document, `02-scoping/scoping-document.docx`, `02b-wireframes/wireframe-manifest.json`, `03-design-system/*-design-system.html`,
+   Requirement Gathering document, `02-scoping/scoping-document.docx`, `02b-wireframes/*-wireframes.html`, `03-design-system/*-design-system.html`,
    `state.json` → `app.preview_url`, earlier one-off outputs in `state.json` → `standalone.runs`. Wireframes count only
    when approved (`stages.wireframes` = `approved`, or a `standalone.runs` wireframes entry with status `done`);
    unapproved ones are not offered, and the run treats them as absent. In a chain (§ 6, "Approve and make <next
@@ -78,8 +78,8 @@ on without it):
 | requirements | Client name · Use case · Slack and Google Drive connectors (their tools are in the session) | Client website · Gmail and Calendar connectors | Connectors: stop and ask the person to connect them (in Claude Code: `/mcp`, or as a claude.ai connector), then check again, as Setup does |
 | brd | Client name · Use case · **At least one input**: an RG document, meeting notes, an email, client files, or a Slack or Drive link · For connector discovery: the UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) — required when the input names a client system the app reads from or writes to; otherwise optional (without it, the model inventory is skipped and the models are marked `unknown` until the build's verify step) | Client website | Offer two options: "Run `/poc-studio:requirements` first" or "Paste or attach what you have" |
 | wireframes | Client name · Use case · **BRD or scoping document** (.docx or PDF) | — | Offer "Run `/poc-studio:brd` first" or "Attach a BRD" |
-| design | Client name · Use case · **BRD or scoping document** (.docx or PDF) · Client website (ask once; accept "derive it", then the skill derives it) | Wireframes (an approved `wireframe-manifest.json` from this workspace; without it, the design system works from the BRD alone, and offer `/poc-studio:wireframes` first) · Client logo file · Brand guidelines | Offer "Run `/poc-studio:brd` first" or "Attach a BRD" |
-| app | Client name · Use case · **BRD or scoping document** · The UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) · The collateral tools (Playwright, for the Stage 4b walk) and a valid Orbit sign-in, as for collaterals below · Not a folder whose UnifyApps Headless setup belongs to a pipeline run (below) | Approved wireframes (manifest and frames; else the build follows the BRD's page specs alone) · Design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first) | Plugin or setup missing: tell the person what to install or run, then check again |
+| design | Client name · Use case · **BRD or scoping document** (.docx or PDF) · **Wireframe HTML** (`<slug>-wireframes.html`, approved, from this workspace or attached) | Client logo file · Brand guidelines | No BRD: offer "Run `/poc-studio:brd` first" or "Attach a BRD". No wireframe HTML: offer "Run `/poc-studio:wireframes` first" or "Attach the wireframe HTML" |
+| app | Client name · Use case · **BRD or scoping document** · The UnifyApps Headless plugin (`ua`) installed and this folder set up on `orbit.uat.unifyapps.com` (`/ua:setup`) · The collateral tools (Playwright, for the Stage 4b walk) and a valid Orbit sign-in, as for collaterals below · Not a folder whose UnifyApps Headless setup belongs to a pipeline run (below) | Approved wireframe HTML (else the build follows the BRD's page specs alone) · Design system HTML (without one, say the build uses UnifyApps Headless's default look, and offer `/poc-studio:design` first) | Plugin or setup missing: tell the person what to install or run, then check again |
 | collaterals | Client name · Use case · **Which collaterals** (always asked, below) · **App preview link** (Preview link rule) · Orbit sign-in valid · The collateral tools for the ones chosen | BRD or scoping document (strongly recommended: it drives the story and personas) · RG document · Audience: business, technical or mixed (else the skill decides) | Ask |
 
 **Collaterals — which ones (always asked).** Unless the command already says which (the extra argument or words such
@@ -150,8 +150,8 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
    questions during the stage are answered by the AI PM from context and assumptions, not the person (except, in
    `app`, Zen's planning questions, its plan approval and every `CONFIRM_REQUIRED`, and in `requirements` the
    `SAMPLE_UPLOAD:` question, which are the person's); the design
-   system runs unattended, settles brand colour by its own source order and uses the UnifyApps logo as a labelled
-   stand-in when no client logo exists; builds use UnifyApps Headless in Zen mode on Orbit UAT with a new solution
+   system runs unattended, settles brand colour by its own source order and, when the client's official logo file
+   cannot be retrieved by any of its routes, shows a labelled placeholder and marks the brand incomplete; builds use UnifyApps Headless in Zen mode on Orbit UAT with a new solution
    `<Client> — <Use case>`, and model IDs follow its recommendation; collaterals use the bundled UnifyApps template;
    POC data policy — made-up seed and document values, so public Orbit links are approved (real samples in
    `files/samples/` are never uploaded); the person's Slack, Gmail,
@@ -198,9 +198,11 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
   Part B's model inventory always; its `01c-integration/integration-spec.json` is the BRD's **input 3**. A BRD given as
   input to another one-off asset is used as it is.
 - **wireframes** — orchestrator § 2b: `wireframes` with the BRD collected as "the approved scoping document"; output
-  `<workspace>/02b-wireframes/` (the PDF is what goes to Orbit). The PDF is opened locally for the person in § 5.2.
+  `<workspace>/02b-wireframes/`; its only output, the HTML, goes to Orbit and is opened locally for the person in
+  § 5.2, to click through. Wireframes approved before v1.46.0 (PNG/PDF, no HTML) are converted first (wireframes skill,
+  "Legacy wireframes") when a design system is asked for.
 - **design** — orchestrator § 3, unchanged and unattended: the BRD collected is "the approved scoping document"; the
-  wireframes (when collected), the website and any logo file or brand guidelines collected are passed with it; output
+  wireframe HTML and any logo file or brand guidelines collected are passed with it; output
   `<workspace>/03-design-system/<slug>-design-system.html`. The file is opened locally for the person in § 5.2,
   once it has passed review.
 - **app** — orchestrator § 4 as written (including step 2b, connector-discovery `scope: verify`, and the rule for a
@@ -271,7 +273,7 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
    - the app row(s): `https://poc-build-loop-orbit.tensor-uat.unifyapps.com/assets/<type-slug>`;
    - the AI PM gate summary: `python3 "$R/lessons.py" gate <workspace> <stage> --since <first_review>` (this run's
      reviews only);
-   - for a design system or wireframes, also open the file (the HTML or the PDF) locally now (`open <file>` on a Mac, `xdg-open` on Linux);
+   - for a design system or wireframes, also open the HTML locally now (`open <file>` on a Mac, `xdg-open` on Linux);
    - any `check_this` assumptions and anything still open.
 3. Ask with AskUserQuestion. When the asset has a **next asset** (table below), three options, in this order:
    **Approve and make <next asset>** / **Approve** / **Request changes** (they type the changes in "Other"). For

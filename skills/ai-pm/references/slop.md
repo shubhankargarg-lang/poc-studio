@@ -59,3 +59,31 @@ If yes, it is slop.
 | K4 | Deck big stats that are backlog sizes or vanity counts | deck text | "Outcome stats only (collateral skill rule)" |
 | K5 | Template sample text, `*` or `**` left on a slide | `check.py` + render | "Fill or delete the slot" |
 | K6 | "Next steps" that are our fixes, not the client's path | deck text | "Pilot → connect systems → roll out" |
+
+## 5 · From the team's "Dos and don'ts to reduce AI slop" (14 Nov 2026)
+
+Items the catalogue above did not yet name. The wireframes skill carries the same rules in its "Slop rules" section
+and its `wf_tool.py check` tests them; a `check:` line the producer did not fix or defend is a finding here. The
+design system styles exactly what the wireframe contains, so content slop is caught at the wireframes stage; the
+visual items (U19, U20) are judged on the design system and the build by screenshot.
+
+| # | Slop | Detect | Fix line |
+|---|---|---|---|
+| T1 | Sentences over 25 words, or averaging over 20 | `wf_tool.py check`; word count | "Split into sentences of 25 words at most" |
+| T2 | Stock AI phrasing: "it's not just X, it's Y", slogans, "In conclusion", "Let me know if", hedges ("may potentially"), more than one dash aside in a paragraph | phrase list; `check` | "Say the fact once, plainly" |
+| T3 | A list of three by habit ("fast, secure and scalable") | read | "List what is true: two, four or seven" |
+| T4 | The swap test fails: the title or sentence still makes sense with another company's name | read | "Rewrite with this client's record, number or step" |
+| T5 | Traces of how the output was made: tool names, file paths, run IDs, scores, error codes on screen or in a document | `check`; regex | "Remove; keep it in the QA notes" |
+| T6 | Something built that nobody asked for | requirement map | "Cut it, or list it under Optional next steps" |
+| U13 | More than four key facts on a card or record header; eight or more numbers on one card | `check` | "Keep four; put the rest behind Details" |
+| U14 | More than six metrics on a screen, or a metric with no comparison and time frame | `check`; screenshot | "Six at most, each with its target or last period and its time frame" |
+| U15 | A card inside a card | `check` | "Flatten into the parent's sections" |
+| U16 | A tag on every row, or tags in three or more columns of a table | `check` | "Colour only the exceptions" |
+| U17 | Emoji used as icons, or an icon with no word | `check` | "Use a labelled icon or words" |
+| U18 | More than one primary button, or more than two other actions in a page header | `check` | "One primary; the rest in a menu" |
+| U19 | Glass, glows or purple and indigo gradients by default; more than two typefaces | screenshot | "Solid by default; brand gradients only by role" |
+| U20 | Chart junk: 3D, shadows, gradient fills, heavy gridlines, rainbow palettes, more than four series, a pie with more than five slices, bars not from zero, an untitled or "Chart 1" chart | screenshot | "Flat marks, one data colour and one highlight, a takeaway title, axes with units" |
+| U21 | False precision ("$1,284,391.4762") or mixed formats ("$1.2M" beside "1,200,000 USD") | `check`; read | "Round to two or three significant figures; one format per unit" |
+| U22 | A chart or headline number with no source or time-frame note | screenshot | "Add the source or time frame under it" |
+
+A clean word scan is not proof of quality: generic content in clean words is still slop (the test at the top).

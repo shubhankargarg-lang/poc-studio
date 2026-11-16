@@ -1,273 +1,636 @@
 ---
 name: wireframes
-description: Turns the approved scoping document (BRD) into low-fidelity wireframes that decide how each page works — who arrives, what they decide, what needs them and their one next step — and draws them as grey-box PNGs from a short JSON layout spec by a bundled script (no browser, no HTML), plus a component manifest, the closed list of components the design system then designs and the build then uses. Names the app's signature (the one object or interaction no other app has) and draws it as itself, picks each page's pattern and shape from its work so no two apps share a house layout, follows the bundled patterns reference and, for map pages, the map-component reference. Runs in POC Studio's Plan phase between Scoping and the Design System, and for /poc-studio:wireframes.
+description: Turns the approved scoping document (BRD) into complete, clickable, low-fidelity wireframes in one editable HTML file. Every screen, workflow path and state the BRD supports is drawn with real content, working controls and a stable data-* component-ID contract. The file is the structural and behavioural source of truth for the design system and the UnifyApps Headless (Nebula) build. That HTML is the only output: the person clicks through it at the gate, it goes to Orbit, and the design system and the build read it. Names the app's signature and draws it as itself, picks each page's pattern from its work, and keeps scope to what the BRD justifies, with no filler, invented features or AI slop. Runs in POC Studio's Plan phase between Scoping and the Design System, and for /poc-studio:wireframes.
 ---
 
 # Wireframes (POC Studio, Plan phase)
 
-**Input:** the approved scoping document (`02-scoping/scoping-document.docx`), the client and use case.
+**Input:** the approved scoping document (`02-scoping/scoping-document.docx`, or a PDF), the client and the use case.
 **Output** in `<workspace>/02b-wireframes/`:
 
-| File | What it is |
-|---|---|
-| `<slug>.wireframe.json` | the layout spec you write (the only thing you write by hand) |
-| `png/<page-id>.png` | one low-fidelity frame per page, at the persona's real width |
-| `<slug>-wireframes.pdf` | all frames in nav order: what the person approves and what goes to Orbit |
-| `wireframe-manifest.json` | generated from the spec: the app's signature, pages with their brief and pattern, the demo journey, every change to the BRD's layout with its reason, and every component with its purpose, the data it shows, its actions, pages, blocks, CMP IDs, variants, states and, for maps, the data contract and behaviour |
+| File | What it is | Who reads it |
+|---|---|---|
+| `<slug>-wireframes.html` | **The only output.** One self-contained, editable, clickable HTML file: every screen, frame, state and interaction, with the metadata contract below | the person (at the gate and in Orbit), the AI PM, the design system, UnifyApps Headless (Nebula) |
+| `_working/wireframe-manifest.json` | internal, generated from the HTML: pages, frames, signature, journey, components with their instances, variants and states | `coverage.py`, the build plan, the AI PM |
+| `_working/<slug>.wireframe.json` | internal, generated from the HTML: the page index (a content hash per screen) | the orchestrator's review list |
+| `_working/qa/` | internal, review screenshots of every screen and frame, contact sheets and a reading-order overlay per screen | the visual review (step 8) and the fresh-eyes reviewer |
 
-**Why this stage exists.** The BRD says what the app must do: its pages, personas, data, agents and demo story.
-The wireframes decide *how each page works*: what the person sees first, what needs them, how they decide and what
-they do next, and so what is on each page and where. The design system then designs the components in the
-manifest (plus its baseline: sign-in, empty/error/loading/no-access, toast, confirm, and any the journey needs, marked
-Added with a reason), and the build composes pages to
-these layouts. A page that is hard to use at this stage stays hard to use after styling and building, and the fix
-then costs rounds of human review; getting the flow right here, at low fidelity, is the cheapest place to do it.
+There is no PDF and there are no PNG frames to hand over: the HTML is what everyone opens. The HTML is the only file
+you write by hand; the internal files are generated from it by `scripts/wf_tool.py` and never uploaded or shown.
+Change a wireframe by editing the HTML and regenerating, never by editing a generated file.
+
+**The tools are files in this skill, never typed by hand.** `scripts/wf_tool.py` (embed, check, manifest, review),
+`scripts/coverage.py`, `scripts/diff.py`, and the fixed parts of every wireframe, `assets/wf-base.css` and
+`assets/wf-runtime.js`, which `wf_tool.py embed` puts into the HTML. Find the folder once:
+```bash
+W="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/wireframes/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$W" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/wf_tool.py' 2>/dev/null | head -1)")"
+```
+
+**Why this stage exists.** The BRD says what the app must do. The wireframes decide how each screen works: what the
+person sees first, what needs them, how they decide, what they do next and what happens after. Getting this right
+here is cheap; a screen that is hard to use stays hard to use after styling and building.
+
+**What this skill owns, and what it hands on.** The wireframe owns the application structure, the screen hierarchy,
+the component inventory, the content, the business meaning, the interactions, and the component and instance IDs.
+The design system owns the brand, the visual language, the tokens, the finished look of each component and its
+visual states. It styles and finishes what this file contains, and changes none of its content or behaviour. So
+anything the app needs must be here: a component this file leaves out will either be missing or be invented later
+without the BRD in view.
+
+| Responsibility | Wireframe skill | Design system skill |
+|---|---|---|
+| BRD interpretation | primary responsibility | consume and preserve |
+| User journeys | define | preserve |
+| Business rules | define and validate | preserve |
+| Screen and state coverage | define | preserve |
+| Content and data | define | preserve |
+| Functional interactions | define and validate | preserve and style |
+| Component identification | identify | catalogue and trace |
+| Component anatomy | basic structural representation | refine and correct |
+| Layout composition | functional and logical | visually optimise |
+| Typography | minimal hierarchy | the complete type system |
+| Colour and brand | minimal, greyscale | full brand treatment |
+| Elevation and shadows | not used | applied where they separate surfaces |
+| Visual states | functional representation | fully designed states |
+| Final visual quality | not its objective | primary responsibility |
+
+So do not polish here. A problem of finish (flat cards, weak hierarchy, a drawer that blends into the page) is the
+design system's to solve. A problem of structure is yours: a drawer with no header, its actions loose in the body, a
+screen in the wrong reading order, a document drawn as a picture.
+
+**Low fidelity means low visual styling.** Greys, one system font and no brand. It never means incomplete structure,
+content or behaviour. Every component on every screen carries real content and every visible control works.
+
+---
 
 ## Rules
 
-1. **The BRD sets what is built; you decide how each page works.** Every page in §11 gets a frame, in nav order,
-   with the page's own ID; nothing L2, nothing the document does not build. Take its personas (§7), journeys (§8),
-   data (§12), agents (§13), seed data (§19), its demo day (§19) and demo storyline (§20.2) as given. Each §11 page
-   says what the page must do (the question, the decision, what needs the person, the primary action, filters, exact
-   copy and states) and its information and actions table: build the page's brief from them. §23 lists capabilities
-   with CMP IDs: decide the UI components that deliver each one (one, several, or one shared), and put its CMP ID on
-   their blocks as `cmp`. An older document may still give a "Layout", a blocks table with UI patterns or a §23
-   component list: treat those as a starting suggestion, use them where they serve the person, and change them where
-   the brief (rule 2) and `references/patterns.md` show a better way. Record every change in the spec's
-   `brd_overrides` (what the BRD had, what you did, why); a CMP ID you fold into another component goes there too,
-   so nothing is dropped silently. Set `app.search_label` and `app.agent` from the document's own words
-   (spec-format.md). **When the app is a module inside a product the client already uses** (the document
-   names a host app, a menu path such as "PLM › In market", or a shell to match), keep that product's shell
-   and navigation as the document describes them, and design only what is inside the page; changing the
-   host's navigation is never an override this skill makes. Each persona's nav badges count that persona's
-   own work.
-2. **Think before you draw: a brief for every page.** Before any block, write the page's `brief` in the spec: who
-   `arrives` and from where; their `job` on this page; the `decision` they make; what they need to see to make it
-   (`sees`), including where the numbers come from; what `needs_you` (the person) and what is `done` already by the
-   system or others; and the one `next` step. Write it in the user's words. If you cannot fill `decision` and `next`,
-   the page has no clear purpose: merge it or raise it as a finding.
-3. **Pick the page's pattern and its shape from the work** (`references/patterns.md` part 1): the pattern (`queue`,
-   `split`, `focus`, `decision`, `guided`, `board`, `dashboard`, `map`, `feed`) from the brief, then one of its shapes
-   from the data and the signature. Do not give two pages the same shape unless they show the same kind of data; when
-   several pages are queues, each gets a different shape. The
-   rules in patterns.md part 4 apply to every page, and they are checks on what the page does: they are not a layout.
-   There is no standard page top. Carry the next step and the work split the way each page needs (patterns.md part
-   3): a banner, chips, a decision bar or a step indicator on most pages is the house layout this rule forbids. Use a
-   decision bar only where the page ends in one choice, and a step indicator only where the job has ordered steps.
-4. **The signature first, drawn as itself; slot the generic.** Every app has one object or interaction no other app
-   has (patterns.md part 2). Name it in the spec's `signature` (`name`, `frame`, `why`), draw it with its real block
-   (`artefact`, `media`, `graph`, `calendar`, `tree`, `board`, the map, `chat`, `compare`, `decomp`), give it the most
-   space on its page and let it shape the pages around it. **When the signature is a thing people already know (a
-   product page on a channel, an invoice, a contract, a script page, a boarding pass, a lab report), draw it as that
-   thing:** first look up how the real one is laid out and write its parts in order (for an Amazon product page: the
-   picture gallery on the left; brand store link, title, price, "About this item" bullets and description on the
-   right), then draw it as an `artefact` with its real text from the seed data and the marks on the actual words.
-   Grey lines in boxes read as any document from any app; the renderer warns when the signature is drawn that way. On the home, the signature holds the home's own work
-where it can (in other domains: a hospital's wards on its floor plan, a legal team's contracts as their first pages, a
-lab's samples as wells on their plate; take the form from this app's own object): a list beside it showing the same items again is two ways in to one thing (patterns.md part 4 rule 9). Draw the other
-defining parts in detail too: each page's
-   hero, the work queue, the decision, the record's main object, the agent's answer; mark them `hero: true`.
-   Everything else is a `slot`: an empty dashed region named with its component, `count`, the `variants` it needs, its
-   `states` and a one-line `note` on what it must do. A slot never holds a hero and never holds a paragraph of
-   content. Give every component
-   block its `purpose`, the data it `shows` and what it `does` (spec-format.md), and a hero component its `volume` and
-   `primary` action: this is the component's brief, and the design system designs to it.
-   **The hero object.** Take the scoping document's §21 "Hero object" (or decide it: the one thing these users care
-   about most, the thing they would point at on screen: a product, a store, an invoice, a script page, a permit, a
-   site) and write it in the spec's `hero_object`. When it has a picture, people recognise it by eye, so the picture
-   goes wherever they pick, check or approve one: `thumb: true` on the signature's rows and the lists that hold it,
-   `media` where the pictures themselves are the work. The signature always shows the hero object as itself. If the
-   work is visual (shots, posters, products, photos, scans), draw the pictures. The renderer warns when the hero
-   object's picture is missing from the signature, the home or most pages.
-5. **Low fidelity, on purpose.** Greys only, one font, no brand, no icons beyond what the script draws. Real labels
-   and copy in the user's words, never lorem ipsum; numbers from the seed data (§19) where the document gives them.
-   Set the spec's `today` from the document's demo day (§19) (and a page's own `today` for a frame later in the story), and make every date, day count
-   and count on a frame agree with it and with each other: a tab that says 6 shows 6.
-   No "demo", "synthetic", "dummy", "simulate" or placeholder words on screen, in the journey or in a brief (the build reads all three); a record's name comes before its code;
-   no styling instructions in notes (looks are the design system's job).
-6. **Name components by what they do, once.** Use one name per component across all pages (`approval-queue-table`,
-   not three spellings), reuse it wherever the same thing appears, and put the §23 CMP ID of the capability it delivers on its blocks as `cmp` when
-   it is that component. A new component is fine when the brief needs it; give it a `purpose`.
-7. **The demo story walks through the frames.** Write the spec's `journey`: each step of the §20.2 storyline in the
-   user's words and the frame that shows it. Each frame's `next` step leads to the next frame of the journey. When
-   the next step belongs to another persona, say how the work reaches them (a message, an assignment, a shared
-   link) in that page's `arrives`, or start them from their own page.
-8. **Variety is bounded here.** `variants` lists only the forms the pages actually need (a compact card, a horizontal
-   bar chart; at most three per component): the design system must design these. It may still show its own style-set
-   alternatives within its rule-1 families (at most three per family counting these), never a new component. States:
-   the ones §11 names for the block plus the cases from patterns.md part 4 rule 10, always including loading and empty for
-   data blocks.
-9. **Extra frames only for what changes the layout.** A second frame of a page (`PG-03b`) is for an open panel, a
-   drawer, a modal, a later step of a guided page, a different mode of the same map, or a phone layout. Not for every
-   state: states go in `states`. An extra frame shows the page after the change, so update every block the change
-   touches (counts, statuses, answers), not only the titles. The agent opens as a drawer (one frame shows it) unless it leads a `guided` page; a
-   confirm dialog for the one irreversible action is one modal. A window or drawer that holds real controls (a
-   settings window, a picker, a dossier) draws them as `blocks` inside the overlay, over its page.
-10. **Maps.** A page whose main question is *where* (sites, stores, branches, assets, routes, a radius search) is a
-    map page: read `references/map-component.md` and follow it exactly — the map is the page, panels float over it,
-    one of four modes (`rings`, `dots`, `arcs`, `radius`), a legend in this screen's own words, and the map block's
-    `data` contract (object, lat/lng fields, what colours a site, card fields, route ends or radius). If the records
-    have no latitude/longitude in §12, the page is not a map page: raise it as a finding for the AI PM, do not invent
-    fields. Never put a map in a card on a dashboard.
-11. **References and research.** Before you settle the signature and one other component that carries the app, find
-    out how others do the same job: real products, case studies and pattern libraries, through the `research` skill
-    (patterns.md part 7). In POC Studio, save each answer to `<workspace>/research/wireframes-<topic>.md`. Fall back to
-    the built-in web search and fetch tools if it fails or comes back with no usable example. Then carry on: the research answer is an input to the spec, never the run's last message. Add any reference the person or the BRD gives. List each in the spec's `references` with
-    the component it changed, what you take and what you leave, and take only that.
-12. **UX rules every page keeps.** One main action per page (the rest secondary). Bulk selection where a list holds
-    more than about 20 items at once (`volume`). A confirm frame for the irreversible action. Seven or fewer table
-    columns in view; the rest belong in the record. Every action shows its result: the frame after it, or the state
-    it leaves. **States tell the truth:** an action the text calls blocked is drawn blocked (`disabled: true`), and
-    every count on a frame matches the items it shows. The renderer prints a `check:` line for each one it can see.
-13. **Explore the navigation; never assume it.** Before drawing the pages, draw three really different navigation
-    shells on the home and choose one with its reason (`nav_options`, spec-format.md). The renderer has six: `left`
-    (a labelled left rail), `icons` (a narrow icon rail), `context` (an icon rail plus a panel for the current area:
-    saved views, groups, locks, recent records), `topbar` (a light bar with tabs), `band` (a dark band holding the
-    logo and destinations, as many brand sites do) and `command` (no rail: destinations as text and a command field
-    to go or ask). Choose from the work: how many destinations, how long the sessions are, whether the person moves
-    between areas or stays in one, how much width the hero object needs, and how the client's own product and site
-    navigate. **The three options come from three families**: a rail (`left`, `icons` or `context`), a bar (`topbar` or
-    `band`) and the `command` bar; the renderer warns otherwise. A persona whose work differs may get its own shell
-    (page `shell`). The renderer draws the options side by side in `png/NAV-options.png` and the PDF, the chosen one
-    framed. The left rail is a choice like any other, never the default.
-14. **More than one way to look at the main data.** Each hero list, table, grid or board that holds many items gets
-    2 or 3 views (`views`, e.g. wall · table · by lock, or queue · board by owner · timeline), drawn as a switch on its
-    title row; `view` marks the one shown. Draw at least one alternative view as its own frame (`alt_view_of` the
-    page, with the same items), so the design system and the build see the app's page types, not only its pages.
-    **Give every other view a kind** (`{"name": "By lock", "kind": "board", "group_by": "meta"}`; kinds: `table`,
-    `board`, `wall`, `list`): the renderer draws each one from the same items in `png/VIEWS.png`, so no listed view is
-    left undrawn. A view earns its place by answering a different question (which to do next; which team holds most;
-    what locks when), never as decoration.
-15. **No filler, nothing generated-looking.** Every title says what the block holds in the person's words ("Ready to
-    write · 8, nearest lock first"); never "Overview", "Insights", "Quick actions", "Recent activity", "At a glance",
-    "Key metrics" or "Welcome back". No block bigger than its content; no text running out of its box or sitting on
-    other text. The renderer checks all three on every frame (it records where every word landed) and prints a
-    `check:` line for each.
-16. **Draw the payoff.** The demo's best moment is when the signature's decision resolves: the blocked thing clears,
-    the number moves, the work goes out. Draw that moment as its own frame and name it in the spec's `payoff_frame`,
-    so the design system and the build see the end of the story, not only its problem.
-17. **One spec, rendered, never hand-drawn.** Write the spec (format: `references/spec-format.md`; a full example:
-    `references/example-spec.json`), then render. Change a layout by changing the spec and re-rendering.
+Rules give their reason where it is not obvious. Where two rules pull in different directions, the order of priority is: the BRD's
+scope and wording, then working behaviour, then restraint (rule 12), then everything else.
+
+1. **The BRD sets what is built; you decide how each screen works.** Every page in §11 gets a screen, in nav order,
+   with the page's own ID (`PG-03`). Nothing from L2 or future scope. Take the personas (§7), journeys (§8),
+   data (§12), agents (§13), workflows and business rules (§14), roles (§16), seed data and demo day (§19), demo
+   storyline (§20.2) and hero object (§21) as given. §23 lists capabilities or components with CMP IDs. Deliver each
+   one with one or more components and put its CMP ID in their `data-brd-ref`. Where the BRD suggests a layout or a
+   UI pattern, use it where it serves the person and change it where the brief (rule 3) and
+   `references/patterns.md` show a better way. Record every change in `brd_overrides` (what the BRD had, what you
+   did, why). A CMP ID you fold into another component goes there too, so nothing is dropped silently.
+   **A page several personas use** is drawn for its primary persona. Each other persona whose view differs (other
+   actions, another default tab, read-only) gets a frame with `persona`, and elements only some personas see carry
+   `data-for` (rule 13).
+   **When the app is a module inside a product the client already uses** (the BRD names a host app or a menu path),
+   keep that product's shell and navigation as the BRD describes them and design only what is inside the page.
+
+2. **Map the requirements before you draw.** Read the BRD through and write `requirements` in `wf-meta`: one entry
+   per thing the app must show or do. That covers each page's question, decision and primary action, each
+   information item, each action and its outcome, each business rule a person meets on screen (a prerequisite, a
+   limit, a refusal), each workflow step a person starts or sees, each stated state, and each journey step. Each
+   entry has the BRD `ref`, the `need` in plain words, and `covered_by`, the screen, frame or instance IDs that
+   deliver it. An entry nothing can cover gets a `status`: `open question`, `out of scope` or `not shown on screen`
+   (a background automation). This map is how the run proves complete coverage. It is also how it avoids invention:
+   a component that serves no entry has no reason to exist (rule 12).
+
+3. **A brief for every screen before any markup.** In `wf-meta.screens.<id>.brief` write, in the user's words:
+   `arrives` (from where, when), `job`, `decision`, `sees` (what they need to see to decide, and where the numbers
+   come from), `needs_you`, `done` (what the system or others already did) and the one `next` step. If you cannot
+   write `decision` and `next`, the screen has no clear purpose: merge it into another or raise it in
+   `open_questions`.
+   **Then declare its reading order** in `wf-meta.screens.<id>.reading_order`, as instance IDs: `first` (what the
+   person must notice first), `next` (what they need to understand next), `act` (where they decide or act) and
+   `support` (what they may need). The shell is not part of it. Compose the screen so placement, grouping, spacing
+   and emphasis follow that order: `first` at the top of the content and the most prominent, `act` in the first view,
+   `support` after or beside, never above, and never louder. Fix weak hierarchy by moving, grouping and spacing what
+   is there; never by adding cards, badges, numbers, labels or decoration. `review` checks the order on the rendered
+   screen and draws it on `_working/qa/reading-order-<id>.png`.
+
+4. **Pick the screen's pattern and shape from its work.** Use `references/patterns.md` part 1 for the pattern (`queue`,
+   `split`, `focus`, `decision`, `guided`, `board`, `dashboard`, `map`, `feed`) and its shapes, part 3 for carrying
+   the next step without a house layout, and part 4 for the rules every page keeps. Two screens of one app get the
+   same shape only when they show the same kind of data. That reference was written for the earlier JSON spec. Its
+   mentions of `slot` and spec fields are replaced by this skill's HTML; its `check:` lines come from `wf_tool.py check`. Its pattern, signature,
+   usability and reference guidance all still apply.
+
+5. **The signature first, drawn as itself.** Every app has one object or interaction no other app has (patterns.md
+   part 2). Name it in `wf-meta.signature` (`name`, `component`, `frame`, `why`), give it the most space on its
+   screen and on the home, and draw it as the real thing its users know. For a known artefact (an invoice, a
+   contract, a product page, a boarding pass, a lab report), look up how the real one is laid out and draw its parts
+   in that order, with real text from the seed data. Take the hero object from §21 (`hero_object`: `name`,
+   `picture`, `judged_by_eye`). When it has a photograph, show a picture area (`.wf-img` with a caption saying what
+   the photo shows) wherever the person picks, checks or approves one.
+   **A document is drawn as the document.** When the BRD names a known document (an invoice, a lab report, a purchase
+   order, a receipt, a delivery note, a contract), draw a simplified but recognisable version of it as a
+   `document` component in `.wf-doc`: title and reference, parties and dates (`dl`, `.doc-parties`), line items or
+   measurements (`table`, numbers in `.num`), totals or key findings (`.doc-totals`, `.grand`), and status or approval
+   (`.doc-stamp`). Use only the fields the BRD and seed data support. A scanned page takes `.wf-scan`; a value that
+   is hard to read takes `.doc-faint`. A document is never a grey box with a caption: `check` rejects one.
+
+6. **Every component is complete.** Each component shows realistic, relevant content that makes clear what it
+   represents, why it exists, what information it presents, what the person can do with it, and what happens after
+   they act. A table has its real columns and 4 to 8 real rows from the seed data. A form has its real fields,
+   values, validation and submit result. A chart has its title stating the takeaway, axes with units and the real
+   values. A queue shows its items in order. An AI answer shows the real answer, its sources and its stated
+   confidence. An empty dashed box, a box naming a component, a count such as "×6", a list of variants or a
+   technical note in place of content is never acceptable. A stakeholder must understand every screen without
+   knowing any implementation term.
+
+7. **Language the person would use.** Titles say what the block holds ("Rooms waiting for your check · 4"). Button
+   labels are a verb and an object ("Release room"). Error messages say what happened and how to fix it. Use the
+   BRD's exact copy wherever it gives one, and list those strings in `wf-meta.exact_copy`. Use one term per concept
+   everywhere, in the client's words from the glossary. Keep sentences to 25 words at most. Use no internal codes,
+   IDs, rule numbers, field names, tool names or file names on screen; a record's name comes before its own ID. Use
+   no "demo", "synthetic", "sample", "dummy" or placeholder words on screen, in the journey or in a brief. When a
+   real name contains one of those words, add it to `allow_words` and give the reason in the hand-over. When the
+   BRD itself names a user-facing control with one of them (a "Demo tools" menu, say), keep its function, give it a
+   neutral name, and record the rename in `brd_overrides`.
+
+8. **Facts from the BRD, sample data marked.** Names, numbers, dates and statuses come from the seed plan (§19) where
+   it gives them. Where you must illustrate beyond it (a fifth row, a time stamp, a second name), wrap the invented
+   value in `<span data-sample>`. Reviewers can show these marks with the review bar; the design system and the
+   build ignore them, and they never appear as visible labels. **Never copy a real client sample** (anything in
+   `01-requirement-gathering/files/samples/`: real invoices, emails, names, account numbers) into the wireframe: the
+   file is uploaded to Orbit as a public link. Draw the same kind of document with invented values in the same shape. Set `wf-meta.today` from the demo day, and make every
+   date, day count and count agree with it and with each other: a tab that says 6 shows 6 items.
+
+9. **Every path and state the BRD supports.** For each workflow the person meets, draw the main path, the
+   alternate paths the BRD names (send back, reject with reason, re-shoot, edit then confirm), and the result of
+   each action. For each data component, draw the states it needs as `data-states` with real wording, using the
+   BRD's exact wording where §11 gives it: loading, empty (first use), filtered to nothing (a different fact from
+   empty, with its own wording and action), error with how to recover, success, slow AI, and no permission. Add
+   "unset" for a field from a journey the person has not done yet. A disabled action is drawn disabled with its
+   reason visible beside it, in the BRD's helper text. Only draw a state the BRD, the workflow or the data actually
+   produces.
+
+10. **Every visible control works.** Links, tabs, filters, row clicks, buttons, form submits, drawers, modals,
+    toasts and the agent all do what they say, through `data-interaction` (`assets/wf-runtime.js`) or a link to a screen. A
+    control whose real effect is outside the prototype (send an email, export a file) shows the result state the
+    person would see ("Report sent to 3 attendees"). A control that does nothing is a defect.
+
+11. **Navigation and the agent, chosen on purpose.** Decide the shell from the work: how many destinations, how
+    long the sessions are, whether people move between areas or stay in one, and how much width the hero object
+    needs. Consider three really different shells from three families: a rail (labelled left rail, icon rail, rail
+    plus context panel), a bar (light tab bar, dark band), and a command bar. Draw each small on the review sheet
+    `#NAV-options`, choose one with its reason (`nav_options`, one `chosen: true`), and build every screen in the
+    chosen shell. Keep to seven destinations or fewer per persona. A persona whose work differs may get its own
+    shell. Give the agent exactly one way in for the whole app, recorded as `data-agent-entry` on `<html>`:
+    `topbar` (a button in the bar), `launcher` (one floating button, for a shell with no bar or a phone) or
+    `command` (the command field asks it). The agent opens as a drawer, except on a `guided` screen it leads.
+
+12. **Restraint: every element serves a stated need.** An element with no entry in `requirements` and no line in
+    the screen's brief is removed. Quality does not come from the number of elements. These numbers are limits; go
+    under them when the work allows:
+    - one primary (filled) action per screen and at most two other visible actions beside it, with the rest in a
+      menu (a drawer or modal has its own primary);
+    - at most four key facts in a card or record header, with the rest behind "Details" or in a tab;
+    - at most six headline numbers in a view, each with its comparison and time frame. A row of number tiles opens
+      only a `dashboard` screen, never a screen where the person acts;
+    - status colour only on exceptions, with one status word per row;
+    - one AI marker per panel ("Checked by AI", "Suggested"), never an AI badge on every block;
+    - no card inside a card; no section that repeats what another already shows; no chart where a sorted table or
+      one sentence answers the question;
+    - helper text only where it changes what the person does;
+    - extra screens only for what changes the layout (rule 13). States are not screens.
+    Set the size budget before you write markup: screens (= §11 pages), frames (rule 13), components (one per
+    distinct job). Say in the hand-over where the BRD forced you over a limit.
+
+13. **Frames only for what changes the layout.** A frame is a named state of a screen, declared in `wf-meta.frames`
+    and opened by URL hash (`#PG-02b`). Make one only for a real change in layout or composition (an open drawer or
+    modal, a different map mode, the payoff), a persona's own view of a shared page (`persona`), a structurally
+    different state, a workflow step that needs its own view (a later step of a guided screen), a phone layout for a
+    persona who uses two devices (`width`), or an alternative view the BRD asks for. Filters, tabs, sorting and other
+    controls that change content in place work in place: a frame per filter choice is noise, and `check` flags it.
+    Draw the story's main record fully; another record the journey visits gets its own frame only when its decision
+    looks different, not because its numbers do. Each journey step points at the
+    screen or frame that shows it. `payoff_frame` is the frame where the signature's decision resolves: the blocked thing clears, the number moves, the work goes out.
+    Name three key screens in `key_screens` for the design system to draw at high fidelity: `home` (the primary
+    persona's start screen, with the signature), `main` (the screen where the primary persona does the job the demo
+    storyline centres on) and `agent` (a frame of `main` with the agent drawer open; if the BRD has no agent, the
+    frame of `main` that opens its main drawer or modal). `home` and `main` are two different screens unless the app
+    has only one: when the start screen is also where the work happens, `main` is the screen the storyline's main
+    decision moves to (often the signature's own page). `check` fails `home` equal to `main`, and flags a `home` where
+    the signature is not visible: when the start screen opens empty (a chat before its first answer), point `home` at
+    the frame where the signature shows.
+
+14. **Views only when the BRD supports them.** A switch between views (table, board, calendar) is added only when
+    the BRD names more than one way to see the data, or a persona's stated job needs two orderings of the same items.
+    Record the reason in the component's registry entry (`views`). It never appears as decoration.
+
+15. **Maps.** A screen whose main question is *where* (sites, stores, assets with coordinates) is a map screen: read
+    `references/map-component.md` and follow it. The map fills the screen, panels float over it, it has one of four
+    modes, and its legend is in this screen's own words. Draw it at low fidelity as a grey area with positioned
+    markers and labels. Put the mode, data contract and any behaviour lines in the map component's registry entry
+    (`modes`, `data_contract`, `behaviour`). If the records have no latitude and longitude in §12, it is not a map
+    screen: raise it in `open_questions` and do not invent fields.
+
+16. **Research the signature, briefly.** Before you settle the signature and one other component that carries the
+    app, find out how leading products do the same job: real products first, then pattern libraries (Mobbin, Page
+    Flows), then case studies. Use the `research` skill with a Quick budget (3 to 5 searches, stop at two or three
+    good examples), as patterns.md part 7 describes, and save each answer to
+    `<workspace>/research/wireframes-<topic>.md`. If `research` is missing or fails, use web search and fetch to the
+    same budget. Take layout moves and interactions, never artwork or text. List two to four references in
+    `wf-meta.references` with what you took and left. Research never stops the run.
+
+17. **Ask, do not invent.** When the BRD is silent, contradictory or ambiguous on something the screen needs (who
+    approves, what happens on failure, which field is shown), write an `open_questions` entry with the BRD ref, the
+    question and the assumption you drew, and mark the affected content `data-sample` where it is invented. Do not
+    add a feature, a field or a rule to fill the gap. The orchestrator's reviewer resolves open questions in an
+    unattended run.
+
+---
+
+## The metadata contract (shared with the design-system skill)
+
+The wireframe HTML carries machine-readable metadata that never shows in the interface. The design system and the
+build read it, so its names and meanings are fixed. Change them only with a version change to both skills.
+
+### On elements
+
+| Attribute | Where | Meaning |
+|---|---|---|
+| `data-screen-id` | each `<section class="wf-screen">` | the BRD page ID (`PG-03`); unique |
+| `data-screen-title`, `data-persona`, `data-width`, `data-pattern`, `data-brd-ref` | the same section | page name, primary persona ID (`U2`), device width (1280 desktop, 375 phone), pattern, BRD section |
+| `data-component-id` | each component instance's root element | the reusable component's ID, kebab-case, named by what it does (`inspection-queue-table`); the same ID wherever the same component appears |
+| `data-instance-id` | the same element | `<screen-id>.<component-id>`, with `-2`, `-3` for repeats on one screen (`PG-01.room-card-3`); unique in the file |
+| `data-component-type` | the same element | one of: `nav`, `header`, `tabs`, `filter-bar`, `table`, `list`, `card`, `record-header`, `form`, `chart`, `metric`, `board`, `calendar`, `timeline`, `stepper`, `media`, `document`, `map`, `chat`, `ai-answer`, `diff`, `tree`, `graph`, `compare`, `upload`, `rating`, `drawer`, `modal`, `toast`, `banner`, `menu`, `popover`, `empty-state` |
+| `data-variant` | the same element, when the component has variants | the variant's name, declared in the registry |
+| `data-state`, `data-states` | the same element | the initial state, and every state it can show (`default loading empty error`). Overlays use `closed open` |
+| `data-when` | a child of an instance | the state(s) in which this child shows; children without it always show |
+| `data-brd-ref` | every instance | BRD references it delivers, separated by spaces: page, CMP, feature, workflow, rule IDs (`PG-02 CMP-03 HK-005 WF-01`) |
+| `data-interaction` | a control | what happens when it is used (`assets/wf-runtime.js`). An instance it names is resolved only inside the control's own screen, never on another screen; `~name` means `<this screen>.name`, so a shell or menu repeated on every screen can carry the same markup |
+| `data-atom`, `data-variant` | buttons, links styled as buttons, inputs, selects, toggles, checkboxes, radios, tags, avatars | the atom kind and its variant (`button` + `primary`, `secondary`, `tertiary`; `tag` + `positive`, `attention`, `negative`, `neutral`). Atoms have no instance ID |
+| `data-sample` | an inline element | an illustrative value the BRD did not give (rule 8) |
+| `data-for` | any element inside a screen | the persona IDs who see it (`U2 U4`); others do not. Never on the same element as `data-when` |
+| `data-icon` | an atom | the icon the control needs, by meaning (`search`, `close`, `camera`). Low fidelity draws no icon; the design system draws it here and nowhere else |
+| `data-logo` | the element holding the client or app name in the shell | where the design system places the logo |
+| `data-wf-chrome` | review bar, notes, review sheets | scaffolding, never part of the app |
+
+**Components, instances and variants.** A component is a reusable thing with one job (a room card, the inspection
+queue table, the report-issue drawer). Every place it appears is an instance with its own instance ID and the same
+component ID. Different content never makes a new component or a new variant. A variant exists only when the
+structure, behaviour or purpose differs (a compact card that drops the photo; a read-only table with no row actions).
+Declare each variant in the registry with what differs. A table owns its rows; cards repeated in a list are
+instances.
+
+### `wf-meta` (one JSON block in `<head>`)
+
+```json
+{
+  "app": {"name": "Room Ready", "shell": "topbar", "agent": "Ask Room Ready"},
+  "client": "…", "use_case": "…", "slug": "client-app", "today": "14 Nov", "start": "PG-01",
+  "signature": {"name": "…", "component": "room-photo-check", "frame": "PG-02", "why": "…"},
+  "hero_object": {"name": "room", "picture": "the four photos of the finished room", "judged_by_eye": ["…"]},
+  "nav_options": [{"name": "…", "shell": "left|icons|context|topbar|band|command", "why": "…", "chosen": true}],
+  "journey": [{"step": "what the person does, in their words", "frame": "PG-01"}],
+  "payoff_frame": "PG-02c", "key_screens": {"home": "PG-01", "main": "PG-02", "agent": "PG-02e"},
+  "frames": [{"id": "PG-02b", "of": "PG-02", "title": "Room · report issue open", "set": {"PG-02.report-issue-drawer": "open"}},
+             {"id": "PG-02s", "of": "PG-02", "title": "Room · supervisor view", "persona": "U2", "set": {"PG-02.room-tabs": "ai-check"}},
+             {"id": "PG-04m", "of": "PG-04", "title": "Ready rooms · phone", "width": 375},
+             {"id": "PG-02r", "of": "PG-02", "title": "Room · Arabic layout", "dir": "rtl"}],
+  "screens": {"PG-01": {"shape": "…", "brief": {"arrives": "…", "job": "…", "decision": "…", "sees": "…", "needs_you": "…", "done": "…", "next": "…"},
+              "reading_order": {"first": ["PG-01.queue-summary"], "next": ["PG-01.invoice-queue-table"], "act": ["PG-01.page-header"], "support": ["PG-01.activity-feed"]}}},
+  "requirements": [{"ref": "PG-02 Actions", "need": "supervisor releases with a reason", "covered_by": ["PG-02.release-form", "PG-02d"]}],
+  "components": {"room-photo-check": {"name": "Room photo check", "type": "media", "purpose": "…", "shows": ["…"],
+      "does": ["…"], "volume": "4 photos", "primary": "Submit for check", "hero": true, "signature": true,
+      "variants": {"compact": "drops the result line; used in the queue preview"}, "media": {"ratio": "4:3", "where": "grid"},
+      "views": [], "modes": [], "data_contract": {}, "behaviour": []}},
+  "brd_overrides": [{"brd": "…", "change": "…", "why": "…"}],
+  "references": [{"source": "…", "url": "…", "for": "<component>", "take": ["…"], "leave": ["…"]}],
+  "open_questions": [{"id": "Q1", "brd_ref": "…", "question": "…", "assumption": "…"}],
+  "assumptions": ["…"], "exact_copy": ["…"], "allow_words": []
+}
+```
+
+`screens.<id>.reading_order` is `{"first": [ids], "next": [ids], "act": [ids], "support": [ids]}` (support optional).
+`frames[].set` gives each instance's state in the frame. Set `frames[].width` only for a phone or desktop layout of the
+same screen, `frames[].dir` only for a right-to-left frame, and `frames[].persona` only for another persona's view.
+
+---
+
+## Building the file
+
+One HTML file. Its parts, in order:
+
+```html
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-wf-version="1" data-slug="<slug>" data-shell="<chosen shell>" data-agent-entry="topbar">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><App> — wireframes</title>
+  <style id="wf-base"></style>   <!-- filled by `wf_tool.py embed` from assets/wf-base.css; never typed -->
+  <style id="wf-app">/* this app's own layout rules only: grids, widths, order. No colour, border, shadow or font */</style>
+  <script type="application/json" id="wf-meta">{ … }</script>
+</head>
+<body>
+  <nav class="wf-review" data-wf-chrome aria-label="Wireframe review"></nav>
+  <main class="wf-stage">
+    <section class="wf-screen" data-screen-id="PG-01" data-screen-title="My Rooms" data-persona="U1" data-width="375"
+             data-pattern="queue" data-brd-ref="§11 PG-01" hidden>
+      <div class="wf-device" style="--w:375px;--h:812px"> … the whole screen: shell, content, its overlays … </div>
+    </section>
+    …
+  </main>
+  <section id="NAV-options" data-wf-chrome hidden> … the three shells, small, with their reasons … </section>
+  <aside class="wf-notes" data-wf-chrome hidden></aside>
+  <script id="wf-runtime"></script>   <!-- filled by `wf_tool.py embed` from assets/wf-runtime.js; never typed -->
+</body>
+</html>
+```
+
+The runtime builds the review bar (screen and frame picker, a state picker for every instance with more than one
+state, the annotation toggle and the notes) from the metadata, so you write none of it.
+
+**Authoring patterns:**
+- **Each screen is whole.** It carries its own shell instance (`PG-02.app-nav`), its content and its overlays, all
+  inside its `.wf-device`, so it exports and copies on its own.
+- **Tabs:** a `tabs` instance whose `data-state` is the open tab and whose `data-states` lists the tabs. Each tab
+  button has `role="tab" data-tab="photos" data-interaction="state:PG-02.room-tabs=photos"`, and each panel has
+  `data-when="photos"`. Filters and segmented switches work the same way.
+- **Overlays** (`drawer`, `modal`, `toast`, `menu`): inside the device, `data-state="closed" data-states="closed
+  open" hidden`. Give each drawer and modal its basic anatomy: a `<header>` (the title, its context line and the close
+  button, `data-icon="close"`), its content, and a `<footer>` after the content holding its actions. When the
+  overlay's content changes by state (`data-when` blocks), each block keeps that order. `check` fails a drawer or
+  modal with no header and flags a close control or primary action outside its region. On a map screen the drawer
+  opens below the top bar, so the bar stays visible (`map-component.md`).
+  Use a modal only for an irreversible or legally significant act; use a drawer for work attached to the current
+  record.
+- **Disabled with a reason:** `<button … disabled aria-describedby="why-release">Release room</button>
+  <p id="why-release" class="wf-help">Room is blocked by ticket 0412</p>`.
+- **Forms** validate with `required` and show their `invalid` state with the error text in the BRD's words. The
+  submit button runs `submit; …` so an invalid form stops there.
+- **Pictures (photographs only):** `<div class="wf-img" style="--ratio:4/3">Shower and bath · taken 09:12</div>`. The
+  caption says what the photo shows.
+- **Documents:** `<article class="wf-doc" data-component-type="document" …><header><div><h3>Invoice</h3><p>MBG-26-04471
+  · 13 Nov 2026</p></div><p class="doc-stamp">Blocked</p></header><div class="doc-parties"><dl>…supplier…</dl><dl>…buyer,
+  PO…</dl></div><table>…lines, with <td class="num">…</table><div class="doc-totals"><div><span>Net</span><span>EUR
+  31,350.00</span></div><div class="grand">…</div></div></article>`. The part class names are shared with the design
+  system, which styles the same parts.
+- **Right to left:** when the BRD needs Arabic, Hebrew or Urdu, add one frame of the main screen with `"dir": "rtl"`
+  to show the mirrored layout. Use translated text where the BRD gives it; list the rest for translation in
+  `open_questions`.
+- **Phone screens:** at 375 px, in one column, with the shell's phone form and the primary action within thumb reach.
+
+`wf-app` holds layout only because the design system carries it into its styled screens unchanged. Name the classes
+it defines `l-…` (`l-queue-col`, `l-band`): the design system's kit has its own short names (`opt`, `legend`, `tile`,
+`band`), and an unprefixed class of yours would pick up the kit's styling. `check` lists any class outside the `wf-`,
+`l-` and `doc-` names. Keep the HTML
+maintainable: semantic elements (`header`, `nav`, `main`, `section`, `table`, `form`, `label`,
+`button`), no external files, fonts or scripts, and no inline styles beyond `--w`, `--h` and `--ratio`.
+
+---
 
 ## Steps
 
-1. Read `references/patterns.md`. Then read the scoping document's §7 personas, §8 journeys, §9 conventions
-   (navigation, global elements), §11 page specs (all of each), §12 for status tones and the picture, document and
-   lat/lng fields, §13 agents, §14 refusal messages, §19 seed data and the demo day, §20.2 demo storyline, §23
-   capabilities (or component inventory in an older document), and any glossary or client wording. Note the shell
-   (left nav or top bar), the nav items per persona, the hero object and its picture (§21), and what the person must
-   see to decide on each page (§11).
-2. **Think first.** Name the app's `signature` (rule 4), then research how others handle it and one other defining
-   component (rule 11) and settle both. Look at how the client's own product and site navigate, and settle the three
-   navigation options (rule 13) and the views of each hero data set (rule 14). For each §11 page, write its `brief`, choose its `pattern`
-   and shape (rules 2–3) and how it carries its next step and its work split (patterns.md part 3); write the `journey`
-   (rule 7). Note where the BRD's layout or components do not serve the brief and decide what replaces them
-   (`brd_overrides`). Only then draw.
-3. Write `<workspace>/02b-wireframes/<slug>.wireframe.json`: one page per §11 page in nav order, built on its pattern
-   and shape, with a header subtitle saying what the page is for; then the extra frames (rule 9), then one drawer
-   frame for the agent and one modal frame for the irreversible action if the document has them.
-4. Render (on a Mac, the collateral tools' Python has Pillow; the fonts ship with this skill):
+1. **Read.** `references/patterns.md`, then the whole BRD: §7 personas and devices, §8 journeys, §9 conventions,
+   §10 features (L1 only), §11 page specs (each in full: question, decision, primary action, filters, exact copy,
+   states, prerequisites and helper text, actions and what happens), §12 data and statuses, §13 agents, §14
+   workflows and business rules, §16 roles, §17 AI trust rules, §19 seed data and demo day, §20.2 demo storyline,
+   §21 hero object and reference products, §23 capabilities, and the glossary. Also read a map page's
+   `references/map-component.md`.
+2. **Map the requirements** (rule 2) and write the open questions (rule 17).
+3. **Think before markup.** Name the signature and research it (rules 5, 16). Settle the navigation options and the
+   agent's one entry (rule 11). Write each screen's brief, pattern and shape (rules 3, 4) and the journey and payoff
+   (rule 13). Set the size budget (rule 12). Write the component registry: one entry per distinct job, with its
+   purpose, what it shows and does, its states and any genuine variants.
+4. **Write the HTML** (Building the file): the screens in nav order, then their frames, the `#NAV-options` sheet, and
+   `wf-meta` complete, with empty `wf-base` and `wf-runtime` tags. Then put the fixed parts in (find `W` as above):
    ```bash
-   W="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/wireframes/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$W" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/render.py' | head -1)")"
-   source ~/.local/poc-collateral/env.sh 2>/dev/null; R=~/.local/poc-studio/design-register.json; [ -f "$R" ] || R=""; python3 "$W/render.py" "<workspace>/02b-wireframes/<slug>.wireframe.json" "<workspace>/02b-wireframes" ${R:+--register "$R"}
+   H="<workspace>/02b-wireframes/<slug>-wireframes.html"; python3 -I "$W/wf_tool.py" embed "$H"
    ```
-   `--register` is passed only when the shared design-system register exists at
-   `~/.local/poc-studio/design-register.json`; never search the disk for another register file.
-   A spec error stops the render with one line per problem: fix the spec and run again. A spec without `signature` is
-   a spec from before v4: it renders as it always did, and what it lacks (briefs, patterns, the signature, the
-   navigation options, hero object, payoff frame, references, house-layout checks) prints as `warning:` lines instead
-   of stopping. A new spec always has a `signature`, so every rule above applies to it. Every `check:` line it prints
-   is a tell (patterns.md part 6): fix it, or say in the hand-over why it stays. If Pillow is missing,
-   `pip install pillow` (into the collateral venv on a Mac).
-5. Check coverage against the scoping document, and fix every gap it lists (a missing page is a gap; a missing CMP ID
-   is a gap unless `brd_overrides` names it with its reason; a slot without `cmp` is fine for a shared component):
+5. **Check and fix until clean:**
    ```bash
-   W="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/wireframes/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$W" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/render.py' | head -1)")"
-   source ~/.local/poc-collateral/env.sh 2>/dev/null; python3 "$W/coverage.py" "<workspace>/02-scoping/scoping-document.docx" "<workspace>/02b-wireframes/wireframe-manifest.json"
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; python3 -I "$W/wf_tool.py" check "$H"
    ```
-   (Each shell starts fresh, so the first line is repeated. A BRD given as a PDF works too: pass the .pdf.)
-6. **Look at every PNG yourself (Read the image) as a first-time user would.** In the first 10 seconds of each frame,
-   can you tell what the page is for, what needs you, and what to do next? Is the hero drawn as itself? Does the
-   journey read in order from frame to frame? Then the cover test (patterns.md part 2): cover the header and nav of
-   each frame; if it could belong to any app, rework it around the signature. Lay all the PNGs side by side: if most
-   pages share the same top half, rework them. Then fix overlaps, cut-off text, a frame taller than it needs to be, or
-   a region whose purpose is unclear. Re-render until the renderer prints no `check:` line you cannot defend.
-6b. **A fresh-eyes review, one round.** Start a separate agent when the session can (otherwise do it yourself as a
-   separate pass, before rereading your spec). Give it only the PNGs (frames, `NAV-options.png`, `VIEWS.png`), each
-   page's brief and the journey; never the spec or your notes. It answers, frame by frame:
-   - **First ten seconds:** what is this page for, what needs the person, what do they do next? Anything it cannot
-     answer is a finding.
-   - **The signature:** does it look like the real thing its users know, with real text, or like a generic box?
-   - **Truth:** does every state, count and date on screen agree with the others and with the brief?
-   - **The story:** do the frames read in the journey's order, ending on the payoff?
-   - **Craft:** anything sloppy (misaligned, cramped, empty, cut off, a title that says nothing), anything that looks
-     generated, anything a person doing this job would miss?
-   - **Uniqueness:** could this app's home or signature belong to another client with the logo swapped?
+   Fix every `error:` line. Fix each `check:` line, or say in the hand-over why it stays.
+6. **Generate the internal manifest and check coverage:**
+   ```bash
+   python3 -I "$W/wf_tool.py" manifest "$H" "<workspace>/02b-wireframes/_working"
+   python3 "$W/coverage.py" "<workspace>/02-scoping/scoping-document.docx" "<workspace>/02b-wireframes/_working/wireframe-manifest.json"
+   ```
+   Every §11 page needs a screen, and every CMP ID needs an instance or a `brd_overrides` entry with its reason.
+7. **Review screenshots** (see "Review screenshots"): `python3 -I "$W/wf_tool.py" review "$H" "<workspace>/02b-wireframes/_working/qa"`.
+   It captures every screen and frame, a contact sheet and a reading-order overlay per screen, for your review only.
+   Fix every `check:` line about reading order, overlapping text, overflow or script errors.
+8. **The visual acceptance gate.** Automated checks are necessary and not enough. Open the HTML in a browser if the
+   session has one, click through the journey from the first step to the payoff, and try every control on the way.
+   Then go through every contact sheet and every reading-order overlay in `_working/qa/`, and open any screen or
+   frame that looks wrong at full size. Review every screen, every meaningful frame, every component and its
+   important states, the reading order, each document, layout consistency across screens, overflow and clipping, BRD
+   coverage, and anything invented or unnecessary. For each screen, ask:
+   - Can you tell within ten seconds what it is for, what needs you and what to do next?
+   - Does every component say what it is, why it exists, what it shows, what you can do and what happens after?
+   - Is there anything the BRD does not ask for, anything said twice, anything a person in this job would miss?
+   - Cover test: cover the header and nav. Could this screen belong to any app? If so, rework it around the
+     signature.
+   - Lay all frames side by side: if most screens share the same top half, rework them.
+   - Does the overlay's numbered order match where the eye actually goes? If not, move and group; do not decorate.
+   - Is each document recognisable as that document?
+   Never write that every screen was reviewed when only some were; the hand-over says what you looked at.
+9. **Fresh-eyes review, one round.** Start a separate agent when the session can. Give it only the HTML, the review
+   screenshots and contact sheets, each screen's brief, the journey and the requirement map, never your notes or
+   check output. If no independent agent can run, say so in the hand-over and mark the review outstanding; never
+   write up a review that did not happen. It answers screen by screen: first ten seconds; is the signature the real
+   thing; do every state, count and date agree; does the story read in order to the payoff; anything sloppy,
+   generated-looking, invented or missing; could this app belong to another client with the logo swapped; does any
+   title or sentence pass the swap test (Slop rules, rule 4); does every screen and block trace to a BRD need. Fix
+   every finding in the HTML, re-run steps 5 to 7, and list the findings with what you did in the hand-over.
+10. **Hand-over.** Return the HTML's path (the only output), any "Optional next steps" (ideas beyond the BRD, not
+    drawn), the screen, frame and component counts, the signature, the hero object, the chosen navigation with the
+    two not chosen, each screen's pattern and shape in one line each, the `brd_overrides` and `open_questions` in one
+    line each, the references with what each changed, how the review screenshots were taken, and any `check:` line
+    kept with its reason.
 
-   Fix every finding in the spec, re-render, and list the findings with what you did in the hand-over. One round;
-   the AI PM reviews after.
-7. Return the PDF, the PNG folder and the manifest paths, the page and component counts, the signature, the hero
-   object, the chosen navigation (and the two not chosen) and the alternative views in one line each,
-   each page's pattern and shape in one line, the BRD changes from `brd_overrides` in one line each, each reference with what it changed, and any
-   `check:` line you kept with its reason.
+---
+
+## Review screenshots
+
+The screenshots in `_working/qa/` exist only for the visual review; nothing downstream reads them, and the HTML is
+complete without them. `review` needs a browser. Check, in this order:
+
+1. `python3 -I -c "import playwright"` succeeds. On a Mac, POC Studio's shared tools provide it after
+   `source ~/.local/poc-collateral/env.sh`. `review` then uses Playwright's Chromium, or else any Chromium or Chrome
+   already installed. Never download a second browser when one exists.
+2. Without Python Playwright, `review` drives an installed Chrome or Chromium from the command line. Each frame is
+   then cut at the window height, the `NAV-options` sheet is not drawn, and neither the reading order nor overlapping
+   text is measured, so check both by eye; `review` prints these as `check:` lines.
+3. With neither, `review` says so and stops without error. Review every screen by eye in the browser instead (open
+   the HTML and use the review bar's screen and frame picker), and say at the top of the hand-over that no
+   screenshots could be taken. Never skip the stage for this.
+
+The internal manifest keeps the field names the stages that read it use (`pages`, `components[].component`, `type`,
+`blocks`, `cmp`, `variants`, `features`, `states`, `purpose`, `shows`, `does`, `hero`, `media`, `views`, `modes`,
+`data_contract`, `signature`, `journey`, `brd_overrides`, `nav_options`, `shell`, `payoff_frame`), plus `format`,
+`frames`, `components[].instances`, `variant_defs`, `atoms`, `agent_entry`, `open_questions` and `assumptions`.
+`blocks` holds `<screen-id>/<instance-id>`.
+
+---
+
+## Slop rules (the team's "Dos and don'ts to reduce AI slop")
+
+Slop is output that looks finished but is generic, padded, invented or hard to read. These rules come from the team's
+"Dos and don'ts to reduce AI slop" (14 Nov 2026), and most of them are already inside the rules above; this list is
+the whole set as it applies to wireframes, so nothing is left to memory. Each has a number so it can be checked, and
+`check` tests every one it can see; the word lists live in `check`, not here.
+
+**Content**
+1. Every screen, block and chart traces to a need in the BRD (`requirements`); cut what does not.
+2. Build only what was asked. An extra idea goes in the hand-over under "Optional next steps", never on a screen.
+3. Facts, names and numbers come from the BRD; an invented value is marked `data-sample` (rule 8 above).
+4. The swap test: put another company's name in any title or sentence; if it still makes sense, rewrite it.
+5. One term per concept, in the client's words, everywhere.
+6. No trace of how the file was made on screen: no tool names, file names, paths, run IDs, scores or error codes.
+
+**Writing** (the reader understands over 90% of a 14-word sentence and under 10% of a 43-word one)
+7. Sentences average 15 to 20 words, 25 at most. One dash aside per paragraph at most; no chains of "·", ";" or arrows.
+8. Each screen, block and message starts with its main point. Use everyday words, the active voice, and concrete
+   numbers ("from 3 days to 4 hours") in place of praise words.
+9. Codes and IDs go in tables and record headers, after the name, never in running text.
+10. Calm and factual: no exclamation marks, slogans, "not just X, it's Y", openers that restate the question, closers
+    like "Let me know", or hedges like "may potentially". State an uncertainty once, specifically.
+11. A list is as long as the facts: two, four or seven items, never three by habit.
+
+**Headings**
+12. Every title names what its block holds or its outcome, in the reader's words; never "Overview" or "Chart 1".
+13. Each screen has its own subtitle; no line repeats across screens.
+
+**Screens**
+14. One job and one primary button per screen, and at most two other visible actions in its header; the rest go in a
+    menu.
+15. The home opens on the person's next task and shows the signature; never on a strip of number tiles.
+16. At most four key facts on a card or record header; the rest behind "Details". At most eight numbers on one card.
+17. Navigation has seven items or fewer; tabs only where there is enough content to split.
+18. No card inside a card; sections of one card are its own headings and dividers.
+19. Colour (tags) marks the exceptions: never the same tag on every row, never tags in three or more columns.
+20. Real, varied data from the client's domain: no repeated dummy value down a column, no placeholder names.
+21. Every view has its empty, loading and error states where the data can produce them (rule 9 above).
+22. Buttons say a verb and an object; error messages say what happened and how to fix it; rules are explained in
+    words ("within the 30% discount limit").
+23. One way into the assistant; AI output is marked once per panel, never with a sparkle on every block.
+24. No emoji anywhere; every icon has its word beside it (Close and More may carry theirs as `aria-label`).
+
+**Charts and numbers**
+25. Pick the chart for the question: a line for a trend, a sorted bar to compare, a table for exact values; no pie
+    with more than five slices, never two pies to compare.
+26. At most six metrics per screen, each with its comparison (target or last period) and its time frame.
+27. At most four series per chart; axes labelled with units, lines labelled directly, bars starting at zero.
+28. Round to the precision the decision needs (two or three significant figures); one format per unit.
+29. A short note under every chart and headline number says its source or time frame ("From the 11 Nov scan").
+
+**When rules conflict:** the BRD's facts and exact copy first, then these rules, then completeness. Never add a
+screen, block or word to look thorough. A clean `check` is not proof of quality: generic content in clean words is
+still slop, which is why the fresh-eyes review asks the swap test (rule 4) and whether every screen traces to the BRD
+(rule 1).
+
+## Validation (all must pass before hand-over)
+
+| Area | Pass when |
+|---|---|
+| Requirement coverage | every `requirements` entry is covered or has a status; `coverage.py` reports no missing page or CMP ID |
+| Screens and workflows | every §11 page has a screen; every journey step has a screen or frame; every action shows its result; every alternate path the BRD names is drawn |
+| Component completeness | no instance without content; no placeholder, component name or count shown in place of content; every hero table has real rows |
+| Content quality | the BRD's exact copy where it gives one; one term per concept; no internal codes or placeholder words on screen; sample data marked |
+| Slop rules | every rule in "Slop rules" holds; each `check:` line from them is fixed or defended in the hand-over |
+| Interactions | `check` reports no control that does nothing and no interaction pointing at nothing; you clicked through the journey |
+| States | every data component has the states its data produces, with real wording; disabled actions show their reason |
+| Data consistency | one `today`; counts match the items shown; the same record has the same values on every screen |
+| Responsive | each screen works at its persona's width with no sideways scroll; a persona with two devices has the second layout as a frame |
+| HTML integrity | `check` reports no errors; the file opens with no script error (`review` reports any) |
+| Metadata | unique screen and instance IDs; every instance's component is in the registry; every registry entry is used; variants declared; states consistent; `key_screens` set, with `home` and `main` different screens; the app's own classes named `l-…` |
+| Overlay anatomy | every drawer and modal has a header with its title and close control, its content, and a footer with its actions |
+| Rendered text | `review` reports no text overlapping other text (map labels on markers, labels under a floating panel) |
+| Reading order | every screen declares `first`, `next` and `act`; `review` reports no reading-order check; the overlays match where the eye goes |
+| Documents | every known document is a `.wf-doc` with its real parts; no document drawn as a picture |
+| Frames | each frame changes layout, a persona's view, a structural state or a workflow step; no frame per filter or tab choice |
+| Restraint | the rule 12 limits hold or the hand-over says why; the cover test and the side-by-side test pass |
+| Visual review | you clicked through the journey and went through every contact sheet and overlay (or every screen by eye when no browser could take screenshots); fresh-eyes findings are fixed, or the review is reported outstanding |
+
+---
 
 ## What the next stages do with it
 
-- **Design system:** reads the manifest as its component list (its section 0.0): a component page for every manifest
-  component with the listed variants, features and states, designed for its `purpose`, `shows` and `does`, the
-  `hero` components first; plus its baseline (sign-in, statuses, empty/error/loading, toast, confirm, the agent
-  drawer, the next-step banner, steps and chips, the kit atoms), with the `signature` component given the most care. The
-  wireframes decide each page's layout, pattern and the journey; the design system decides how each component looks
-  and may give a component a richer form when its brief is better served (a list of products as an image grid, a
-  timeline with pictures), recording the change. Its full screens keep each frame's layout and pattern.
-- **Build:** the frames and manifest go in the build request; each page follows its frame's layout and pattern and
-  the design system's styling. Map pages follow `map-component.md` (platform-master adds it as a pointer).
-- **AI PM:** reviews this stage (lens `wireframes`) and, at Stage 4b, checks the built pages against the frames.
+- **Design system:** takes exactly two inputs, the BRD and this HTML. It catalogues every component and atom found
+  here, keeps every component ID, instance ID, variant and state, finishes and styles them, and draws the three
+  `key_screens` at high fidelity with their content unchanged. It may complete a component's visual anatomy (wrap a
+  drawer's body and footer, draw Close as an icon button) and records each correction. It adds no content or
+  behaviour. A gap it finds comes back as a wireframe change.
+- **Build (UnifyApps Headless):** composes each page from its screen here (regions, order and content), styled by the
+  design system. It builds the chosen navigation shell only, the agent from its one entry, maps per
+  `map-component.md`, and every state and interaction drawn here.
+- **AI PM:** reviews this stage and later checks the built pages against these screens.
+
+---
 
 ## Update mode (a change request after the app is built)
 
-Called by the orchestrator's **4c · Changes after the build** (and `asset-run` § 6 for a one-off app) when the AI PM
-has triaged a change as **big** or **very big**. Input: the person's words verbatim, the AI PM's change-clarity reading (or the person's answers), the AI PM's
-triage (its
-`affected_pages`, `new_pages`, `components`), and the approved `02b-wireframes/`. The app is not touched in this step.
+Called by the orchestrator's **4c · Changes after the build** (and `asset-run` § 6) when the AI PM has triaged a
+change as **big** or **very big**. Input: the person's words verbatim, the AI PM's change-clarity reading, its triage
+(`affected_pages`, `new_pages`, `components`), and the approved `02b-wireframes/`. The app is not touched in this
+step.
 
-1. **Keep the approved version.** Move the current spec, `png/`, PDF and manifest to
-   `02b-wireframes/_previous/v<N>/` (`N` = the approved version; never delete it). Copy the spec back as the working
-   spec.
-2. **Edit only what the change needs.** Change the affected pages' entries in the spec, add new pages (and their
-   extra frames, rule 9) in nav order with new page IDs, remove a page only if the person asked. Every rule above still
-   holds (a brief and pattern for a new page, low fidelity, slots, one name per component, real copy from the person's
-   words or the scoping document). Leave every other page's entry byte for byte as it was. The design system is not
-   updated: a new component is added as a slot with a `note` saying it is new in this change, and the build styles it
-   from the design system's kit and tokens.
-   **A legacy spec** (one without `signature`, written before v4) is updated as a legacy spec: no migration is needed,
-   since it renders as before with `warning:` lines. Do not add a signature, briefs or patterns to the whole spec. If
-   the person's change itself needs v4 fields (a new page needs its `brief` and `pattern`; a changed page's work
-   changed), add them only to the changed or added pages; every other page keeps its entry as it was.
-3. **Render and check** as in Steps 4–6, on the changed and added pages only (coverage still runs against the scoping
-   document; a page the person added that the document does not have is expected, not a gap). The rework in Steps
-   4–6 (fixing `check:` lines, the cover test, the side-by-side sameness pass, the fresh-eyes review) applies only to
-   the changed and added pages. `check:` and `warning:` lines about pages outside the change, and the global ones
-   (`nav_options`, references, payoff frame, `hero_object`, house layout, the cover test, the fresh-eyes rework), are
-   listed in the hand-over but **not fixed**: fixing them would change pages the person did not ask about.
-4. **Make the change sheet** (before | after for every page that differs, and the manifest delta):
+1. **Keep the approved version.** Copy the current HTML to `02b-wireframes/_previous/v<N>/` and keep working on the
+   HTML in place. Never delete a previous version. If the approved wireframes have no HTML (made before wireframes
+   were HTML), convert them first ("Legacy wireframes" below) and keep the converted copy as `_previous/v<N>/`.
+2. **Edit only what the change needs.** Change the affected screens; add new screens (with briefs, frames and
+   requirement entries) in nav order with new page IDs; remove a screen only if the person asked. Keep every
+   unchanged screen's markup byte for byte. Keep existing component and instance IDs: a changed component keeps its
+   ID, and a new one gets a new ID with a registry `notes` line saying it is new in this change. The design system
+   is not re-run; the build styles a new component from the design system's kit and tokens.
+3. **Embed, check, generate and review** (steps 4 to 7), and review only the changed and added screens (steps 8 and 9).
+   List `check:` lines about other screens in the hand-over, without fixing them.
+4. **Make the change sheet:**
    ```bash
-   W="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/wireframes/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$W" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/render.py' | head -1)")"
-   source ~/.local/poc-collateral/env.sh 2>/dev/null; python3 "$W/diff.py" "<workspace>/02b-wireframes/_previous/v<N>" "<workspace>/02b-wireframes" "<workspace>/02b-wireframes/changes/CR-<n>" --request "<the person's words>"
+   source ~/.local/poc-collateral/env.sh 2>/dev/null; python3 -I "$W/diff.py" "<workspace>/02b-wireframes/_previous/v<N>" "<workspace>/02b-wireframes" "<workspace>/02b-wireframes/changes/CR-<n>" --request "<the person's words>"
    ```
-   Check its list against the triage: every affected page appears, and nothing else does. A page that changed
-   without being asked for is undone. The sheet also reports app-level changes (the `app` block and spec-level keys
-   such as `today`, `signature`, `nav_options`, `journey`, `payoff_frame`, `hero_object`, `brd_overrides`), the
-   `NAV-options` and `VIEWS` sheets when they differ (labelled as sheets, not pages), and pages whose only change is
-   their `brief`, `pattern` or `shape` with the same drawing as "metadata only" (no before | after page). An
-   app-level change the triage did not ask for is undone like a page. `NO_CHANGES` means the edit did not land: fix
-   the spec.
-5. Return `changes/CR-<n>/change-sheet.pdf`, `change-summary.json`, the pages added, removed, changed and metadata
-   only, the sheets and app-level keys that changed, the components added (not in the design system) in one line
-   each, and the `check:` / `warning:` lines left unfixed because they sit outside the change.
+   Check its list against the triage: every affected page appears and nothing else does. Undo any unrequested
+   change. `NO_CHANGES` means the edit did not land.
+   The change sheet is one clickable HTML page: each changed screen before and after, side by side.
+5. **Return** `changes/CR-<n>/change-sheet.html`, `change-summary.json`, the screens added, removed and changed, the
+   components added in one line each, and the `check:` lines left unfixed because they sit outside the change.
 
 ## Answering the AI PM
 
-Answer each finding in the response file as `fixed`, `disputed` (with the brief line, the patterns.md rule, the §11
-line or the CMP ID behind it) or `deferred`. A fix changes the spec only where the finding points; re-render
-everything (it takes a second).
+Answer each finding as `fixed`, `disputed` (with the brief line, the requirement entry, the patterns.md rule, the §11
+line or the CMP ID behind it) or `deferred`. A fix changes the HTML only where the finding points. Then re-run
+`check`, `manifest` and `review`.
+
+## Legacy wireframes (made before wireframes were HTML)
+
+A POC whose wireframes were approved as PNG frames and a PDF (`02b-wireframes/<slug>.wireframe.json`, `png/`,
+`<slug>-wireframes.pdf`, `wireframe-manifest.json`, no `*-wireframes.html`) is converted once, when the design system
+is about to run or a change request needs Update mode:
+1. Read the approved spec (its fields are explained in `references/legacy-spec-format.md`), every PNG frame, the
+   manifest and the BRD.
+2. Draw the **same** wireframes as HTML (Building the file): the same screens, page IDs, component IDs, frames,
+   navigation, signature, journey and content. Fill what the old frames left as empty slots with real content from
+   the BRD, mark invented values `data-sample`, and change nothing else: this is a format change, not a redesign.
+3. Run steps 4 to 7. Keep the old files in `02b-wireframes/_legacy/` (never delete them).
+4. Hand over as "the approved wireframes, now clickable; nothing changed". The orchestrator shows it at a short gate.
+
+---
+
+## The fixed parts (files in this skill)
+
+- `assets/wf-base.css`: the low-fidelity stylesheet (greys, one system font, no brand). Put into every wireframe by
+  `wf_tool.py embed`; never edited per app (the app's own layout rules go in `wf-app`).
+- `assets/wf-runtime.js`: screens, frames, states, interactions and the review bar. Put in by `wf_tool.py embed`;
+  never edited per app. `data-interaction` is a list of steps separated by `;`, run in order:
+
+  | Step | Does |
+  |---|---|
+  | `go:<screen or frame id>` | opens that screen or frame |
+  | `back` | goes back |
+  | `open:<instance>` / `close:<instance>` / `toggle:<instance>` | an overlay's state (`close` alone closes the overlay the control is in) |
+  | `state:<instance>=<state>` | sets any instance's state (tabs, filters, results, loading) |
+  | `wait:<ms>` | pauses, for a loading or checking state before its result |
+  | `toast:<instance>` | shows a toast for four seconds |
+  | `submit` | stops the steps if the surrounding form is invalid |
+
+  Example: `submit; state:~room-check=checking; wait:1200; state:~room-check=pass; toast:~status-toast`. Every
+  instance a step names is resolved only inside the control's own screen; there is no document-wide fallback, so an
+  action on one screen can never change another screen. If the target is not on that screen, the interaction stops
+  at that step, changes nothing, and reports `wf: missing target "<id>" on screen <screen>` in the console, in
+  `window.wfErrors` and on `<html data-wf-error>`; `check` reports the same as an error before the file is opened.
+  `~name` lets a component repeated on every screen (the shell, the user menu, the agent drawer) carry identical
+  markup. Frames set states only on their own screen, checked the same way. Escape closes the open overlay, and
+  opening a drawer or modal moves focus into it.
+- `scripts/wf_tool.py`: `embed`, `check`, `manifest`, `review`. `check` holds the word lists for placeholder,
+  filler and generic-title tells and the slop checks, so this file does not repeat them.

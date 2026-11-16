@@ -91,14 +91,17 @@ and any later session — can read them:
     scoping-document.docx               the build plan (Part A proposal, Part B build spec)
     _working/                           scoping's working notes, research, evidence log
   02b-wireframes/
-    <slug>.wireframe.json               the layout spec (the wireframes skill writes it; render.py draws it)
-    png/<page-id>.png                   one low-fidelity frame per page
-    <slug>-wireframes.pdf               all frames in nav order (what the person approves; what goes to Orbit)
-    wireframe-manifest.json             the component list (with briefs, signature, journey, chosen navigation) the
-                                        design system starts from and the build uses; png/ also holds NAV-options.png
-                                        and VIEWS.png (sheets, not pages)
+    <slug>-wireframes.html              THE only output: one editable, clickable HTML file with the metadata contract
+                                        (screens, frames, components, instances, states, interactions); the person
+                                        clicks through it at the gate, it goes to Orbit, the design system and the
+                                        build read it
+    _working/                           internal, generated from the HTML: wireframe-manifest.json (coverage, the
+                                        build plan), <slug>.wireframe.json (page index), qa/ (review screenshots)
+    _previous/v<N>/, changes/CR-<n>/    Update mode: approved versions kept, and each change sheet (HTML)
+    _legacy/                            the old PNG/PDF wireframes of a POC started before v1.46.0, after conversion
   03-design-system/
     <slug>-design-system.html           the design system HTML UnifyApps Headless reads (one self-contained file)
+    _working/qa/                        the audit's screenshots, contact sheets and consistency.json
   04-build/
     build-summary.md                    UnifyApps Headless's result: app name, preview link, published app URL, what was built
     zen-decisions.md                    Zen's planning questions and the person's answers
@@ -158,9 +161,14 @@ This file is the reviewer's memory of the use case; keep it factual and short.
 
 If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and `context-log.md`, tell the person in one line where the
 run stands, and continue from the first stage that is not `approved` (or `skipped`). Never redo an approved stage unless the
-person asks. A run started before Wireframes existed has no `wireframes` entry: if its design system is already past
-`pending`, add `"wireframes": { "status": "skipped" }` and carry on (the design system then reads the scoping document
-alone, as before); otherwise add it as `pending`, and Wireframes runs next after Scoping. A run started before
+person asks. A run started before Wireframes existed has no `wireframes` entry: if its design system is already
+`approved`, add `"wireframes": { "status": "skipped" }` and carry on; otherwise add it as `pending`, and Wireframes
+runs next (the design system needs the wireframe HTML, so a design system that was in progress runs again after
+them). **Wireframes approved before v1.46.0** (PNG frames and a PDF, no `02b-wireframes/*-wireframes.html`) whose
+design system is not yet `approved`: before the design system runs, call `wireframes` to convert them ("Legacy
+wireframes": the same wireframes as clickable HTML, nothing changed), let the AI PM check the conversion (lens
+`wireframes`), and show it at a short gate (AskUserQuestion: **Approve** / **Change the wireframes**). Orbit: M1w
+and M2w for the HTML as a new wireframes version. A run started before
 connector discovery existed has no `connector-discovery` entry: if Scoping is already past `pending`, add
 `"connector-discovery": { "status": "skipped" }` (Stage 4 step 2b then runs `scope: models` before the build);
 otherwise add it as `pending`, and it runs next. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
@@ -307,13 +315,10 @@ Every stage runs by default, and the pipeline never offers a skip. Only two thin
 person asks for it in their own words (at the start, in any message, or in "Other" at a gate), in Zen and Sonic. The
 AI PM never skips anything and never suggests a skip; a skip is always a human decision.
 
-- **Wireframes (2b).** Can be skipped until the design system starts. Set `stages.wireframes` to
-  `{ "status": "skipped", "by": "person", "reason": "<their words>", "at": "<time>" }`, log it in `context-log.md` as a
-  human decision, and go from the scoping gate straight to the design system, which then reads the scoping document
-  alone (its "Without wireframes" path). The build request leaves out the frames (as it already does when
-  `stages.wireframes` is `skipped`). Orbit: no M1w or M2w; M2a's `last_activity` reads "BRD approved; design system
-  in progress". If the wireframes are already running, stop them and keep their files; if they are already
-  approved, there is nothing to skip: say so.
+- **Wireframes (2b) cannot be skipped.** The design system takes the approved wireframe HTML as one of its two
+  inputs and stops without it. If the person asks to skip them, say so in one line and run them. (A run resumed from
+  before Wireframes existed whose design system is already `approved` keeps `"wireframes": "skipped"`, as in
+  Resuming.)
 - **Collaterals (5), per item.** The person can skip one or two of the three: demo script, demo video, deck. At least
   one is always made (skipping all three would skip the stage). Record `stages.collaterals.skip` (for example
   `["video"]`) with their words and the time, as a human decision, and make only the others, the way a one-off run
@@ -392,7 +397,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 
 | In the run | Orbit moment (orbit-writeback) |
 |---|---|
-| Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file except real samples) · G2a (scoping doc) · G2w (wireframes PDF) · G2b (design system) · G3 (published app) |
+| Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file except real samples) · G2a (scoping doc) · G2w (wireframes HTML) · G2b (design system) · G3 (published app) |
 | Person approves (Zen) or the AI PM approves (Sonic) | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
@@ -444,15 +449,16 @@ except at the start (the POC ID must be verified).
      Zen, Zen planning's questions and plan approval in Stage 4; and in both modes every `CONFIRM_REQUIRED` and every
      connector-discovery `SYSTEM_ACCESS:` question — the client connection and access, a replacement model — and
      Requirement Gathering's `SAMPLE_UPLOAD:` question, which are the person's).
-   - Wireframes: the stage runs unattended; low fidelity (greys, real copy, slots for generic components); each page
-     has a brief and a pattern, three navigation shells are drawn and one is chosen, a change from the BRD is recorded
-     in `brd_overrides` with a reason; a map page follows the wireframes skill's map-component reference; the approved
-     manifest is the design system's starting component list (it may add what the journey needs, marked Added with a
-     reason).
+   - Wireframes: the stage runs unattended; one clickable HTML file, low fidelity (greys, one font) with real content
+     in every component and every control working; each screen has a brief, a pattern and a reading order, the
+     signature is drawn as itself, a change from the BRD is recorded in `brd_overrides` with a reason; a map page
+     follows the wireframes skill's map-component reference; the approved HTML is the design system's input and its
+     complete component list (the design system adds no component).
    - Design system: the stage runs unattended (the person is treated as absent for the skill's stops);
      brand-colour conflicts are settled by the design-system skill's own brand source order, without
-     asking; if no client logo file exists, the logo kit uses the UnifyApps logo (labelled stand-in); the output is
-     one local HTML file, uploaded to Orbit as a public link.
+     asking; it retrieves the client's official logo by every route in its Step 3, and when none works it shows a
+     labelled placeholder and marks the brand incomplete; the output is one local HTML file, uploaded to Orbit as a
+     public link.
    - Build: UnifyApps Headless in Zen mode on Orbit UAT; the person (Zen run mode) or the AI PM (Sonic run mode)
      answers Zen's planning questions and approves its plan, which platform-master has already reviewed and corrected; builder and test agents run in parallel; an asset
      UnifyApps Headless cannot build is built by platform-master's browser fallback (the person signs in); deploying/testing the POC app there is pre-approved; model IDs:
@@ -490,9 +496,10 @@ except at the start (the POC ID must be verified).
    Log what was installed in `context-log.md`.
 5. **AI PM (v1.0).** Let `R` be the ai-pm skill's `scripts/` folder
    (`find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' -exec dirname {} \;`), and `W` the wireframes skill's
-   (`find ~/.claude/plugins -path '*wireframes/scripts/render.py' -exec dirname {} \; | head -1`), and `D` the
-   design-system skill's folder (`dirname "$(find ~/.claude/plugins -path '*design-system/scripts/check_ds.py' 2>/dev/null | head -1)"`,
-   then its parent); give all three to the AI PM in every request (`scripts: {ai_pm: <R>, wireframes: <W>, design_system: <D>}`).
+   (`find ~/.claude/plugins -path '*wireframes/scripts/wf_tool.py' -exec dirname {} \; | head -1`), and `D` the
+   design-system skill's folder (`dirname "$(find ~/.claude/plugins -path '*skills/design-system/SKILL.md' 2>/dev/null | sort -V | tail -1)"`);
+   give all three to the AI PM in every request (`scripts: {ai_pm: <R>, wireframes: <W>, design_system: <D>}`). The
+   wireframes and design-system tools are files in those folders (`$W/wf_tool.py`, `$D/scripts/ds_tool.py`).
    - `python3 "$R/lessons.py" init` (seeds the lesson bank once per machine; never overwrites) and
      `pip install pyyaml` into the shared venv if `python3 -c "import yaml"` fails.
    - Set `state.json` → `"owner_profile"`: the POC owner's email in lower case, from Orbit setup (`orbit.owner.email`).
@@ -577,35 +584,31 @@ spec at the Scoping gate. A resumed run never asks the connection questions agai
 
 Part of the Plan phase (G2), between the BRD and the design system: the BRD says what is built and what each page must
 do, the wireframes decide how each page works (its brief, pattern, layout, the signature, the navigation, the views),
-and the design system then designs those components, adding only what the journey needs (marked Added with a reason).
+and the design system then styles and finishes exactly those components, adding none.
 
 - Create the autopilot file. Call `wireframes` (Skill tool: `poc-studio:wireframes`) with the client name, the use
   case, the approved `02-scoping/scoping-document.docx` and the output folder `<workspace>/02b-wireframes/`. It runs
   unattended: anything it cannot settle goes to the reviewer (resolve). Its research goes through `research`; copy
   each answer to `<workspace>/research/wireframes-<topic>.md`.
-- Review: `stage: wireframes`, artifacts = the spec `<slug>.wireframe.json`, the PDF, the `png/` folder and
-  `wireframe-manifest.json`; upstream = the approved scoping document.
-- **Orbit:** M1w · G2 (the wireframes PDF, with notification) before the gate; M2w on approve (wireframes approved only);
+- Review: `stage: wireframes`, artifacts = `<slug>-wireframes.html` (the only output; the reviewer takes its own
+  screenshots); upstream = the approved scoping document.
+- **Orbit:** M1w · G2 (the wireframes HTML, with notification) before the gate; M2w on approve (wireframes approved only);
   M3 on changes; M5 before re-gating.
-- Gate. Show the frame count (not counting the `NAV-options` and `VIEWS` sheets) against the scoping pages, the signature and hero object, the chosen navigation (and the
-  two rejected), each page's pattern, the `brd_overrides` with their reasons, the component count from the manifest,
-  the `check:` lines kept with their reason, the fresh-eyes findings, and any map page with its mode. Approving here
-  fixes the layouts and the starting component list the design system designs from.
+- Gate. Open the HTML locally for the person to click through. Show the screen and frame count against the scoping
+  pages, the signature and hero object, the chosen navigation (and the options not chosen), each screen's pattern, the
+  `brd_overrides` and open questions with their assumptions, the component count, the `check:` lines kept with their
+  reason, the fresh-eyes findings, and any map page with its mode. Approving here fixes the screens and the complete
+  component list the design system styles.
 
 ## 3 · Design System
 
-The `design-system` skill (v12.6) is tested and its output is approved as is. **Call it exactly as it is; do not
-change, extend or second-guess its steps** — its section 0.0 says how the approved wireframes guide it. It reads the
-approved wireframe manifest and the scoping document and produces one HTML design system the builder composes from:
-the creative direction, a showcase of **three** screens (home with the signature, the main working page, the agent
-drawer open) plus two or three close-ups, foundations, the flow panels per capability, component pages (the signature
-and the main ones at full depth), the journey-to-component table, and the composition contract with the `#build-plan`
-and `#style-sets` blocks for UnifyApps Headless. It may add the components the journey needs, marked Added with a
-reason. Do not ask it to draw more screens: the three-screen limit is deliberate. It includes a separate
-creative-director pass and a judgement pass; it draws pictures as HTML/CSS mockups and never fetches photos (the real
-images come in the build). It needs Python Playwright for its
-screenshots (the shared tools install it); its own register of earlier apps lives at
-`~/.local/poc-studio/design-register.json`.
+The `design-system` skill is tested. **Call it exactly as it is; do not change, extend or second-guess its steps.**
+It takes exactly two inputs, the approved scoping document (its "BRD") and the approved wireframe HTML, and produces one
+self-contained HTML design system: the client's brand (colour, official logo, typeface), a standalone catalogue that
+finishes every component the wireframe contains (with `#corrections` for anatomy it completed without changing content
+or behaviour), the three `key_screens` the wireframe names at high fidelity, light and dark, and the composition
+contract with `#ds-manifest`, `#build-plan` and `#style-sets` for UnifyApps Headless. It adds no component and no
+screen. It needs Python Playwright or an installed Chrome for its audit and screenshots (the shared tools install it).
 Only these session facts are supplied by you:
 
 - Create the autopilot file. Call `design-system` with:
@@ -614,8 +617,8 @@ Only these session facts are supplied by you:
   - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
     its section 21 brand cues are **evidence with source types**, not a chosen palette; the design-system skill decides the
     palette and theme by its own brand source order (client material → brand guidelines → live product → website).
-  - **the wireframes** = the approved `02b-wireframes/wireframe-manifest.json`, the `png/` frames and the PDF (when
-    `stages.wireframes` is `skipped`, say there are none: the skill then works from the scoping document alone).
+  - **the wireframes** = the approved `02b-wireframes/<slug>-wireframes.html` (its second input, and the wireframes'
+    only output).
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
     `<slug>-design-system.html` (one self-contained file, as the skill requires). UnifyApps Headless reads the HTML from this
@@ -625,20 +628,22 @@ Only these session facts are supplied by you:
   - **file name and folder:** this name and folder replace the skill's own `<client>-design-system.html` "in the
     outputs folder": the outputs folder is `<workspace>/03-design-system/` and the file is `<slug>-design-system.html`.
   - **run mode:** **unattended** (the skill's own term): nobody answers its stops during the stage. Treat the person
-    as absent for the skill's stops even though they are in the chat. A typeface that cannot be identified (Step 2b's
-    "Ask") is not a stop either: ship the closest open substitute, mark it `[DERIVED]` in the type note.
+    as absent for the skill's stops even though they are in the chat. A typeface that cannot be identified is not a
+    stop either: ship the closest open substitute and say so in the type note.
 - **The skill's two stops are answered without the person** (the reviewer's standing answers):
   - Brand hue ambiguous → the skill decides by its own **brand source order** (Step 1), unattended; never wait and
     never override it with a "standing decision" (the skill forbids that). It records both candidates in the port note.
-  - No client logo file anywhere → the skill's stop 2 fallback: the logo kit is built from the UnifyApps logo bundled
-    with this plugin (`assets/unifyapps-logo.png`; also `skills/poc-collateral-studio/assets/unifyapps-logo.png`;
-    `find ~/.claude/plugins -name unifyapps-logo.png`), labelled as a stand-in; recorded in the port note.
-- Review: `stage: design-system`, upstream = the approved scoping document and the approved wireframes (manifest and
-  `png/` frames).
+  - No official logo file after every retrieval route in the skill's Step 3 → the skill's unattended answer: a
+    labelled placeholder wordmark where the wireframe marks the logo, the full logo section with seven placeholder
+    slots, `data-brand-status="incomplete"`, and every route tried. Tell the person at the gate that the logo file is
+    the one thing missing; when they supply it, the skill swaps it in (one replacement per variant).
+- Review: `stage: design-system`, artifacts = `<slug>-design-system.html` and `03-design-system/_working/qa/`,
+  upstream = the approved scoping document and the approved wireframe HTML.
 - **Orbit:** M1b · G2 (the design system, with notification; stage moves to `4_design_system`) before the gate; M2 ·
   G2 on approve (G2 approved, stage `5_build`); M3 on changes; M5 before re-gating.
-- Gate. On approval also record the look for the AI PM's logo-off test: `python3 "$R/lessons.py" look "<Client>"
-  "<chrome · surface · shell · concept>"`, read from the file's expression card.
+- Gate. Show the brand status (complete, or what is missing), the direction chosen and the one rejected, the audit
+  results, the Wireframe gaps and the hand-over's three answers. On approval also record the look:
+  `python3 "$R/lessons.py" look "<Client>" "<chrome · surface · shell · concept>"`, read from the expression card.
 
 ## 4 · Build with UnifyApps Headless
 
@@ -768,22 +773,24 @@ Only these session facts are supplied by you:
     `models[]`: "AI models (checked <date>): <slot> → <card> (fallback <card>) for each slot. Before indexing knowledge,
     index one document and check its status, then the rest. If any step fails on credits or quota, stop that step and
     report it; never switch the model yourself." (The switch goes through connector-discovery model recovery.)
-  - **Wireframes:** `<workspace>/02b-wireframes/` — the approved low-fidelity frames (`png/<page-id>.png`, one per
-    page) and `wireframe-manifest.json`. Each page's regions, their order and what each region holds follow its frame;
-    the components in each region are the manifest's, styled by the design system. A map page (`layout: map` in the
-    spec) is built as the map component in `wireframes/references/map-component.md` (platform-master adds it to the
-    pointers), with the manifest's data contract. Build only the navigation shell the manifest marks chosen (the other
-    two on `png/NAV-options.png` are rejected), each page's `pattern`, and each hero list's views (`png/VIEWS.png`,
-    `alt_view_of` frames) as a switch on the same page, never as separate pages. Skip this item when
-    `stages.wireframes` is `skipped`.
+  - **Wireframes:** `<workspace>/02b-wireframes/` — the approved wireframe HTML (`<slug>-wireframes.html`: every
+    screen, state and interaction, clickable; open it and use its screen picker) and its internal manifest
+    (`_working/wireframe-manifest.json`). Each page's regions, their order and what each region holds follow its
+    screen in the HTML (`data-screen-id`, with `data-instance-id` per region); the components in each region are the
+    HTML's, styled by the design system. A map page (`data-pattern="map"`) is built as the map component in
+    `wireframes/references/map-component.md` (platform-master adds it to the pointers), with its data contract. Build
+    only the navigation shell `wf-meta.nav_options` marks chosen (the others, on the `#NAV-options` sheet, are
+    rejected), each screen's `data-pattern`, and each hero list's views as a switch on the same page, never as separate
+    pages. Every state and interaction drawn in the HTML is built.
   - **Design system:** `<workspace>/03-design-system/<slug>-design-system.html`. Tell UnifyApps Headless to quote and follow the
     **Composition contract** section of that file verbatim, and to look every design decision up instead of choosing:
     the pattern and region fillers for each page from the `#build-plan` block (its `rules` for any page not listed),
     the active style set from the `#style-sets` block, and only specimens marked `data-active="true"` (never one
     labelled "Reference — not in this app"). Also from the contract: the shell, agents in drawers on the platform's
-    live agent component, data/table rules, overlays and spacing, colours only from the token block, every state and
-    micro-interaction from the component pages, the flow panels (`#flows`) and the journey-to-component table, and the
-    navigation shell chosen in the wireframes. Open the agent only from the one entry the design system names
+    live agent component, data/table rules, overlays and spacing, colours only from the token block, gradients only
+    where the expression card places them, every state from the catalogue entries, each component's anatomy as its
+    catalogue entry shows it (`#corrections` lists where that differs from the wireframe's drawing), and the
+    navigation chosen in the wireframes. Open the agent only from the one entry the design system names
     (`app.agent_entry`): one way in, never a second launcher. The file draws three screens on purpose; UnifyApps Headless
     composes every other page from its wireframe frame, the kit and the patterns, matching the drawn screens' finish,
     and never copies one screen's content onto another page. The design system's pictures are mockups: seed the app
@@ -870,8 +877,8 @@ Only these session facts are supplied by you:
   2. Check the Orbit session: `node "$R/orbit_signin.mjs" --check`; if expired, remove the autopilot file and have the
      person sign in again (`node "$R/orbit_signin.mjs"`).
   3. Review: `stage: build`, `artifacts: [<preview_url>, 04-build/test-report.md, 04-build/routes.json]`, upstream =
-     the approved scoping document plus the design system and the approved wireframe frames (`02b-wireframes/png/`,
-     unless `stages.wireframes` is `skipped`). The reviewer runs `build_walk.mjs` and judges storyline,
+     the approved scoping document plus the design system and the approved wireframe HTML
+     (`02b-wireframes/<slug>-wireframes.html`). The reviewer runs `build_walk.mjs` and judges storyline,
      fidelity, copy and the reverse trace (ai-pm, stage lenses → build).
   4. **REVISE / BLOCK:** give UnifyApps Headless the findings as numbered fix lines, in the same session, as direct
      changes through `ua-change` with independent fixes in parallel ("Fix exactly these, nothing else: F1 …"); a
@@ -929,42 +936,46 @@ and a built page does not.
    `small` / `big` / `very-big`, artifacts: `02b-wireframes/` spec and manifest, `04-build/build-summary.md` and
    `04-build/changes/CR-<n>.clarity.yaml`; lens `change-triage`). Save the answer to `04-build/changes/CR-<n>.triage.yaml` (`<n>` counts change requests in this
    workspace) and tell the person in one line: the tier, the pages it touches, why. When `stages.wireframes` is
-   `skipped` there are no frames to update: `big` and `very-big` go to step 4 without the wireframes, and say so.
+   `skipped` (a POC from before wireframes existed) there are no wireframes to update: `big` and `very-big` go to step
+   4 without them, and say so. Wireframes that are PNG/PDF only (made before v1.46.0) are converted to HTML first by
+   the wireframes skill ("Legacy wireframes"), as part of Update mode.
 3. **Small** → straight to the app: the change as numbered fix lines to UnifyApps Headless as direct changes through
    `ua-change` (same session, independent fixes in parallel, no new plan), then step 5.
 4. **Big or very big → wireframes first. The app is not touched until the person approves.**
    - Create the autopilot file. Call `wireframes` in **Update mode** (wireframes skill) with their words, the clarity
      reading (`04-build/changes/CR-<n>.clarity.yaml`), the triage
-     and the approved `02b-wireframes/`. It edits only the affected frames, re-renders and writes
-     `02b-wireframes/changes/CR-<n>/change-sheet.pdf` (before | after per page) and `change-summary.json`. The design
-     system is not updated: a new component is styled by the build from its kit and tokens.
+     and the approved `02b-wireframes/`. It edits only the affected screens in the HTML and writes
+     `02b-wireframes/changes/CR-<n>/change-sheet.html` (each changed screen before | after, clickable) and
+     `change-summary.json`. The design
+     system is not updated: a new component is styled by the build from its kit and tokens, following the nearest
+     catalogue entry of the same kind.
    - Review: `stage: wireframes`, lens `wireframes-update`, artifacts = the change sheet, `change-summary.json` and the
-     new spec; upstream = `_previous/v<N>` (the approved wireframes), the clarity reading, the triage and their words.
+     new wireframe HTML; upstream = `_previous/v<N>` (the approved wireframes), the clarity reading, the triage and their words.
      REVISE as usual.
    - **Show the person** (in Zen and in Sonic; remove the autopilot file): open the change sheet locally (`open` on a
      Mac, `xdg-open` on Linux), list pages added, changed and removed and any new component in one line each, the AI
      PM summary, then AskUserQuestion: **Approve wireframes and update the app** / **Change the wireframes** (they
      type what in "Other") / **Drop this change**.
      - **Change the wireframes** → the clarity check (step 1b) on their words, then Update mode again on the
-       current spec with them and the reading, review, show again. The
+       current HTML with them and the reading, review, show again. The
        app is still untouched.
      - **Drop this change** → restore `_previous/v<N>` as the current wireframes, close the iteration (M5 with no new
        version, note "dropped"), and go back to where the run was.
-     - **Approve** → Orbit **M5** for the wireframes (new wireframes version, `from_iteration`, the change sheet PDF
-       uploaded alongside); `stages.wireframes_version` +1 in `state.json`. Then:
+     - **Approve** → Orbit **M5** for the wireframes (new wireframes version: the HTML, `from_iteration`, the change
+       sheet HTML uploaded alongside); `stages.wireframes_version` +1 in `state.json`. Then:
    - **Big** → the approved change as numbered fix lines to UnifyApps Headless through `ua-change`, limited to the
-     triage's pages: "Change exactly these pages to match their updated frames in `02b-wireframes/png/` (listed:
-     PG-…); add the new pages PG-… from their frames; leave every other page as it is. New components: style them
+     triage's pages: "Change exactly these pages to match their updated screens in
+     `02b-wireframes/<slug>-wireframes.html` (listed: PG-…); add the new pages PG-… from their screens; leave every other page as it is. New components: style them
      from the design system's kit and tokens." Platform assets it cannot build go to platform-master's fallback.
    - **Very big** → a **scoped re-plan**: `/ua:plan` on the **existing solution** (its id from `build-summary.md`)
      with a build request limited to the affected pages, new pages and changed objects, pointing at the updated
-     frames and manifest; platform-master job 2 reviews the plan and the builder check runs, as in Stage 4; Zen's
+     wireframe HTML; platform-master job 2 reviews the plan and the builder check runs, as in Stage 4; Zen's
      questions and plan approval follow the run mode (Zen planning window in Zen, the AI PM in Sonic). Pages not in
      the triage are never in the task graph: if Zen's plan includes them, send "change something: only these
      pages". Rebuilding pages already built stays the person's decision.
 5. **Test what was touched, then the AI PM walk.** UnifyApps Headless re-tests the changed and new pages and anything
    that depends on them (Stage 4's test rules, at most 3 fix rounds); add rows to `04-build/test-report.md`. Then the
-   AI PM build walk (4b) on the preview link, with the updated frames as upstream. Publish, update
+   AI PM build walk (4b) on the preview link, with the updated wireframe HTML as upstream. Publish, update
    `build-summary.md` (update "what was built" — objects, agents, automations, pages, by their names in the
    solution — and add a "Changes" section: CR-<n>, tier, pages, wireframes version), Orbit **M5** (new app version,
    closing the iteration), and gate again (the verify gate, or the stage the change came from).
