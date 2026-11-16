@@ -617,8 +617,8 @@ Only these session facts are supplied by you:
   - **the BRD** = the approved `02-scoping/scoping-document.docx` (the skill's "BRD" means this document);
     its section 21 brand cues are **evidence with source types**, not a chosen palette; the design-system skill decides the
     palette and theme by its own brand source order (client material → brand guidelines → live product → website).
-  - **the wireframes** = the approved `02b-wireframes/<slug>-wireframes.html` (its second input; the manifest, PNGs and
-    PDF are exports of it).
+  - **the wireframes** = the approved `02b-wireframes/<slug>-wireframes.html` (its second input, and the wireframes'
+    only output).
   - **where to save:** `<workspace>/03-design-system/`. The deliverable is the design system **HTML file** (the
     living style guide, with the token block and logo kit in it) saved there as
     `<slug>-design-system.html` (one self-contained file, as the skill requires). UnifyApps Headless reads the HTML from this
