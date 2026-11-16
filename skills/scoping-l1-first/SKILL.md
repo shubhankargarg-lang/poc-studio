@@ -15,7 +15,7 @@ Your job: take whatever Requirement Gathering hands over and produce a **golden 
 
 Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the AI PM (resolve mode), never to the user.
 
-The Pentland example is the quality bar: two flow decks and a one-line email became a full feature catalogue, two app build plans and a design system. The brand compliance example is the other bar: one page of meeting notes became a fully specified scoring model with checks, inputs, formulas, thresholds and per-brand weights. Inputs will usually be that thin. Thin input never justifies a thin document.
+The Pentland example is the quality bar: two flow decks and a one-line email became a 338-feature catalogue, two app build plans and a design system. The brand compliance example is the other bar: one page of meeting notes became a fully specified scoring model with checks, inputs, formulas, thresholds and per-brand weights. Inputs will usually be that thin. Thin input never justifies a thin document.
 
 ---
 
@@ -104,7 +104,7 @@ These rules keep a long document usable. They do not limit length.
 - Put wide tables (section 10 feature catalogue, section 12 object tables, section 14 workflow specs, section 22 traceability, Appendix E and F) in a **landscape section**, 8–9 pt table text.
 - Diagrams (section 2 "Picture the system"): Word cannot render Mermaid. Render each diagram to a PNG (mermaid-cli `mmdc` if installed, otherwise Graphviz, otherwise matplotlib) and insert the image with a caption "Figure N. …". If none of these can run, present the diagram as a table of nodes and edges and say so in Document Control.
 - Number tables and figures; keep IDs (U1, P1, PG-…, WF-…, AG-…, CMP-…) as plain text so they can be searched.
-- Before finishing, open the file (or convert it to PDF with LibreOffice and render a few pages) to check that headings, landscape sections, tables and images display properly. Do this once, together with section 9's look at the pages (Step 8).
+- Before finishing, open the file (or convert it to PDF with LibreOffice and render a few pages) to check that headings, landscape sections, tables and images display properly.
 
 ---
 
@@ -140,7 +140,7 @@ For each section of the document template (section 6), write down what the input
 - a **logged assumption**: client facts nobody can look up, such as volumes, team sizes or internal policy. State the value you assumed and why.
 
 ### Step 4 — Research (always through the `research` skill)
-All research goes through the `research` skill (section 4). First check `<workspace>/research/` (and `_working/research/`) for earlier answers and reuse them. Then list every open question and send them in **one round of at most 3 questions**, once; the other steps that need research (inputs, brand guidelines in section 4, Step 7, 14.2 and 19) use that round's answers, or record an assumption, never a new call. When you fan research out to sub-agents for parallelism, each sub-agent's instructions must say: "Invoke the `research` skill with the Skill tool and follow it. Use your own web search only if that skill is not available, and state at the top of your output which mode you used: research skill or fallback." Typical research per type is listed in section 5; skip what doesn't apply. Internal process automation may need only one or two calls. Save each brief and answer under `_working/research/`. While sub-agents work, create `.poc-studio/waiting` beside `.poc-studio/autopilot` (when that exists) and end the turn until Claude Code's finished notice, with no status checks; delete it when the last reply arrives. Every finding you use goes into the document with its source ID.
+All research goes through the `research` skill (section 4). First check `<workspace>/research/` (and `_working/research/`) for earlier answers and reuse them. Then list every open question and send them together in **one round**, once (as many questions as the scope needs); the other steps that need research (inputs, brand guidelines in section 4, Step 7, 14.2 and 19) use that round's answers, or record an assumption, never a new call. When you fan research out to sub-agents for parallelism, each sub-agent's instructions must say: "Invoke the `research` skill with the Skill tool and follow it. Use your own web search only if that skill is not available, and state at the top of your output which mode you used: research skill or fallback." Typical research per type is listed in section 5; skip what doesn't apply. Internal process automation may need only one or two calls. Save each brief and answer under `_working/research/`. While sub-agents work, create `.poc-studio/waiting` beside `.poc-studio/autopilot` (when that exists) and end the turn until Claude Code's finished notice, with no status checks; delete it when the last reply arrives. Every finding you use goes into the document with its source ID.
 
 Keep research on the business, the market, the regulations and the features. How other products lay out and show the same work is researched by the wireframes skill and the design system, after this document.
 
@@ -152,7 +152,7 @@ Build the Module › Feature › Sub-feature tree (section 7):
 - Add the cross-cutting layer: AI trust (provenance marking, human review, undo), copilot, notifications, audit, admin.
 - Tag every row with every column, then prioritise every row as below.
 
-Size the catalogue to the problem: L1 rows in full, L2 rows one line each. If a standard tool in the category has a capability, it either appears in the catalogue (usually as a one-line L2 row) or appears in Out of Scope with a reason.
+Pentland had about 160 sub-features per app. Size the catalogue to the problem, but do not stop at a short list: if a standard tool in the category has a capability, it either appears in the catalogue (usually as L2) or appears in Out of Scope with a reason.
 
 #### Prioritise: must-have (L1) vs good-to-have (L2)
 The catalogue is the full list; the build is **L1 only**. Priority is decided by what the client needs to see, not by how useful a feature might be. A row is **L1** only if it has at least one of these reasons, recorded in the catalogue's **L1 reason** column:
@@ -204,7 +204,7 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a capability. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
 
 ### Step 8 — Write, build the Word file, then self-review
-Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix every flagged line in one pass, rebuild, and re-check; repeat only for lines still flagged. Only finish when it passes. Render pages to look at them once, at the end (the Word formatting check and section 9's together), and after a later fix only the pages that changed. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
+Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
 
 ---
 
@@ -243,7 +243,7 @@ The `research` skill takes four parts. Always send all four.
 | Part | What to send |
 |---|---|
 | **Question(s)** | Required. One or more specific questions. Ask "Which capabilities do Salsify, Akeneo and inriver offer for attribute enrichment, with doc links?", not "research PIM tools". |
-| **Purpose** | What the answer feeds and where it's used, e.g. "Feature catalogue for a client-facing scoping document; needs vendor evidence per feature." This sets research depth. Client-facing scoping is Deep: at most 30 searches, 15 pages and 5 vendors. |
+| **Purpose** | What the answer feeds and where it's used, e.g. "Feature catalogue for a client-facing scoping document; needs vendor evidence per feature." This sets research depth. Client-facing scoping is Deep: at most 30 searches and 15 pages, with as many vendors as the category needs. |
 | **Context** | Known facts: client, industry, country, the use-case type, relevant findings from earlier calls. |
 | **Format** | Ask for what you'll paste in directly, e.g. "Table: capability · vendors offering it · source URL · standard/partial/gap", or "List of fields with type and example". |
 
@@ -261,7 +261,7 @@ Inputs often mix types. Use the primary type's playbook and add the secondary ty
 
 ### A. POV / greenfield in a known product category
 *Example: Pentland wanted our POV on Product Enrichment and PLM in fashion. The input was two process decks and an email.*
-- **Research (heavy)**: the 5 leading vendors in the category, their feature sets, recent AI features, the category's regulations (e.g. EU AI Act marking, Digital Product Passport), standard KPIs, and the client's brands, public footprint and current systems.
+- **Research (heavy)**: 6–10 leading vendors in the category, their feature sets, recent AI features, the category's regulations (e.g. EU AI Act marking, Digital Product Passport), standard KPIs, and the client's brands, public footprint and current systems.
 - **Depth**: a large feature catalogue with Market coverage and Seen In, differentiators, and a must-have slice that tells a story through the client's own process (their stage names, their meeting names such as PACE, their lanes).
 - **Watch**: map every feature to a stage in the *client's* flow, not the vendor's. If the client already runs tools in the category, say how the app sits alongside or replaces them.
 
@@ -384,7 +384,7 @@ Section 9 closes Part A. It should leave a reader who stops here knowing what th
 The **complete** feature catalogue lives here, in the format of section 7, in a landscape section, split into the must-have build scope and the future scope. Do not summarise it or move it elsewhere.
 - **10.1 Summary**: a table per app: module · L1 · L2 · total · market gaps in L1, with totals; plus the L1 reason tally (core flow / agent / client ask / research must-have). State "Grand total: N", "L1 must-have: N" and "L2 future scope: N" here, generated by script.
 - **"10.2 Must-have catalogue (L1 — build scope)"**: one lean table per module (grouped by app, then module, with the heading `App › Module`), every L1 sub-feature with the columns in section 7. This is the only feature list the build works from; its build and research details are in Appendix E and F.
-- **"10.3 Future scope (L2 — not in this build)"**: one table per module listing every L2 row, one line each, with: ID · Sub-feature · Why it can wait · Depends on (L1 IDs or assets). Then a **future-scope assets** table: page, block, object, field, workflow, agent or integration that only L2 needs · the L2 IDs that need it · note. These are not specified anywhere else in the document.
+- **"10.3 Future scope (L2 — not in this build)"**: one table per module listing every L2 row with: ID · Sub-feature · Description · Why it can wait · Depends on (L1 IDs or assets) · Market coverage · Sources. Then a **future-scope assets** table: page, block, object, field, workflow, agent or integration that only L2 needs · the L2 IDs that need it · note. These are not specified anywhere else in the document.
 - **10.4 Agent catalogue**: a one-row-per-agent index for the agents in the build scope: agent · app · what it does · reads from · writes or proposes · human gate · L1 feature IDs. The full specs are in section 13. Agents that only L2 needs appear in the future-scope assets table instead.
 
 ### 11. Page specifications
@@ -549,10 +549,7 @@ Start with the build order: build steps in dependency order (objects and seed �
   - **Seed matches the story.** Each step's record is seeded in exactly the state the step needs: other required approvals already submitted, or the item still in Draft if the step sends it. The hero records (19), agent test answers (13) and field examples (12) all agree with the step.
   - **Show the differentiators.** Every headline differentiator from section 6 appears in a step, including its blocked or failing case when that is the point. Trim other steps to stay in time.
   - **Say what cannot be shown live.** Anything that cannot happen live during the demo (e.g. hourly scheduled reminders) goes in 20.4, or gets an admin 'Run now' action.
-- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun. These numbers are a guide, not a cap: a complex
-solution can need many more workflows (dozens). Never drop or merge away a workflow an L1 feature needs to meet the
-guide; when the L1 build still needs more, keep them all and add a Decision in 20.3 naming the L1 features that need
-them.
+- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun. These figures are a guide, not a cap: a complex solution can need many more pages, objects and workflows (dozens). Never drop or merge away anything an L1 feature needs to meet them; when the L1 build needs more, keep it all and add a Decision in 20.3 naming the L1 features that need it.
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
 ### 21. Hand-off to the design system
@@ -605,8 +602,8 @@ Each feature's attributes are split across three tables keyed by ID, so no table
 
 **10.3 L2 future scope** (one per module):
 
-| ID | Sub-feature | Why it can wait | Depends on |
-|---|---|---|---|
+| ID | Sub-feature | Description | Why it can wait | Depends on | Market coverage | Sources |
+|---|---|---|---|---|---|---|
 
 L2 rows carry no Component, Page, Objects or Agent/WF values, because nothing is built for them now, and they do not appear in Appendix E or F.
 

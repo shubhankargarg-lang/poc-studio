@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.49.2
+- **"Leaner BRD" (1.49.0 change 8) removed completely**, now treated as high risk: complex solutions can need dozens of workflows, and slimming the BRD can cut what the build needs. Scoping is back to 1.48.0 for the 338-feature quality bar, the catalogue sizing rule, full L2 rows in 10.3 (ID · Sub-feature · Description · Why it can wait · Depends on · Market coverage · Sources), the fix-and-rebuild loop and the page renders.
+- **No caps on what a solution contains.** 20.3's page, object and workflow figures are a guide, never a cap: nothing an L1 feature needs is dropped or merged away; a larger build is kept and explained with a Decision. Research no longer caps the number of vendors (scoping's heavy research is 6–10 vendors again) or the number of questions in scoping's research round. The search and page budgets per depth stay (they limit effort, not content).
+
 ## 1.49.1
 - **Scoping: no hard cap on workflows.** 1.49.0 added "never more than 10 workflows per POC"; a complex solution can need many more (dozens), so the cap could drop workflows that L1 features need. The 3–8 figure is back to a guide: merge where it is safe, never drop an L1 workflow, and record a Decision in 20.3 when the build needs more.
 

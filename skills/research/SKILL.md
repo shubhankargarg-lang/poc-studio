@@ -56,7 +56,7 @@ say that you did.
 - Use short queries of 2 to 6 words. Start broad, then narrow, and change the wording after a miss.
 - Search one topic per query: one competitor, one regulation, one reference site.
 - Open the page of anything you rely on. A search snippet is a lead and never a source.
-- Compare at most 5 vendors or products for one question.
+- Compare the vendors or products the question needs (no fixed number), within the depth's search and page budget.
 - Note each page's facts once (link, date, exact figures) in the calling stage's `<stage folder>/_working/notes.md`
   (on a direct run, `_working/notes.md` in the current folder), appending, never overwriting it; reopen a page only for
   one missing fact.
