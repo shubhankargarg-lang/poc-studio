@@ -851,15 +851,30 @@ Only these session facts are supplied by you:
      data, without first creating a user in the Matrix app; orbit-writeback's **Preview link rule**: work it out from
      the app id if it gives a published or builder link) and save it in `state.json` → `app.preview_url`; the walk
      runs on it.
-  1. Write `04-build/routes.json` from scoping §11 in nav order: `[{"name": "<page>", "route": "<route>"}, …]`
-     (UnifyApps Headless's route list if the scoping routes changed), and `04-build/glossary.json` from scoping Appendix B as
+  1. Write `04-build/routes.json` from scoping §11 in nav order (UnifyApps Headless's route list if the scoping routes
+     changed): `[{"name": "<page>", "route": "<route>", "persona": ["<persona>", …], "tabs": ["<tab>", …], "open": "first-row"}, …]`.
+     `route` is **relative to the preview link, with no leading `/`** (`"orders"`, not `"/orders"`): code-app preview
+     links sit under a path (`…/agent-api/preview/b/<app id>/main`), so a route from the domain root opens Orbit, not
+     the app. Use a full `https://` address only for a page outside the app root. Pass the preview link to the walk
+     unchanged.
+     `persona`: the page's **Personas** from §11, in the app's own role names (the walk switches to each in the app's
+     profile menu and walks the page once per persona). `tabs`: every tab or stage §11 names for the page (the walk
+     reports any it cannot find). `open`: only for a list whose records open with their tabs in a drawer or record
+     page (§11 "record pages with tabs"); `"first-row"` opens the first row. Leave out any field §11 does not give.
+     When the app's profile menu has no role switch and the person has a separate sign-in per persona, also write
+     `04-build/personas.json` (`{"<persona>": {"storage": "<session file>"}}`) or its `switch` steps; otherwise none. Also write `04-build/glossary.json` from scoping Appendix B as
      `{"<client term>": ["<words that must not appear instead>"]}` where the document names such words.
   2. Check the Orbit session: `node "$R/orbit_signin.mjs" --check`; if expired, remove the autopilot file and have the
      person sign in again (`node "$R/orbit_signin.mjs"`).
-  3. Review: `stage: build`, `artifacts: [<preview_url>, 04-build/test-report.md, 04-build/routes.json]`, upstream =
+  3. Review: `stage: build`, `artifacts: [<preview_url>, 04-build/test-report.md, 04-build/routes.json]` (plus `04-build/personas.json` if written), upstream =
      the approved scoping document plus the design system and the approved wireframe frames (`02b-wireframes/png/`,
      unless `stages.wireframes` is `skipped`). The reviewer runs `build_walk.mjs` and judges storyline,
      fidelity, copy and the reverse trace (ai-pm, stage lenses → build).
+  3a. **Tool failure:** when the review comes back with a `tool_failure` block (the walk could not run, even after one
+     re-run), the build was **not reviewed**. Do not retry again and do not publish on it. File it as a POC Studio
+     ticket by following `commands/feedback.md` from Step 1 (the update check already ran this session), naming the
+     `ai-pm` skill, Stage 4b, the POC, and attaching the walk's `report.md` and `routes.json`. Then tell the person in
+     one line that the build was not reviewed, why (the block's `error`), and the ticket number, and wait for them.
   4. **REVISE / BLOCK:** give UnifyApps Headless the findings as numbered fix lines, in the same session, as direct
      changes through `ua-change` with independent fixes in parallel ("Fix exactly these, nothing else: F1 …"); a
      platform asset it cannot build goes to platform-master's browser fallback. UnifyApps Headless fixes, re-runs its
