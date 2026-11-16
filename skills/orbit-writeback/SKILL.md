@@ -179,7 +179,9 @@ iteration_logged · stage_completed. `actor_type`: `ai` for what the run does, `
   "skill": "<the POC Studio skill that made the document>", "created_at": 1792280000000 }
 ```
 
-`phase`: understand (G1) · plan (G2) · build (G3) · deliver (G4).
+`phase`: understand (G1) · plan (G2) · build (G3) · deliver (G4). Moment 2c adds `context`, `times_asked`, `quotes`, `root_skill`,
+`kind`, `outcome`, `outcome_version`, `confidence` and `context_added_at` at gate approval (never touching `title`
+or `reason`), and creates `source: chat` iterations for asks typed in the chat.
 
 **POC** — object `orbit_studio_poc` (update only, `recordId` = the POC record's id from the check in Setup)
 Every POC update also sends `last_activity` (one plain line people read) and `last_activity_at`.
@@ -348,6 +350,8 @@ drive, unchanged:
 **upload files → Documents → Iteration → Activity → POC last.**
 
 **Before every moment:**
+0. **Send any gate-feedback payload not saved yet** (Moment 2c): `python3 "$O/gate_feedback.py" pending --ledger "$LG"`
+   lists them; send each with `apply_record_edits`, then `gate_feedback.py saved <payload> <reply>`.
 1. **Retry `failed_writes` first.** If they all save now, send any `slack_notification` that was held back for their
    gate with this moment's POC update (only if this moment is itself M1 or M5; otherwise send a POC update with
    `slack_notification true` for that gate on its own).
@@ -440,6 +444,41 @@ are the same as above, with these differences only:
 - **Reconcile check** on a Sonic run: a late approval is written with `actor_type: "ai"` and the message "Approval
   recorded late (AI PM, Sonic mode)".
 - **M3** (changes the person types during a Sonic run) is written exactly as in Zen, `actor_type: "person"`.
+
+### Moment 2c — the gate's feedback, as context on its iterations (after every gate approval)
+
+Moment 3 writes the person's ask the moment they make it (their exact words in `reason`). When a gate is approved
+(M2, M2a, M2w, the G4 approval, and the AI PM's approvals in Sonic too), right after that moment's writes, add what
+the rest of the gate's chat says about those asks, and every ask typed in the chat that never became a change
+request. `O` and `LG` are as in Moment 7 ("How to write it": this skill's `scripts/` folder and the
+run's `.poc-studio` folder). Full runs only (a one-off run has no POC and no iterations). **It never holds up the run:** a step that
+fails is retried at the next moment, and the stage after the gate starts as usual.
+
+1. **The gate's turns:** `python3 "$O/gate_feedback.py" turns --gate gN --ledger "$LG"` → `turns.json`: every human
+   turn since the last gate, from every chat of this run (typed messages, messages typed while you were busy,
+   AskUserQuestion answers with their "Other" text, pasted screenshots), with approvals, "go ahead", sign-in chatter,
+   status pings and plain option picks already left out. Sample text and secrets are removed. No candidates → stop.
+2. **This POC's iterations:** `get_records` on `orbit_studio_iteration`, filter `poc` EQUAL the POC ID, saved to
+   `$TMPDIR/iterations.json` (their record ids, words and versions).
+3. **Decide each ask** (your judgement; `references/iteration-context.md` says how) and write
+   `$TMPDIR/gate-items.json` (format in `gate_feedback.py`'s header): for every candidate turn, either the
+   iteration it belongs to (the change request it repeats, explains or adds to), a new ask from the chat, or
+   `not_feedback`. For each ask: the turns where it was said (every repeat), the **context** (what it means and the
+   general rule behind it, plain words, at most 60 words, never a client name or amount in the rule part), the
+   **skill to improve** (where the problem first appeared), **practice or app fix**, the **outcome** (does the version
+   now approved show it: done with its version, not done, regressed, unclear) and a **confidence** 0–100.
+4. **Build and check:** `python3 "$O/gate_feedback.py" build $TMPDIR/gate-items.json --turns <turns.json>
+   --existing $TMPDIR/iterations.json --poc <POC ID> --phase <phase> --actor-name "<owner>" --actor-email "<email>"
+   --ledger "$LG"`. It refuses a quote that is not word for word, a turn left out, an unknown skill and a missing
+   field (exit 2: fix only what the `error:` lines name, at most 2 tries). Updates carry **only** the new fields
+   (`context`, `times_asked`, `quotes`, `root_skill`, `kind`, `outcome`, `outcome_version`, `confidence`,
+   `context_added_at`), never `title` or `reason`; a new ask from the chat is created with `source: chat` and the
+   person's exact words as `reason`. The payload goes to the outbox, and the next gate starts after these turns.
+5. **Send:** `apply_record_edits` with the payload file, then `gate_feedback.py saved <payload> <reply>`. Not saved
+   → it stays in the outbox and "Before every moment" step 0 sends it again; nothing else waits on it. A refusal
+   naming an unknown field means Orbit · Iteration lacks the new fields: leave the payload pending (it goes through
+   once they exist).
+6. Tell the person nothing unless they ask; the iterations panel in POC Build Loop shows it.
 
 ### Moment 3 — the owner asks for changes instead of approving
 Iteration (create): status open, phase of the gate, **reason = their exact words**, related_document = the version

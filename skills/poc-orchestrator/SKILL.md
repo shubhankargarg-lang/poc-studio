@@ -345,7 +345,9 @@ Remove the autopilot file, then:
 3. **Approve** → mark the stage `approved` in `state.json`, log it, run `python3 "$R/lessons.py" record <workspace>
    <stage> approved`, send any pending Observability rows and run the Observability check against Orbit
    (orbit-writeback Moment 7: "Nothing is lost", "Check against Orbit"), run the Orbit approval write (M2 / M2a / M2w) and **confirm it landed** (orbit-writeback: "Confirm
-   every approval"); only then move on to the next stage.
+   every approval"), then add the gate's feedback context to its iterations (orbit-writeback **Moment 2c**: everything
+   the person typed at this gate, as context on the change requests plus any ask typed in the chat; a step that fails
+   is retried at the next moment and never holds the run); only then move on to the next stage.
    **Changes** → log the feedback verbatim (it is now a human decision for every later review), and also
    `python3 "$R/lessons.py" capture <workspace> <stage> "<their words, verbatim>"` and `… record <workspace> <stage>
    changes`, so the AI PM turns it into a lesson for every later POC. If the feedback names something the AI PM's
@@ -399,6 +401,7 @@ reference). Do the write **before** putting the gate to the person (posting) and
 |---|---|
 | Stage done + reviewed, before its gate | **M1** — G1 (RG + every discovered client file except real samples) · G2a (scoping doc) · G2w (wireframes HTML) · G2b (design system) · G3 (published app) |
 | Person approves (Zen) or the AI PM approves (Sonic) | **M2** — G1 · G2a (scoping: BRD approved only) · G2w (wireframes approved only) · G2 (design system: G2 approved) · G3 |
+| Right after every M2 (and the G4 approval) | **M2c** — the gate's feedback as context on its iterations (context, asked N×, skill to improve, practice or app fix, outcome, confidence) and new `chat` iterations for asks typed in the chat; never changes `title` or `reason` |
 | Person asks for changes (their text, verbatim) | **M3** — Iteration row + activities; more text about the same change is added to that iteration |
 | The reworked document is ready, before re-gating | **M5** — new version, old one superseded, iteration closed |
 | A big or very big change after the build: updated wireframes approved (4c) | **M5** — new wireframes version (`from_iteration`, change sheet uploaded); the iteration stays open until the new app version's M5 |
@@ -1015,8 +1018,9 @@ and a built page does not.
 - **Orbit:** nothing before the gate. M3 (phase deliver) on changes; on approval, first the **Reconcile check**
   (G1–G3 must show approved in Orbit), then **M1 · G4** (upload script PDF, deck,
   video; demo_ready) — do it before marking the run done.
-- Gate. On approval (after M1 · G4), send any pending Observability rows and run the check against Orbit, mark the run
-  done, delete the autopilot file, and give the person the list of files with their paths in the client folder, ending
+- Gate. On approval (after M1 · G4), send any pending Observability rows and run the check against Orbit, run
+  orbit-writeback **Moment 2c** for G4 and send every gate-feedback payload still pending (`gate_feedback.py pending`),
+  mark the run done, delete the autopilot file, and give the person the list of files with their paths in the client folder, ending
   with the Observability report line (`skill_run_row.py report`).
 
 ## Rules for the whole run

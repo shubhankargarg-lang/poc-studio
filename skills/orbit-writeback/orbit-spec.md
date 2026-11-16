@@ -123,6 +123,11 @@ Iteration — object orbit_studio_iteration (create; then update to close)
   "created_at": 1792280000000
 }
 phase: understand (G1) · plan (G2) · build (G3) · deliver (G4).
+Context added at gate approval (Moment 2c, update by recordId; never title or reason): context (text), times_asked
+(integer), quotes (JSON [{"text","at"}]), root_skill (skill key), kind (practice | app_fix), outcome (done |
+not_done | regressed | unclear), outcome_version (text), confidence (0-100), context_added_at (ms). An ask found in
+the chat that was never a change request is created with source "chat", reason = the person's exact words, and the
+same fields.
 
 POC — object orbit_studio_poc (update only, recordId = poc_id)
 Every POC update also sends last_activity (one plain line people read) and last_activity_at. slack_notification: true is sent only in the last call of a gate push (moments 1 and 5). It makes Orbit post the gate to the POC's Slack thread; Orbit clears it itself.
