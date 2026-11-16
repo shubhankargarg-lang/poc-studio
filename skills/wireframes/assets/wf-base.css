@@ -1,0 +1,78 @@
+/* wf-base v1 — low fidelity: greys, one system font, no brand, no decoration. Structure and content only. */
+*{box-sizing:border-box}
+html{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1f1f1f;background:#e9e9e7}
+body{margin:0}
+[hidden]{display:none!important}
+h1,h2,h3,h4,p{margin:0}
+h1{font-size:22px;font-weight:600}h2{font-size:17px;font-weight:600}h3{font-size:15px;font-weight:600}
+small,.wf-muted{color:#666;font-size:13px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #1f1f1f;outline-offset:2px}
+/* review chrome (never part of the app) */
+.wf-review{position:sticky;top:0;z-index:50;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#2b2b2b;color:#f2f2f2;font-size:13px}
+.wf-review select,.wf-review button{background:#444;color:#f2f2f2;border:1px solid #666;border-radius:4px;padding:3px 8px}
+.wf-notes{max-width:880px;margin:14px auto;padding:14px 18px;background:#fff;border:1px solid #bbb;font-size:13px}
+.wf-stage{padding:24px;display:flex;justify-content:center}
+html.wf-export .wf-stage{padding:0;display:block}
+html.wf-export [data-wf-chrome]{display:none!important}
+/* the device frame: one per screen, at the persona's width */
+.wf-device{width:var(--w,1280px);min-height:var(--h,800px);background:#fff;position:relative;overflow:hidden;border:1px solid #c8c8c8;container-type:inline-size}
+html.wf-export .wf-device{border:0}
+/* layout primitives (names say what they do, not how they look) */
+.wf-app{display:grid;grid-template-columns:auto 1fr;min-height:inherit}
+.wf-app.wf-top-shell{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+.wf-nav{background:#f1f1f0;border-right:1px solid #d6d6d6;padding:14px 10px;display:flex;flex-direction:column;gap:4px;min-width:200px}
+.wf-top-shell>.wf-nav{flex-direction:row;align-items:center;border-right:0;border-bottom:1px solid #d6d6d6;min-width:0;padding:10px 16px;gap:8px}
+.wf-nav a{display:block;padding:7px 10px;border-radius:4px;color:#333;text-decoration:none}
+.wf-nav a[aria-current="page"]{background:#d9d9d7;font-weight:600;color:#111}
+.wf-main{padding:20px 24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.wf-row{display:flex;gap:16px;flex-wrap:wrap}
+.wf-row>*{flex:1 1 260px;min-width:0}
+.wf-stack{display:flex;flex-direction:column;gap:10px}
+.wf-inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wf-split{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px}
+.wf-card{border:1px solid #cfcfcf;border-radius:6px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:8px}
+.wf-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+/* atoms */
+.wf-btn{border:1px solid #8a8a8a;background:#fff;border-radius:4px;padding:7px 14px;cursor:pointer}
+.wf-btn[data-variant="primary"]{background:#3a3a3a;border-color:#3a3a3a;color:#fff}
+.wf-btn[data-variant="tertiary"]{border-color:transparent;text-decoration:underline}
+.wf-btn:disabled,.wf-btn[aria-disabled="true"]{background:#eee;border-color:#ccc;color:#8c8c8c;cursor:not-allowed}
+.wf-link{color:#1f1f1f;text-decoration:underline;cursor:pointer;background:none;border:0;padding:0}
+.wf-tag{display:inline-block;border:1px solid #9a9a9a;border-radius:999px;padding:1px 9px;font-size:12px}
+.wf-tag[data-variant="attention"],.wf-tag[data-variant="negative"]{border-width:2px;font-weight:600}
+.wf-field{display:flex;flex-direction:column;gap:4px}
+.wf-field label{font-size:13px;font-weight:600}
+.wf-field input,.wf-field select,.wf-field textarea{border:1px solid #9a9a9a;border-radius:4px;padding:7px 9px;background:#fff}
+.wf-field [aria-invalid="true"]{border-width:2px}
+.wf-help{font-size:13px;color:#555}
+.wf-error{font-size:13px;font-weight:600}
+.wf-table{width:100%;border-collapse:collapse}
+.wf-table th{text-align:left;font-size:12px;font-weight:600;color:#555;border-bottom:1px solid #bdbdbd;padding:7px 8px}
+.wf-table td{border-bottom:1px solid #e1e1e1;padding:8px;vertical-align:top}
+.wf-tabs{display:flex;gap:2px;border-bottom:1px solid #cfcfcf}
+.wf-tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent}
+.wf-tabs button[aria-selected="true"]{border-bottom-color:#1f1f1f;font-weight:600}
+/* documents (invoice, lab report, purchase order…): drawn as the document, never as a picture */
+.wf-doc{background:#fff;border:1px solid #9a9a9a;box-shadow:0 1px 3px rgba(0,0,0,.14);padding:20px 24px;display:flex;flex-direction:column;gap:12px;font-size:13px;max-width:var(--doc-w,640px)}
+.wf-doc header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.wf-doc h3{font-size:16px} .wf-doc dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px} .wf-doc dt{color:#555} .wf-doc dd{margin:0}
+.wf-doc .doc-parties{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wf-doc table{width:100%;border-collapse:collapse} .wf-doc th{text-align:left;font-size:11px;color:#555;border-bottom:1px solid #9a9a9a;padding:4px 6px} .wf-doc td{border-bottom:1px solid #e1e1e1;padding:5px 6px}
+.wf-doc .doc-totals{align-self:flex-end;min-width:240px} .wf-doc .doc-totals div{display:flex;justify-content:space-between;gap:24px} .wf-doc .doc-totals .grand{font-weight:600;border-top:2px solid #3a3a3a;padding-top:4px}
+.wf-doc .doc-stamp{align-self:flex-start;border:2px solid #3a3a3a;padding:1px 8px;font-weight:600;font-size:12px;letter-spacing:.04em}
+.wf-doc.wf-scan{background:#f7f6f1} .wf-doc .doc-faint{color:#9a9a9a}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+/* pictures (photographs only): a grey box that says what the photo shows */
+.wf-img{background:#dcdcdc;color:#4a4a4a;display:flex;align-items:flex-end;padding:8px;font-size:12px;aspect-ratio:var(--ratio,4/3);border-radius:4px}
+/* overlays live inside the device so exports show them */
+.wf-scrim{position:absolute;inset:0;background:rgba(0,0,0,.28);z-index:20}
+.wf-drawer{position:absolute;top:0;right:0;bottom:0;width:min(420px,100%);background:#fff;border-left:1px solid #9a9a9a;z-index:21;display:flex;flex-direction:column;gap:12px;padding:16px;overflow:auto}
+.wf-modal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,92%);background:#fff;border:1px solid #6f6f6f;z-index:22;padding:18px;display:flex;flex-direction:column;gap:12px}
+.wf-toast{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);background:#3a3a3a;color:#fff;padding:9px 14px;border-radius:6px;z-index:23;display:flex;gap:12px;align-items:center}
+.wf-toast .wf-link{color:#fff}
+/* review annotations, off by default */
+html.wf-annot [data-sample]{text-decoration:underline dotted 2px}
+html.wf-annot [data-instance-id]{outline:1px dashed #9c9c9c;outline-offset:2px}
+@container (max-width:700px){.wf-split{grid-template-columns:1fr}.wf-app{grid-template-columns:1fr}.wf-nav{flex-direction:row;overflow-x:auto;min-width:0;border-right:0;border-bottom:1px solid #d6d6d6}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

@@ -128,16 +128,16 @@ Three apps, three different first screens, each built from its own signature. Th
 
 ## 6. The tells (check every frame before you hand over)
 
-- Most pages open the same way (the same three blocks in the same order). `render.py` prints this.
-- A next-step banner, the same chips, a decision bar or a step indicator on most pages. `render.py` prints this.
+- Most pages open the same way (the same three blocks in the same order). `wf_tool.py check` prints this.
+- A next-step banner, the same chips, a decision bar or a step indicator on most pages. `wf_tool.py check` prints this.
 - A home that does not show the signature, shows it as a side panel beside a list, or puts a narrow side column
   beside it without saying why; a narrow side column on most pages; two queue pages drawn the
-  same way; an extra frame whose titles changed but whose rows did not. `render.py` prints these.
+  same way; an extra frame whose titles changed but whose rows did not. `wf_tool.py check` prints these.
 - The signature drawn as a slot, a text card, a table or a list; a picture-led app drawn without pictures.
 - A row of number tiles opening a page where the person acts.
 - Dates that disagree on what day it is ("lock in 23 days" beside "2 days overdue, due 8 Aug"); a tab or heading whose
-  count differs from what is drawn under it; a hero table of grey bars. `render.py` prints these.
-- The journey passing from one persona to another through a page only the first one uses. `render.py` prints this.
+  count differs from what is drawn under it; a hero table of grey bars. `wf_tool.py check` prints these.
+- The journey passing from one persona to another through a page only the first one uses. `wf_tool.py check` prints this.
 - An internal code or ID as the main text; a source system's name as a label.
 - "Demo", "synthetic", "dummy", "simulate", "placeholder", "TBD" on screen, in the journey or in a brief; a component's name used as on-screen text.
 - Styling words in a note (hover, shadow, blur, colour): looks are the design system's job.
@@ -146,7 +146,7 @@ Three apps, three different first screens, each built from its own signature. Th
 - Search drawn twice; a large empty welcome banner; the agent as a page in a non-chat app.
 - A window or drawer that needs real controls drawn as a paragraph: put its blocks inside the overlay.
 
-`render.py` prints the ones it can find as `check:` lines; fix each, or say in the hand-over why it stays.
+`wf_tool.py check` prints the ones it can find as `check:` lines; fix each, or say in the hand-over why it stays.
 
 ## 7. References: the ones you are given and the ones you find
 

@@ -1,3 +1,6 @@
+> **Legacy reference.** Wireframes made before v1.46.0 were a JSON spec drawn to PNG frames by a renderer that no
+> longer exists. Read this only to convert such a spec to HTML (SKILL.md, "Legacy wireframes").
+
 # The wireframe spec — format and block library
 
 One JSON file per run: `<workspace>/02b-wireframes/<slug>.wireframe.json`. `scripts/render.py` draws it. Every field
