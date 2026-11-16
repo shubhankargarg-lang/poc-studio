@@ -61,8 +61,8 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 | `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx` |
 | `research` | research | the question the calling stage sent | the research answer |
 | `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document + `01c-integration/integration-spec.json` | `02-scoping/scoping-document.docx` |
-| `wireframes` | wireframes | the approved scoping document | `02b-wireframes/*.pdf`, `png/`, `wireframe-manifest.json` |
-| `design-system` | design | the approved scoping document + the approved wireframes (manifest and `png/` frames) | `03-design-system/*.html` (style guide, tokens, logo kit) |
+| `wireframes` | wireframes | the approved scoping document | `02b-wireframes/<slug>-wireframes.html` (the deliverable), its PDF, `png/`, `_qa/`, `wireframe-manifest.json` |
+| `design-system` | design | the approved scoping document + the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`) | `03-design-system/<slug>-design-system.html`, its `_working/qa/` screenshots and `consistency.json` |
 | `build` | build (v1.0: review at Stage 4b, after UnifyApps Headless's own parallel testing, before publish) + resolve for UnifyApps Headless's questions (only `/ua:setup`'s and those asked after the person approves the Zen plan; Zen planning and `CONFIRM_REQUIRED` are the person's) | the approved scoping document + design system + the approved wireframe frames | the app at `app.preview_url`, walked with `scripts/build_walk.mjs`; `04-build/test-report.md` |
 | `collaterals` | deliverable | the approved scoping document + the built app | `05-collaterals/**/out/*` |
 
@@ -84,25 +84,22 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   where "high-level, not configuration-level" applies. Review **Part B** (sections 10–23 and the Appendix) as a build
   spec: it is *meant* to be configuration-level, so detail there is never a finding; check only that it is complete,
   consistent with Part A, and traces to the L1 features.
-- **Wireframes (v4.11):** low fidelity is the point: greys, one font, slots that only name a component are correct, never
-  a finding. Each page has a brief and a pattern, the signature is drawn as itself, the journey ends on a payoff frame,
-  three navigation shells are drawn and one chosen, and a change from the scoping document is recorded in
-  `brd_overrides` with a reason (never a finding). Check them with `wireframes/scripts/coverage.py`, a re-render, and the
-  `wireframes` lens. A legacy spec (made before v4, no `signature`) renders with warnings, which are not findings.
-- **Design system (v12.6):** with approved wireframes, every manifest component has a component page; the skill may add
-  components the journey needs, each marked `data-added="true"` with a `data-reason` (never a finding when it has its
-  reason; one without a reason is). Review the single HTML file against the skill's finished-piece
-  list (`references/reference.md`, "The finished-piece rule") and for brand fit and scope against the scoping document:
-  three showcase screens plus two or three close-ups (the limit, not a gap: other pages are covered by component pages,
-  the flow panels, the journey-to-component table and `#build-plan`), one agent entry, the composition contract with
-  `#build-plan` and one active set in `#style-sets`, every specimen tagged `data-active`, the creative direction, the
-  hero object drawn as picture mockups where it has a picture, both themes measured, a clean render check and `check_ds.py`. Standing
-  human decisions, never a finding: the brand colour settled by the skill's source order without asking, a logo kit
-  built from the UnifyApps logo (labelled stand-in) when no client logo file exists, pictures drawn as HTML/CSS mockups (no photos), and the file
-  uploaded to Orbit as a public link.
-  **v1.0:** the skill's own checks and `#review` scores are claims, not evidence. Render the file yourself, run
-  `scripts/render_check.js` and the skill's `check_ds.py`, and score its seven dimensions from your own screenshots
-  (`references/stage-lenses.md` → design-system).
+- **Wireframes (HTML contract):** one editable, clickable HTML file is the deliverable; the PDF, `png/` frames and
+  the manifest are generated from it. Low fidelity is the point: greys, one font and no brand are correct, never a
+  finding. Every component carries real content (no slots); every control works; each screen has a brief, a pattern
+  and a reading order; the signature is drawn as itself; documents are drawn as documents; frames exist only for real
+  layout, persona, structural or workflow changes; a change from the scoping document is recorded in `brd_overrides`
+  with a reason (never a finding). Check it with the skill's own `wf_tool.py check` and `export`, `coverage.py`, and
+  the `wireframes` lens.
+- **Design system (standalone catalogue):** takes exactly two inputs, the BRD and the wireframe HTML, and styles and
+  finishes what the wireframe contains: one catalogue entry per wireframe component (no low-fidelity copy beside it;
+  traceability through `data-source-*` attributes), the three `key_screens` the wireframe names, light and dark, the
+  composition contract, `#ds-manifest`, `#build-plan`, `#style-sets` and `#corrections` (anatomy corrections that
+  keep content and behaviour). Standing human decisions, never a finding: the brand colour settled by the skill's
+  source order without asking; a placeholder logo, labelled, with `data-brand-status="incomplete"`, when no official
+  file could be retrieved after the skill's routes; pictures drawn as HTML/CSS mockups; the file uploaded to Orbit as a
+  public link. The skill's own QA report is a claim, not evidence: run its `fidelity` and `audit` yourself and judge
+  from your own screenshots (`references/stage-lenses.md` → design-system).
 - **Build (v1.0):** reviewed once UnifyApps Headless's own testing is done and before publish. Open `app.preview_url` with the
   saved Orbit session and run `scripts/build_walk.mjs`; then judge storyline, fidelity, copy and the reverse trace
   (`references/stage-lenses.md` → build). UnifyApps Headless still answers for its own tests; this is the independent check.
@@ -179,10 +176,11 @@ reasonably go either way, or a change request that fails the clarity check below
 
 - **Brand colour ambiguous** (design-system stop 1): the skill's own brand source order decides, unattended; DECIDE
   that the skill applies its order (never substitute another rule).
-- **Typeface cannot be identified** (design-system Step 2b "Ask"): ship the closest open substitute, mark it
-  `[DERIVED]` in the type note; DECIDE.
-- **No client logo file** (design-system stop 2): use the UnifyApps logo bundled with the plugin
-  (`assets/unifyapps-logo.png`) to build the logo kit, labelled as a stand-in; DECIDE.
+- **Typeface cannot be identified:** ship the closest open substitute and say so in the type note; DECIDE.
+- **No client logo file** (design-system stop 2): first check the skill tried every retrieval route in its Step 3
+  (brand or media page, the parent's brand site, the file's own address, the browser on the file's address, a public
+  copy that names its source); then the skill's unattended answer stands: a labelled placeholder, the full logo section
+  with seven placeholder slots, the brand marked incomplete; DECIDE.
 - **UnifyApps Headless asks which model to use** for agents or LLM tasks: the card the Integration Spec's `models[]`
   names for that slot (tested by connector-discovery); for a slot it does not cover, choose the option the builder
   recommends; if it recommends none, tell it to select the most appropriate model for the task itself; if it cannot,
@@ -502,11 +500,11 @@ against real gate feedback over time.
 run that stage's lens in `references/stage-lenses.md` on top: re-run first, then judge. Scripts:
 - scoping: `python3 scripts/scope_metrics.py <docx>` (sizing, L1 share, §1 opening, slop, unsourced numbers, primary
   persona, storyline) after the stage's own `check_docx.py`;
-- wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` and a re-render of the spec with `"$W/render.py"`
-  (`W` = the request's `scripts.wireframes`, or `find ~/.claude/plugins -path '*wireframes/scripts/render.py'`);
-- design-system: `scripts/render_check.js` in a browser, light and dark, at 1280×800, 1280×680 and 375×812; the skill's
-  `"$D/scripts/check_ds.py"` (with the manifest and the shared register) and `"$D/scripts/register.py" compare`
-  (`D` = the request's `scripts.design_system`; commands in the design-system skill);
+- wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` (`W` = the request's `scripts.wireframes`), and
+  the skill's own `wf_tool.py check` and `export`, taken from the wireframes SKILL.md (Appendix C), never the copy in
+  the workspace (stage lenses → wireframes, "Get the tools");
+- design-system: the skill's own `ds_tool.py fidelity` and `audit`, taken from the design-system SKILL.md (Appendix C)
+  (`D` = the request's `scripts.design_system`, the skill's folder; stage lenses → design-system);
 - build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`;
 - every stage: the slop phrases in `scripts/slop-phrases.json`.
 - every review after a change request: the clarity `reading` (or the person's answers) is the upstream for the
@@ -531,9 +529,9 @@ finding or a decision** (scored under R3).
   audience's vocabulary; high-level, not configuration-level.
 - **wireframes:** the `wireframes` lens in `references/stage-lenses.md` is the whole checklist (none of the design list
   below applies: greys, one font and no brand are the point).
-- **design:** the design-system skill's finished-piece list (v12.6, `references/reference.md`) is the checklist; tokens only; every
-  state; AI output shown as a reason plus one action; small-text and icon contrast; whose design system is
-  used, and approval if it overrides a stated ask; reference research present.
+- **design:** the `design-system` lens in `references/stage-lenses.md` is the checklist: fidelity to the wireframe,
+  every component finished for its kind, surfaces and edges, gradients only where the direction put them, tokens only,
+  every state, both themes, the logo section, and the composition contract.
 - **build (v1.0, Stage 4b):** the app itself, from `app.preview_url`, after UnifyApps Headless's `test-report.md`. Check: the walk
   is clean (no layout defects, raw values, unexplained disabled buttons, side stripes, console errors, failed
   requests); every storyline step shows the right record in the right state; counts reconcile (badges and KPI tiles

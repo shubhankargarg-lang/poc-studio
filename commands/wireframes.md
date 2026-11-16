@@ -1,5 +1,5 @@
 ---
-description: Make low-fidelity wireframes (PNG frames, PDF and a component manifest) from a BRD, on its own (no POC needed)
+description: Make clickable low-fidelity wireframes (one HTML file, with its PDF, PNG frames and component manifest) from a BRD, on its own (no POC needed)
 argument-hint: <Client> | <Use case> [| <POC ID>]
 ---
 

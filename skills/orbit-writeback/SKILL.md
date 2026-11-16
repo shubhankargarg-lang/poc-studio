@@ -382,7 +382,10 @@ drive, unchanged:
 
 **M1w · G2 (Wireframes)** is written exactly like the BRD column below, with these values: upload
 `<slug>-wireframes.pdf` with `upload_public_file`; Document `type wireframes`, name "Wireframes", stage `3_scope`,
-gate_pack `g2`, status `in_review`, `file_kind pdf`, `summary` = page and component counts and which pages are maps;
+gate_pack `g2`, status `in_review`, `file_kind pdf`, `summary` = screen, frame and component counts and which pages
+are maps. Also upload `<slug>-wireframes.html` (the clickable deliverable) with `upload_public_file` (`text/html`) as a
+second Document: `type wireframes`, name "Wireframes (clickable HTML)", the same stage, gate_pack and status,
+`file_kind html`;
 Activity `document_saved` and `gate_posted` g2; POC: **stage stays `3_scope`**, current_gate g2, g2_status waiting,
 status waiting, g2_summary (BRD approved + wireframes), gate_summary, `slack_notification true`.
 
@@ -407,12 +410,12 @@ Record every new `document_id` in the run state.
 - **M2a (scoping approved, design system not done yet):** Document (update) the BRD → `approved`. Activity
   `gate_decided`, gate g2, decision approve, actor_type person, message "BRD approved". POC: current_gate none,
   status running, last_activity "BRD approved; wireframes in progress" ("BRD approved; design system in progress" when the
-  person asked to skip the wireframes: then there is no M1w or M2w). **No** `g2_owner_approved`, no
+  run was resumed from before Wireframes existed: then there is no M1w or M2w). **No** `g2_owner_approved`, no
   `g2_status approved`, no stage change, no slack_notification. `g2_status` deliberately stays `waiting` until the
   design system is posted (M1b) and approved (M2); `last_activity` tells readers the BRD is approved. (G2 is approved
   only with the design system.)
-- **M2w (wireframes approved, design system not done yet):** the same as M2a, for the wireframes document: Document
-  (update) → `approved`; Activity `gate_decided`, gate g2, decision approve, actor_type person, message "Wireframes
+- **M2w (wireframes approved, design system not done yet):** the same as M2a, for the wireframes documents (the PDF
+  and the clickable HTML): each Document (update) → `approved`; Activity `gate_decided`, gate g2, decision approve, actor_type person, message "Wireframes
   approved"; POC: current_gate none, status running, last_activity "Wireframes approved; design system in progress".
   No `g2_owner_approved`, no `g2_status approved`, no stage change, no slack_notification.
 - **Confirm every approval (M2, M2a and M2w) before the run moves on.** Right after the write, read the POC row back with
