@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.49.1
+- **Scoping: no hard cap on workflows.** 1.49.0 added "never more than 10 workflows per POC"; a complex solution can need many more (dozens), so the cap could drop workflows that L1 features need. The 3–8 figure is back to a guide: merge where it is safe, never drop an L1 workflow, and record a Decision in 20.3 when the build needs more.
+
 ## 1.49.0
 **Loop optimisation: the low-risk changes** (from the loop-optimisation prompts, ranked low risk; the build brief, parallel build and stages-as-agents changes are not in this release). Nothing in what a stage produces changes; each stage does less repeated reading, waiting and re-checking.
 
@@ -7,7 +10,7 @@
 - **Waiting flag.** New `.poc-studio/waiting` (beside the autopilot file): `autopilot-stop.sh` lets the turn end while it exists. Skills write it while helper agents or background jobs run, end the turn and wait for Claude Code's finished notice instead of polling; the orchestrator and asset-run remove a leftover one at start.
 - **Retry once.** A failing tool or command is fixed and retried once, then recorded and the stage carries on (AI PM, research, RG, scoping, wireframes, design system, collaterals: only the failing scene or act is recaptured).
 - **Toolkits and checker code as files.** The collateral toolkit (17 files) moves from the SKILL.md appendix to `poc-collateral-studio/assets/kit/` and is copied with one `cp -R` (the SKILL.md drops from 2,214 to about 630 lines). Scoping's `check_docx.py` is now `scoping-l1-first/scripts/check_docx.py`, copied into `_working/`; its calibration examples and change notes move to `references/calibration-and-changes.md`.
-- **Leaner BRD.** Scoping §5: L1 rows in full, L2 rows one line each; §10.3 table is ID / sub-feature / why it can wait / depends on; at most 10 workflows per POC; fix in one pass and render once.
+- **Leaner BRD.** Scoping §5: L1 rows in full, L2 rows one line each; §10.3 table is ID / sub-feature / why it can wait / depends on; fix in one pass and render once.
 - **Collaterals: fewer recordings and rounds.** Inputs read once into `_working/notes.md`; sign-in order auth/<persona>.json → the Setup Orbit session → `kit/auth.mjs`; one batch of app fixes and one copilot refresh, then the data is frozen; at most 2 recordings per act and 2 video builds per round, at most 2 review versions; the "no sync flash" drift is accepted when the cues land; review starts from the contact sheet; a short check before hand-over.
 - **Research caps and reuse.** Quick 10 searches / 5 pages, Standard 20 / 10, Deep 30 / 15, at most 5 vendors; a caller's budget is capped at the depth's maximum. Callers reuse `<workspace>/research/` first and send all questions in one round (scoping: one round of at most 3); RG's fallback is limited to 10 searches and 5 pages.
 - **Notes once.** Each stage reads its inputs once and writes `_working/notes.md` in one write (RG, scoping, wireframes, design system, platform-master `04-build/_working/notes.md` for jobs 1b and 2, collaterals); platform-master's question review and fallback read only the reference sections they need (never all of `api-spec.md`).
