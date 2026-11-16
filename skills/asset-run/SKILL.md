@@ -18,9 +18,7 @@ The full pipeline (`/poc-studio:start`, `poc-orchestrator`) is not involved and 
 | `app` | `/poc-studio:app` | `ua:setup`, `platform-master`, `ua:plan` (Zen) — Stage 4 | `build` (Stage 4b) | `app` | `04-build/` |
 | `collaterals` | `/poc-studio:collaterals` | `poc-collateral-studio` | `collaterals` | `demo_script`, `deck`, `video` (the ones chosen) | `05-collaterals/` |
 
-Load every skill with the Skill tool by its plugin name (`poc-studio:<skill>`), **once per session**: a skill already
-loaded in this session is followed from what is already loaded (orbit-writeback included), and a later job of it starts
-with `session_log.py mark-start <skill>` instead of loading it again. `R` below is the AI PM's scripts folder:
+Load every skill with the Skill tool by its plugin name (`poc-studio:<skill>`). `R` below is the AI PM's scripts folder:
 `R=$(dirname "$(find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' | head -1)")`. On a Mac, every Bash command
 that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts with `source ~/.local/poc-collateral/env.sh && `
 once that file exists.

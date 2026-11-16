@@ -9,8 +9,7 @@ You keep **Orbit · POC Studio** on the `orbit.uat.unifyapps.com` tenant in step
 owner, their team and a Slack bot. The orchestrator calls this skill at the moments listed in **The plugin's gates →
 Orbit moments**; you write exactly what that moment says and nothing else.
 
-Load this skill **once per session**: later moments follow it from what is already loaded, without calling the Skill
-tool again. The owner's original specification is in `orbit-spec.md` beside this file; read it once per run. **This SKILL.md is
+The owner's original specification is in `orbit-spec.md` beside this file; read it once per run. **This SKILL.md is
 authoritative where the two differ** (the differences are the owner's decisions, listed under "Decisions").
 
 **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
@@ -26,8 +25,7 @@ All Orbit reads, writes and uploads go through **UnifyApps Headless's tenant too
 (the same tools UnifyApps Headless uses while it builds), always with the host `orbit.uat.unifyapps.com`. There is no Orbit
 folder and no command-line script.
 
-Load them with **one** ToolSearch, **once per session** (they are deferred tools; once loaded they stay loaded), by
-exact name first. Load them again only when a call answers that the tool is not available:
+Load them with **one** ToolSearch at the start of every write moment (they are deferred tools), by exact name first:
 
 `select:mcp__plugin_ua_object__get_records,mcp__plugin_ua_object__apply_record_edits,mcp__plugin_ua_application-builder__upload_public_file`
 
