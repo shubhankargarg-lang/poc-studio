@@ -167,7 +167,7 @@ call per event, never reopened to append line by line.
    `files/samples/` are never uploaded); the person's Slack, Gmail,
    Drive and Calendar are read-only, and the only writes outside the folder are this one-off's Orbit row(s) and, for a
    video, the file copied into the `POC Studio Video Library` shared drive.
-5. **AI PM setup** (once per machine; seconds after that): `python3 "$R/lessons.py" init`, and `pip install pyyaml`
+5. **AI PM setup** (seconds; every run): `python3 "$R/lessons.py" init` (refreshes the plugin's seed lessons; never touches the person's own), and `pip install pyyaml`
    into the shared venv if `python3 -c "import yaml"` fails. `owner_profile` for review requests = `created_by_email`
    in lower case (leave it out if unknown).
 

@@ -3,7 +3,7 @@
 
 # The wireframe spec — format and block library
 
-One JSON file per run: `<workspace>/02b-wireframes/<slug>.wireframe.json`. `scripts/render.py` draws it. Every field
+One JSON file per run: `<workspace>/02b-wireframes/<slug>.wireframe.json`. The old renderer (no longer shipped) drew it. Every field
 below is read by the renderer or written to the manifest; nothing else is.
 
 ```json
