@@ -21,6 +21,9 @@ try:  # this chat's log file, for the orchestrator's own rows (session_log.py sl
     if h.get("transcript_path"):
         os.makedirs(os.path.join(os.environ["OBS_DIR"], "session-logs"), exist_ok=True)
         open(os.path.join(os.environ["OBS_DIR"], "session-logs", "transcript"), "w").write(h["transcript_path"])
+        lst = os.path.join(os.environ["OBS_DIR"], "session-logs", "transcripts.txt")   # every chat of this run (gate feedback)
+        known = open(lst).read().split("\n") if os.path.exists(lst) else []
+        if h["transcript_path"] not in known: open(lst, "a").write(h["transcript_path"] + "\n")
 except Exception: pass
 LOGGED = {"requirement-gathering", "connector-discovery", "scoping-l1-first", "wireframes", "design-system", "platform-master",
           "poc-collateral-studio", "research"}
