@@ -1,5 +1,5 @@
 ---
-description: Make clickable low-fidelity wireframes (one HTML file, with its PDF, PNG frames and component manifest) from a BRD, on its own (no POC needed)
+description: Make clickable low-fidelity wireframes (one HTML file) from a BRD, on its own (no POC needed)
 argument-hint: <Client> | <Use case> [| <POC ID>]
 ---
 
@@ -9,10 +9,10 @@ The arguments are `<Client> | <Use case> [| <POC ID>]`. The POC ID is optional; 
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.45.0**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.46.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.45.0"
+LOADED="1.46.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]

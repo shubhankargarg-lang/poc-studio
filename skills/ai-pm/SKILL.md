@@ -61,7 +61,7 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
 | `requirement-gathering` | requirements | the client's own files and messages | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx` |
 | `research` | research | the question the calling stage sent | the research answer |
 | `scoping` | plan (Part A) + spec completeness (Part B) | the approved Requirement Gathering Document + `01c-integration/integration-spec.json` | `02-scoping/scoping-document.docx` |
-| `wireframes` | wireframes | the approved scoping document | `02b-wireframes/<slug>-wireframes.html` (the deliverable), its PDF, `png/`, `_qa/`, `wireframe-manifest.json` |
+| `wireframes` | wireframes | the approved scoping document | `02b-wireframes/<slug>-wireframes.html` (the only output; take your own screenshots with `wf_tool.py review`) |
 | `design-system` | design | the approved scoping document + the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`) | `03-design-system/<slug>-design-system.html`, its `_working/qa/` screenshots and `consistency.json` |
 | `build` | build (v1.0: review at Stage 4b, after UnifyApps Headless's own parallel testing, before publish) + resolve for UnifyApps Headless's questions (only `/ua:setup`'s and those asked after the person approves the Zen plan; Zen planning and `CONFIRM_REQUIRED` are the person's) | the approved scoping document + design system + the approved wireframe frames | the app at `app.preview_url`, walked with `scripts/build_walk.mjs`; `04-build/test-report.md` |
 | `collaterals` | deliverable | the approved scoping document + the built app | `05-collaterals/**/out/*` |
@@ -84,12 +84,12 @@ never return `INVALID_REQUEST` for their absence. Use general context about the 
   where "high-level, not configuration-level" applies. Review **Part B** (sections 10–23 and the Appendix) as a build
   spec: it is *meant* to be configuration-level, so detail there is never a finding; check only that it is complete,
   consistent with Part A, and traces to the L1 features.
-- **Wireframes (HTML contract):** one editable, clickable HTML file is the deliverable; the PDF, `png/` frames and
-  the manifest are generated from it. Low fidelity is the point: greys, one font and no brand are correct, never a
+- **Wireframes (HTML contract):** one editable, clickable HTML file is the only output; the internal manifest is
+  generated from it. Low fidelity is the point: greys, one font and no brand are correct, never a
   finding. Every component carries real content (no slots); every control works; each screen has a brief, a pattern
   and a reading order; the signature is drawn as itself; documents are drawn as documents; frames exist only for real
   layout, persona, structural or workflow changes; a change from the scoping document is recorded in `brd_overrides`
-  with a reason (never a finding). Check it with the skill's own `wf_tool.py check` and `export`, `coverage.py`, and
+  with a reason (never a finding). Check it with the skill's own `wf_tool.py check` and `review`, `coverage.py`, and
   the `wireframes` lens.
 - **Design system (standalone catalogue):** takes exactly two inputs, the BRD and the wireframe HTML, and styles and
   finishes what the wireframe contains: one catalogue entry per wireframe component (no low-fidelity copy beside it;
@@ -500,11 +500,11 @@ against real gate feedback over time.
 run that stage's lens in `references/stage-lenses.md` on top: re-run first, then judge. Scripts:
 - scoping: `python3 scripts/scope_metrics.py <docx>` (sizing, L1 share, §1 opening, slop, unsourced numbers, primary
   persona, storyline) after the stage's own `check_docx.py`;
-- wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` (`W` = the request's `scripts.wireframes`), and
-  the skill's own `wf_tool.py check` and `export`, taken from the wireframes SKILL.md (Appendix C), never the copy in
-  the workspace (stage lenses → wireframes, "Get the tools");
-- design-system: the skill's own `ds_tool.py fidelity` and `audit`, taken from the design-system SKILL.md (Appendix C)
-  (`D` = the request's `scripts.design_system`, the skill's folder; stage lenses → design-system);
+- wireframes: `python3 "$W/coverage.py" <scoping docx> <manifest>` and the skill's own `wf_tool.py check` and
+  `review` (`W` = the request's `scripts.wireframes`, the installed skill's `scripts/` folder; never a copy in the
+  workspace; stage lenses → wireframes, "Get the tools");
+- design-system: the skill's own `scripts/ds_tool.py fidelity` and `audit` (`D` = the request's
+  `scripts.design_system`, the installed skill's folder; stage lenses → design-system);
 - build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`;
 - every stage: the slop phrases in `scripts/slop-phrases.json`.
 - every review after a change request: the clarity `reading` (or the person's answers) is the upstream for the

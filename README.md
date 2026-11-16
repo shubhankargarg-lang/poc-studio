@@ -187,13 +187,13 @@ is Claude Code's own bug-report command, so use the `poc-studio:` prefix.)
 | 1 | Requirement Gathering | `requirement-gathering` | `01-requirement-gathering/Requirement Gathering - <Client> - <Use case>.docx`, `files/` |
 | 1c | Connector discovery (every POC): the client's own system through its UnifyApps connection, read-only — objects, fields, connector operations, the automations to build — only when the requirements use a client system; the AI models the build will use, each proved by one real call, always. Also model recovery at any stage when a model runs out of credits or quota (you choose the replacement) | `connector-discovery` | `01c-integration/Integration Spec - <Client> - <Use case>.md`, `integration-spec.json` |
 | 2 | Scoping (build plan) | `scoping-l1-first` | `02-scoping/scoping-document.docx` |
-| 2b | Wireframes (Plan phase, between the BRD and the design system): how each page works — a brief and a pattern per page, the app's signature drawn as itself, the demo journey ending on a payoff frame, three navigation options with one chosen, 2–3 views per main list, any change from the BRD recorded with a reason; low fidelity, map pages per the map reference; the manifest is the design system's starting component list | `wireframes` | `02b-wireframes/<slug>-wireframes.pdf`, `png/`, `wireframe-manifest.json` |
-| 3 | Design System (v12.6): a creative direction, pictures drawn as HTML/CSS mockups (the build seeds the real images), three showcase screens, flow panels per capability, the wireframes' components plus any the journey needs (marked Added), the composition contract for the build, a judgement pass on seven scores | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
+| 2b | Wireframes (Plan phase, between the BRD and the design system): one clickable, low-fidelity HTML file — every screen, state and interaction with real content and working controls, a brief, pattern and reading order per screen, the app's signature drawn as itself, the demo journey ending on a payoff, three navigation options with one chosen, any change from the BRD recorded with a reason, the team's AI-slop rules checked; map pages per the map reference. It is the design system's and the build's complete component list | `wireframes` | `02b-wireframes/<slug>-wireframes.html` (the only output) |
+| 3 | Design System: takes the BRD and the wireframe HTML and styles exactly what the wireframe contains — the client's brand (colour, official logo or a labelled placeholder, typeface), a catalogue entry per wireframe component traced back to it, anatomy corrections for the build, the three key screens in light and dark, the composition contract for the build, checked by its own fidelity and visual audit | `design-system` | `03-design-system/<client-slug>-<usecase-slug>-design-system.html` |
 | 4 | Build in UnifyApps Headless on Orbit: planned in Zen mode with you answering its questions; `platform-master` adds best-practice pointers for the use case and reviews and corrects the plan before you approve it; built and tested by parallel builder agents, fixed, then walked in a browser by the AI PM (Stage 4b) before it is published. An asset UnifyApps Headless cannot build is built by `platform-master` over the API in the browser (you sign in) | `/ua:setup`, `platform-master`, `/ua:plan` (Zen) | the app on https://orbit.uat.unifyapps.com/, `04-build/build-summary.md`, `zen-decisions.md`, `test-report.md` |
 | 5 | Collaterals (UnifyApps template; the deck opens with the UnifyApps cover, carries a technical blueprint — architecture plus every automation and agent built — and closes with the Thank You slide) | `poc-collateral-studio` | `05-collaterals/<slug>-collateral/out/`: demo script, demo video, deck (PPT) |
 
-Every stage runs. If you ask, two things can be skipped: the wireframes (before the design system starts; it then
-works from the BRD alone) and one or two of the three collaterals. Nothing else can be skipped, and the AI PM never
+Every stage runs. If you ask, one or two of the three collaterals can be skipped (the wireframes cannot: the design
+system styles them). Nothing else can be skipped, and the AI PM never
 skips anything on its own.
 
 After each stage: the **AI PM** (the `ai-pm` agent, an independent subagent) re-runs the stage's own checks, reviews
@@ -218,7 +218,7 @@ A change you ask for once the app exists (at the verify gate, during collaterals
 | Tier | Examples | What happens |
 |---|---|---|
 | Small | copy, a broken button, seed data, agent or automation logic, a column on an existing table | fixed directly in the app (UnifyApps Headless `ua-change`) |
-| Big | a new page, drawer or modal; a page's regions rearranged; a new component; a storyline step | only the affected wireframes are updated and you see a before/after sheet (`02b-wireframes/changes/CR-<n>/change-sheet.pdf`); after you approve, only those pages are changed in the app |
+| Big | a new page, drawer or modal; a page's regions rearranged; a new component; a storyline step | only the affected wireframes are updated and you see a before/after sheet (`02b-wireframes/changes/CR-<n>/change-sheet.html`, each changed screen before and after, clickable); after you approve, only those pages are changed in the app |
 | Very big | a new persona, a new navigation, about half the pages, a data model change | wireframes first as above; after you approve, a re-plan limited to the affected pages on the same solution |
 
 You always approve the updated wireframes yourself, in Zen and in Sonic. The design system is not updated for a change:
@@ -241,11 +241,11 @@ skills/requirement-gathering/
 skills/research/                   (+ references/calling-research.md, source-guide.md)
 skills/orbit-writeback/            Orbit · POC Studio write-back at each gate (+ orbit-spec.md)
 skills/scoping-l1-first/
-skills/wireframes/                 low-fidelity wireframes from the BRD: render.py (PNG + PDF + manifest, no browser),
-                                   coverage.py (against the BRD), diff.py (before/after change sheet), references/: spec format,
-                                   example, map component, page patterns (v4.11; older specs render with warnings)
-skills/design-system/              v12.6 (creative direction, three showcase screens, component kit + composition contract,
-                                   scripts check_ds / scan / register / base_css; UnifyApps stand-in logo)
+skills/wireframes/                 clickable low-fidelity wireframes (one HTML) from the BRD: scripts/wf_tool.py (embed, check
+                                   incl. the slop rules, manifest, review screenshots), coverage.py, diff.py (HTML change sheet);
+                                   assets/wf-base.css, wf-runtime.js; references/: page patterns, map component, legacy spec format
+skills/design-system/              styles the wireframe HTML with the client's brand: scripts/ds_tool.py (inventory, fidelity,
+                                   audit, embed), assets/ds-runtime.js
 skills/asset-run/                  one asset end to end: prerequisites, stage, AI PM, one-off Orbit row, approval
 skills/platform-master/            UnifyApps platform expert for Stage 4: pointers, Zen question review, Zen plan review, browser fallback
                                    (+ references/: use-case pointers, plan-review checklist, API, connectors, graph, governance)
@@ -254,5 +254,4 @@ skills/ai-pm/                      the AI PM: reviews every stage, re-runs its c
                                     render check, lessons, Orbit sign-in)
 lessons/lessons.md                 the AI PM's seed lessons (copied once per machine to ~/.local/poc-studio/lessons)
 skills/poc-collateral-studio/      (+ assets/UnifyApps_template.pptx)
-assets/unifyapps-logo.png          fallback logo when a client logo cannot be found
 ```

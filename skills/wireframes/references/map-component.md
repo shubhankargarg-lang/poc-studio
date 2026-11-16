@@ -85,10 +85,11 @@ client's region to the seed data first).
 
 ## What each stage does with this
 
-- **Wireframes:** draw the page with `"layout": "map"` and a `map` block with its `mode`, legend words,
-  floating cards and panel, and write the map's **data contract** (object, lat/lng fields, what colours a site,
-  card fields, route ends, radius) and this behaviour list into `wireframe-manifest.json`.
-- **Design system:** one component page for `network-map` with every mode the manifest lists, the ring, dot,
+- **Wireframes:** draw the screen with `data-pattern="map"` and a `map` component (`data-component-type="map"`)
+  with its modes, legend words, floating cards and panel, and write the map's **data contract** (object, lat/lng
+  fields, what colours a site, card fields, route ends, radius) and this behaviour list into its `wf-meta` registry
+  entry (`modes`, `data_contract`, `behaviour`), which the internal manifest carries.
+- **Design system:** one catalogue entry for the map component with every mode the wireframe lists, the ring, dot,
   label, card, route and radius anatomy, the legend pill and the floating controls, in both themes, plus the
   tile filter for light and dark. Nothing beyond the modes in the manifest.
 - **Build (platform-master pointer):** implement this component once and reuse it on every map page; follow

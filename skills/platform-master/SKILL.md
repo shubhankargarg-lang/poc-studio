@@ -49,7 +49,8 @@ change them.
    - `Pointers:` the pointers from "Pointers for every use case" and from this type's section that apply to this
      scoping document — at most 15, each one line, phrased as what the build should do. Leave out any pointer whose
      subject the scoping document does not contain (no map pointer without a map).
-   - `Map:` only when the approved wireframe manifest (`02b-wireframes/wireframe-manifest.json`) has a map component:
+   - `Map:` only when the approved wireframes have a map screen (`data-pattern="map"` in `02b-wireframes/<slug>-wireframes.html`, or a
+     `map` component in its internal `02b-wireframes/_working/wireframe-manifest.json`):
      "Build every map page with one shared map component as `wireframes/references/map-component.md` describes
      (plain Leaflet, OpenStreetMap tiles tinted by a CSS filter, full-bleed with floating panels, whole-step fits padded
      for the panels, own screen-space clustering into health rings, collision-free labels, hover-to-card), in the
@@ -94,10 +95,10 @@ before its one question (start / change something / keep for later) is put to th
    - an L1 item of Part B has no task, or a task builds something Part B does not ask for;
    - a pointer that applies is not reflected in the plan (the `Map:` pointer included: one shared map component, not
      one map per page, and not a map inside a card);
-   - a page's layout differs from its approved wireframe frame (`02b-wireframes/png/`), or a region holds a component
-     the manifest does not give it; the plan builds a navigation shell
-     the manifest did not choose (`NAV-options.png` holds two rejected ones), or builds a hero list's views
-     (`VIEWS.png`, `alt_view_of` frames) as separate pages instead of a switch on one page;
+   - a page's layout differs from its screen in the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`:
+     its regions and their order), or a region holds a component that screen does not give it; the plan builds a
+     navigation shell `wf-meta.nav_options` did not choose (the `#NAV-options` sheet shows the rejected ones), or
+     builds a hero list's views as separate pages instead of a switch on one page;
    - **a task that builds the app, a page or the app publish has kind `app`, `page-layout`, `page-bind` or `publish`, or
      owner `app-agent`** (that is the no-code config builder): the adjustment is "rebuild as text-to-code: kind
      `code-app` / `code-publish`, owner `code-app-agent`". This is checked first, on every round, and is never moved

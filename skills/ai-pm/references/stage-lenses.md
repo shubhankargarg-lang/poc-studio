@@ -85,21 +85,18 @@ a cut that a human decision approved.
 
 ## wireframes (kind: design, low fidelity — wireframes skill, HTML contract)
 
-**Get the tools** from the skill itself, never the copy in the workspace (the producer may have changed it):
+**Get the tools** from the installed skill (`scripts.wireframes` in the request, `$W`), never a copy in the workspace
+(the producer may have changed it); write your own output to a temporary folder:
 ```bash
-WS="$(find ~/.claude/plugins -path '*skills/wireframes/SKILL.md' 2>/dev/null | sort -V | tail -1)"; T="$(mktemp -d)"
-python3 - "$WS" "$T/wf_tool.py" <<'PY'
-import re, sys; s = open(sys.argv[1]).read(); a = s.index("## Appendix C")
-open(sys.argv[2], "w").write(re.search(r"```python\n(.*?)\n```", s[a:], re.S).group(1))
-PY
+W="<scripts.wireframes>"; [ -f "$W/wf_tool.py" ] || W="$(dirname "$(find ~/.claude/plugins -path '*wireframes/scripts/wf_tool.py' 2>/dev/null | sort -V | tail -1)")"; T="$(mktemp -d)"
 ```
 
 **Re-run:**
-- `python3 -I "$T/wf_tool.py" check <workspace>/02b-wireframes/<slug>-wireframes.html`: every `error:` is a finding;
+- `python3 -I "$W/wf_tool.py" check <workspace>/02b-wireframes/<slug>-wireframes.html`: every `error:` is a finding;
   every `check:` line must be fixed or defended in the hand-over (an unexplained one is a finding).
-- `python3 -I "$T/wf_tool.py" export <html> "$T/out"` (needs a browser): look at `"$T/out/_qa/"` contact sheets and the
-  reading-order overlays yourself. Script errors, reading-order checks and overlapping text it prints are findings.
-- `python3 "$W/coverage.py" <scoping docx> <manifest>`: every §11 page has a screen and every CMP ID is on an instance
+- `python3 -I "$W/wf_tool.py" review <html> "$T/qa"` (needs a browser; the HTML is the only output, so these
+  screenshots are yours): look at the `"$T/qa/"` contact sheets and the reading-order overlays yourself. Script errors, reading-order checks and overlapping text it prints are findings.
+- `python3 -I "$W/wf_tool.py" manifest <html> "$T"`, then `python3 "$W/coverage.py" <scoping docx> "$T/wireframe-manifest.json"`: every §11 page has a screen and every CMP ID is on an instance
   or named in `brd_overrides` with a reason. Each gap is a finding.
 - Open the HTML in a browser and click through the journey (`wf-meta.journey`) from start to payoff.
 
@@ -205,8 +202,9 @@ manifest in `02b-wireframes/`, scoping §11 and `04-build/build-summary.md`. Go 
 "Get the tools"); `coverage.py`. A page `diff.py` reports as "metadata only" did not change on screen.
 
 **Judge:**
-- Every page in the triage's `affected_pages` and `new_pages` appears in the change sheet, and **no other page does**:
-  an unrequested change to another frame is blocking (fix line: restore it from `_previous/v<N>`).
+- Every page in the triage's `affected_pages` and `new_pages` appears in the change sheet (`change-sheet.html`: each
+  changed screen before | after, clickable), and **no other page does**: an unrequested change to another screen is
+  blocking (fix line: restore it from `_previous/v<N>`).
 - The after frame does what the person asked, in their words, and still answers the page's question (the
   `wireframes` lens applies to each changed frame).
 - New components in the manifest delta are full components with real content, with a registry `note` saying they are
@@ -222,14 +220,14 @@ and tokens); that unchanged frames were not re-reviewed; `check:` or `warning:` 
 
 ## design-system (kind: design — design-system skill, standalone catalogue)
 
-**Get the tools** from the skill itself, never the copy in `03-design-system/_working/` (the producer may have changed
-it): the same command as the wireframes lens, with `'*skills/design-system/SKILL.md'` and `ds_tool.py`.
+**Get the tools** from the installed skill (`scripts.design_system` in the request, `$D`), never a copy in the
+workspace: `D="<scripts.design_system>"; [ -f "$D/scripts/ds_tool.py" ] || D="$(dirname "$(dirname "$(find ~/.claude/plugins -path '*design-system/scripts/ds_tool.py' 2>/dev/null | sort -V | tail -1)")")"; T="$(mktemp -d)"`.
 
 **Re-run** (start each command with `source ~/.local/poc-collateral/env.sh 2>/dev/null;`):
-- `python3 -I "$T/ds_tool.py" fidelity <wireframes.html> <design-system.html>`: every `error:` is a finding (content,
+- `python3 -I "$D/scripts/ds_tool.py" fidelity <wireframes.html> <design-system.html>`: every `error:` is a finding (content,
   structure, traceability, anatomy corrections listed in `#corrections`, data-bound visuals, the logo section, the
   twelve sections, the JSON blocks).
-- `python3 -I "$T/ds_tool.py" audit <design-system.html> "$T/qa"`: every `error:` is a finding (contrast in both
+- `python3 -I "$D/scripts/ds_tool.py" audit <design-system.html> "$T/qa"`: every `error:` is a finding (contrast in both
   themes, blank, clipped and cut specimens, component anatomy, surfaces that blend in, field and button edges,
   touching controls, select arrows, the surface ladder, rendered consistency). `check:` lines the QA report does not
   explain are findings.
@@ -277,9 +275,9 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 - **Fidelity (R8).** Each page's pattern matches its `#build-plan` entry; only active variants; tokens only; each
   component built with the anatomy its catalogue entry shows (`#corrections` lists where that differs from the
   wireframe's drawing); agent in the drawer with **one** way in (the design system's `app.agent_entry`). Compare side
-  by side with the three styled screens and the approved wireframe frames (`02b-wireframes/png/`, or the HTML): same regions in the same order, the chosen
-  navigation shell only (the other two on `NAV-options.png` are rejected), and each hero list's views as a switch on
-  the same page (an `alt_view_of` frame is a view, not a page). On a map page, check the map-component behaviour: rings split on zoom, labels never
+  by side with the three styled screens and the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`, each screen by its `data-screen-id`): same
+  regions in the same order, the chosen navigation shell only (the others, on the `#NAV-options` sheet, are
+  rejected), and each hero list's views as a switch on the same page (a view frame is a view, not a page). On a map page, check the map-component behaviour: rings split on zoom, labels never
   overlap, the card opens on hover and stays on click, sites stay clear of open panels, the legend's words match.
 - **Copy lens.** Read `copy.json` against the glossary (scoping Appendix B) and slop C1–C7: one name per thing,
   outcome-named buttons, exact refusal wording, no jargon, sentence case.
