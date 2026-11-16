@@ -327,6 +327,8 @@ scope: full | delta                              # delta in every later review u
 scope_reason: <one line>                         # why full, or "changes are local"
 read: [ <sections read in a delta review> ]      # the changed sections, the findings' places and what depends on them
 weakest_part: <one line: the author's own weakest part, or yours if they gave none>
+# build only, when the walk could not run after one re-run (the calling step files it; never file it yourself)
+tool_failure: null | { tool: build_walk.mjs, exit_code, error: <one line>, report: <path or none>, routes: <path>, preview_url, app_root, tries: 2 }
 ```
 
 **Fix lines (v1.0).** Every `fix` is one change a producer can apply without asking a question:
@@ -505,7 +507,16 @@ run that stage's lens in `references/stage-lenses.md` on top: re-run first, then
   workspace; stage lenses → wireframes, "Get the tools");
 - design-system: the skill's own `scripts/ds_tool.py fidelity` and `audit` (`D` = the request's
   `scripts.design_system`, the installed skill's folder; stage lenses → design-system);
-- build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`;
+- build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`
+  (add `--personas 04-build/personas.json` when that file exists; `--settle` defaults to 30000 ms, enough for cold UAT
+  pages). Exit code 0 = walk complete, 1 = the script crashed, 2 = bad arguments or Playwright missing, 3 = report
+  INCOMPLETE. An **INCOMPLETE** report, the **Platform** section and **Walk problems** (`route_left_app` included)
+  are never findings or fix lines.
+  **When the walk fails** (exit 1, 2 or 3, or no `report.json`): fix the cause it names (sign in again, correct
+  `routes.json`, add the persona's switch, get the Orbit user access to the app) and run it **once** more. If it fails again, **stop**: return
+  `verdict: ASK_HUMAN` with a `tool_failure` block (below) and no findings or scores. Never judge the build from the
+  app's code, the build plan or UnifyApps Headless's report in place of the walk: a build is judged only from the
+  walk's screenshots and report, and a build that could not be walked is not reviewed (`references/stage-lenses.md` → build);
 - every stage: the slop phrases in `scripts/slop-phrases.json`.
 - every review after a change request: the clarity `reading` (or the person's answers) is the upstream for the
   change. Anything changed beyond it, or a producer or builder note saying it switched to a new input because it was

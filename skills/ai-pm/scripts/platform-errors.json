@@ -1,0 +1,39 @@
+{
+  "_note": "Signs that the UnifyApps platform or tenant, not the app, failed. build_walk.mjs retries a page that shows one (up to 2 times) and reports what remains as tenant_unavailable, never as an app defect. Text markers are matched case-insensitively against the page title, and against the page text only when the page has under 600 characters of text (a real app page can mention these words). Add markers from real runs.",
+  "statuses": [
+    429,
+    502,
+    503,
+    504
+  ],
+  "text": [
+    "temporarily unavailable",
+    "service unavailable",
+    "bad gateway",
+    "gateway timeout",
+    "gateway time-out",
+    "upstream connect error",
+    "no healthy upstream",
+    "upstream request timeout",
+    "server is overloaded",
+    "please try again later"
+  ],
+  "_note_no_access": "no_access_text: signs that the signed-in user (or persona) may not see the page. Matched case-insensitively against headings and alerts, and against the page text when the page has under 800 characters of text. Such a page is not reviewed (walk problem); on the start page the report is INCOMPLETE.",
+  "no_access_text": [
+    "do not have access",
+    "don't have access",
+    "dont have access",
+    "no access to",
+    "not authorized",
+    "not authorised",
+    "unauthorized",
+    "unauthorised",
+    "access denied",
+    "permission denied",
+    "you need permission",
+    "insufficient permissions",
+    "not linked to",
+    "request access",
+    "forbidden"
+  ]
+}

@@ -222,7 +222,9 @@ sections name** (M1–M6, M4a, M4b, Reconcile, the G4 upload): a one-off writes 
   - **No design system:** leave the build request's design-system item out, tell UnifyApps Headless to use its default
     look, and give the 4b review the BRD alone as upstream (no `#build-plan` fidelity check).
   - **4b inputs:** when the BRD has no page list (§ 11) or glossary (Appendix B), build `routes.json` from UnifyApps
-    Headless's own route list and leave `glossary.json` empty.
+    Headless's own route list (`name` and `route` only; add `persona`, `tabs` or `open` only where the BRD or UnifyApps
+    Headless names them, as in orchestrator § 4b step 1) and leave `glossary.json` empty. Routes are relative to the
+    preview link with no leading `/` (`"orders"`), as in orchestrator § 4b step 1.
   - Finish with the app's **preview link** (Preview link rule) in `04-build/one-off/build-summary.md` and the run
     entry's `file_link` — never in `state.json` → `app`. `CONFIRM_REQUIRED` stays the person's.
 - **collaterals** — orchestrator § 5 with: the preview link from § 1 as every persona's `url` and `public_url`; the
