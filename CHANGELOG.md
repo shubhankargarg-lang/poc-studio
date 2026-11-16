@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.49.3
+- **Skills and tools load fresh again at every use** (1.49.0's "load once per session" removed as high risk). On a long run Claude Code compacts the conversation and a skill loaded earlier is only summarised, so a later stage could follow a shortened version and skip steps; the session-log hook also marks a skill's start only on a Skill call. Back to 1.48.0: the orchestrator and asset-run call the Skill tool every time, orbit-writeback is loaded at each moment and loads its tenant tools with one ToolSearch at the start of every write moment, and requirement gathering loads connectors and reads the docx skill as before. Kept from 1.49.0: state and logs written once per event, tool checks reused for 24 hours (sign-in, connector and model checks always run).
+
 ## 1.49.2
 - **"Leaner BRD" (1.49.0 change 8) removed completely**, now treated as high risk: complex solutions can need dozens of workflows, and slimming the BRD can cut what the build needs. Scoping is back to 1.48.0 for the 338-feature quality bar, the catalogue sizing rule, full L2 rows in 10.3 (ID · Sub-feature · Description · Why it can wait · Depends on · Market coverage · Sources), the fix-and-rebuild loop and the page renders.
 - **No caps on what a solution contains.** 20.3's page, object and workflow figures are a guide, never a cap: nothing an L1 feature needs is dropped or merged away; a larger build is kept and explained with a Decision. Research no longer caps the number of vendors (scoping's heavy research is 6–10 vendors again) or the number of questions in scoping's research round. The search and page budgets per depth stay (they limit effort, not content).

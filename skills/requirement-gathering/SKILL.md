@@ -53,7 +53,7 @@ Search terms: the client's name and spelling variants (e.g. "Pentland", "Pentala
 | Notion (if connected) | Pages about the client |
 | Web | The client's website, only to confirm name, website and what the company does. **Through the `research` skill** (see "Getting outside facts" below) |
 
-Follow links and attachments found in what you read, and references in passing ("the deck they sent"). Load each connector once per run. In Slack, take files from the same search as messages (content types `messages,files`). Cover all the search terms in as few searches per source as the source allows; after those, stop a source after one search that brings nothing new (2b's title searches are separate).
+Follow links and attachments found in what you read, and references in passing ("the deck they sent"). In Slack, take files from the same search as messages (content types `messages,files`). Cover all the search terms in as few searches per source as the source allows; after those, stop a source after one search that brings nothing new (2b's title searches are separate).
 
 ### Getting outside facts
 First reuse a matching answer in `<workspace>/research/` when one exists. Otherwise, any web lookup this stage needs (the client's website, what the company does, its brands or units) goes through the `research` skill, called once with all the questions. Invoke it with the Skill tool (`research`, or the plugin-qualified name the session lists, e.g. `poc-studio:research`). Send:
@@ -156,7 +156,7 @@ person in Zen and Sonic; the AI PM never answers it.
 
 Before starting: make the final Slack retry for any client file still pending (2a, attempt 2), if it has not been made.
 
-Build it with the `docx` skill (read its SKILL.md once per run). Write the build script once in `_working/`; later fixes are small edits to only the flagged lines, then one rebuild. Look at the pages once at the end (the summary, the personas and the score table), and after a later fix only at the pages that changed. Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Directly under that, a short summary of at most five lines: the use case in two lines, the score and verdict, and the top 3 questions that need answering (the Blocking ones from Section 3). It is a summary, not a section. Then **exactly these four sections**, nothing else:
+Build it with the `docx` skill (read its SKILL.md first). Write the build script once in `_working/`; later fixes are small edits to only the flagged lines, then one rebuild. Look at the pages once at the end (the summary, the personas and the score table), and after a later fix only at the pages that changed. Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Directly under that, a short summary of at most five lines: the use case in two lines, the score and verdict, and the top 3 questions that need answering (the Blocking ones from Section 3). It is a summary, not a section. Then **exactly these four sections**, nothing else:
 
 ### 1. Client brief
 Plain prose and short tables, readable by someone who has never heard of the client.

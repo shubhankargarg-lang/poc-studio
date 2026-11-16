@@ -51,9 +51,7 @@ channels, email threads and Drive folders mix them. Every stage works on **this*
 ## The skills you call
 
 Call each with the Skill tool. Use the plugin-qualified name the session lists (e.g. `poc-studio:scoping-l1-first`);
-if a same-named skill exists from elsewhere, prefer the `poc-studio:` one. Load each skill once per session; load it
-again only if a context compaction dropped its text. A later job or re-run of a skill that has its own Observability
-row starts with `session_log.py mark-start <skill>` (orbit-writeback Moment 7), because no new Skill call marks it.
+if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
 
 | Stage | Skill |
 |---|---|
