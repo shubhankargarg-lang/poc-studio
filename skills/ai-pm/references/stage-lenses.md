@@ -263,16 +263,42 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 
 **Re-run:**
 - `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session json> --routes 04-build/routes.json --out reviews/build-walk-<n>`
-  walks every page in scoping §11 nav order at 1280×800, opens every tab, and writes per page: screenshot,
+  (plus `--personas 04-build/personas.json` when it exists) walks every page in scoping §11 nav order at 1280×800,
+  once per persona in `routes.json` (switching persona in the app's profile menu, or with the session or steps in
+  `personas.json`), opens every tab, nested tabs up to 3 deep, and the drawer or record a route's `open` names, and
+  writes per page: load time, screenshot,
   render-check counts, visual-acceptance checks (horizontal scroll, row height ≤ 64 px, rows visible ≥ 8, wrapped
   pills), raw values on screen, disabled buttons without a reason, side stripes, console errors, failed requests,
   and every visible string (`copy.json`).
 - Reconcile counts: every rail badge and KPI tile number equals its page's row count (from the walk's numbers).
+- **Read the report before judging:**
+  - **INCOMPLETE** or **STOPPED** at the top (signed out, a persona it could not switch to, routes that leave the
+    app, or half the pages not walked): fix the cause it names (sign in again, add the persona's `switch` steps or
+    session to `personas.json`, write routes relative to the preview link) and re-run **once**. If it is still
+    incomplete, stop and return the `tool_failure` block (ai-pm SKILL.md, build); do not approve or reject the build
+    on that report, and never review the app's code instead.
+  - **`route_left_app`** (under Walk problems): the route opened a page outside the app root (the report's first
+    line). The routes file is wrong, not the app: never a finding.
+  - **No access** (under Walk problems): the page said the signed-in user may not see it (HTTP 401/403, "you do not
+    have access"). On the start page the report is INCOMPLETE: the Orbit user is not linked to the app, so nothing
+    was reviewed; ask the person to link the user (or give a persona that has access) and re-run once. On a single
+    page: if scoping §11 gives that persona the page, check the screenshot and raise it as an R1/R7 finding;
+    otherwise the route's persona is wrong.
+  - **Platform (tenant_unavailable):** HTTP 429/502/503/504 and platform error pages that stayed after 2 retries.
+    These are the platform's, not the app's: never a finding, never a fix line. Re-run those pages later (a routes
+    file with only them); if they stay down, tell the person the tenant is unavailable.
+  - **Walk problems:** the walk itself could not check something (a check crashed; its screenshot is kept). Judge
+    that page from its screenshot; never pass a walk problem to UnifyApps Headless.
+  - **Slow (loaded after N s)** is a non-blocking note: the first visit to a cold UAT page is often slow. Only
+    **never finished loading** (still a skeleton or spinner after 30 s) is blocking.
+  - The render check leaves out screen-reader text, chart internals and angled labels; the rest are candidates to
+    confirm on the screenshot, as always.
 
 **Judge:**
 - **Storyline.** Walk scoping §20.2 step by step on the screenshots. Each step: right page, right record in the right
   state, the proof visible without extra clicks.
-- **Fidelity (R8).** Each page's pattern matches its `#build-plan` entry; only active variants; tokens only; each
+- **Fidelity (R8).** Each page's pattern matches its `#build-plan` entry (match routes ignoring a leading `/`:
+  `orders` in `routes.json` is `/orders` in `build-plan.pages`); only active variants; tokens only; each
   component built with the anatomy its catalogue entry shows (`#corrections` lists where that differs from the
   wireframe's drawing); agent in the drawer with **one** way in (the design system's `app.agent_entry`). Compare side
   by side with the three styled screens and the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`, each screen by its `data-screen-id`): same
@@ -288,7 +314,8 @@ first pass; this is the independent one. The app is opened from `app.preview_url
 **Fix route:** findings go to UnifyApps Headless in the same session as numbered fix lines, as direct changes through
 `ua-change` (no new plan), independent fixes in parallel; a platform asset it cannot build goes to platform-master's
 browser fallback. At most 3 rounds per item; then the walk re-runs on the pages the fixes touched, plus the first
-page of the storyline (a routes file with only those pages), never the whole app again.
+page of the storyline (a routes file with only those pages), never the whole app again. Platform failures and walk
+problems are never sent as fix lines.
 
 **Never:** design decisions already approved in the design system; seed records the person created while verifying.
 
