@@ -481,6 +481,18 @@ fails is retried at the next moment, and the stage after the gate starts as usua
    general rule behind it, plain words, at most 60 words, never a client name or amount in the rule part), the
    **skill to improve** (where the problem first appeared), **practice or app fix**, the **outcome** (does the version
    now approved show it: done with its version, not done, regressed, unclear) and a **confidence** 0–100.
+   **Before-and-after check, for every ask about something you can see** (a wireframe screen, a design-system section,
+   an app page, a video scene or slide): compare the screen it is about in the version the person asked on with the
+   same screen in the version now approved, from the AI PM's kept review screenshots — `reviews/shots/wireframes-<n>/`,
+   `reviews/shots/design-system-<n>/`, `reviews/build-walk-<n>/` (each with `shots.json` naming its version and screens),
+   and the collateral kit's `review/v<n>/` frames. "Before" is the last review taken before the ask (by time), "after"
+   the review of the approved version. Look at both images (Read them; for a wireframe change after the build, the
+   `diff.py` change sheet is the pair). The outcome comes from what the two pictures show: done when the after
+   picture shows the change, not done when it does not, regressed when the before picture had it and the after
+   lost it. Confidence 80+ only when you checked the pair; with no kept screenshot for one side, judge from the
+   approved version as before and keep confidence under 80. Write the pair you used in
+   `reviews/shots/feedback-checks.md` (iteration id · before file · after file · outcome), one line each. It stays in the
+   POC folder; nothing is uploaded to Orbit for it.
 4. **Build and check:** `python3 "$O/gate_feedback.py" build $TMPDIR/gate-items.json --turns <turns.json>
    --existing $TMPDIR/iterations.json --poc <POC ID> --phase <phase> --actor-name "<owner>" --actor-email "<email>"
    --ledger "$LG"`. It refuses a quote that is not word for word, a turn left out, an unknown skill and a missing
