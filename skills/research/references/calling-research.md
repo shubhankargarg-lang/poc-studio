@@ -62,9 +62,9 @@ Tips:
 
   | Purpose | How Research works |
   |---|---|
-  | Confirming one fact, or an internal yes/no check | Quick: about 5 to 10 searches |
-  | Feeding a working draft, such as a scoping document section or a design direction | Standard: about 10 to 20 searches |
-  | Figures the client will see, or a decision that is hard to reverse | Deep: 20 or more searches, with every key figure confirmed by a second source |
+  | Confirming one fact, or an internal yes/no check | Quick: at most 10 searches and 5 pages |
+  | Feeding a working draft, such as a scoping document section or a design direction | Standard: at most 20 searches and 10 pages |
+  | Figures the client will see, or a decision that is hard to reverse | Deep: at most 30 searches and 15 pages, with every key figure confirmed by a second source |
 
 - **Include the context.** Client, industry and country change the answer, particularly for
   regulations and design conventions.
@@ -120,5 +120,5 @@ The answer comes back in the reply. Saving it, or adding it to a document, is yo
 
 ## Running several questions
 
-Send related questions in one request so Research can reuse sources. Send unrelated questions as
-separate requests, or run them in parallel with subagents and merge the answers in your skill.
+Send related questions in one request so Research can reuse sources. List every open question first and send them
+all in one round (unrelated ones in parallel with subagents, answers merged in your skill); no one-by-one follow-ups.

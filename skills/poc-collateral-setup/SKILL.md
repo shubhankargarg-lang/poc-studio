@@ -44,24 +44,31 @@ Find the scripts at `${CLAUDE_PLUGIN_ROOT}/skills/poc-collateral-setup/scripts/`
 ## 1. Already installed? (seconds)
 
 ```bash
-[ -f ~/.local/poc-collateral/env.sh ] && bash ~/.local/poc-collateral/doctor.sh
+M=~/.local/poc-collateral/doctor-ok
+if [ -f "$M" ] && [ -n "$(find "$M" -mmin -1440 2>/dev/null)" ]; then echo "doctor ok (checked in the last 24 h)"
+elif [ -f ~/.local/poc-collateral/env.sh ] && bash ~/.local/poc-collateral/doctor.sh; then touch "$M"
+else rm -f "$M"; fi
 ```
 
-Every line `ok` → nothing to do; say "Collateral tools already set up on this Mac" in one line.
+A `doctor-ok` marker less than 24 hours old means the tools were all `ok` then: the doctor is skipped. Otherwise the
+doctor runs; every line `ok` → the marker is written and there is nothing to do; say "Collateral tools already set up
+on this Mac" in one line. Anything not `ok` removes the marker, so the next check runs the doctor again.
 
 ## 2. Install (first time, or the doctor showed MISSING)
 
 Tell the person in one line: "Setting up the collateral tools once on this Mac (about 1 GB into your user folder, no
 admin needed); this runs in the background." Then run it **in the background** (Bash `run_in_background`; it takes
-several minutes) and carry on with other work:
+several minutes). Write `${CLAUDE_PROJECT_DIR:-$PWD}/.poc-studio/waiting` (beside the autopilot file) while it runs, so the autopilot lets the turn end, carry on
+with other work, and wait for its finished notice instead of checking on it; delete the flag when it finishes:
 
 ```bash
 bash "<skill base dir>/scripts/setup.sh"
 ```
 
 It ends with the doctor report. When it finishes:
-- `setup finished` and every doctor line `ok` → log it in `context-log.md`.
-- `FAILED: <step>` lines → run setup once more (most failures are a dropped download). If the same step fails again,
+- `setup finished` and every doctor line `ok` → `touch ~/.local/poc-collateral/doctor-ok`, and log it in
+  `context-log.md`.
+- `FAILED: <step>` lines → `rm -f ~/.local/poc-collateral/doctor-ok`, run setup once more (most failures are a dropped download). If the same step fails again,
   tell the person in one line which tool is missing and what it blocks (e.g. "LibreOffice did not install: deck
   previews cannot be rendered"), and carry on; Stage 5 runs the doctor again before it starts.
 

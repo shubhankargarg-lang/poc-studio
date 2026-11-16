@@ -51,7 +51,9 @@ channels, email threads and Drive folders mix them. Every stage works on **this*
 ## The skills you call
 
 Call each with the Skill tool. Use the plugin-qualified name the session lists (e.g. `poc-studio:scoping-l1-first`);
-if a same-named skill exists from elsewhere, prefer the `poc-studio:` one.
+if a same-named skill exists from elsewhere, prefer the `poc-studio:` one. Load each skill once per session; load it
+again only if a context compaction dropped its text. A later job or re-run of a skill that has its own Observability
+row starts with `session_log.py mark-start <skill>` (orbit-writeback Moment 7), because no new Skill call marks it.
 
 | Stage | Skill |
 |---|---|
@@ -149,17 +151,21 @@ and the collateral brief (`brief.json` → `"poc_id"`, internal only). Create th
 ```
 
 Status values: `pending` → `running` → `in_review` → `awaiting_approval` → `approved` (or back to `running` on
-requested changes). Update it at every transition.
+requested changes). Write it when a stage's status changes or when this skill names a value to save, not after every
+step.
 
 ### context-log.md
 
 Append a dated line at every event: what the stage decided or assumed, every question and the answer it got (and
 who answered: reviewer or person), every reviewer verdict, every gate result, and the person's feedback verbatim.
-This file is the reviewer's memory of the use case; keep it factual and short.
+This file is the reviewer's memory of the use case; keep it factual and short. Write each event once, in one step with
+its other records (the log line, the `state.json` change, the review request, the lessons note), and never reopen the
+file to check what you wrote.
 
 ## Resuming
 
-If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and `context-log.md`, tell the person in one line where the
+If `<cwd>/<client-slug>/<usecase-slug>/state.json` exists (and has the same POC ID), read it and the last 40 lines of
+`context-log.md` (more only if a stage in progress needs them), tell the person in one line where the
 run stands, and continue from the first stage that is not `approved` (or `skipped`). Never redo an approved stage unless the
 person asks. A run started before Wireframes existed has no `wireframes` entry: if its design system is already
 `approved`, add `"wireframes": { "status": "skipped" }` and carry on; otherwise add it as `pending`, and Wireframes
@@ -172,7 +178,8 @@ and M2w for the HTML as a new wireframes version. A run started before
 connector discovery existed has no `connector-discovery` entry: if Scoping is already past `pending`, add
 `"connector-discovery": { "status": "skipped" }` (Stage 4 step 2b then runs `scope: models` before the build);
 otherwise add it as `pending`, and it runs next. **First run the orbit-writeback skill's Reconcile check**, so any approval or document version that never
-reached Orbit is written before the run goes on.
+reached Orbit is written before the run goes on. A tool check saved in `state.json` → `tools_checked_at` less than 24
+hours ago is reused (Setup step 4 is skipped); sign-in, connector and model checks are always run again.
 
 ## Run mode: Sonic or Zen (asked at the start of every run)
 
@@ -243,6 +250,13 @@ AskUserQuestion is blocked and redirected to the reviewer, and ending the turn i
 plain-text question, e.g. from UnifyApps Headless, is routed too). Create that file when a stage starts running; delete it right before
 you put an approval gate or an `ASK_HUMAN` question to the person; recreate it when the stage work resumes.
 Delete it when the run finishes or stops.
+
+**Waiting for helpers (the waiting flag).** When you have handed work to helper agents or background jobs and have
+nothing else to do until they reply, create `.poc-studio/waiting` beside the autopilot file and end your turn: Claude
+Code tells you when each one finishes. Never check on them in a loop (no status checks, no `sleep` and look again):
+each check re-reads the whole conversation. The autopilot hook lets the turn end while `waiting` exists. Delete
+`waiting` when the last reply arrives, before a gate, before any question to the person, and at the end of the run.
+(Setup's background tool install is not waited on this way: Setup carries on with its other checks meanwhile.)
 
 Always use the absolute path (stages `cd` into subfolders, and the shell keeps that directory):
 
@@ -427,7 +441,9 @@ except at the start (the POC ID must be verified).
    `<client-slug>/<usecase-slug>-<POC ID>/`).
    A `state.json` that holds only one-off runs (a `standalone` key and no `poc_id`) is not a pipeline run: start the
    run in it and keep its `standalone` key as it is. Remove a leftover `.poc-studio/one-off` flag (from an interrupted
-   one-off run): while it exists the owner is not nudged in Slack.
+   one-off run): while it exists the owner is not nudged in Slack. Remove a leftover `.poc-studio/waiting` too.
+   Run the checks that do not depend on each other (the connector tool searches, the tools doctor, the Orbit
+   check) together in one message, not one after another.
    If the client folder already holds **other** use cases, mention them in one line and keep them untouched.
 2. **Connector check.** Look for each connector's tools with a tool search (`slack`, `gmail`, `drive`, `calendar`).
    - **Slack and Google Drive are required.** If either has no tools in the session, stop and ask the person to
@@ -496,7 +512,8 @@ except at the start (the POC ID must be verified).
      system's screenshots; it reuses an installed Chromium).
    - From then on, on a Mac, every Bash command that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts
      with `source ~/.local/poc-collateral/env.sh && ` once that file exists (each shell starts fresh).
-   Log what was installed in `context-log.md`.
+   Log what was installed in `context-log.md`, and save `tools_checked_at` (now, epoch ms) in `state.json` when the
+   tools all pass, so a resume within 24 hours skips this step.
 5. **AI PM (v1.0).** Let `R` be the ai-pm skill's `scripts/` folder
    (`find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' -exec dirname {} \;`), and `W` the wireframes skill's
    (`find ~/.claude/plugins -path '*wireframes/scripts/wf_tool.py' -exec dirname {} \; | head -1`), and `D` the

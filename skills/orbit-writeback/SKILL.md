@@ -9,7 +9,8 @@ You keep **Orbit · POC Studio** on the `orbit.uat.unifyapps.com` tenant in step
 owner, their team and a Slack bot. The orchestrator calls this skill at the moments listed in **The plugin's gates →
 Orbit moments**; you write exactly what that moment says and nothing else.
 
-The owner's original specification is in `orbit-spec.md` beside this file; read it once per run. **This SKILL.md is
+Load this skill **once per session**: later moments follow it from what is already loaded, without calling the Skill
+tool again. The owner's original specification is in `orbit-spec.md` beside this file; read it once per run. **This SKILL.md is
 authoritative where the two differ** (the differences are the owner's decisions, listed under "Decisions").
 
 **POC data policy (owner decision):** POC Studio builds proofs of concept with dummy data. The app's seed data,
@@ -25,7 +26,8 @@ All Orbit reads, writes and uploads go through **UnifyApps Headless's tenant too
 (the same tools UnifyApps Headless uses while it builds), always with the host `orbit.uat.unifyapps.com`. There is no Orbit
 folder and no command-line script.
 
-Load them with **one** ToolSearch at the start of every write moment (they are deferred tools), by exact name first:
+Load them with **one** ToolSearch, **once per session** (they are deferred tools; once loaded they stay loaded), by
+exact name first. Load them again only when a call answers that the tool is not available:
 
 `select:mcp__plugin_ua_object__get_records,mcp__plugin_ua_object__apply_record_edits,mcp__plugin_ua_application-builder__upload_public_file`
 
@@ -70,7 +72,12 @@ orbit:
   failed_writes: []     # anything that did not reach Orbit after 3 tries
 ```
 
-and, beside `orbit`, `observability` (Moment 7's run group, last sequence and run ids).
+and, beside `orbit`, `observability` (Moment 7's run group, last sequence and run ids), and `orbit.paths`: the
+absolute `O` (this skill's `scripts/` folder) and `LG` (the run's `.poc-studio` folder) found once at Setup (Moment 7,
+"How to write it"). Every later command uses these absolute paths as they are, without a `find`.
+
+Write `state.json` **once per moment**, at its end, with everything the moment changed (documents, iterations,
+`failed_writes`), not after each row.
 
 ## How to write
 
@@ -272,8 +279,8 @@ blocks the run: if it fails, flag it and carry on.
 3. **Same account and sync working (the real test):** write a small file
    `<shared root>/_poc-studio-sync-check (<email>).txt` containing the POC ID and a fresh random token (one file per
    person, overwritten each run, never deleted). Then, with the connector, search
-   `parentId = '0AOY3pnWOezbhUk9PVA' and title = '_poc-studio-sync-check (<email>).txt'` every 15 s for up to 3
-   minutes and read it (`read_file_content`): it passes when the token matches. Seeing the token through the
+   `parentId = '0AOY3pnWOezbhUk9PVA' and title = '_poc-studio-sync-check (<email>).txt'` at most 3 times — after 1, 2 and 3
+   minutes — and read it (`read_file_content`): it passes when the token matches. Seeing the token through the
    connector proves the connector and Drive for desktop use the same Google account, that this account can write to
    the shared drive, and that sync works.
    The first write may bring up Claude Code's permission prompt (the folder is outside the workspace) and macOS's
@@ -315,7 +322,9 @@ blocks the run: if it fails, flag it and carry on.
    1. Copy (never move) the final `.mp4` to `<shared root>/<POC ID> - <Client> - Demo video v<N>.mp4` (`cp`; no
       sub-folders). If a file with that name is already there from an earlier run of the same POC, use the next `v<N>`.
    2. With the connector, search `parentId = '0AOY3pnWOezbhUk9PVA' and title = '<POC ID> - <Client> - Demo video
-      v<N>.mp4'` every 30 s for up to 15 minutes (large files take a while to upload). Take the newest match.
+      v<N>.mp4'` at most 3 times — after 5, 10 and 15 minutes (large files take a while to upload); while it uploads in
+      the background, write `${CLAUDE_PROJECT_DIR:-$PWD}/.poc-studio/waiting`, end the turn and wait instead of checking more often (delete the
+      flag when the file is found or the 15 minutes are up). Take the newest match.
    3. Read its permissions: the `allemployees@unifyapps.com` group permission (inherited from the drive) means
       everyone in the company can open it. If it is missing, say at the gate that the video is open only to the
       drive's members and why.
@@ -335,13 +344,14 @@ drive, unchanged:
 
 - **Check:** the person's `My Drive` root is `my_drive` from step 2. Write `<my_drive>/POC Studio/_poc-studio-sync-check.txt`
   (`mkdir -p` the folder) with the POC ID and a fresh token; with the connector, search
-  `title = '_poc-studio-sync-check.txt'` every 15 s for up to 3 minutes and read it: it passes when the token matches.
+  `title = '_poc-studio-sync-check.txt'` at most 3 times (after 1, 2 and 3 minutes) and read it: it passes when the token matches.
   Then find the `POC Studio` folder (`title = 'POC Studio'`, folder mime type, `owner = 'me'`) and read its
   permissions: company-wide when there is a `domain` permission for the owner's email domain with role `reader` or
   higher. If it is missing, ask the person once to set it themselves (give the folder link): **Share → General access
   → "<company>" (anyone in the organisation with the link) → Viewer → Done**. Claude never changes this setting itself.
 - **Upload:** copy the `.mp4` to `<my_drive>/POC Studio/<POC ID> - <Client>/<Client> - Demo video v<N>.mp4`
-  (`mkdir -p`, then `cp`); search `title = '<Client> - Demo video v<N>.mp4'` every 30 s for up to 15 minutes and take
+  (`mkdir -p`, then `cp`); search `title = '<Client> - Demo video v<N>.mp4'` at most 3 times (after 5, 10 and 15 minutes, with the waiting
+  flag as above) and take
   the newest match in that folder; read its permissions (a `domain` permission inherited from `POC Studio`); if it is
   missing, share it with the POC owner's email as `reader` and say at the gate that it is not shared company-wide and
   why. Then step 4 above.
@@ -349,9 +359,15 @@ drive, unchanged:
 ## Order inside every moment
 **upload files → Documents → Iteration → Activity → POC last.**
 
-**Before every moment:**
-0. **Send any gate-feedback payload not saved yet** (Moment 2c): `python3 "$O/gate_feedback.py" pending --ledger "$LG"`
-   lists them; send each with `apply_record_edits`, then `gate_feedback.py saved <payload> <reply>`.
+**Before every moment:** find everything waiting to be resent with **one** Bash call:
+```bash
+python3 "$O/gate_feedback.py" pending --ledger "$LG"; python3 "$O/skill_run_row.py" pending --ledger "$LG"; \
+python3 "$O/skill_run_row.py" no-log --ledger "$LG"; python3 -c "import json;print(json.load(open('<workspace>/state.json')).get('orbit',{}).get('failed_writes',[]))"
+```
+(a one-off run reads `standalone.failed_writes` instead). Then resend what it lists, in this order:
+0. **Gate-feedback payloads not saved yet** (Moment 2c): send each with `apply_record_edits`, then
+   `gate_feedback.py saved <payload> <reply>`. Observability rows still pending go out as Moment 7 says ("Nothing is
+   lost"); rows with no log are repaired as Moment 7 says ("Retry, never drop").
 1. **Retry `failed_writes` first.** If they all save now, send any `slack_notification` that was held back for their
    gate with this moment's POC update (only if this moment is itself M1 or M5; otherwise send a POC update with
    `slack_notification true` for that gate on its own).
@@ -726,6 +742,8 @@ observability:
      Tokens come from `--slice` (real usage). Only if the slice failed, add `files_read` and `files_written` (paths)
      and the builder estimates `tokens_in` / `tokens_out`.
   2. `python3 "$O/skill_run_row.py" $TMPDIR/skill-run-in.json --slice $TMPDIR/slice.json --out $TMPDIR/orbit-skill-run.json --ledger "$LG"`.
+     Run steps 1 and 2 as **one** Bash call (`slice … > $TMPDIR/slice.json && python3 "$O/skill_run_row.py" …`), with
+     the input file written in the same call (a heredoc), so a row costs one command before the write.
      - Exit 0 → send that file's JSON with `apply_record_edits` exactly as it is.
      - Exit 2 → the row lacks `skill` or `started_at`: add it (the hook's start file, or now) and build again.
      - Exit 3 → another row must come first: a review is never logged before the run it checked (`reviews_run_id`
@@ -946,8 +964,10 @@ deletes a ticket.
    file's bytes or base64 in a row, and never put file lines in `quote`.
 3. **Build the ticket and its `created` row with the builder, never by hand.** POC Build Loop finds and changes a
    ticket by `ticket_key`, so a ticket without it (or without `priority` and `updated_at`) cannot be moved or assigned
-   in the app. Let `O` be this skill's `scripts/` folder
-   (`find ~/.claude/plugins -path '*orbit-writeback/scripts/feedback_ticket.py' -exec dirname {} \; | head -1`).
+   in the app. Let `O` be this skill's `scripts/` folder as an absolute path: the `orbit.paths.O` saved in `state.json`
+   when there is one, else find it once
+   (`find ~/.claude/plugins -path '*orbit-writeback/scripts/feedback_ticket.py' -exec dirname {} \; | head -1`) and use
+   that absolute path in every command below.
    1. Write what you have, as one JSON object, to `$TMPDIR/fb/in.json` with a short script:
       `title` (the person's short title, or their first sentence), `feedback` (their words, unedited; several points
       in one message stay in one ticket), `given_by_name`, `given_by_email` (if known), `skill`, `quote` (their own

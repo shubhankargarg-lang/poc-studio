@@ -46,7 +46,7 @@ is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 
 **Re-run:**
 - `python3 _working/check_docx.py 02-scoping/scoping-document.docx` must print `ok`.
-- `python3 <skill>/scripts/scope_metrics.py 02-scoping/scoping-document.docx` — sizing, L1 share, slop hits,
+- `python3 "$R/scope_metrics.py" 02-scoping/scoping-document.docx` — sizing, L1 share, slop hits,
   §1 opening line, §20.2 storyline steps.
 
 **Judge (Part A):**
@@ -327,7 +327,8 @@ Review only the collaterals made. One the person asked to skip (`stages.collater
 its checks below do not apply.
 
 **Re-run:** `python3 kit/check.py` (must report 0 must-fix); read `review/v<n>/report.md` and the contact sheet;
-render the deck and script PDF to images and look at every page.
+render the deck and script PDF to images; look at one contact sheet of every page first, then at full size the
+first and last slide, the storyline's key moments and anything flagged or unclear (SKILL.md "What it reads").
 
 **Judge:**
 - **Opening.** The first narration line names the client's pain (RG pain points), not a feature (K1).

@@ -35,15 +35,17 @@ say that you did.
 
    | Purpose looks like | Depth |
    |---|---|
-   | Confirming a single fact or an internal yes/no check | Quick: about 5 to 10 searches |
-   | Feeding a working draft, such as a scoping document section or a design direction | Standard: about 10 to 20 searches |
-   | Figures or claims the client will see, or a decision that is hard to reverse | Deep: 20 or more searches, several angles, every key figure confirmed by a second source |
+   | Confirming a single fact or an internal yes/no check | Quick: at most 10 searches and 5 pages opened |
+   | Feeding a working draft, such as a scoping document section or a design direction | Standard: at most 20 searches and 10 pages opened |
+   | Figures or claims the client will see, or a decision that is hard to reverse | Deep: at most 30 searches and 15 pages opened, several angles, every key figure confirmed by a second source |
 
    When the purpose is unclear, use standard. **If the caller states a search budget** (for example
    "Quick — at least 3 searches"), use that budget instead of the table: it is the floor to reach and
-   the point to stop once the answer is clear.
+   the point to stop once the answer is clear, capped at its depth's maximum (Deep's if no depth is named). At the
+   cap, stop and list what is still open under Gaps.
 2. **Reuse what exists.** Check the context for earlier findings on the same point, and link to them
-   instead of searching again.
+   instead of searching again. In POC Studio, also check `<workspace>/research/` before any search: reuse an earlier
+   answer to the same question and search only for what it leaves open.
 3. **Search.** Use `references/source-guide.md` to pick where to look for this kind of question.
 4. **Read and rate the sources** you rely on.
 5. **Write the answer** in the format below.
@@ -54,13 +56,21 @@ say that you did.
 - Use short queries of 2 to 6 words. Start broad, then narrow, and change the wording after a miss.
 - Search one topic per query: one competitor, one regulation, one reference site.
 - Open the page of anything you rely on. A search snippet is a lead and never a source.
+- Compare at most 5 vendors or products for one question.
+- Note each page's facts once (link, date, exact figures) in the calling stage's `<stage folder>/_working/notes.md`
+  (on a direct run, `_working/notes.md` in the current folder), appending, never overwriting it; reopen a page only for
+  one missing fact.
 - With subagents available, give each one a question and run them in parallel, then merge the results
-  and remove duplicates.
+  and remove duplicates. Brief each with its depth's maximum, the notes file and the failure rule below. While they
+  work, end the turn and wait for Claude Code's finished notice, with no status checks; if
+  `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot` exists, first create `.poc-studio/waiting` beside it, and delete it when
+  the last reply arrives, before merging.
 - Stop when every question has an answer, or two differently worded searches found nothing. Record
   that question as a gap.
 - Put only public facts in queries. Deal values, internal contacts, pricing and anything marked
   confidential stay out, because queries leave the company.
-- If a site refuses access, use another source or note the gap. Design gallery sites sometimes need a
+- Check the tools you need once, up front. On a failure, read the error, fix the cause and retry once; then use
+  another source or note the gap. If a site refuses access, use another source or note the gap. Design gallery sites sometimes need a
   real browser session; use a connected browser for those.
 
 ### Rating sources
@@ -114,7 +124,8 @@ Each rule comes with its reason, because the caller builds on what comes back.
 
 ## Check before returning
 
-- Every factual sentence has a link, and the link supports it.
+- Every factual sentence has a link, and the link supports it (check links, figures and dates against the notes file
+  named in "Search practice").
 - Numbers, prices and dates match their sources exactly.
 - Each question is answered or listed under gaps.
 - The answer makes sense when read without the findings table.
@@ -124,7 +135,8 @@ Then hand the result back.
 - **Called by another skill in the same conversation** (the wireframes, design-system or scoping skill
   loaded this one in the middle of its own run): write the answer where that skill can use it, then go
   straight back to the step of that skill that asked for it and carry on with its task. The person is
-  waiting for that skill's output, so never end the turn on the research answer.
+  waiting for that skill's output, so never end the turn on the research answer. (Ending the turn to wait for your own
+  subagents is allowed and is not ending on the answer.)
 - **Run as a separate agent, or asked directly by the person:** return the result in the reply and stop.
   Carrying on with the caller's own task is the caller's job.
 

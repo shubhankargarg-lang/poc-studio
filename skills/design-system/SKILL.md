@@ -380,7 +380,8 @@ the client, the brand cues, the people and the conditions of use.**
    that smaller screens are unsupported. Draw no phone layout the BRD did not ask for; AI trust and labelling
    rules (§17); non-functional notes such as language, accessibility and devices (§18); the hand-off to the design
    system, with the hero object and reference products (§21); the glossary. Brand cues in the BRD are evidence with
-   source types, not a chosen palette.
+   source types, not a chosen palette. Write what you take from the BRD once into `03-design-system/_working/notes.md`
+   (messages and copy word for word) and work from the notes; reopen the BRD only for one missing fact.
 4. **Decide nothing about structure.** Every component the inventory lists will be catalogued. No component outside
    it will be. Variants are the wireframe's variants, and states are the wireframe's states plus the interaction
    states each control needs (Step 9). When something the BRD needs is missing from the wireframe, or a component's
@@ -392,7 +393,10 @@ the client, the brand cues, the people and the conditions of use.**
 
 **Brand source order** (highest first): material the person or the caller supplied → the client's official brand
 guidelines or design system → the client's live product → the client's website → the BRD's §6 cues. Research
-through the `research` skill when it is installed; if it fails, use web search and fetch. Record each source.
+through the `research` skill when it is installed; if it fails, use web search and fetch. Record each source. Read
+`<workspace>/research/` once first, if it exists: a question it already answers is not asked again, and its brand
+facts are leads you confirm on the live site. Fetch the client's page and its linked stylesheet once, and use them for
+Steps 2, 3 and 4 together.
 
 * **Read the CSS custom properties off `:root` on the live site**, not a screenshot and not the brand book. *On
   daikincomfort.com they are literally `--daikin_blue`, `--daikin_orange`, `--daikinGradient`.* Take the neutral ramp
@@ -411,7 +415,8 @@ through the `research` skill when it is installed; if it fails, use web search a
 
 ## Step 3 · Harvest the logo
 
-**Acquisition, in order. Stop at the first that yields a real file:**
+**Acquisition, in order. Stop at the first that yields a real file.** Fetch routes 1–4 together in one batch (the order
+still picks the winner); go on to the later routes only when none of those is a real file.
 
 1. **Inline `<svg>` in the site header**, or a linked `.svg` (`/logo.svg`, `/assets/logo*.svg`), always preferred; it
    scales and recolours cleanly.
@@ -488,6 +493,9 @@ one replacement per variant. `fidelity` fails a page without the seven slots.
 research. *May we put that file in our prototype?* is licensing, and the answer is usually no.
 
 ### Identify it, in this order
+
+At most two look-ups to identify the face: the stylesheet (or the rendered page) for routes 1–4 below, then one
+`research` request for the rest.
 
 **Fetch the linked stylesheet, not the page.** A page fetch returns converted text with no `@font-face` in it. That
 was tried on a live client site and came back with no font information while the site plainly loads webfonts. Read
@@ -880,7 +888,9 @@ Do not claim that UnifyApps Headless compiles or imports any token format. It re
 ## Step 10 · The visual acceptance gate
 
 Automated checks are necessary and not enough. **A technically passing page that looks unfinished or confuses its
-reader is a failed page.** Run the checks, look at everything, pass the polish gate, then have it looked at by fresh
+reader is a failed page.** Run this full pass once, at the end, in both themes; after a later fix, re-check and look
+only at the sections that changed. On any failed command or fetch, read the error, fix the cause and retry once; then
+take another route or record the gap (`check:` lines still get fixed). Run the checks, look at everything, pass the polish gate, then have it looked at by fresh
 eyes.
 
 **Walk every text role with alpha composited over its real parent chain, in light and in dark.** The reference run on
@@ -973,7 +983,9 @@ coherent, professionally designed product rather than a set of separately genera
 result, and what you changed, in the QA report.
 
 **Fresh-eyes review, one round.** Start a separate agent when the session can, and give it only the screenshots and
-contact sheets: no notes, no source, no audit output. It must be able to say what the application is, navigate the
+contact sheets: no notes, no source, no audit output. While it works, end the turn and wait for Claude Code's finished
+notice, with no status checks; if `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot` exists, create `.poc-studio/waiting`
+beside it and remove it when the reply arrives. It must be able to say what the application is, navigate the
 document, find three components named from the wireframe, explain one component's anatomy and behaviour, compare its
 light and dark appearance, and judge whether it could rebuild it. Record its findings and what you changed in the QA
 report. If no independent review could run, say so in the QA report and leave it marked outstanding; never write a

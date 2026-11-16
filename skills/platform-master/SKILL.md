@@ -39,7 +39,10 @@ change them.
 ## 1 · Pointers (before `/ua:plan`)
 
 1. Read the approved scoping document: the problem statements, personas and journeys (Part A), and the objects, agents,
-   workflows, pages and seed data of Part B.
+   workflows, pages and seed data of Part B. Read it once, and write what the later jobs need to
+   `04-build/_working/notes.md` in one write: the Part B L1 items (objects, agents, workflows, pages, each one line), the
+   seed volumes, the personas and the use-case type once chosen. Jobs 1b and 2 read these notes instead of the scoping
+   document again; open the document only for an item the notes do not cover.
 2. Classify the use case with `references/use-case-pointers.md` → "How to classify": one use-case type, and the
    architecture style that fits it. If no type fits, take the closest one by the first screen the primary persona opens,
    and say why.
@@ -63,8 +66,9 @@ change them.
 Every planning question Zen asks passes through you first, so the person sees platform-master's own input beside Zen's
 options and can choose it.
 
-1. Read the question and its options against `platform-pointers.md` and the references (checklist, `api-spec.md`,
-   `connectors.md`).
+1. Read the question and its options against `platform-pointers.md`, `04-build/_working/notes.md` and the reference
+   sections the question touches (checklist, `api-spec.md`, `connectors.md`): find the section with Grep and read only
+   it, never the whole of `api-spec.md`.
 2. Decide one of three, and return it to the orchestrator:
    - **Add an option** — the platform has a route that none of Zen's options gives, or Zen's options rest on a
      platform claim the references say is false. Return one option:
@@ -85,7 +89,8 @@ options and can choose it.
 When Zen has written its spec (with `## Assumptions` and "Check this" lines), its task graph and its preview page, and
 before its one question (start / change something / keep for later) is put to the person:
 
-1. Read the spec, the task graph and the preview; `platform-pointers.md`; the scoping document's Part B; and
+1. Read the spec, the task graph and the preview; `platform-pointers.md`; the Part B items in
+   `04-build/_working/notes.md` (open the scoping document only for an item they do not cover); and
    `01c-integration/integration-spec.json` (its `models[]`, and `systems[]` when a client system is used: the
    connection id, operations and field mapping every client-system task must use).
 2. Check the plan against `references/plan-review-checklist.md` and the pointers. Use `connectors.md`,
@@ -135,7 +140,9 @@ UnifyApps Headless and is listed at the verify gate.
 
 1. **Plan it.** Write `04-build/fallback-<n>.md`: the task number and entity from the task graph, what UnifyApps Headless
    reported, the asset to create (type, name, fields or steps — from the plan's spec), what depends on it, and how you
-   will verify it (`references/fallback-by-api.md` for that asset type).
+   will verify it (`references/fallback-by-api.md` for that asset type). Read only the section of `fallback-by-api.md`
+   for that asset type and the `api-spec.md` sections for the endpoints it uses (find them with Grep), not the whole
+   files.
 2. **Search before creating.** Look for the asset in the POC's solution first (fallback-by-api "search before
    create"); if it exists, reuse it and go to step 5.
 3. **Sign in.** Open `https://orbit.uat.unifyapps.com` in the session's browser (the person's preferred browser). The
