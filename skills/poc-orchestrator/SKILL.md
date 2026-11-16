@@ -879,8 +879,8 @@ Only these session facts are supplied by you:
   4d. **Every L1 feature is on screen** (scoping L1 features, §11 pages): each L1 feature has a place in the app where
      the person sees it, checked against the seed data. That includes outcomes the AI or an automation decides on its
      own (auto-approved, auto-closed, auto-routed records): they are listed where the person would look for them (a
-     view, tab or filter of their own, never only a back-end status), each with the AI's one-line reason. `test-
-     report.md` has one row per L1 feature with the page it shows on; a feature with no place on screen counts as
+     view, tab or filter of their own, never only a back-end status), each with the AI's one-line reason.
+     `test-report.md` has one row per L1 feature with the page it shows on; a feature with no place on screen counts as
      failed.
   5. **Fix and re-test:** every failure goes back to UnifyApps Headless (same session) as a **direct change through
      `ua-change`** — no new plan per fix. All independent fixes in one batch go to their builder agents **in
