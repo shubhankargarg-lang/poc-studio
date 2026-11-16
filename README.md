@@ -252,6 +252,6 @@ skills/platform-master/            UnifyApps platform expert for Stage 4: pointe
 skills/ai-pm/                      the AI PM: reviews every stage, re-runs its checks, Stage 4b build walk, lessons
                                    (+ references/: stage lenses, slop catalogue; scripts/: build walk, scope metrics,
                                     render check, lessons, Orbit sign-in)
-lessons/lessons.md                 the AI PM's seed lessons (copied once per machine to ~/.local/poc-studio/lessons)
+lessons/lessons.md                 the AI PM's seed lessons (refreshed into ~/.local/poc-studio/lessons on every run; your own lessons are kept)
 skills/poc-collateral-studio/      (+ assets/UnifyApps_template.pptx)
 ```

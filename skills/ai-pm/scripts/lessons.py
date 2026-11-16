@@ -12,7 +12,13 @@ Home: $POC_STUDIO_LESSONS or ~/.local/poc-studio/lessons/
   metrics.jsonl       one line per gate outcome, for first-try approval rate
 
 usage:
-  lessons.py init                                         copy the seed lessons and profiles (first run; never overwrites)
+  lessons.py init                                         refreshes seed lessons; never touches your own. Safe on every run:
+                                                          seed lessons (`- source: seed`, L-001 … L-499) are added or
+                                                          replaced from the plugin (repo wins); your own lessons (L-500 on)
+                                                          are kept; one of yours that clashes with a new seed id is
+                                                          renumbered (≥ L-500, references in inbox.md and profiles updated);
+                                                          a backup lessons.md.bak-<date> is written before any change.
+                                                          Other seed files are copied only when missing.
   lessons.py for <stage> [--owner <name>]                 print the checks a review of <stage> must run
   lessons.py capture <workspace> <stage> "<feedback>" [--work <id>]   store gate feedback verbatim in the inbox
                                                           (--work: count it under this id, e.g. a one-off run's SA-… id)
@@ -49,14 +55,77 @@ def lessons():
         out.append({"id": m.group(1), "stage": m.group(2), "area": m.group(3).strip(), "body": m.group(4).strip()})
     return out
 
+OWN_FROM = 500                       # people's own lessons start here; seed lessons stay below
+LEGACY_SEED = {f"L-{i:03d}" for i in range(1, 20)}   # shipped before the `- source: seed` marker existed
+
+def split_blocks(text):
+    """(preamble, [(id, stage, block text)]) — each block from its '### L-' line to the next."""
+    parts = re.split(r"(?m)^(?=### L-\d+ · )", text)
+    pre, out = parts[0], []
+    for b in parts[1:]:
+        m = re.match(r"### (L-\d+) · ([\w-]+) · ", b)
+        out.append((m.group(1), m.group(2), b.strip() + "\n\n"))
+    return pre, out
+
+def is_seed(block, lid, stage, seed_stage):
+    if re.search(r"(?m)^- source: seed\s*$", block): return True
+    return lid in LEGACY_SEED and stage == seed_stage      # a legacy copy of a seed lesson
+
+def write_atomic(path, text):
+    tmp = path + ".tmp"
+    with open(tmp, "w") as h: h.write(text)
+    os.replace(tmp, path)
+
 def cmd_init():
     os.makedirs(p("profiles"), exist_ok=True)
     seed = os.path.normpath(SEED)
     for f in glob.glob(os.path.join(seed, "**", "*.md"), recursive=True):
-        dst = p(os.path.relpath(f, seed))
+        rel = os.path.relpath(f, seed); dst = p(rel)
+        if rel == "lessons.md": continue
         if not os.path.exists(dst):
             os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copy(f, dst); print("seeded", dst)
+    seed_text, dst = read(os.path.join(seed, "lessons.md")), p("lessons.md")
+    if not os.path.exists(dst):
+        shutil.copy(os.path.join(seed, "lessons.md"), dst); print("seeded", dst)
+    elif seed_text:
+        refresh_seed(seed_text, dst)
     print("lessons home:", HOME, "·", len(lessons()), "lessons")
+
+def refresh_seed(seed_text, dst):
+    local_text = read(dst)
+    spre, sblocks = split_blocks(seed_text)
+    _, lblocks = split_blocks(local_text)
+    seed_by = {i: (st, b) for i, st, b in sblocks}
+    taken = {i for i, _, _ in lblocks} | set(seed_by)
+    for f in glob.glob(p("profiles", "*.md")):
+        taken |= set(re.findall(r"(?m)^### (L-\d+) · ", read(f)))
+    changes, renames, own, kept_seed = [], {}, [], {}
+    for i, st, b in lblocks:
+        if i in seed_by and is_seed(b, i, st, seed_by[i][0]):
+            kept_seed[i] = b                       # replaced by the repo text below
+        elif i in seed_by:                         # a person's own lesson using a seed id: renumber it
+            n = max([int(x[2:]) for x in taken] + [OWN_FROM - 1]) + 1
+            new = f"L-{n:03d}"; taken.add(new); renames[i] = new
+            own.append(re.sub(rf"^### {re.escape(i)} · ", f"### {new} · ", b))
+            changes.append(f"renumbered local {i} → {new}")
+        else:
+            own.append(b)                          # never changed: not in the seed file
+    for i, st, b in sblocks:
+        if i not in kept_seed: changes.append(f"added {i}")
+        elif kept_seed[i] != b: changes.append(f"updated {i}")
+    lpre = split_blocks(local_text)[0]
+    if not changes and lpre.strip() == spre.strip(): return     # nothing to refresh (whitespace aside)
+    text = spre + "".join(b for _, _, b in sblocks) + "".join(own)
+    if text == local_text: return
+    bak = f"{dst}.bak-{TODAY}"
+    if not os.path.exists(bak): shutil.copy(dst, bak); print("backup", bak)
+    write_atomic(dst, text)
+    if renames:                                    # keep references to renumbered lessons pointing at them
+        for f in [p("inbox.md")] + glob.glob(p("profiles", "*.md")):
+            t = read(f); t2 = t
+            for old, new in renames.items(): t2 = re.sub(rf"\b{re.escape(old)}\b", new, t2)
+            if t2 != t: write_atomic(f, t2)
+    for c in changes: print(c)
 
 def cmd_for(stage, owner=None):
     ls = [l for l in lessons() if l["stage"] in (stage, "all")]
@@ -82,7 +151,9 @@ def cmd_inbox():
 
 def cmd_add(a):
     stage = a["stage"]; assert stage in STAGES, f"stage must be one of {STAGES}"
-    nxt = max([int(l["id"][2:]) for l in lessons()] + [0]) + 1
+    ids = [int(l["id"][2:]) for l in lessons()]
+    for f in glob.glob(p("profiles", "*.md")): ids += [int(x) for x in re.findall(r"(?m)^### L-(\d+) · ", read(f))]
+    nxt = max([i for i in ids if i >= OWN_FROM] + [OWN_FROM - 1]) + 1   # your own lessons start at L-500
     lid = f"L-{nxt:03d}"
     block = f"### {lid} · {stage} · {a['area']}\n- check: {a['check']}\n- why: {a['why']}\n- origin: {a['origin']}\n- added: {TODAY}\n\n"
     if a.get("owner"): append(p("profiles", f"{a['owner']}.md"), block)

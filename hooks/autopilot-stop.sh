@@ -6,7 +6,7 @@ INPUT="$(cat 2>/dev/null)"
 DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 FLAG="$DIR/.poc-studio/autopilot"
 [ -f "$DIR/.poc-studio/zen-planning" ] && exit 0   # Zen planning window: the user answers, let the turn end
-[ -f "$DIR/.poc-studio/waiting" ] && exit 0        # helpers or background jobs are working: end the turn and wait for their notice
+[ -n "$(find "$DIR/.poc-studio/waiting" -mmin -60 2>/dev/null)" ] && exit 0   # helpers or background jobs are working (a flag over 60 min old is a leftover and is ignored)
 [ -f "$FLAG" ] || exit 0
 printf '%s' "$INPUT" | grep -q 'SYSTEM_ACCESS:' && exit 0   # connector-discovery: access and model choices are the person's
 printf '%s' "$INPUT" | grep -q 'SAMPLE_UPLOAD:' && exit 0    # requirement-gathering: real samples of AI inputs are the person's

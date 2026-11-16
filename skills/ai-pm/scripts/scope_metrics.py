@@ -2,7 +2,7 @@
 """scope_metrics.py — the AI PM's numbers on a scoping document, beyond what check_docx.py enforces.
 
 check_docx.py proves the document is well formed. This script measures whether the scope is the right size and the
-writing is specific: L1 share, build-scope sizing against the POV budget, the executive summary's opening, slop and
+writing is specific: L1 share, build-scope sizing against the POV guide (blocking only when no Decision explains a larger build), the executive summary's opening, slop and
 unsourced numbers in Part A, the primary persona, and the demo storyline. Every result is a candidate finding for the
 reviewer to confirm by reading the section it points at.
 
@@ -15,7 +15,7 @@ from docx.text.paragraph import Paragraph
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SLOP = json.load(open(os.path.join(HERE, "slop-phrases.json")))
-BUDGET = {"pages_per_app": (3, 6), "objects_per_app": (8, 12), "workflows_per_app": (3, 8), "agents": (1, 1), "l1_share": (0.30, 0.50)}
+BUDGET = {"pages_per_app": (3, 8), "objects_per_app": (8, 12), "workflows_per_app": (3, 8), "agents": (1, 1), "l1_share": (0.30, 0.50)}
 
 doc = Document(sys.argv[1])
 blocks, h1, h2 = [], "", ""
@@ -39,18 +39,28 @@ def find(dim, blocking, where, evidence, fix):
     F.append({"id": f"S{len(F)+1}", "dimension": dim, "blocking": blocking, "where": where, "evidence": evidence, "fix": fix})
 
 # Catalogue: L1 and L2
-l1, l2 = set(), set()
+l1, l2, asked = set(), set(), set()
 for b in blocks:
     if b[0] != "t": continue
     h = head(b[1])
     if h[:2] == ["ID", "Sub-feature"]:
         ids = {r.cells[0].text.strip() for r in b[1].rows[1:]}
         (l1 if "L1 reason" in h else l2 if "Why it can wait" in h else set()).update(ids)
+        if "L1 reason" in h:
+            k = h.index("L1 reason")
+            asked |= {r.cells[0].text.strip() for r in b[1].rows[1:] if re.search(r"client ask", r.cells[k].text, re.I)}
 total = len(l1 | l2); share = len(l1) / total if total else 0
-out["features"] = {"L1": len(l1), "L2": len(l2), "total": total, "l1_share": round(share, 2)}
+out["features"] = {"L1": len(l1), "L2": len(l2), "total": total, "l1_share": round(share, 2), "l1_client_ask": len(asked & l1)}
 lo, hi = BUDGET["l1_share"]
-if total and share > hi: find("R10", True, "§10 catalogue", f"L1 is {len(l1)} of {total} rows ({share:.0%}); the POV guide is 30–45%",
-                             "Re-test every L1 row with the L1 rule (scoping step 5); move rows with no client ask, core-flow, agent or research-must-have reason to L2")
+# The L1 share is a guide, not a cap: client-asked rows never count against it.
+other = len(l1 - asked) / total if total else 0
+if total and share > hi:
+    if other > hi:
+        find("R10", True, "§10 catalogue", f"L1 is {len(l1)} of {total} rows ({share:.0%}); {len(l1 - asked)} of them have no Client ask reason; the POV guide is 30–45%",
+             "Re-test the L1 rows that have no Client ask with the L1 rule (scoping step 5); move only rows with no core-flow, agent or research-must-have reason to L2. Never move a client-asked row to L2")
+    else:
+        find("R10", False, "§10 catalogue", f"L1 is {len(l1)} of {total} rows ({share:.0%}), above the 30–45% guide, mostly client asks ({len(asked & l1)})",
+             "Check the rows without a Client ask still meet the L1 rule; client-asked rows stay L1")
 elif total and share < lo: find("R2", False, "§10 catalogue", f"L1 is only {share:.0%} of rows", "Check no client-asked item or journey stage lost its L1 row")
 
 # Build-scope sizing per app (from PG-/OB-/WF-/AG- headings)
@@ -60,10 +70,40 @@ pages, objs, wfs, ags = ids("PG"), ids("OB"), ids("WF"), ids("AG")
 apps = {re.sub(r"-?\d+$", "", p[3:]) or "app" for p in pages} or {"app"}
 napps = len(apps)
 out["sizing"] = {"apps": napps, "pages": len(pages), "objects": len(objs), "workflows": len(wfs), "agents": len(ags)}
+# The sizing figures are a guide, not a cap (scoping 20.3): over the guide is blocking only when no Decision explains it.
+def sizing_decisions():
+    """D-IDs that 20.3 references, that exist in 5.7, and whose 5.7 row is about size or names L1 feature IDs."""
+    def text_of(pred):
+        parts = []
+        for b in blocks:
+            if not pred(b): continue
+            parts.append(b[1].text if b[0] == "p" else "\n".join(" | ".join(c.text for c in r.cells) for r in b[1].rows))
+        return "\n".join(parts)
+    t203 = text_of(lambda b: sec(b[2]) == 20 and b[3].startswith("20.3"))
+    rows57 = {}
+    for b in blocks:
+        if not (sec(b[2]) == 5 and b[3].startswith("5.7")): continue
+        lines = [b[1].text] if b[0] == "p" else [" | ".join(c.text for c in r.cells) for r in b[1].rows[1:]]
+        for ln in lines:
+            m = re.match(r"\s*(D\d+)\b", ln)
+            if m: rows57[m.group(1)] = rows57.get(m.group(1), "") + " " + ln
+    refs = set(re.findall(r"\bD\d+\b", t203))
+    ok = r"\b(pages?|objects?|workflows?|scope|sizing|size)\b|\bF-\d"
+    def about_size(row):   # names the size, or names L1 feature IDs from the catalogue
+        return re.search(ok, row, re.I) or any(re.search(rf"(^|\W){re.escape(f)}(\W|$)", row) for f in l1 if f)
+    return sorted((d for d in refs if d in rows57 and about_size(rows57[d])), key=lambda x: int(x[1:]))
+decisions = sizing_decisions()
+out["sizing"]["decisions"] = decisions
 for k, n, key in (("pages", len(pages), "pages_per_app"), ("objects", len(objs), "objects_per_app"), ("workflows", len(wfs), "workflows_per_app")):
-    cap = BUDGET[key][1] * napps
-    if n > cap: find("R10", True, "§20.3", f"{n} {k} for {napps} app(s); the POV budget is ≤ {cap}",
-                     f"Merge {k} (fold stages into tabs, children into fields, per-action workflows into change-status) — or re-test L1; do not explain the overrun")
+    lo_, hi_ = BUDGET[key]; cap = hi_ * napps
+    if n <= cap: continue
+    guide = f"{n} {k} for {napps} app(s); the POV guide is {lo_}–{hi_} per app (≤ {cap})"
+    if decisions:
+        find("R10", False, "§20.3", f"{guide}; explained by {', '.join(decisions)}",
+             f"Check the Decision names the L1 features that need the extra {k}; merge only where nothing an L1 feature needs is lost.")
+    else:
+        find("R10", True, "§20.3", guide,
+             "Add a Decision (D-ID in 5.7, referenced in 20.3) naming the L1 features that need the larger build, or merge where nothing an L1 feature needs is lost. Never drop an L1 workflow, page or object to meet the guide.")
 if len(ags) > 1:
     find("R10", False, "§13", f"{len(ags)} agents specified ({', '.join(ags)}); the POV default is one live copilot",
          "Keep one agent unless a Decision (D-ID) says why a second is needed; check 5.7")

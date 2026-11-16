@@ -252,7 +252,7 @@ Delete it when the run finishes or stops.
 **Waiting for helpers (the waiting flag).** When you have handed work to helper agents or background jobs and have
 nothing else to do until they reply, create `.poc-studio/waiting` beside the autopilot file and end your turn: Claude
 Code tells you when each one finishes. Never check on them in a loop (no status checks, no `sleep` and look again):
-each check re-reads the whole conversation. The autopilot hook lets the turn end while `waiting` exists. Delete
+each check re-reads the whole conversation. The autopilot hook lets the turn end while `waiting` exists and is less than 60 minutes old (an older one is treated as a leftover from a stopped run; for a job that runs longer, `touch` the flag again when you check on it). Delete
 `waiting` when the last reply arrives, before a gate, before any question to the person, and at the end of the run.
 (Setup's background tool install is not waited on this way: Setup carries on with its other checks meanwhile.)
 
@@ -518,7 +518,7 @@ except at the start (the POC ID must be verified).
    design-system skill's folder (`dirname "$(find ~/.claude/plugins -path '*skills/design-system/SKILL.md' 2>/dev/null | sort -V | tail -1)"`);
    give all three to the AI PM in every request (`scripts: {ai_pm: <R>, wireframes: <W>, design_system: <D>}`). The
    wireframes and design-system tools are files in those folders (`$W/wf_tool.py`, `$D/scripts/ds_tool.py`).
-   - `python3 "$R/lessons.py" init` (seeds the lesson bank once per machine; never overwrites) and
+   - `python3 "$R/lessons.py" init` (refreshes the plugin's seed lessons on every run; never touches the person's own lessons) and
      `pip install pyyaml` into the shared venv if `python3 -c "import yaml"` fails.
    - Set `state.json` → `"owner_profile"`: the POC owner's email in lower case, from Orbit setup (`orbit.owner.email`).
      Every reviewer request carries it as `owner_profile`. A profile is created in the lesson home the first time the
