@@ -388,6 +388,12 @@ the client, the brand cues, the people and the conditions of use.**
    anatomy cannot work as drawn, add an entry to **Wireframe gaps** (the gap, the BRD ref, the wireframe change it
    needs) and style the screen as drawn. Finishing a component's anatomy is not a structural decision; Step 9 says
    exactly what may change.
+5. **Check the wireframe against the BRD before styling.** Compare what the wireframe draws with what the BRD states:
+   the named shell and navigation items; each screen's rules (when an action is enabled, what validation says, free
+   text versus a fixed list, allowed values); the reply language; who may do what; any count and the label beside it.
+   Where they disagree, do not choose one silently: style the screen as drawn, record each disagreement under
+   **Wireframe gaps** (BRD ref, what the wireframe shows, the change it needs), and name them in the overview banner so
+   the reviewer sees them before approving.
 
 ## Step 2 · Sample the brand
 
