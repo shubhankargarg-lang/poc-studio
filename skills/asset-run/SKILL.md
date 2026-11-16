@@ -18,7 +18,9 @@ The full pipeline (`/poc-studio:start`, `poc-orchestrator`) is not involved and 
 | `app` | `/poc-studio:app` | `ua:setup`, `platform-master`, `ua:plan` (Zen) — Stage 4 | `build` (Stage 4b) | `app` | `04-build/` |
 | `collaterals` | `/poc-studio:collaterals` | `poc-collateral-studio` | `collaterals` | `demo_script`, `deck`, `video` (the ones chosen) | `05-collaterals/` |
 
-Load every skill with the Skill tool by its plugin name (`poc-studio:<skill>`). `R` below is the AI PM's scripts folder:
+Load every skill with the Skill tool by its plugin name (`poc-studio:<skill>`), **once per session**: a skill already
+loaded in this session is followed from what is already loaded (orbit-writeback included), and a later job of it starts
+with `session_log.py mark-start <skill>` instead of loading it again. `R` below is the AI PM's scripts folder:
 `R=$(dirname "$(find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' | head -1)")`. On a Mac, every Bash command
 that runs `python3`, `node`, `ffmpeg`, `soffice` or `pandoc` starts with `source ~/.local/poc-collateral/env.sh && `
 once that file exists.
@@ -89,8 +91,12 @@ missing; the person ticks one, two or all three. Record the choice in the run (`
 
 **Tools, then sign-in, then the video route** (collaterals; tools and sign-in also for app; tools also for design, whose
 screenshots need Python Playwright), in this order:
-- **Tools:** on a Mac, run the `poc-collateral-setup` doctor (load that skill). If it is not all `ok`, run its install
-  and wait for it (about 1 GB the first time; no admin, no Homebrew). On Linux, check `ffmpeg`, `pdftotext`, `soffice`,
+- **Tools:** first remove a leftover `.poc-studio/waiting` flag from an earlier run. If `state.json` →
+  `standalone.tools_checked_at` is less than 24 hours old, skip the doctor (the sign-in below always runs). Otherwise,
+  on a Mac, run the `poc-collateral-setup` doctor (load that skill). If it is not all `ok`, run its install (about 1 GB
+  the first time; no admin, no Homebrew): in the background, write `.poc-studio/waiting`, end the turn and wait for its
+  finished notice instead of polling; then delete the flag and run the doctor once more. When all tools pass, save
+  `standalone.tools_checked_at` (now). On Linux, check `ffmpeg`, `pdftotext`, `soffice`,
   `node`, `python3` and Playwright Chromium, and give the person the one line to paste for anything missing.
 - **Orbit sign-in:** `node "$R/orbit_signin.mjs" --check`; exit 0 = valid. Any other result (not signed in, expired, or
   a tool error) → run `node "$R/orbit_signin.mjs"` and ask the person to sign in to Orbit in the window that opens
@@ -122,6 +128,12 @@ once. Keep their email if the profile gives it. Save both in `state.json` → `s
 
 **Retry earlier failed writes.** If `state.json` → `standalone.failed_writes` has entries, retry them now (orbit-writeback,
 "One-off documents" → Failures) and say in one line what was written.
+
+**Helpers and background jobs.** Whenever this run waits for a helper agent or a background command (the stage
+skill's subagents, an install, a long render), write `${CLAUDE_PROJECT_DIR:-$PWD}/.poc-studio/waiting` (the
+project folder's `.poc-studio`, which the autopilot hook reads, not the workspace's), end the turn and wait for the finished
+notice; delete the flag when it arrives. Notes this run writes (`context-log.md`, the run entry) are written in one
+call per event, never reopened to append line by line.
 
 ## 2 · Workspace and run state
 

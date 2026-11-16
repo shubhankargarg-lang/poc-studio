@@ -119,6 +119,14 @@ this stage; `prior_verdict` from round 2 on; earlier verdicts in `<workspace>/re
 (`python3 scripts/lessons.py for <stage> --owner <owner>`), `references/stage-lenses.md` for this stage,
 `references/slop.md`, and from round 2 the producer's response file (`<workspace>/reviews/<stage>-response-<n>.yaml`).
 **Never:** the chat transcript, or full research documents (only their answer and gaps).
+**Read lean:** from `references/stage-lenses.md` only its opening and the lenses this request names; from
+`references/slop.md` only the sections for this kind of output; from upstream documents only the sections this stage
+needs (the artifact itself still in full in round 1). Turn each .docx, .pptx and PDF into text once in
+`<workspace>/reviews/_working/` (`.docx` with `pandoc -t gfm --wrap=none`) and reuse it while the file is unchanged;
+read each file once, reopening it only to check one fact. For pictures (wireframe screens, design-system screens,
+collaterals, build screenshots): one contact sheet first (make one with Pillow if none exists), then at full size only
+the storyline steps, the key screens (the wireframe's and design system's `key_screens`), the first and last slide,
+and anything flagged or unclear.
 **From round 2, and in every later review of a stage:** only what changed and what depends on it (next section).
 
 ## Skips are the person's
@@ -130,7 +138,8 @@ resolve mode is ASK_HUMAN.
 
 ## Later reviews read only what changed
 
-The first review of a stage reads everything. **Every later review of the same stage reads only what changed since the
+The first review of a stage reads everything and lists every finding in one verdict (page by page for the build), so
+the producer fixes them in one pass instead of meeting new ones each round. **Every later review of the same stage reads only what changed since the
 last review, and what depends on it.** That covers round 2 and round 3 after a REVISE, the review after the person asks
 for changes at a gate, and the review after a change after the build (4c). Reading the whole artifact again costs as
 much as the first review and turns up findings on parts that were already passed, which only adds rounds.
@@ -336,8 +345,10 @@ tool_failure: null | { tool: build_walk.mjs, exit_code, error: <one line>, repor
 executive summary" is not a fix line; "§1 para 1 — open with P1's cost: 'Range reviews slip two weeks every season
 because…' (E4)" is. A finding a lesson caught names it in `precedent`.
 
-**Blocking finding:** one that fails a first-glance item, leaves an acceptance criterion or a stated ask unmet, or
-would be seen by the audience. Blocking findings rule out PASS; on their own they do not cause BLOCK.
+**Blocking finding:** one that fails a first-glance item, a stated ask, an acceptance criterion, a lesson or a profile
+item; or one this skill, a stage lens or a confirmed script finding calls blocking; or one the client would clearly
+notice, now or once built. Other cosmetic nits (a few pixels of spacing or alignment, a word choice nobody would
+notice) are non-blocking. If unsure, block. Blocking findings rule out PASS; on their own they do not cause BLOCK.
 
 `resolve` returns the same header with `disposition: DECIDE | SEND_BACK | REQUEST_RESEARCH | ASK_HUMAN`, an
 `answer`, `confidence: H | M | L`, `source`, `reversible: yes | no`, and a one-line `why` naming the pro and the con.
@@ -455,6 +466,7 @@ Each lens is a question experienced reviewers ask again and again.
 1: a "fails when" case occurs where the audience will see it.
 2: no "fails when" case where the audience will see it; minor issues elsewhere.
 3: the work shows positive evidence the dimension is handled, and the finding cites it.
+Non-blocking cosmetic findings alone never lower a score.
 
 ### Stage kinds and emphasis
 
@@ -508,6 +520,7 @@ run that stage's lens in `references/stage-lenses.md` on top: re-run first, then
 - design-system: the skill's own `scripts/ds_tool.py fidelity` and `audit` (`D` = the request's
   `scripts.design_system`, the installed skill's folder; stage lenses → design-system);
 - build: `node scripts/build_walk.mjs --url <preview_url> --storage <orbit session> --routes <routes.json> --out <workspace>/reviews/build-walk-<n>`
+  (run it in the foreground with a 600000 ms timeout and wait for it; no background run and no status checks)
   (add `--personas 04-build/personas.json` when that file exists; `--settle` defaults to 30000 ms, enough for cold UAT
   pages). Exit code 0 = walk complete, 1 = the script crashed, 2 = bad arguments or Playwright missing, 3 = report
   INCOMPLETE. An **INCOMPLETE** report, the **Platform** section and **Walk problems** (`route_left_app` included)
@@ -558,6 +571,11 @@ finding or a decision** (scored under R3).
 
 ## Procedure
 
+0. **Tools.** `R` = the request's `scripts.ai_pm` (else this skill's `scripts/` folder); a bare `scripts/…` in this
+   skill or in `references/stage-lenses.md` means `"$R/…"`. Use full paths, start every `python3` or `node` command
+   with `source ~/.local/poc-collateral/env.sh 2>/dev/null;`, and check the tools you need once. When a command
+   errors (a failed check is a finding, not an error), read the error, fix the cause and retry once; then take
+   another route or record the check as "not run" in `reran` (unverified, R9).
 1. Check independence. Not a fresh context: set `advisory: true`.
 2. Validate the request; fill optional fields from the workspace context. Return `INVALID_REQUEST` only if a hard-required field is missing.
 3. Read only what "What it reads" allows, including `prior_verdict` and the producer's response file from round 2 on.

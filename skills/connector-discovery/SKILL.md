@@ -513,8 +513,8 @@ tell the person to fix the provider connection; they are not a model switch.
 6. **Re-run only what failed** (the node, the agent test, the unindexed documents) and check it worked (run status,
    trace, `check_knowledge_status` = indexed for every source).
 7. **Record it:** the spec's `models[]` (old → new, reason, time, who chose), `context-log.md` as a human decision,
-   and, in POC Studio, `lessons.py capture <workspace> build "<provider> credits ran out during <step>; switched to
-   <card>"`. **Update the BRD**
+   and, in POC Studio, the lesson, written in full as one command:
+   `R=$(dirname "$(find ~/.claude/plugins -path '*ai-pm/scripts/lessons.py' | head -1)"); python3 "$R/lessons.py" capture <workspace> build "<provider> credits ran out during <step>; switched to <card>"`. **Update the BRD**
    wherever it names the old card id (§13, §17, assumptions), as described in "A model change in the BRD" below, so a
    rebuild does not bring the exhausted card back.
 

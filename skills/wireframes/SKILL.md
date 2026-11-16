@@ -228,7 +228,9 @@ scope and wording, then working behaviour, then restraint (rule 12), then everyt
     good examples), as patterns.md part 7 describes, and save each answer to
     `<workspace>/research/wireframes-<topic>.md`. If `research` is missing or fails, use web search and fetch to the
     same budget. Take layout moves and interactions, never artwork or text. List two to four references in
-    `wf-meta.references` with what you took and left. Research never stops the run.
+    `wf-meta.references` with what you took and left. Research never stops the run. Before any search or site visit,
+    check `<workspace>/research/` for an earlier answer to the same question and reuse it; search only for what it
+    leaves open.
 
 17. **Ask, do not invent.** When the BRD is silent, contradictory or ambiguous on something the screen needs (who
     approves, what happens on failure, which field is shown), write an `open_questions` entry with the BRD ref, the
@@ -380,7 +382,10 @@ maintainable: semantic elements (`header`, `nav`, `main`, `section`, `table`, `f
 
 ## Steps
 
-1. **Read.** `references/patterns.md`, then the whole BRD: §7 personas and devices, §8 journeys, §9 conventions,
+1. **Read.** `references/patterns.md`. If `<workspace>/02b-wireframes/_working/notes.md` is missing or older than the
+   scoping document, turn the document into text once and write into that notes file what this step lists (exact copy,
+   field names and numbers word for word); then take the document's facts only from the notes, reopening the document
+   only to check one missing fact. Read, from the notes, the whole BRD: §7 personas and devices, §8 journeys, §9 conventions,
    §10 features (L1 only), §11 page specs (each in full: question, decision, primary action, filters, exact copy,
    states, prerequisites and helper text, actions and what happens), §12 data and statuses, §13 agents, §14
    workflows and business rules, §16 roles, §17 AI trust rules, §19 seed data and demo day, §20.2 demo storyline,
@@ -410,7 +415,8 @@ maintainable: semantic elements (`header`, `nav`, `main`, `section`, `table`, `f
 7. **Review screenshots** (see "Review screenshots"): `python3 -I "$W/wf_tool.py" review "$H" "<workspace>/02b-wireframes/_working/qa"`.
    It captures every screen and frame, a contact sheet and a reading-order overlay per screen, for your review only.
    Fix every `check:` line about reading order, overlapping text, overflow or script errors.
-8. **The visual acceptance gate.** Automated checks are necessary and not enough. Open the HTML in a browser if the
+8. **The visual acceptance gate.** Automated checks are necessary and not enough. Do this full pass once, at the end;
+   after a later fix, look only at the screens and frames that changed. Open the HTML in a browser if the
    session has one, click through the journey from the first step to the payoff, and try every control on the way.
    Then go through every contact sheet and every reading-order overlay in `_working/qa/`, and open any screen or
    frame that looks wrong at full size. Review every screen, every meaningful frame, every component and its
@@ -425,14 +431,17 @@ maintainable: semantic elements (`header`, `nav`, `main`, `section`, `table`, `f
    - Does the overlay's numbered order match where the eye actually goes? If not, move and group; do not decorate.
    - Is each document recognisable as that document?
    Never write that every screen was reviewed when only some were; the hand-over says what you looked at.
-9. **Fresh-eyes review, one round.** Start a separate agent when the session can. Give it only the HTML, the review
+9. **Fresh-eyes review, one round.** Start a separate agent when the session can. While it works, end the turn and
+   wait for Claude Code's finished notice, with no status checks; if `$CLAUDE_PROJECT_DIR/.poc-studio/autopilot`
+   exists, create `waiting` beside it when you hand the job over and remove it when the reply arrives. Give it only the HTML, the review
    screenshots and contact sheets, each screen's brief, the journey and the requirement map, never your notes or
    check output. If no independent agent can run, say so in the hand-over and mark the review outstanding; never
    write up a review that did not happen. It answers screen by screen: first ten seconds; is the signature the real
    thing; do every state, count and date agree; does the story read in order to the payoff; anything sloppy,
    generated-looking, invented or missing; could this app belong to another client with the logo swapped; does any
    title or sentence pass the swap test (Slop rules, rule 4); does every screen and block trace to a BRD need. Fix
-   every finding in the HTML, re-run steps 5 to 7, and list the findings with what you did in the hand-over.
+   every finding in the HTML, re-run steps 5 to 7 (looking only at the screens that changed), and list the findings
+   with what you did in the hand-over.
 10. **Hand-over.** Return the HTML's path (the only output), any "Optional next steps" (ideas beyond the BRD, not
     drawn), the screen, frame and component counts, the signature, the hero object, the chosen navigation with the
     two not chosen, each screen's pattern and shape in one line each, the `brd_overrides` and `open_questions` in one
@@ -590,7 +599,10 @@ step.
 
 Answer each finding as `fixed`, `disputed` (with the brief line, the requirement entry, the patterns.md rule, the §11
 line or the CMP ID behind it) or `deferred`. A fix changes the HTML only where the finding points. Then re-run
-`check`, `manifest` and `review`.
+`check`, `manifest` and `review`, and look only at the screens that changed.
+
+**On any failed command** (a tool, a download, a search), read the error, fix the cause and retry once; then take
+another route or note it in the hand-over.
 
 ## Legacy wireframes (made before wireframes were HTML)
 

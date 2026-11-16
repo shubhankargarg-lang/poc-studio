@@ -15,7 +15,7 @@ Your job: take whatever Requirement Gathering hands over and produce a **golden 
 
 Run end to end **without asking the user anything**. Where information is missing, research it or make the most reasonable assumption, write the assumption down, and keep going. The human reviews afterwards; aim for a document that needs no changes. When the POC Studio orchestrator runs this skill and a question genuinely cannot be settled by research or an assumption, it goes to the AI PM (resolve mode), never to the user.
 
-The Pentland example is the quality bar: two flow decks and a one-line email became a 338-feature catalogue, two app build plans and a design system. The brand compliance example is the other bar: one page of meeting notes became a fully specified scoring model with checks, inputs, formulas, thresholds and per-brand weights. Inputs will usually be that thin. Thin input never justifies a thin document.
+The Pentland example is the quality bar: two flow decks and a one-line email became a full feature catalogue, two app build plans and a design system. The brand compliance example is the other bar: one page of meeting notes became a fully specified scoring model with checks, inputs, formulas, thresholds and per-brand weights. Inputs will usually be that thin. Thin input never justifies a thin document.
 
 ---
 
@@ -104,13 +104,16 @@ These rules keep a long document usable. They do not limit length.
 - Put wide tables (section 10 feature catalogue, section 12 object tables, section 14 workflow specs, section 22 traceability, Appendix E and F) in a **landscape section**, 8–9 pt table text.
 - Diagrams (section 2 "Picture the system"): Word cannot render Mermaid. Render each diagram to a PNG (mermaid-cli `mmdc` if installed, otherwise Graphviz, otherwise matplotlib) and insert the image with a caption "Figure N. …". If none of these can run, present the diagram as a table of nodes and edges and say so in Document Control.
 - Number tables and figures; keep IDs (U1, P1, PG-…, WF-…, AG-…, CMP-…) as plain text so they can be searched.
-- Before finishing, open the file (or convert it to PDF with LibreOffice and render a few pages) to check that headings, landscape sections, tables and images display properly.
+- Before finishing, open the file (or convert it to PDF with LibreOffice and render a few pages) to check that headings, landscape sections, tables and images display properly. Do this once, together with section 9's look at the pages (Step 8).
 
 ---
 
 ## 3. Pipeline
 
-Run the steps in order. Each one writes to disk before the next starts, so a long run can resume.
+Run the steps in order. Each one writes to disk before the next starts, so a long run can resume. Check the tools you
+need once, up front. Read each input once into `_working/notes.md` and work from the notes, reopening a raw file only
+to check one missing fact. On a failed command, search or download, read the error, fix the cause and retry once; then
+take another route or record the gap.
 
 ### Step 1 — Intake
 Read every input (section 1). Fill the evidence log. Write a half-page **input summary** covering: who the client is, what they literally asked for, what material exists, and what is plainly missing.
@@ -137,7 +140,7 @@ For each section of the document template (section 6), write down what the input
 - a **logged assumption**: client facts nobody can look up, such as volumes, team sizes or internal policy. State the value you assumed and why.
 
 ### Step 4 — Research (always through the `research` skill)
-All research goes through the `research` skill (section 4). Invoke it with the Skill tool for each research brief. When you fan research out to sub-agents for parallelism, each sub-agent's instructions must say: "Invoke the `research` skill with the Skill tool and follow it. Use your own web search only if that skill is not available, and state at the top of your output which mode you used: research skill or fallback." Typical research per type is listed in section 5; skip what doesn't apply. Internal process automation may need only one or two calls. Save each brief and answer under `_working/research/`. Every finding you use goes into the document with its source ID.
+All research goes through the `research` skill (section 4). First check `<workspace>/research/` (and `_working/research/`) for earlier answers and reuse them. Then list every open question and send them in **one round of at most 3 questions**, once; the other steps that need research (inputs, brand guidelines in section 4, Step 7, 14.2 and 19) use that round's answers, or record an assumption, never a new call. When you fan research out to sub-agents for parallelism, each sub-agent's instructions must say: "Invoke the `research` skill with the Skill tool and follow it. Use your own web search only if that skill is not available, and state at the top of your output which mode you used: research skill or fallback." Typical research per type is listed in section 5; skip what doesn't apply. Internal process automation may need only one or two calls. Save each brief and answer under `_working/research/`. While sub-agents work, create `.poc-studio/waiting` beside `.poc-studio/autopilot` (when that exists) and end the turn until Claude Code's finished notice, with no status checks; delete it when the last reply arrives. Every finding you use goes into the document with its source ID.
 
 Keep research on the business, the market, the regulations and the features. How other products lay out and show the same work is researched by the wireframes skill and the design system, after this document.
 
@@ -149,7 +152,7 @@ Build the Module › Feature › Sub-feature tree (section 7):
 - Add the cross-cutting layer: AI trust (provenance marking, human review, undo), copilot, notifications, audit, admin.
 - Tag every row with every column, then prioritise every row as below.
 
-Pentland had about 160 sub-features per app. Size the catalogue to the problem, but do not stop at a short list: if a standard tool in the category has a capability, it either appears in the catalogue (usually as L2) or appears in Out of Scope with a reason.
+Size the catalogue to the problem: L1 rows in full, L2 rows one line each. If a standard tool in the category has a capability, it either appears in the catalogue (usually as a one-line L2 row) or appears in Out of Scope with a reason.
 
 #### Prioritise: must-have (L1) vs good-to-have (L2)
 The catalogue is the full list; the build is **L1 only**. Priority is decided by what the client needs to see, not by how useful a feature might be. A row is **L1** only if it has at least one of these reasons, recorded in the catalogue's **L1 reason** column:
@@ -201,7 +204,7 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a capability. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
 
 ### Step 8 — Write, build the Word file, then self-review
-Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
+Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix every flagged line in one pass, rebuild, and re-check; repeat only for lines still flagged. Only finish when it passes. Render pages to look at them once, at the end (the Word formatting check and section 9's together), and after a later fix only the pages that changed. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
 
 ---
 
@@ -240,7 +243,7 @@ The `research` skill takes four parts. Always send all four.
 | Part | What to send |
 |---|---|
 | **Question(s)** | Required. One or more specific questions. Ask "Which capabilities do Salsify, Akeneo and inriver offer for attribute enrichment, with doc links?", not "research PIM tools". |
-| **Purpose** | What the answer feeds and where it's used, e.g. "Feature catalogue for a client-facing scoping document; needs vendor evidence per feature." This sets research depth. Client-facing scoping is high depth. |
+| **Purpose** | What the answer feeds and where it's used, e.g. "Feature catalogue for a client-facing scoping document; needs vendor evidence per feature." This sets research depth. Client-facing scoping is Deep: at most 30 searches, 15 pages and 5 vendors. |
 | **Context** | Known facts: client, industry, country, the use-case type, relevant findings from earlier calls. |
 | **Format** | Ask for what you'll paste in directly, e.g. "Table: capability · vendors offering it · source URL · standard/partial/gap", or "List of fields with type and example". |
 
@@ -258,7 +261,7 @@ Inputs often mix types. Use the primary type's playbook and add the secondary ty
 
 ### A. POV / greenfield in a known product category
 *Example: Pentland wanted our POV on Product Enrichment and PLM in fashion. The input was two process decks and an email.*
-- **Research (heavy)**: 6–10 leading vendors in the category, their feature sets, recent AI features, the category's regulations (e.g. EU AI Act marking, Digital Product Passport), standard KPIs, and the client's brands, public footprint and current systems.
+- **Research (heavy)**: the 5 leading vendors in the category, their feature sets, recent AI features, the category's regulations (e.g. EU AI Act marking, Digital Product Passport), standard KPIs, and the client's brands, public footprint and current systems.
 - **Depth**: a large feature catalogue with Market coverage and Seen In, differentiators, and a must-have slice that tells a story through the client's own process (their stage names, their meeting names such as PACE, their lanes).
 - **Watch**: map every feature to a stage in the *client's* flow, not the vendor's. If the client already runs tools in the category, say how the app sits alongside or replaces them.
 
@@ -381,7 +384,7 @@ Section 9 closes Part A. It should leave a reader who stops here knowing what th
 The **complete** feature catalogue lives here, in the format of section 7, in a landscape section, split into the must-have build scope and the future scope. Do not summarise it or move it elsewhere.
 - **10.1 Summary**: a table per app: module · L1 · L2 · total · market gaps in L1, with totals; plus the L1 reason tally (core flow / agent / client ask / research must-have). State "Grand total: N", "L1 must-have: N" and "L2 future scope: N" here, generated by script.
 - **"10.2 Must-have catalogue (L1 — build scope)"**: one lean table per module (grouped by app, then module, with the heading `App › Module`), every L1 sub-feature with the columns in section 7. This is the only feature list the build works from; its build and research details are in Appendix E and F.
-- **"10.3 Future scope (L2 — not in this build)"**: one table per module listing every L2 row with: ID · Sub-feature · Description · Why it can wait · Depends on (L1 IDs or assets) · Market coverage · Sources. Then a **future-scope assets** table: page, block, object, field, workflow, agent or integration that only L2 needs · the L2 IDs that need it · note. These are not specified anywhere else in the document.
+- **"10.3 Future scope (L2 — not in this build)"**: one table per module listing every L2 row, one line each, with: ID · Sub-feature · Why it can wait · Depends on (L1 IDs or assets). Then a **future-scope assets** table: page, block, object, field, workflow, agent or integration that only L2 needs · the L2 IDs that need it · note. These are not specified anywhere else in the document.
 - **10.4 Agent catalogue**: a one-row-per-agent index for the agents in the build scope: agent · app · what it does · reads from · writes or proposes · human gate · L1 feature IDs. The full specs are in section 13. Agents that only L2 needs appear in the future-scope assets table instead.
 
 ### 11. Page specifications
@@ -546,7 +549,8 @@ Start with the build order: build steps in dependency order (objects and seed �
   - **Seed matches the story.** Each step's record is seeded in exactly the state the step needs: other required approvals already submitted, or the item still in Draft if the step sends it. The hero records (19), agent test answers (13) and field examples (12) all agree with the step.
   - **Show the differentiators.** Every headline differentiator from section 6 appears in a step, including its blocked or failing case when that is the point. Trim other steps to stay in time.
   - **Say what cannot be shown live.** Anything that cannot happen live during the demo (e.g. hourly scheduled reminders) goes in 20.4, or gets an admin 'Run now' action.
-- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun.
+- **"20.3 Build scope vs future scope"**: a table of what the build contains (pages, components, objects, workflows, agents, integrations, L1 feature count) and what is deliberately left for later (the L2 count and the future-scope assets from 10.3), so the builder doesn't improvise L2 and the reviewer doesn't read it as missing. Counts come from the same script as Document Control. As a guide for a POV: per app 4–8 pages, aiming for 3–6 (reviewers keep asking for fewer, cleaner pages), 8–12 objects, 3–8 workflows, and one agent, the live copilot. Add a second agent only with a Decision saying why. Open secondary records, create forms and detail views in drawers or modals rather than as new pages. Reach these numbers by merging, not by dropping journey stages. Fold stages into tabs of one record page, fold small child or lookup records into fields or one shared object, and fold per-action workflows into the generic change-status workflow. Merge workflows that always run together (e.g. approving a message card sends it). Drop metric-refresh schedules when the page can count live from records. Merge one-to-one or few-row child records (a gate, a connection, a handful of deliveries) into their parent as fields. Merge parallel log objects into one with a category. Reset from a seed data file rather than a separate snapshot object when that is simpler. If the L1 build exceeds this, re-test the L1 rows (step 5) rather than explaining the overrun. Never more than 10
+workflows per POC, whatever the framing.
 - **"20.4 Known limits of the build"**: what will look clickable but isn't wired (publish, send, roles), so the demo script avoids it. Nothing L2 should appear as a visible control; if a page needs a placeholder for it, say so here.
 
 ### 21. Hand-off to the design system
@@ -599,8 +603,8 @@ Each feature's attributes are split across three tables keyed by ID, so no table
 
 **10.3 L2 future scope** (one per module):
 
-| ID | Sub-feature | Description | Why it can wait | Depends on | Market coverage | Sources |
-|---|---|---|---|---|---|---|
+| ID | Sub-feature | Why it can wait | Depends on |
+|---|---|---|---|
 
 L2 rows carry no Component, Page, Objects or Agent/WF values, because nothing is built for them now, and they do not appear in Appendix E or F.
 
@@ -640,176 +644,13 @@ Rules:
 
 ### `check_docx.py`
 
-Save this as `_working/check_docx.py` and run it on the finished file (`pip install python-docx --break-system-packages` if needed). Extend it with case-specific checks; never weaken it.
-
-    import re, sys, hashlib, collections
-    from docx import Document
-    from docx.text.paragraph import Paragraph
-    from docx.table import Table
-    doc = Document(sys.argv[1])
-    errs = []
-
-    # --- walk the body in order, tracking the current Heading 1 / Heading 2 ---
-    blocks = []                                   # (kind, obj, h1, h2)
-    h1 = h2 = ""
-    for el in doc.element.body.iterchildren():
-        if el.tag.endswith("}p"):
-            p = Paragraph(el, doc); s = p.style.name if p.style is not None else ""
-            if s == "Heading 1": h1, h2 = p.text.strip(), ""
-            elif s == "Heading 2": h2 = p.text.strip()
-            blocks.append(("p", p, h1, h2))
-        elif el.tag.endswith("}tbl"):
-            blocks.append(("t", Table(el, doc), h1, h2))
-    paras = [b[1] for b in blocks if b[0] == "p"]
-    tables = [b[1] for b in blocks if b[0] == "t"]
-    def head(t): return [c.text.strip() for c in t.rows[0].cells]
-    def cells(t): return [c.text for r in t.rows for c in r.cells]
-    def heading(p, lvl): return p.style is not None and p.style.name == f"Heading {lvl}"
-    h1s = [p.text.strip() for p in paras if heading(p, 1)]
-    allh = [p.text.strip() for p in paras if p.style is not None and p.style.name.startswith("Heading")]
-    text = "\n".join(p.text for p in paras)
-    alltext = text + "\n" + "\n".join(x for t in tables for x in cells(t))
-
-    # --- structure: sections, parts, required and forbidden headings ---
-    for i in range(24):
-        if not any(h.startswith(f"{i}.") for h in h1s): errs.append(f"missing section {i}")
-    if not any(h.startswith("Appendix") for h in h1s): errs.append("missing Appendix")
-    def pos(pred):
-        return next((i for i, h in enumerate(h1s) if pred(h)), None)
-    pa, pb = pos(lambda h: h.startswith("Part A")), pos(lambda h: h.startswith("Part B"))
-    s0, s10 = pos(lambda h: h.startswith("0.")), pos(lambda h: h.startswith("10."))
-    if pa is None or pb is None: errs.append("missing 'Part A' / 'Part B' Heading 1 dividers")
-    elif not (s0 is not None and s10 is not None and pa < s0 and s0 < pb < s10):
-        errs.append("Part A must come before section 0, Part B between sections 9 and 10")
-    for req in ["How to read this document", "5.5 Must-have vs future scope", "10.2 Must-have catalogue",
-                "10.3 Future scope", "20.1 Acceptance checklist", "20.3 Build scope vs future scope",
-                "20.4 Known limits of the build", "21.1 Hero object", "21.2 Reference products",
-                "E. Feature build mapping", "F. Feature research mapping"]:
-        if not any(h.startswith(req) for h in allh): errs.append(f"missing heading: {req}")
-    for bad in [r"Full catalogue", r"^5\.5 Phases\b", r"Build slice", r"Known limits of Phase 1", r"^C\. Assumptions log"]:
-        for h in allh:
-            if re.search(bad, h): errs.append(f"old-layout heading: '{h}'")
-
-    # --- placeholders and code ---
-    for bad in ["TBD", "TODO", "{{", "```"]:
-        if bad in alltext: errs.append(f"placeholder or code block: {bad}")
-    if re.search(r'^\s*[\{\[]\s*"', alltext, re.M): errs.append("JSON-like block found")
-
-    # --- readability: table width, Phase 1 columns, duplicates ---
-    wide, ph_col, ph_row = [], [], []
-    for n, t in enumerate(tables, 1):
-        h = head(t)
-        if len(h) > 10: wide.append(f"{n} ({len(h)} cols, '{h[0]} | {h[1]}…')")
-        if any(x == "Phase 1" for x in h): ph_col.append(n)
-        if h and h[0] in ("Item", "Convention", "Count", "Topic", "Block"):
-            keys = [r.cells[0].text.strip() for r in t.rows[1:]]
-            if "Phase 1" in keys: ph_row.append(n)
-            for k, c in collections.Counter(keys).items():
-                if c > 1 and k not in ("", "—"): errs.append(f"table {n} repeats row '{k}'")
-    def few(xs): return ", ".join(map(str, xs[:6])) + (f" … (+{len(xs)-6})" if len(xs) > 6 else "")
-    if wide: errs.append(f"{len(wide)} tables wider than 10 columns: {few(wide)}")
-    if ph_col: errs.append(f"{len(ph_col)} tables have a 'Phase 1' column: tables {few(ph_col)}")
-    if ph_row: errs.append(f"{len(ph_row)} spec tables have a 'Phase 1' row: tables {few(ph_row)}")
-    seen = {}
-    for n, t in enumerate(tables, 1):
-        if len(t.rows) < 4: continue
-        key = hashlib.md5("|".join(cells(t)).encode()).hexdigest()
-        if key in seen: errs.append(f"table {n} duplicates table {seen[key]}; state it once and reference it")
-        seen.setdefault(key, n)
-    runs, cur = [], []
-    for p in paras:
-        if p.style is not None and "List" in p.style.name and p.text.strip(): cur.append(p.text.strip())
-        else:
-            if len(cur) >= 3: runs.append(tuple(cur))
-            cur = []
-    if len(cur) >= 3: runs.append(tuple(cur))
-    for r, c in collections.Counter(runs).items():
-        if c > 1: errs.append(f"list repeated {c} times (starts '{r[0][:50]}'); state it once and reference it")
-
-    # --- "Phase 2/3" only in section 5, 10.3 and the Appendix ---
-    def allowed(h1, h2): return h1.startswith("5.") or h2.startswith("10.3") or h1.startswith("Appendix")
-    stray = collections.Counter()
-    for kind, obj, b1, b2 in blocks:
-        if allowed(b1, b2): continue
-        txt = obj.text if kind == "p" else "\n".join(cells(obj))
-        n = len(re.findall(r"\b(Phase [23]|later phase)\b", txt, re.I))
-        if n: stray[b1] += n
-    for sec, n in stray.items(): errs.append(f"'Phase 2/3' mentioned {n}× in {sec}; use the page's 'Future scope' line or 10.3")
-
-    # --- diagrams ---
-    if len(doc.inline_shapes) < 5: errs.append(f"{len(doc.inline_shapes)} diagram images (need ≥ 5: journey, app map, AI/data flow, lifecycle, ER)")
-    caps = [p.text for p in paras if re.match(r"Figure \d+\.", p.text.strip())]
-    if len(caps) < len(doc.inline_shapes): errs.append("every diagram image needs a 'Figure N.' caption")
-    if not any(s.orientation == 1 for s in doc.sections): errs.append("no landscape section for wide tables")
-
-    # --- catalogue: L1 tables, L2 tables, appendix mappings ---
-    l1, l2, comp_ids, mapE, mapF = set(), set(), set(), set(), set()
-    for t in tables:
-        h = head(t)
-        if h[:2] == ["ID", "Sub-feature"]:
-            ids = [r.cells[0].text.strip() for r in t.rows[1:]]
-            if "L1 reason" in h:
-                rsn = h.index("L1 reason")
-                for r in t.rows[1:]:
-                    fid = r.cells[0].text.strip(); l1.add(fid)
-                    if r.cells[rsn].text.strip() in ("", "—"): errs.append(f"L1 row without L1 reason: {fid}")
-            elif "Why it can wait" in h: l2 |= set(ids)
-            else: errs.append(f"catalogue table (ID | Sub-feature …) with neither 'L1 reason' nor 'Why it can wait': {h[:5]}")
-        if h[:2] == ["ID", "Process stage"]: mapE |= {r.cells[0].text.strip() for r in t.rows[1:]}
-        if h[:2] == ["ID", "Market coverage"]: mapF |= {r.cells[0].text.strip() for r in t.rows[1:]}
-        if h[:2] in (["CMP ID", "Capability"], ["CMP ID", "Component"]): comp_ids |= {r.cells[0].text.strip() for r in t.rows[1:]}
-    feat = l1 | l2
-    if not l1: errs.append("no L1 (build scope) catalogue rows")
-    if l1 & l2: errs.append(f"IDs in both L1 and L2: {sorted(l1 & l2)[:5]}")
-    if mapE != l1: errs.append(f"Appendix E build mapping does not match L1 (missing {len(l1-mapE)}, extra {len(mapE-l1)})")
-    if not l1 <= mapF: errs.append(f"Appendix F research mapping misses {len(l1-mapF)} L1 rows")
-
-    # --- every stated count agrees with the tables ---
-    for label, val in (("Grand total", len(feat)), ("L1 must-have", len(l1)), ("L2 future scope", len(l2))):
-        found = re.findall(rf"{label}: (\d+)", alltext)
-        if not found: errs.append(f"'{label}: N' not stated")
-        for f in set(found):
-            if int(f) != val: errs.append(f"'{label}: {f}' but tables have {val}")
-    if feat:
-        for a, b in re.findall(r"\b(\d+) of (\d+)\b", alltext):
-            if int(b) == len(feat) and int(a) not in (len(l1), len(l2)): errs.append(f"'{a} of {b}' matches neither L1 ({len(l1)}) nor L2 ({len(l2)})")
-    spec = {k: len({h.split()[0] for h in allh if re.match(rf"{p}\d+\b", h)})
-            for k, p in (("Pages", r"PG-[A-Z]*"), ("Objects", r"OB-"), ("Agents", r"AG-"), ("Workflows", r"WF-"))}
-    spec["Components"] = len(comp_ids)
-    for t in tables:
-        if head(t)[:2] == ["Count", "Value"]:
-            for r in t.rows[1:]:
-                k, v = r.cells[0].text.strip(), r.cells[1].text.strip()
-                for name, n in spec.items():
-                    m = re.match(r"(\d+)", v)
-                    if k.startswith(name) and m and int(m.group(1)) != n: errs.append(f"Document control says {k} = {m.group(1)} but the specs have {n}")
-
-    # --- components and L2 leakage into build specs ---
-    if not comp_ids: errs.append("no capability inventory table (CMP ID | Capability …)")
-    for cid in set(re.findall(r"\bCMP-[A-Z]*-?\d+\b", alltext)) - comp_ids: errs.append(f"unknown component {cid}")
-    def expand(txt):                                         # "FC-001–FC-004" -> each ID
-        out = set(re.findall(r"\b[A-Z]{2,4}-\d{3}\b", txt))
-        for a, p, x, y in re.findall(r"\b(([A-Z]{2,4})-(\d{3}))\s*[–-]\s*\2-(\d{3})\b", txt):
-            out |= {f"{p}-{i:03d}" for i in range(int(x), int(y) + 1)}
-        return out
-    build_refs = set()
-    for p in paras:
-        if p.text.startswith("Features covered"): build_refs |= expand(p.text)
-    for t in tables:
-        h = head(t)
-        for col in ("L1 feature IDs", "Features powered", "Feature IDs"):
-            if col in h and h[:2] != ["ID", "Sub-feature"]:
-                i = h.index(col); build_refs |= {x for r in t.rows[1:] for x in expand(r.cells[i].text)}
-        if h and h[0] == "Item":
-            for r in t.rows[1:]:
-                if r.cells[0].text.strip() in ("Features powered", "Components and features", "Features covered"):
-                    build_refs |= expand(r.cells[1].text)
-    leak = sorted(build_refs & l2)
-    if leak: errs.append(f"{len(leak)} L2 feature IDs referenced in build specs, e.g. {leak[:5]}")
-
-    print("\n".join(errs) or "ok")
-    print("features:", len(feat), "L1:", len(l1), "L2:", len(l2), "components:", len(comp_ids),
-          "pages/objects/agents/workflows:", spec["Pages"], spec["Objects"], spec["Agents"], spec["Workflows"])
+The checker is a file in this skill, `scripts/check_docx.py`: copy it once into `_working/` by its full path (never
+retype it) and run it on the finished file with `source ~/.local/poc-collateral/env.sh 2>/dev/null; python3
+_working/check_docx.py scoping-document.docx`. Extend the `_working/` copy with case-specific checks; never weaken it.
+```bash
+SC="$(ls -d ~/.claude/plugins/cache/*/poc-studio/*/skills/scoping-l1-first/scripts 2>/dev/null | sort -V | tail -1)"; [ -n "$SC" ] || SC="$(dirname "$(find ~/.claude/plugins -path '*scoping-l1-first/scripts/check_docx.py' 2>/dev/null | head -1)")"
+cp "$SC/check_docx.py" <workspace>/02-scoping/_working/check_docx.py
+```
 
 What it enforces, so you know what to fix when it fails:
 - **Structure**: sections 0–23 and the Appendix; the Part A divider before section 0 and the Part B divider between sections 9 and 10; the required Heading 2s named in section 6 ("How to read this document", 5.5, 10.2, 10.3, 20.1, 20.3, 20.4, Appendix E and F); and none of the old-layout headings ("Full catalogue", "5.5 Phases", "Build slice", "Known limits of Phase 1", an Appendix assumptions log).
@@ -900,42 +741,8 @@ If a check fails, fix the document rather than weakening the check. In POC Studi
 
 ---
 
-## 11. Calibration: how the Pentland example maps to this skill
+## 11–12. Calibration examples
 
-- **Input**: an email asking for a POV on Product Enrichment and PLM in fashion, a 6-slide deck (future org, Demand vs GSP roles, new-product routes, range-to-release workflow), and a 6-page image-only PDF ("How we operate": strategy → concept → creation → activation, with NPD / Low touch / Zero touch lanes; planning calendar; bottom-up forecast).
-- **Type**: A (POV in a known category), secondary C. **Framing**: POV/demo.
-- **Research**: about 10 vendors per app, EU AI Act and C2PA, AI-UX guidance; 188 sources. Research also found the client's current stack (Centric PLM, Salsify, SAP, Shopify), which changed the positioning.
-- **Catalogue**: PLM 161, Enrichment 159 and AI layer 18 sub-features, plus a 13-agent catalogue and a 36-component UI list.
-- **Components**: e.g. Content Hub: content builder, tech pack reviewer, content generator, asset shot-list checker, channel readiness board, claims checker; PLM: line plan matrix, proposal studio, PACE decision room, style stage-gate stepper, critical-path calendar, forecast & sign-off grid.
-- **Build plans**: PLM with 5 journey sections plus supporting pages, 19 objects, 3 workflows, one live Copilot and seeded ★ AI. Content app with 6 pages, 6 objects with typed fields, a 7-stage product record, 9 workflows (W1–W9), named seed records, an acceptance checklist and a demo path.
-- **Sizing lesson** (from the Pentland scoping reviews): reviewers found 19 objects, many personas and many pages too heavy. They asked for about 10–12 objects, three personas, a handful of well-defined pages and three workflows (reset demo, change stage, generate the PACE pack PPT). They also rejected a draft that had drifted into a product-data and GTIN tool. The fix: keep the whole journey (strategies, concept, PACE, product record, line plan, critical path, materials, approvals) on fewer, richer pages, keep checks inside the product record, and seed every page.
-- The client's process stages and meeting names (PACE, IBP, lanes) drove the page order, the stage picklists and the demo story.
-
-A scoping document from this skill should contain everything the Excel and both build plans held, in one Word file, in the structure above.
-
-**What the builds had to improvise** (both apps were built as code apps; the build plans missed these, and the rules above now require them): a generic read workflow as the copilot's tool, an activity-log object, a reset-demo workflow with seed snapshots and date shifting, an object prefix to avoid clashing with an older model on the tenant, one validated change-status workflow for all objects with per-object allowed values, gate conditions per stage, computed completeness/readiness/validation fields recalculated on every save, planted seed defects matching the copilot's expected answers, a deep-link route for agent answers, global brand/season filters, and a browser-side fallback when the agent could not generate a deck. Also note that the inputs spent much of their pages on demand and supply planning while the ask was PLM and Enrichment; the PLM build absorbed it as PACE meetings, forecasts and milestones rather than a third app.
-
-**Don't reuse Pentland's page or component names** (content builder, line plan matrix and the rest above): they are Pentland's answers. **Don't copy these numbers either.** Pentland's counts (two apps, ~160 sub-features per app, 13 agents) fit Pentland. Size each new case from its own process and category.
-
----
-
-## 12. Calibration: the brand compliance example
-
-- **Input**: one page of meeting notes. The ask was to validate retail shelf compliance from photos using AI or computer vision; the KPIs listed were shelf space, visibility, logo placement, font and tagline; the targets were drinks brands (Diageo and Jim Beam named); field reps are offline, so on-device processing is needed; hundreds of thousands of stores; options weighed were classic vision models vs fine-tuned vision LLMs; the goal was the most frugal solution delivering 7–10 KPIs.
-- **Type**: G (AI scoring). **Framing**: POV/demo; the agreed next step was a 3–4 slide proposal deck with a working prototype.
-- **What was produced**: 6 KPIs (must-stock SKU presence, share of shelf, campaign and signage, eye-level visibility, brand placement and integrity, price and promo). The asked-for logo, font and tagline items were folded into brand integrity and campaign checks. Each KPI has an industry name, evidence with sources, a checks table, an inputs table with source type and source (manual input, web search or none), a formula, Pass / Needs attention / Fail / Not assessable bands, critical flags (missing hero SKU, counterfeit, price above MRP in India) and real-world example links. Weights per brand total 100, with reasons (price leads for Diageo because its strategy depends on prices reaching the shelf).
-- **Components**: e.g. shelf photo capture (offline), KPI scorer, store scorecard, brand-team exception queue, rule & weight configurator.
-- These names are this client's; name another client's capabilities from its own work.
-- **Lesson**: for scoring apps, the rules spec is the heart of the scope, and the pages, objects and workflows are built around it.
-- **Prioritisation lesson** (from the first run of this example): the first draft marked 126 of 175 rows L1 and specified 18 pages, which buried the core flow. Re-tested with the L1 rule (step 5), L1 is the capture → quality check → recognition → KPI scoring → review → follow-up loop, the agents (copilot, vision judge, action planner), the five asked items (shelf space, visibility, logo, font, tagline) plus the 7–10 KPI target, and the research must-haves (availability, price/MRP, critical flags); integrity checks, imports, coaching, model monitoring, digests, WhatsApp, native app and BI export are L2 future scope with no build spec.
-- **Readability lesson** (from the VTInfo shelf-compliance run): the content was strong, but the document was hard to use. It ran to about 130 pages with 240 tables and only 3 diagrams, and four build sections held about 60% of the words. The catalogue had 21 columns, so every cell wrapped to a few characters even in landscape. Priority and a separate "Phase 1" column disagreed on 23 rows, and the Phase 1 count was 134 in one section and 131 in two others. Out-of-phase pages, workflows and agents were fully specified anyway, "Phase 2" appeared 53 times across the specs, and the acceptance criteria were printed twice. The fixes now in this skill: Part A / Part B with a reading guide, a lean 9-column catalogue with build and research details in Appendix E and F, no phase flags in specs, every count generated by script, each list stated once, and at least five diagrams.
-
----
-
-## Changes in v5 (what the design system needs to look like this client)
-
-Each page now says what the person must see to decide, including what they judge by eye and how many items they handle at once. Section 21 adds the hero object with its picture and the other visual objects (21.1), 3 to 5 reference products (21.2), and the typeface, photo style and tone as brand cues. A run that left these out gave the wireframes and the design system nothing visual to work with, and the app came out as rows of text for a business that judges its products by eye.
-
-## Changes in this version (wireframes and design system split)
-
-The wireframes skill now runs after this document and decides how each page works and looks: each page's layout and pattern, the home, the app's signature component and the UI components; the design system designs those components. So this document says what the app must do and leaves how it looks to them: pages keep their purpose, question, decision, data, actions, states and exact wording, with no layout regions, above-the-fold, hero, card anatomy or UI pattern names; section 10.5 and the §21 pattern and custom-component lists are gone; section 23 is the capability inventory, with stable CMP IDs; each status has its tone, picture, document and location fields are marked, every refusal and no-access message is given word for word, and section 19 names the demo day. Examples are from domains we are not scoping, and the Pentland and brand compliance names are marked as theirs.
+The two calibration examples (Pentland, and the brand compliance engine) and the version notes are in
+`references/calibration-and-changes.md`. Read section 11 there once at Step 5 for its sizing lesson (not its counts),
+and section 12 when the use case is an inspection, scoring or compliance engine (type G).
