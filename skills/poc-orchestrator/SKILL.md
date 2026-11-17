@@ -1080,3 +1080,11 @@ and a built page does not.
   raise a limit yourself.
 - Keep the person informed with a task list (one item per stage) and a short line when each stage finishes; no
   running commentary.
+- **Quality rules win.** The shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`) win over any "make it impressive", "rich
+  detail" or "the wow" instruction; the wow comes from the client-specific core action, never from extra panels or
+  decoration. Every stage call (connector discovery at 1c included) names that file's path and any size guide the
+  stage has (a guide, never a cap), so each skill writes to the rules from the start.
+- **Internal records stay internal.** Nothing from `state.json` or `context-log.md` (run IDs, scores, review numbers)
+  goes into a client file.
+- **Messages to the person** give the answer first, in sentences under 25 words, with no throat-clearing ("Here's
+  what happened") or colon reveals, and end on the decision being asked, never on a recap or "Let me know if…".

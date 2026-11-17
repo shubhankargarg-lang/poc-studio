@@ -122,6 +122,17 @@ Each rule comes with its reason, because the caller builds on what comes back.
 5. **Report vendor and gallery claims as claims.** A product page tells you what the vendor says.
 6. **Keep to the question.** Add background only when it changes how the answer is used.
 
+## Quality rules (apply while writing the answer)
+
+The answer follows the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`).
+1. The answer opens with the answer itself.
+2. Sentences in the answer stay under 25 words.
+3. No filler words and no stacked hedging ("may potentially help"); state each gap once, under Gaps.
+4. State the fact or the figure, with no puffery ("plays a vital role") and no trailing "-ing" clauses
+   (", highlighting …").
+5. Every claim names its source; "experts agree", "studies show" and "industry reports suggest" are never used.
+6. Numbers are rounded to the precision the caller needs, in consistent units and formats.
+
 ## Check before returning
 
 - Every factual sentence has a link, and the link supports it (check links, figures and dates against the notes file
@@ -130,6 +141,7 @@ Each rule comes with its reason, because the caller builds on what comes back.
 - Each question is answered or listed under gaps.
 - The answer makes sense when read without the findings table.
 - No confidential detail from the request went into a query or a source.
+- The answer passes the Quality rules above, line by line.
 
 Then hand the result back.
 - **Called by another skill in the same conversation** (the wireframes, design-system or scoping skill

@@ -938,6 +938,11 @@ from iterations only. **A POC is optional.**
 The plugin only **creates** tickets (and their `created` activity row) and **reads** them. It never updates or
 deletes a ticket.
 
+**Text people read** (ticket descriptions, Activity messages, iteration context, document summaries) follows the shared
+writing rules (`<skill-base-dir>/../../references/anti-slop.md`): say what happened and how to fix it; sentences under
+25 words with no filler; no em dashes or trailing "-ing" clauses; name the stage or the file, never "the system"; IDs
+go in their fields, never in the description text. The person's own words are kept exactly as they wrote them.
+
 1. **Find the POC (optional).** Use the current workspace's POC ID: `state.json` → `orbit.poc_id` in the client
    workspace this session is working in (look for `*/*/state.json` under the current folder, or
    `./orbit-test/state.json`).

@@ -447,7 +447,8 @@ maintainable: semantic elements (`header`, `nav`, `main`, `section`, `table`, `f
    screenshots and contact sheets, each screen's brief, the journey and the requirement map, never your notes or
    check output. If no independent agent can run, say so in the hand-over and mark the review outstanding; never
    write up a review that did not happen. It answers screen by screen: first ten seconds; is the signature the real
-   thing; do every state, count and date agree; does the story read in order to the payoff; anything sloppy,
+   thing; do every state, count and date agree; does the story read in order to the payoff; does every line pass the two-second test (rule 36); does every headline
+   number follow from the hero records (rule 30); anything sloppy,
    generated-looking, invented or missing; could this app belong to another client with the logo swapped; does any
    title or sentence pass the swap test (Slop rules, rule 4); does every screen and block trace to a BRD need. Fix
    every finding in the HTML, re-run steps 5 to 7 (looking only at the screens that changed), and list the findings
@@ -487,7 +488,7 @@ The internal manifest keeps the field names the stages that read it use (`pages`
 
 Slop is output that looks finished but is generic, padded, invented or hard to read. These rules come from the team's
 "Dos and don'ts to reduce AI slop" (14 Nov 2026), and most of them are already inside the rules above; this list is
-the whole set as it applies to wireframes, so nothing is left to memory. Each has a number so it can be checked, and
+the whole set as it applies to wireframes, so nothing is left to memory. Apply them while you draw and write each screen; the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`) apply to every line too. Each has a number so it can be checked, and
 `check` tests every one it can see; the word lists live in `check`, not here.
 
 **Content**
@@ -495,8 +496,11 @@ the whole set as it applies to wireframes, so nothing is left to memory. Each ha
 2. Build only what was asked. An extra idea goes in the hand-over under "Optional next steps", never on a screen.
 3. Facts, names and numbers come from the BRD; an invented value is marked `data-sample` (rule 8 above).
 4. The swap test: put another company's name in any title or sentence; if it still makes sense, rewrite it.
-5. One term per concept, in the client's words, everywhere.
-6. No trace of how the file was made on screen: no tool names, file names, paths, run IDs, scores or error codes.
+5. One term per concept, in the client's words, everywhere, and one concept per term: never one word for two things
+   ("High" for volume and for urgency).
+6. No trace of how the file was made on screen: no tool names, file names, paths, run IDs, scores or error codes; no
+   internal agent names (the assistant keeps the one name set in `app.agent`), model names, confidence on rule-based
+   checks or arithmetic, or system words such as "indexing", "knowledge set" and "last read".
 
 **Writing** (the reader understands over 90% of a 14-word sentence and under 10% of a 43-word one)
 7. Sentences average 15 to 20 words, 25 at most. One dash aside per paragraph at most; no chains of "·", ";" or arrows.
@@ -509,7 +513,8 @@ the whole set as it applies to wireframes, so nothing is left to memory. Each ha
 
 **Headings**
 12. Every title names what its block holds or its outcome, in the reader's words; never "Overview" or "Chart 1".
-13. Each screen has its own subtitle; no line repeats across screens.
+13. A subtitle only when it says what the screen is for (never the sort order or the date); no line repeats across
+    screens.
 
 **Screens**
 14. One job and one primary button per screen, and at most two other visible actions in its header; the rest go in a
@@ -523,7 +528,8 @@ the whole set as it applies to wireframes, so nothing is left to memory. Each ha
 21. Every view has its empty, loading and error states where the data can produce them (rule 9 above).
 22. Buttons say a verb and an object; error messages say what happened and how to fix it; rules are explained in
     words ("within the 30% discount limit").
-23. One way into the assistant; AI output is marked once per panel, never with a sparkle on every block.
+23. One way into the assistant; AI output shows as "AI" once per panel, with no sparkle on every block and no agent or
+    model name under each answer. A decision the AI made on its own keeps its one-line reason.
 24. No emoji anywhere; every icon has its word beside it (Close and More may carry theirs as `aria-label`).
 
 **Charts and numbers**
@@ -532,9 +538,33 @@ the whole set as it applies to wireframes, so nothing is left to memory. Each ha
 26. At most six metrics per screen, each with its comparison (target or last period) and its time frame.
 27. At most four series per chart; axes labelled with units, lines labelled directly, bars starting at zero.
 28. Round to the precision the decision needs (two or three significant figures); one format per unit.
-29. A short note under every chart and headline number says its source or time frame ("From the 11 Nov scan").
+29. A short note says the source or time frame of a chart or headline number only when neither is already visible on
+    the screen, and at most once per panel.
 
-**When rules conflict:** the BRD's facts and exact copy first, then these rules, then completeness. Never add a
+**Story, states and clarity**
+30. Every headline number and payoff claim agrees with the hero records' states, values and times. If the story needs
+    a condition the data does not have, raise it in `open_questions`.
+31. Times on a record run in order, and a state comes after the events that cause it. The same count means the same
+    thing everywhere: a header that says 4 matches a filter that says 4.
+32. Every action is allowed only in the states the BRD's lifecycle names; in any other state it is disabled with its
+    reason.
+33. Each option on a decision has a different visible result; two options with the same result are merged or dropped.
+    A status never contradicts an open exception.
+34. No dead ends: draw the path after a wrong AI answer, the edit and remove actions, and what happens next after a
+    hand-off, or list each as an open question.
+35. Each fact appears once per screen. A summary links to its list instead of repeating its figures; it may keep one
+    headline number that links to the list.
+36. The two-second test: every label, badge and count makes sense without the BRD. A badge says what it counts
+    ("2 need attention"), every number has its unit, and each filter has its own title.
+37. Detail goes only to the role that acts on it: check IDs and score maths go to the supervisor, never the
+    housekeeper.
+38. The presenter tools (persona switcher and reset) live only in the review bar (`data-wf-chrome`), never in the user
+    menu or the app bar.
+39. Dates, times and spelling follow the BRD's locale (§19); a time from another zone shows that zone.
+
+**When rules conflict:** the BRD's facts and exact copy first, with one exception: a label must describe what is
+counted. Keep the client's own name when it means what is counted; otherwise rename it, record it in `brd_overrides`
+and raise it in `open_questions`. Then these rules, then completeness. Never add a
 screen, block or word to look thorough. A clean `check` is not proof of quality: generic content in clean words is
 still slop, which is why the fresh-eyes review asks the swap test (rule 4) and whether every screen traces to the BRD
 (rule 1).

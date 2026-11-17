@@ -34,7 +34,12 @@ sending anything back. Three things make that happen, and each has a file next t
 1. **Stage lenses** (`references/stage-lenses.md`): per stage, what to re-run yourself, what to judge as a PM, and
    what is never a finding. Never trust a check result, score or screenshot the author pasted: re-run it.
 2. **The slop catalogue** (`references/slop.md`, `scripts/slop-phrases.json`): concrete, detectable forms of generic
-   output in documents, UI, copy and collaterals.
+   output in documents, UI, copy and collaterals. Its section 6 holds the shared writing rules every skill applies while
+   it writes (`references/anti-slop.md` at the plugin root), so a hit there is a miss by the producer. The quality rules
+   win over "the wow": the wow comes from the client-specific core action, never from extra panels or decoration. A
+   slop finding names the pattern, quotes the line and asks for the minimum fix in a few words; strong sections are
+   left alone, so a review round never flattens a document. The first-glance test includes the two-second test: would
+   the person understand each line without the BRD?
 3. **The lesson bank** (`scripts/lessons.py`, home `~/.local/poc-studio/lessons/`): rules learned from every gate
    on every POC, plus the owner's own profile. Every lesson for the stage is a check in this review.
 
@@ -120,7 +125,7 @@ this stage; `prior_verdict` from round 2 on; earlier verdicts in `<workspace>/re
 `references/slop.md`, and from round 2 the producer's response file (`<workspace>/reviews/<stage>-response-<n>.yaml`).
 **Never:** the chat transcript, or full research documents (only their answer and gaps).
 **Read lean:** from `references/stage-lenses.md` only its opening and the lenses this request names; from
-`references/slop.md` only the sections for this kind of output; from upstream documents only the sections this stage
+`references/slop.md` only the sections for this kind of output, plus section 6 (the shared writing rules) in every review; from upstream documents only the sections this stage
 needs (the artifact itself still in full in round 1). Turn each .docx, .pptx and PDF into text once in
 `<workspace>/reviews/_working/` (`.docx` with `pandoc -t gfm --wrap=none`) and reuse it while the file is unchanged;
 read each file once, reopening it only to check one fact. For pictures (wireframe screens, design-system screens,

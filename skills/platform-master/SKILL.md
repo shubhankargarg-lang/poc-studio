@@ -59,6 +59,23 @@ change them.
      for the panels, own screen-space clustering into health rings, collision-free labels, hover-to-card), in the
      modes <modes from the manifest>, bound to <the data contract's object and lat/lng fields>". It does not count
      toward the 15.
+   - `Quality:` always, for every use case, outside the 15 (like `Map:`), this fixed block, so the build's own copy,
+     states, data and formatting are written clean in the first place. The build should:
+     - label buttons with a verb and an object, never "Submit" or "OK";
+     - write error messages that say what happened and how to fix it, never "Something went wrong";
+     - give every view an empty, loading and error state, with empty states that say what to do next;
+     - show no internal IDs, rule IDs, citation trails, raw values, or "demo" and "synthetic" words on screen;
+     - round numbers to the precision the decision needs, in one format per unit;
+     - explain business rules in words on screen ("within the 30% discount limit");
+     - give one way into the AI assistant, and show AI as "AI" once per panel, with no sparkle icons, no internal agent
+       or model names (the assistant keeps its one name), and no confidence on rule-based checks;
+     - use realistic seed data from the client's domain, with no "John Doe", Lorem ipsum or repeated dummy values;
+     - build only the L1 features, with no extra panels, features or sections;
+     - keep em dashes and colon reveals ("The best part: …") out of UI strings;
+     - keep "View as" and the reset action in the profile menu, grouped apart from the real settings, never labelled
+       "demo" (the AI PM's build walk switches personas through "View as");
+     - show every date, time and number in the BRD's locale, with the zone on any time from another zone;
+     - show each fact once per screen: a summary links to its list, keeping at most one headline number.
 4. Return the pointers. The orchestrator adds them to the build request under **Platform pointers**.
 
 ## 1b · Question review (inside the Zen planning window, before the person sees each question)
@@ -97,7 +114,8 @@ before its one question (start / change something / keep for later) is put to th
    `context-graph.md` or `governance.md` when the plan relies on a connector, a context graph or an agent control.
    An item is an **adjustment** only when it is one of these:
    - it would break or misbehave on the platform (a checklist item it fails);
-   - an L1 item of Part B has no task, or a task builds something Part B does not ask for;
+   - an L1 item of Part B has no task, or a task builds something Part B does not ask for (including panels, sections or
+     widgets nobody asked for);
    - a pointer that applies is not reflected in the plan (the `Map:` pointer included: one shared map component, not
      one map per page, and not a map inside a card);
    - a page's layout differs from its screen in the approved wireframe HTML (`02b-wireframes/<slug>-wireframes.html`:
@@ -124,7 +142,8 @@ before its one question (start / change something / keep for later) is put to th
 
 Never adjust: the scope (L1 only), the page layouts (they come from the approved wireframes), the design decisions (they come from the design system's composition contract), the
 mode, the solution, the builder, the environment, the seed-data policy, or anything the person already answered in the
-planning window (`04-build/zen-decisions.md`).
+planning window (`04-build/zen-decisions.md`). When a plan's copy or seed data breaks a `Quality:` pointer, add a
+"Check this" line naming it instead of an adjustment.
 
 **Platform-master's routes in the plan.** When the person chose a platform-master option during planning (job 1b,
 recorded in `04-build/zen-decisions.md` as "Platform-master:"), check that the spec and the tasks carry it as given;

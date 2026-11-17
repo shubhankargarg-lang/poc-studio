@@ -206,7 +206,7 @@ Design the app on UnifyApps from the journeys, **for the L1 features only** (ste
 Check every L1 feature has a page, an object and (where needed) a workflow or agent behind it, and belongs to a capability. Check every page is reached by at least one persona workflow. Check the reverse too: every specified page, object, workflow, agent, integration and component serves at least one L1 feature; anything that serves only L2 moves to the future-scope assets table.
 
 ### Step 8 — Write, build the Word file, then self-review
-Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from). Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
+Draft the content in `_working/` (prose plus the structured working draft the long tables are generated from), writing every line to section 10's Quality rules and the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`); before the quality gate, read the draft against them as pass or fail and fix every failing line. Read the `docx` skill and build `scoping-document.docx` following the formatting rules in section 2. Then run the **quality gate** in section 9, including the `check_docx.py` script. Fix everything it finds, rebuild, and run it again. Only finish when it passes. Report the final counts (L1 and L2 features; build-scope components, pages, objects, agents, workflows), the research mode used, and the top assumptions in your closing summary.
 
 ---
 
@@ -414,7 +414,7 @@ One subsection per page in the build scope, in nav order (pages needed only by L
 - **Features covered**: L1 feature IDs.
 - For record pages with tabs or stages, a table per tab or stage with: the fields shown (object.field), which are editable at which stage, the completeness rule for that tab, the AI-prefilled values, the actions, and the **gate** to leave the stage (exact condition, e.g. "every offered variant has a GTIN and country of origin"; who can advance; the message shown when blocked). Future stages are read-only unless you say otherwise.
 - **Create and edit paths**: every record type a persona can create needs a create surface (drawer, form or wizard) with its required fields and the ID format it gets; say which records are created only by workflows.
-- **Global elements on every page**: global filters, the copilot entry point, notifications, the user menu (theme, settings, and the reset action, labelled for what it resets, e.g. "Reset promotion data", never "Reset demo"), and the deep-link route an agent answer uses to open a record.
+- **Global elements on every page**: global filters, the copilot entry point, notifications, the user menu (theme and settings), the presenter tools in the profile menu ("View as" to switch persona, and the reset action labelled for what it resets, e.g. "Reset promotion data"), grouped apart from the real settings and never labelled "demo" (the AI PM's build walk switches personas through "View as"), and the deep-link route an agent answer uses to open a record.
 
 Do not name UI patterns or components for a page (a KPI strip, a kanban board, a side pane): describe what the person needs to see and do. The wireframes choose each page's pattern and components; the design system designs them.
 
@@ -527,6 +527,8 @@ Seed only the build-scope objects (section 12); every count, hero record and pla
 - Named **hero records** that carry the demo story, each with the state it's in, its key dates (offsets) and what it demonstrates. One name per record, used identically everywhere.
 - **Every record a persona sees on their home, and every record behind a count on a page, is named** with its state and dates, in a short table per object (e.g. all 15 promotions on the merchant's home, not only the five in the story). The wireframes and design system draw from this list; a record they have to invent is a gap in this section.
 - **Story defects**: list the deliberate problems planted in seed records (missing field, failed rule, overdue, over budget, low-confidence AI value) and which record carries each, so every warning, gate block and exception path has something to show and the copilot's example questions have known answers.
+- **Locale**: state it once: country, time zone, date style, 12- or 24-hour clock and spelling, from the client's head office (or the persona's site when it differs). A time from another zone shows that zone.
+- **The story is true in the data**: if the storyline needs a condition (only one King room free), this plan creates it, within what is realistic for the client's domain; if the story needs unrealistic data, change the story.
 - **Dates**: name the demo day (the "today" every date in the document agrees with, e.g. "Monday 12 Aug"), store dates as offsets from it and say how reset re-anchors them. The wireframes set their `today` from it.
 - **Files and images**: where each comes from (client's public site, generated, placeholder), naming/storage convention, and rights or brand risk. Use the client's real products where public, generic roles instead of real people, neutral names for suppliers. When the app shows product images, use `research` to find real images of the client's actual products (their site or retailer listings) and seed one per product record, so every image card shows a real photo. An illustration or neutral placeholder is only the fallback for records with no public image. State the fallback count and record the feasibility check (source URL per image, rights or brand risk).
 - Where AI output is seeded, the share of records carrying it (e.g. about 1 in 4).
@@ -574,7 +576,7 @@ The last section before the Appendix, so the wireframes, Design and UnifyApps He
 ### Appendix
 Use these Heading 2s:
 - **A. Sources**: ID → title → URL → where it's cited.
-- **B. Glossary** of client terms (e.g. PACE, NPD, GSP).
+- **B. Glossary** of client terms (e.g. PACE, NPD, GSP). Each term has one meaning; a word used for two things is flagged and split (volume and urgency get different words). A metric renamed because the client's label did not describe what is counted keeps the client's term here.
 - **C. Evidence log**: fact → input file and page/slide/sheet → where it's used.
 - **D. Coverage map**: input → domain/process → inside the ask or not → decision (section 1).
 - **"E. Feature build mapping"**: one row per L1 feature, the build columns of section 7. Design and UnifyApps Headless read this with 10.2.
@@ -740,6 +742,39 @@ If a check fails, fix the document rather than weakening the check. In POC Studi
 - Long is fine; vague or hard to navigate is not. Every sentence should help someone design or build something. Say each thing once and point to it, keep tables narrow, and use a diagram wherever a reader would otherwise have to assemble a flow from several tables.
 - Don't use placeholders such as TBD. Make the call, log it as an assumption, and move on.
 - Write for the client as well as the builder: no internal process notes (e.g. "search budget ran out") in the document; say "needs confirmation" instead.
+
+**Quality rules (apply while writing; the shared writing rules apply too)**
+1. Sentences average 15 to 20 words and stay under 25, with no clauses chained by semicolons, brackets, arrows or "·".
+2. Everyday words, the active voice and direct verbs, with people as the subject ("the approver rejects it"); define
+   each technical term the first time it appears.
+3. Concrete numbers ("from 3 days to 4 hours") in place of praise words; let the number or consequence carry the
+   weight, without calling it "important", "key" or "critical".
+4. State each uncertainty once, specifically: "Not in the brief; assumed X".
+5. Part A reasoning is prose; three or more parallel items are a list as long as the facts. Bold at most two points per
+   section; merge a heading over two sentences or fewer into its parent; headings in Part A state outcomes, never
+   "Overview".
+6. The executive summary and section 9 pass the swap test and end on a decision or next step, never on a recap.
+7. The §11 page specs keep their template, but their free text varies its shape from page to page.
+8. Every section traces to a need in the brief; extra ideas go only to future scope (L2). Every number has a source or
+   is labelled "Sample data" (in this document only; never on screen or in collaterals). Section 6 names the source
+   of every research claim, or cuts it.
+9. **§11 copy:** buttons are a verb and an object ("Approve invoice"); error wording says what happened and how to fix
+   it; business rules are explained in words ("within the 30% discount limit"); seed data is realistic and from the
+   client's domain, with no "John Doe" or repeated dummy values.
+10. **Metrics:** each label matches its formula (keep the client's name when it means what is counted; otherwise use
+    the accurate name and record the client's term in Appendix B). A total adds only like quantities. A composite
+    score states the rule it drives, or it is left out.
+11. **States and actions:** the §12.3 lifecycle lists, for every action, the states it is allowed in. Each option on a
+    decision has a different visible result. A status never contradicts an open exception. Drafting notes such as
+    "HR to confirm" are resolved before handover.
+12. **No dead ends:** check the §8 journeys for a wrong AI answer with no next step, a created item that cannot be
+    changed, or a hand-off that does not say how the person hears back. Each becomes an open question or an L2 row; it
+    is L1 only when a Client ask or the storyline needs it.
+13. **AI on screen:** agents (§13) and model cards (§17) are build detail. On screen, AI shows as "AI", once per panel,
+    with no internal agent or model names; the assistant keeps the one name its entry point uses. Each decision the AI
+    made on its own keeps its one-line reason (orchestrator test 4d). Confidence appears only on real AI judgements,
+    and only to the persona who decides. Technical detail (check IDs, score maths) goes only to the persona who acts on
+    it.
 
 ---
 

@@ -343,6 +343,14 @@ ruling, ASK_HUMAN, research requests. For the app, this is the Stage 4b walk ins
   again (§ 4: `round` restarts at 1, `<n>` keeps counting; set `first_review` to the new first `<n>`), then write the
   **new version** (§ 5, which makes v(N+1) and supersedes the older one) and ask again (§ 5.2–6).
 
+## Quality rules for the run
+
+- **Quality rules win.** The shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`) win over any "make it impressive", "rich
+  detail" or "the wow" instruction. The stage call names that file's path and any size guide the stage has (a guide,
+  never a cap), so the skill writes to the rules from the start.
+- **Messages to the person** give the answer first, in sentences under 25 words, with no throat-clearing or colon
+  reveals, and end on the decision being asked, never on a recap or "Let me know if…".
+
 ## Never
 
 - Change the full pipeline's state, files or Orbit rows: no Activity, Iteration or POC update, no `slack_notification`.

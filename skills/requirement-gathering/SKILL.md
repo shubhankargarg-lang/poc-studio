@@ -156,6 +156,8 @@ person in Zen and Sonic; the AI PM never answers it.
 
 ## Step 4 — Write the Requirement Gathering Document
 
+Write every line to the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`, read once) and this skill's **Quality rules** below, as you write.
+
 Before starting: make the final Slack retry for any client file still pending (2a, attempt 2), if it has not been made.
 
 Build it with the `docx` skill (read its SKILL.md first). Write the build script once in `_working/`; later fixes are small edits to only the flagged lines, then one rebuild. Look at the pages once at the end (the summary, the personas and the score table), and after a later fix only at the pages that changed. Title: `Requirement Gathering — <Client>, <use case>` (the use case name you were given, refined only if the client's own words name it differently — say so in Section 1), with the date and who ran it under the title. Directly under that, a short summary of at most five lines: the use case in two lines, the score and verdict, and the top 3 questions that need answering (the Blocking ones from Section 3). It is a summary, not a section. Then **exactly these four sections**, nothing else:
@@ -246,6 +248,26 @@ Two tables.
 - **Files**: File · From (channel or folder, who shared it, date) · Client or internal · Read (Full / Partial / Not reached, with why / **Referenced, not found**, with where it was mentioned) · What it gives. Mark client files "sent in chat". For a file taken from Drive or Gmail because Slack refused it, say so. Tag each sample file as "Sample for <AI feature> · <kind>". For a file Not reached, list the times of the Slack attempts and where else it was looked for.
 - **Sources searched**: Source · What was searched · What was found. Include connectors that were not connected.
 Internal working notes (Orbit or ticket IDs, Slack errors and retry times, search logs, connector problems) go only in Section 4. Sections 1–3 carry none of them, so they read cleanly as client-facing content.
+
+## Quality rules (apply while writing; check before delivering)
+
+1. Sentences average 15 to 20 words and stay under 25; one idea per sentence, with no clauses chained by semicolons,
+   brackets, arrows or "·". Long sentences lose readers fast.
+2. Each section opens with its main point; the document ends on the last open question, with no recap.
+3. Everyday words, the active voice and direct verbs ("decided"); define a technical term the first time it appears.
+4. Concrete numbers in place of praise words; let the fact carry the weight, without calling it "important" or "key".
+5. Three or more parallel items become a list; reasoning stays in prose. Bold at most two points per section, no
+   emoji, no heading over a section of two sentences or fewer, and one or two em dashes in the whole document at most.
+6. The client brief and the problem statement pass the swap test: with another client's name in them, they stop
+   making sense.
+7. One term per concept, in the client's own words, everywhere.
+8. Quote the client exactly as written and name who said it ("Priya, AP lead, 3 Nov email"); never "stakeholders feel".
+9. Record the client's head-office country, and each persona's site when it differs, so the BRD can set the date
+   style, clock and time zone.
+10. The page length is a guide: no gap question is dropped to fit it. The summary stays within its five lines.
+
+**Before delivering**, read the document against these rules and the shared rules as pass or fail, fix every failing
+line, and check those lines again.
 
 ## Step 5 — Deliver
 
