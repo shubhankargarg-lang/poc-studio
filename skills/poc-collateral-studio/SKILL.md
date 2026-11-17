@@ -272,17 +272,17 @@ act; `build.py` re-stitches in seconds (always run `kit/trim.py` again after it)
    `public_url` / `signin_note`); `"internal"` shows them. `internal_terms` are extra phrases
    `check.py` must never find in a customer file. `keepScrollOnNav: true` turns off the scroll reset.
 4. **`story.json`**: acts → scenes, sized to **4–5 minutes** (about 10–13 scenes of 20–30 s). One
-   idea per scene; follow one named subject throughout; write for the ear (short sentences, active
-   voice, US spelling); explore rather than state (filter, open, switch, ask the assistant a real
+   idea per scene; follow one named subject throughout; write for the ear (sentences under 25 words, active
+   voice, US spelling, and the Quality rules below); explore rather than state (filter, open, switch, ask the assistant a real
    follow-up); say where the boundary is ("it flags the issue; the brand team decides"). Every
    number you say must be on that screen or in `facts.json`; every action you claim must be shown
    or be a button visible on that screen.
    ```json
    { "title": "Every shelf visit, *scored with proof*.",
      "opening": { "eyebrow": "Acme Beverages · Proof of concept", "subtitle": "…", "seconds": 4 },
-     "closing": { "title": "From shelf photo to *scored visit*.", "subtitle": "…", "cta": "Next: pilot with 40 stores", "seconds": 5 },
+     "closing": { "title": "Store managers get *a scored visit in 15 seconds*.", "subtitle": "…", "cta": "Next: pilot with 40 stores", "seconds": 5 },
      "acts": [{
-       "id": "A", "title": "Find the visit", "card": "Find the visit, *not the spreadsheet*.",
+       "id": "A", "title": "Find the visit", "card": "Open *the lowest-scoring visit*.",
        "goal": "…", "persona": "brand", "start": "/visits", "settle": 1000,
        "scenes": [{
          "id": "a1", "title": "Open the visit", "lane": "Brand team", "covers": ["F01"],
@@ -371,6 +371,27 @@ The film must look like a person using the app. The toolkit enforces it:
 
 ---
 
+## Quality rules (apply while writing the story, narration and slides)
+
+The script, narration, cards and slides follow the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`) and these:
+1. Narration sentences stay under 25 words, with no filler, flattery or exclamation marks.
+2. No rhetorical questions ("What if…"), no dramatic fragments ("X. And Y. And Z."), and no trailing "-ing" clauses
+   (", showing the team…"): say the consequence.
+3. No em dashes, and no metadiscourse ("here we see", "the key thing here", "notice how", "this matters because").
+4. The same terms as the app, every time: "visit" stays "visit".
+5. Every slide and card title is one plain sentence naming a specific outcome, in the reader's words, saying something
+   new. No colon reveals ("With UnifyApps: …"), stock formulas ("Reinvented", "Every X comes with its Y"), "X, not Y"
+   contrasts, or empty titles ("Overview").
+6. No tagline is repeated across slides or the video's act cards; the opening and closing titles say different things.
+7. The closing title and the last narration line end on the outcome or the next step ("Next: pilot with 40 stores"),
+   never a closing metaphor.
+8. Numbers are rounded and keep one format across the deck, the video and the app. A chart's title states its
+   takeaway.
+9. No POC ID or internal label on a customer-facing slide.
+
+Before recording and before building the deck, read `story.json` and `deck.json` against these rules and fix every
+line that fails.
+
 ## Narration voice
 
 US English, female, offline: Kokoro `af_heart` for every POC (`brief.voice.id` exists only to
@@ -453,9 +474,9 @@ After each version `v<n>`:
              {"id":"ua","label":"UnifyApps","kind":"unifyapps"},
              {"id":"crm","label":"Retail CRM","kind":"system","status":"simulated"} ],
   "views": [
-    {"id":"today","title":"Today: *the manual shelf audit*.","steps":[
+    {"id":"today","title":"Shelf audits today are *manual and uneven*.","steps":[
        {"id":"t1","lane":"merch","text":"Walks the shelf with a checklist","pain":"Results vary by person"} ]},
-    {"id":"with","title":"With UnifyApps: *a scored visit in seconds*.","steps":[
+    {"id":"with","title":"With UnifyApps, *a visit is scored in seconds*.","steps":[
        {"id":"w1","lane":"merch","text":"Uploads shelf photos","scene":"a1"},
        {"id":"w2","lane":"ua","text":"Agent scores six KPIs","kind":"ai","scene":"a2"},
        {"id":"w3","lane":"ua","text":"Visit record created","scene":"a2"},
@@ -496,12 +517,12 @@ slots `T#` and pictures `P#` (the current template: slide 1 "Today's challenges"
 
 ```json
 { "slides": [
-  { "from": 1, "text": { "T0": "HOW SHELF AUDITS WORK TODAY", "T1": ["Today’s challenges: ", "the manual shelf audit", "."] },
+  { "from": 1, "text": { "T0": "HOW SHELF AUDITS WORK TODAY", "T1": ["Shelf audits today are ", "manual and slow to check", "."] },
     "images": { "P0": "lucide:store", "P1": "lucide:camera" }, "notes": "speaker notes" },
   { "from": 2, "images": { "P3": { "path": "build/shots/a2.png", "y": 0.2 } } },
   { "from": 3, "images": { "P0": "build/shots/a2.png" } },
   { "from": 1, "image": "build/swimlane_with_deck.png",
-    "text": { "T0": "HOW IT WORKS WITH UNIFYAPPS", "T1": ["With UnifyApps: ", "a scored visit in seconds", "."] } } ] }
+    "text": { "T0": "HOW IT WORKS WITH UNIFYAPPS", "T1": ["With UnifyApps, ", "a visit is scored in seconds", "."] } } ] }
 ```
 
 An `image` slide keeps the title, trims the picture's empty margins and fits it between the title
@@ -509,7 +530,7 @@ and the footer (`top_in`, `bottom_in`, `left_in`, `right_in` adjust the box); it
 picture ends up under 80% of the slide width.
 
 Default storyline (adjust by persona): **Opening slide** (added by the script) · 1 Today's challenges (slide 1) ·
-2 Reinvented (slide 2, real screenshot) · 3 What each persona gets (slide 3, one per persona) · 4 Swimlane with
+2 How it works now (slide 2, real screenshot; replace the template's sample title) · 3 What each persona gets (slide 3, one per persona) · 4 Swimlane with
 UnifyApps (image slide) · 5 **Technical blueprint (every persona, required)**: one image slide per
 `build/blueprint/blueprint-<n>.png`, in order: the architecture, then the automations and agents on as many slides as
 the list needs · 6 Next steps / go-live path · **Closing slide** (added by the script).
@@ -519,9 +540,9 @@ carries the message, so `blueprint.json` needs no `headline`:
 
 ```json
 { "from": 1, "image": "build/blueprint/blueprint-1.png", "top_in": 1.25, "bottom_in": 0.55,
-  "text": { "T0": "TECHNICAL BLUEPRINT · <POC ID>", "T1": ["How it’s built: ", "<the architecture in a few words>", "."] } },
+  "text": { "T0": "TECHNICAL BLUEPRINT", "T1": ["The POC runs on ", "<the architecture in a few words>", "."] } },
 { "from": 1, "image": "build/blueprint/blueprint-2.png", "top_in": 1.25, "bottom_in": 0.55,
-  "text": { "T0": "TECHNICAL BLUEPRINT · WHAT WAS BUILT", "T1": ["What was built: ", "<n> automations, <n> AI agents", "."] } }
+  "text": { "T0": "WHAT WAS BUILT", "T1": ["The build has ", "<n> automations and <n> AI agents", "."] } }
 ```
 
 A continued list page keeps the same title with "(continued)" in the eyebrow. Keep each title to one line.

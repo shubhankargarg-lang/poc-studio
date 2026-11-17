@@ -58,7 +58,7 @@ is a check. A finding that a lesson caught cites it (`precedent: [L-012]`).
 | Relevance | Does every L1 feature trace to a P-ID, a stated ask or research must-have? Is anything impressive but unrequested? | Untraced module; a supporting check grown into the app's centre |
 | Journey integrity | Does L1 touch every stage of 8.1 at least thinly? Is exactly one persona Primary, and does each persona's home say what they do first and what needs them? | One module is the whole app; a home with no first task |
 | Assumption risk | Rank 5.6 by impact-if-wrong. Any assumption that would change the data model or the storyline must be researched, not assumed. | High-impact volume or process assumption, never challenged |
-| Language | Client vocabulary everywhere (Appendix B)? Any slop from D1–D7? | Executive summary that could be about any client |
+| Language | Client vocabulary everywhere (Appendix B)? Any slop from D1–D7 or slop section 6 (D8–D24, U29–U31, U36)? | Executive summary that could be about any client |
 | Seed realism | Hero records use real brands and products; every warning, gate block and copilot answer has a planted defect | A gate block with nothing seeded to trigger it |
 | Buildability | Computed values written by a workflow (no formula fields); one picklist/lookup convention; object prefixes; code app where the UI needs it | A badge with no workflow writing it |
 
@@ -319,7 +319,7 @@ first pass; this is the independent one. The app is opened from `app.preview_url
   regions in the same order, the chosen navigation shell only (the others, on the `#NAV-options` sheet, are
   rejected), and each hero list's views as a switch on the same page (a view frame is a view, not a page). On a map page, check the map-component behaviour: rings split on zoom, labels never
   overlap, the card opens on hover and stays on click, sites stay clear of open panels, the legend's words match.
-- **Copy lens.** Read `copy.json` against the glossary (scoping Appendix B) and slop C1–C7: one name per thing,
+- **Copy lens.** Read `copy.json` against the glossary (scoping Appendix B) and slop C1–C7 and section 6 (U23–U37, D23–D24): one name per thing,
   outcome-named buttons, exact refusal wording, no jargon, sentence case.
 - **Reverse trace.** Anything visible that no L1 feature asked for (extra tab, extra page, extra chart) is a finding:
   remove it.

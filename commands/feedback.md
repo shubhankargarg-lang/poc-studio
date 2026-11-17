@@ -13,10 +13,10 @@ general, is filed too.
 
 ## Step 0 — make sure this is the latest POC Studio (always first)
 
-This command was loaded from **POC Studio v1.50.2**. Before anything else, run this check with the Bash tool:
+This command was loaded from **POC Studio v1.51.0**. Before anything else, run this check with the Bash tool:
 
 ```bash
-LOADED="1.50.2"
+LOADED="1.51.0"
 python3 - "$LOADED" <<'PY'
 import json, subprocess, sys, urllib.request
 loaded = sys.argv[1]

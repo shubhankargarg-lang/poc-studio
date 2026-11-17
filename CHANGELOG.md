@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.51.0
+**Outputs are written slop-free in the first place.** The anti-slop rules (the team's dos and don'ts, the no-ai-slop skill and the wireframe clarity review of four POCs) now sit inside each skill, at the step where it writes, with a self-check before hand-over. The AI PM checks the same rules as a safety net. No scripts changed.
+- **New shared file `references/anti-slop.md`** (plugin root): the writing rules every skill follows, and how conflicts settle (quality rules win over "the wow"; answer first per section; a list for three or more parallel items, prose for reasoning).
+- **requirement-gathering:** Quality rules at Step 4 (short sentences, main point first, exact client quotes with who said them, head-office country for locale, swap test) and a pass-or-fail read before delivery.
+- **connector-discovery:** Quality rules for the Integration Spec `.md` and the questions to the person.
+- **research:** Quality rules for the answer (answer first, every claim sourced, no stacked hedging, consistent numbers), added to "Check before returning".
+- **scoping-l1-first:** section 10 Quality rules (writing, §11 copy, metric labels match formulas, one meaning per term, states and actions, no dead ends, AI on screen); §19 states the locale once and makes the story true in the seed data; Appendix B flags words with two meanings; presenter tools ("View as" and reset) sit in the profile menu, apart from settings, never labelled "demo"; Step 8 reads the draft against the rules before the quality gate.
+- **wireframes:** Slop rules 5, 6, 13, 23 and 29 updated (one concept per term, no AI internals, subtitles and source notes only when they add something); new rules 30–39 (numbers agree with the hero records, states guard actions, no dead ends, each fact once per screen, the two-second test, detail for the role that acts, presenter tools in the review bar, locale); a label must describe what is counted; the fresh-eyes review asks the two-second and numbers questions.
+- **platform-master:** a fixed `Quality:` block of build pointers for every use case, outside the 15; a plan whose copy or seed data breaks one gets a "Check this" line; tasks that build unasked panels are adjusted.
+- **poc-collateral-studio:** Quality rules for story, narration and slides; the examples now teach plain outcome titles (no colon reveals, "X, not Y" or "Reinvented"), and the blueprint slides no longer carry the POC ID.
+- **ai-pm:** slop catalogue section 6 (rows D8–D24, U23–U37, H1, K7–K9; U29–U31 and U36 blocking, the rest non-blocking), read in every review; U22 asks for a source note only when none is visible; the scoping and copy lenses point at the new rows; new filler phrases in `slop-phrases.json` (non-blocking) and "synthetic data" and "demo data" as on-screen jargon.
+- **poc-orchestrator, asset-run:** quality rules win over "the wow"; each stage call names the shared file and its size guide; messages to the person answer first and end on the decision. **orbit-writeback:** ticket, Activity and context text follows the writing rules.
+
 ## 1.50.2
 **Rules from the POC Build Loop skill proposals (RUN-1794828473934 and RUN-1793623592350), added by hand on the current skills** (the proposals' stored files were older copies, so they were not applied as stored). 14 rules from the 7 pending proposals:
 - **poc-orchestrator** · Stage 4 test 4d: every L1 feature has a place on screen, including outcomes an AI or automation decides on its own (auto-approved, auto-closed, auto-routed), each with the AI's one-line reason; one test-report row per L1 feature. (Heineken)

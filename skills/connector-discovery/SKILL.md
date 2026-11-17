@@ -598,6 +598,20 @@ Statuses: need and operation results `proved` · `ready` · `flags_only` · `blo
 `gap`; automation status `Live` · `Live with assumption` · `Planned`; system status `done` · `partial` · `assumed` ·
 `failed` · `not_needed`.
 
+## Quality rules (the `.md` and the questions to the person)
+
+The `.md` beside the JSON is read by people, so it follows the shared writing rules (`<skill-base-dir>/../../references/anti-slop.md`). The JSON stays
+exact.
+1. Each section of the `.md` opens with its result: connected or not, which models passed.
+2. Sentences under 25 words, everyday words, the active voice; define each technical term the first time it appears.
+3. Every fact names where it came from: the connection, the object read or the test call. Each assumption is stated
+   once, in the Assumed section.
+4. One term per concept, the same one scoping will use. Client objects, fields and operations are written exactly as
+   the system names them, in tables; sentences use the business name.
+5. Connection ids, card ids and test results go in tables, outside the running text.
+6. A `SYSTEM_ACCESS:` question says what is needed and why, in plain words, with no tool names or error codes.
+7. A model-recovery question names the failed step, the models that passed a test, and what changes for the build.
+
 ## Failure handling
 
 | What happens | Do this |
